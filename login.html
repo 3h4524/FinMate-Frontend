@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinMate - Login</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f0f4f3 0%, #e6f0ed 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 32px 64px -12px rgba(52, 73, 67, 0.25);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+            min-height: 600px;
+            border: 1px solid #d1e7dd;
+        }
+
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, #2d5a3d 0%, #1a3d2e 50%, #0f2922 100%);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo i {
+            font-size: 28px;
+            color: #a3c9a8;
+            background: rgba(163, 201, 168, 0.15);
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(163, 201, 168, 0.25);
+        }
+
+        .logo span {
+            font-size: 26px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 1px;
+        }
+
+        .stats-container {
+            margin: 40px 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .main-stat {
+            font-size: 56px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #a3c9a8, #c8e6c9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 15px;
+            opacity: 0.85;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            color: #c8e6c9;
+        }
+
+        .progress-circle {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #388e3c 0deg 120deg,
+                #66bb6a 120deg 240deg,
+                #a5d6a7 240deg 360deg
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 25px auto;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-circle::before {
+            content: '';
+            width: 70px;
+            height: 70px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .progress-circle span {
+            position: relative;
+            z-index: 1;
+            color: #2d5a3d;
+            font-weight: 800;
+            font-size: 20px;
+        }
+
+        .welcome-text {
+            margin-top: 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .welcome-text h2 {
+            font-size: 32px;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+
+        .welcome-text p {
+            opacity: 0.9;
+            line-height: 1.6;
+            font-size: 16px;
+            color: #c8e6c9;
+        }
+
+        .right-panel {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: #fafafa;
+        }
+
+        .login-header {
+            margin-bottom: 35px;
+        }
+
+        .login-header h2 {
+            font-size: 32px;
+            color: #2d5a3d;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .login-header p {
+            color: #546e7a;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2d5a3d;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 16px 18px;
+            border: 2px solid #d1e7dd;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+            color: #2d5a3d;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #388e3c;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(56, 142, 60, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #81c784;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #66bb6a;
+            transition: color 0.2s ease;
+        }
+
+        .password-toggle:hover {
+            color: #388e3c;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 30px;
+        }
+
+        .forgot-password a {
+            color: #388e3c;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #2e7d32;
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(56, 142, 60, 0.3);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(56, 142, 60, 0.4);
+            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+            color: #546e7a;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #d1e7dd;
+            z-index: 1;
+        }
+
+        .divider span {
+            background: #fafafa;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .social-btn {
+            padding: 14px 32px;
+            border: 2px solid #d1e7dd;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d5a3d;
+        }
+
+        .social-btn:hover {
+            border-color: #a5d6a7;
+            background: #f1f8e9;
+            transform: translateY(-1px);
+        }
+
+        .social-btn.google {
+            color: #2d5a3d;
+        }
+
+        .signup-link {
+            text-align: center;
+            color: #546e7a;
+            font-size: 15px;
+        }
+
+        .signup-link a {
+            color: #388e3c;
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.2s ease;
+        }
+
+        .signup-link a:hover {
+            color: #2e7d32;
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: #d32f2f;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                margin: 10px;
+                border-radius: 20px;
+            }
+
+            .left-panel {
+                padding: 30px 20px;
+            }
+
+            .right-panel {
+                padding: 30px 20px;
+            }
+
+            .social-buttons {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .social-btn { 
+                width: 100%; 
+            }
+
+            .login-header h2 {
+                font-size: 28px;
+            }
+
+            .welcome-text h2 {
+                font-size: 28px;
+            }
+        }
+
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 28px;
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transform: translateX(120%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #388e3c, #66bb6a);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #d32f2f, #f44336);
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, #388e3c, #4caf50);
+        }
+
+        .notification i {
+            font-size: 18px;
+        }
+
+        .notification-close {
+            cursor: pointer;
+            margin-left: 12px;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .notification-close:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Add notification container -->
+    <div id="notification" class="notification">
+        <i class="fas fa-info-circle"></i>
+        <span id="notification-message"></span>
+        <i class="fas fa-times notification-close" onclick="hideNotification()"></i>
+    </div>
+
+    <div class="container">
+        <div class="left-panel">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <span>FINMATE</span>
+            </div>
+
+            <div class="stats-container">
+                <div class="main-stat">5K+</div>
+                <div class="stat-label">Join members love and trust our <br>FinMate better and better</div>
+
+                <div class="progress-circle">
+                    <span>95%</span>
+                </div>
+            </div>
+
+            <div class="welcome-text">
+                <h2>Welcome back!</h2>
+                <p>Start managing your finance faster and better with our secure platform</p>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="login-header">
+                <h2>Welcome back!</h2>
+                <p>Start managing your finance faster and better</p>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                    <div id="emailError" class="error-message"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                        <i class="fas fa-eye-slash password-toggle" onclick="togglePassword()"></i>
+                    </div>
+                    <div id="passwordError" class="error-message"></div>
+                </div>
+
+                <div class="forgot-password">
+                    <a href="forgot-password.html">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="login-btn">Sign In</button>
+            </form>
+
+            <div class="divider">
+                <span>or continue with</span>
+            </div>
+
+            <div class="social-buttons">
+                <!-- Container for Google button -->
+                <div id="google-button"></div>
+            </div>
+
+            <div class="signup-link">
+                Don't have an account? <a href="register.html">Create Account</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.querySelector('.password-toggle');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            }
+        }
+
+        // Add notification functions
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const messageElement = document.getElementById('notification-message');
+            
+            // Remove existing classes
+            notification.classList.remove('success', 'error', 'info');
+            // Add new type class
+            notification.classList.add(type);
+            
+            messageElement.textContent = message;
+            notification.classList.add('show');
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                hideNotification();
+            }, 5000);
+        }
+
+        function hideNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.remove('show');
+        }
+
+        // Xử lý đăng nhập
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            document.getElementById('emailError').style.display = 'none';
+            document.getElementById('passwordError').style.display = 'none';
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                console.log('Login response:', data);
+                
+                if (response.ok) {
+                    // Lưu thông tin người dùng vào sessionStorage
+                    const userData = {
+                        userId: data.userId,
+                        name: data.name,
+                        email: data.email,
+                        role: data.role,
+                        premium: data.premium
+                    };
+                    console.log('Storing user data:', userData);
+                    sessionStorage.setItem('user', JSON.stringify(userData));
+                    sessionStorage.setItem('userName', data.name || data.email);
+                    
+                    showNotification('Đăng nhập thành công!', 'success');
+                    
+                    // Thêm delay nhỏ để đảm bảo sessionStorage được cập nhật
+                    setTimeout(() => {
+                        window.location.href = 'home.html';
+                    }, 500);
+                } else {
+                    if (data.requiresVerification) {
+                        sessionStorage.setItem('requiresVerification', 'true');
+                        sessionStorage.setItem('pendingVerificationEmail', data.email);
+                        window.location.href = 'verify-email.html?email=' + encodeURIComponent(data.email);
+                    } else {
+                        showNotification(data.message || 'Đăng nhập thất bại!', 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showNotification('Có lỗi xảy ra khi đăng nhập!', 'error');
+            }
+        });
+
+        // Xử lý đăng nhập bằng Google
+        async function handleCredentialResponse(response) {
+            console.log("Google ID Token: " + response.credential);
+            try {
+                const result = await fetch('http://localhost:8080/api/auth/google', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ token: response.credential })
+                });
+
+                const data = await result.json();
+                console.log('Google login response:', data);
+
+                if (result.ok) {
+                    sessionStorage.setItem('user', JSON.stringify(data));
+                    showNotification('Đăng nhập Google thành công!', 'success');
+                    window.location.href = 'home.html';
+                } else {
+                    if (data.requiresVerification) {
+                        sessionStorage.setItem('requiresVerification', 'true');
+                        sessionStorage.setItem('pendingVerificationEmail', data.email);
+                        window.location.href = 'verify-email.html?email=' + encodeURIComponent(data.email);
+                    } else {
+                        showNotification(data.message || 'Đăng nhập Google thất bại!', 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Google login error:', error);
+                showNotification('Có lỗi xảy ra khi đăng nhập bằng Google!', 'error');
+            }
+        }
+
+        // Khởi tạo Google Sign-In
+        window.onload = function () {
+            google.accounts.id.initialize({
+                client_id: "455189339360-ah566hols1au0npc7mou7halnl7ba4uk.apps.googleusercontent.com",
+                callback: handleCredentialResponse,
+                auto_select: false,
+                cancel_on_tap_outside: true,
+                context: 'signin',
+                ux_mode: 'popup',
+                origin: 'http://127.0.0.1:5500'
+            });
+            google.accounts.id.renderButton(
+                document.getElementById("google-button"), // The container element
+                {   
+                    type: "standard",
+                    size: "large",
+                    theme: "outline",
+                    text: "signin_with",
+                    shape: "rectangular",
+                    logo_alignment: "left",
+                    width: "280"
+                } // Configuration options
+            );
+            // Optional: Display the One Tap prompt automatically
+            // google.accounts.id.prompt();
+        };
+    </script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</body>
+</html>
