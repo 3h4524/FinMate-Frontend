@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goal Progress</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="helper_functions.js?v=1"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+<div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <div class="w-64 bg-gray-900 text-white">
+        <div class="p-6">
+            <div class="flex items-center space-x-2 mb-8">
+                <div class="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center">
+                    <div class="w-4 h-4 bg-white rounded-sm"></div>
+                </div>
+                <span class="text-xl font-bold">FinMate</span>
+            </div>
+            <nav class="space-y-2">
+                <div class="px-4 py-3 rounded-lg cursor-pointer transition-colors text-gray-300 hover:bg-gray-800">
+                    Dashboard
+                </div>
+                <div onclick="window.location.href = 'goal.html';" class="px-4 py-3 rounded-lg cursor-pointer transition-colors bg-teal-600 text-white">Goals
+                </div>
+                <div class="px-4 py-3 rounded-lg cursor-pointer transition-colors text-gray-300 hover:bg-gray-800">
+                    Transactions
+                </div>
+                <div class="px-4 py-3 rounded-lg cursor-pointer transition-colors text-gray-300 hover:bg-gray-800">
+                    Budget
+                </div>
+                <div onclick="window.location.href = 'financial_report.html';" class="px-4 py-3 rounded-lg cursor-pointer transition-colors text-gray-300 hover:bg-gray-800">
+                    Reports
+                </div>
+                <div class="px-4 py-3 rounded-lg cursor-pointer transition-colors text-gray-300 hover:bg-gray-800">
+                    Profile
+                </div>
+                <div class="px-4 py-3 rounded-lg cursor-pointer transition-colors text-gray-300 hover:bg-gray-800">
+                    Settings
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+        <div class="bg-white shadow-sm border-b px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <button onclick="window.location.href = 'goal.html';" id="backButton"
+                            class="flex items-center text-gray-600 hover:text-gray-800 transition-colors">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                        Back to Goals
+                    </button>
+                    <h1 id="pageTitle" class="text-2xl font-bold text-gray-900">Goal Progress</h1>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-1 p-8">
+            <div id="errorMessage"
+                 class="hidden mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center">
+                <svg class="w-5 h-5 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="text-red-800"></span>
+            </div>
+
+            <!-- Goal Details View -->
+            <div id="goalDetailsView" class="space-y-6">
+                <!-- Goal Summary -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <h2 id="goalName" class="text-xl font-semibold text-gray-900"></h2>
+                                <button id="editButton" class="hidden text-gray-400 hover:text-blue-600 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p id="goalIsLongTerm"
+                               class="text-sm text-gray-600 rounded-full inline-block px-2 py-1"></p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div id="goalStatus" class="px-4 py-2 rounded-full text-sm font-medium"></div>
+                            <button id="cancelButton" class="flex items-center text-red-600 hover:text-red-700 font-medium">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+                        <div>
+                            <p class="text-sm text-gray-600 mb-1">Current Amount</p>
+                            <p id="currentAmount" class="text-lg font-semibold text-gray-900"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600 mb-1">Target Amount</p>
+                            <p id="targetAmount" class="text-lg font-semibold text-gray-900"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600 mb-1">Progress</p>
+                            <p id="progressPercentage" class="text-lg font-semibold text-gray-900"></p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600 mb-1">Time Remaining</p>
+                            <p id="timeRemaining" class="text-lg font-semibold text-gray-900"></p>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm text-gray-600 mb-2">
+                            <span>Progress</span>
+                            <span id="progressText"></span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-4">
+                            <div id="progressBar" class="h-4 rounded-full transition-all duration-300"></div>
+                        </div>
+                    </div>
+                </div>
+
+                    <!-- Edit Goal Modal -->
+                <div id="editGoalModal"
+                     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
+                    <div
+                            class="bg-white rounded-2xl shadow-2xl p-0 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto animate-slide-up">
+                        <!-- Header -->
+                        <div class="bg-gradient-to-r from-teal-600 to-teal-700 text-white p-6 rounded-t-2xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h2 class="text-2xl font-bold">Edit Goal</h2>
+                                    <p class="text-teal-100 text-sm mt-1">Update your financial goal details</p>
+                                </div>
+                                <button id="closeEditModalButton"
+                                        class="text-white/80 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Form Content -->
+                        <form id="editGoalForm" class="p-6 space-y-6">
+                            <!-- Goal Details -->
+                            <div class="bg-gray-50 rounded-xl p-5">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 text-teal-600 mr-2" fill="none" stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                    Goal Details
+                                </h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="editGoalName"
+                                               class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Goal Name *
+                                        </label>
+                                        <input type="text" id="editGoalName"
+                                               class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900 placeholder-gray-400"
+                                               placeholder="e.g., Vacation Fund" required>
+                                    </div>
+                                    <div>
+                                        <label for="editTargetAmount"
+                                               class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Target Amount ($) *
+                                        </label>
+                                        <div class="relative">
+                            <span
+                                    class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">$</span>
+                                            <input type="number" id="editTargetAmount" step="0.01"
+                                                   class="w-full border-2 border-gray-200 rounded-xl pl-8 pr-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900"
+                                                   placeholder="1000.00" required min="0.01">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="editDeadline"
+                                               class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Deadline (mm/dd/yyyy) *
+                                        </label>
+                                        <input type="date" id="editDeadline"
+                                               class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900"
+                                               required>
+                                    </div>
+                                    <div>
+                                        <label for="editNotificationEnabled"
+                                               class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Enable Notifications
+                                        </label>
+                                        <input type="checkbox" id="editNotificationEnabled"
+                                               class="h-5 w-5 text-teal-600 focus:ring-teal-500 border-gray-300 rounded">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Error Display -->
+                            <div id="editFormError" class="hidden bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                              clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span id="editErrorMessageModal" class="text-red-700 font-medium"></span>
+                                </div>
+                            </div>
+                            <!-- Action Buttons -->
+                            <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
+                                <button type="button" id="cancelEditModalButton"
+                                        class="flex-1 px-6 py-3 text-gray-600 hover:text-gray-800 border-2 border-gray-200 hover:border-gray-300 rounded-xl font-semibold transition-all duration-200 hover:bg-gray-50">
+                                    Cancel
+                                </button>
+                                <button type="submit" id="saveEditButton"
+                                        class="flex-1 px-6 py-3 bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]">
+                                    Save
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Progress Chart -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900">Progress Chart</h3>
+                        <div class="flex items-center space-x-2">
+                            <button id="lineChartButton" class="p-2 rounded-lg text-gray-400 hover:text-gray-600">
+                                <svg fill="currentColor" class="w-5 h-5" viewBox="0 0 24 24"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                            d="M4,23a1,1,0,0,1-1-1V19a1,1,0,0,1,2,0v3A1,1,0,0,1,4,23Zm9-1V15a1,1,0,0,0-2,0v7a1,1,0,0,0,2,0Zm7-11a1,1,0,0,0-1,1V22a1,1,0,0,0,2,0V12A1,1,0,0,0,20,11Zm.382-9.923A.991.991,0,0,0,20,1H16a1,1,0,0,0,0,2h1.586L12,8.586,8.707,5.293a1,1,0,0,0-1.414,0l-4,4a1,1,0,0,0,1.414,1.414L8,7.414l3.293,3.293a1,1,0,0,0,1.414,0L19,4.414V6a1,1,0,0,0,2,0V2a1,1,0,0,0-.618-.923Z"/>
+                                </svg>
+                            </button>
+
+                            <button id="barChartButton" class="p-2 rounded-lg text-gray-400 hover:text-gray-600">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M2 22H22" stroke="#292D32" stroke-width="1.5" stroke-miterlimit="10"
+                                          stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path
+                                            d="M9.75 4V22H14.25V4C14.25 2.9 13.8 2 12.45 2H11.55C10.2 2 9.75 2.9 9.75 4Z"
+                                            stroke="#292D32" stroke-width="1.5" stroke-linecap="round"
+                                            stroke-linejoin="round"/>
+                                    <path d="M3 10V22H7V10C7 8.9 6.6 8 5.4 8H4.6C3.4 8 3 8.9 3 10Z" stroke="#292D32"
+                                          stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M17 15V22H21V15C21 13.9 20.6 13 19.4 13H18.6C17.4 13 17 13.9 17 15Z"
+                                          stroke="#292D32" stroke-width="1.5" stroke-linecap="round"
+                                          stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                    </div>
+                    <div class="h-64">
+                        <canvas id="progressChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Contribution History -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900">Contribution History</h3>
+                        <div class="flex items-center space-x-2">
+                            <button id="addContributionButton"
+                                    class="hidden flex items-center bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Add Contribution
+                            </button>
+                            <button id="refreshGoalContributionsButton"
+                                    class="flex items-center bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-colors">
+                                <svg class="w-4 h-4 mr-2 animate-spin-on-hover" fill="none" stroke="currentColor"
+                                     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M4 12a8 8 0 0116 0 8 8 0 01-16 0zm14.5-2.5A6.5 6.5 0 005.5 9.5m-1.414 1.414L2 13h5v-5l-2.086 2.086M19.5 14.5A6.5 6.5 0 006.5 14.5m1.414-1.414L10 11h-5v5l2.086-2.086"/>
+                                </svg>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="startDate" class="block text-sm font-medium text-gray-700 mb-1">Start
+                                Date</label>
+                            <input type="date" id="startDate"
+                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-colors">
+                        </div>
+                        <div>
+                            <label for="endDate" class="block text-sm font-medium text-gray-700 mb-1">End
+                                Date</label>
+                            <input type="date" id="endDate"
+                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-colors">
+                        </div>
+                    </div>
+                    <div class="flex justify-end mb-4">
+                        <button id="clearFiltersButton"
+                                class="text-sm text-teal-600 hover:text-teal-800 font-medium">Clear Filters
+                        </button>
+                    </div>
+                    <div id="contributionsList" class="divide-y divide-gray-200"></div>
+                </div>
+
+                <!-- Add Contribution Modal -->
+                <div id="addContributionModal"
+                     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
+                    <div
+                            class="bg-white rounded-2xl shadow-2xl p-0 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto animate-slide-up">
+                        <!-- Header -->
+                        <div class="bg-gradient-to-r from-teal-600 to-teal-700 text-white p-6 rounded-t-2xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h2 class="text-2xl font-bold">Add New Contribution</h2>
+                                    <p class="text-teal-100 text-sm mt-1">Contribute to your financial goal</p>
+                                </div>
+                                <button id="closeModalButton"
+                                        class="text-white/80 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Form Content -->
+                        <form id="contributionForm" class="p-6 space-y-6">
+                            <!-- Contribution Details -->
+                            <div class="bg-gray-50 rounded-xl p-5">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <svg class="w-5 h-5 text-teal-600 mr-2" fill="none" stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                                        </path>
+                                    </svg>
+                                    Contribution Details
+                                </h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="contributionAmount"
+                                               class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Amount ($) *
+                                        </label>
+                                        <div class="relative">
+                                                <span
+                                                        class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">$</span>
+                                            <input type="number" id="contributionAmount" step="0.01"
+                                                   class="w-full border-2 border-gray-200 rounded-xl pl-8 pr-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900"
+                                                   placeholder="100.00" required min="0.01">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="contributionNote"
+                                               class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Note (Optional)
+                                        </label>
+                                        <input type="text" id="contributionNote"
+                                               class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900 placeholder-gray-400"
+                                               placeholder="e.g., Monthly savings">
+                                    </div>
+                                    <div>
+                                        <label for="contributionDate"
+                                               class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Contribution Date (mm/dd/yyyy) *
+                                        </label>
+                                        <input type="date" id="contributionDate"
+                                               class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900"
+                                               required>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Error Display -->
+                            <div id="formError" class="hidden bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                              clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span id="errorMessageModal" class="text-red-700 font-medium"></span>
+                                </div>
+                            </div>
+                            <!-- Action Buttons -->
+                            <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
+                                <button type="button" id="cancelModalButton"
+                                        class="flex-1 px-6 py-3 text-gray-600 hover:text-gray-800 border-2 border-gray-200 hover:border-gray-300 rounded-xl font-semibold transition-all duration-200 hover:bg-gray-50">
+                                    Cancel
+                                </button>
+                                <button type="submit"
+                                        class="flex-1 px-6 py-3 bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]">
+                                    Save
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // State management
+    let goalProgressResponse = null;
+    let chartType = 'line';
+    let error = '';
+    let progressChart;
+
+
+    let initialFormValues = {};
+
+
+    // DOM elements
+    const pageTitle = document.getElementById('pageTitle');
+    const errorMessage = document.getElementById('errorMessage');
+    const errorText = errorMessage.querySelector('span');
+    const progressChartCanvas = document.getElementById('progressChart');
+    const lineChartButton = document.getElementById('lineChartButton');
+    const barChartButton = document.getElementById('barChartButton');
+    const addContributionButton = document.getElementById('addContributionButton');
+    const addContributionModal = document.getElementById('addContributionModal');
+    const closeModalButton = document.getElementById('closeModalButton');
+    const cancelModalButton = document.getElementById('cancelModalButton');
+    const contributionForm = document.getElementById('contributionForm');
+    const formError = document.getElementById('formError');
+
+
+    // DOM elements for edit modal
+    const editGoalModal = document.getElementById('editGoalModal');
+    const closeEditModalButton = document.getElementById('closeEditModalButton');
+    const cancelEditModalButton = document.getElementById('cancelEditModalButton');
+    const editGoalForm = document.getElementById('editGoalForm');
+    const editFormError = document.getElementById('editFormError');
+    const editErrorMessageModal = document.getElementById('editErrorMessageModal');
+
+
+    const cancelButton = document.getElementById('cancelButton');
+    const editButton = document.getElementById('editButton');
+
+
+    // API configuration
+    const API_BASE_URL = 'http://localhost:8080';
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const goalId = urlParams.get('goalId');
+
+    function renderError() {
+        errorMessage.classList.remove('hidden');
+        errorText.textContent = error;
+    }
+
+    // API interactions
+    async function fetchGoalDetails() {
+        console.log("fetchGoalDetails: " + goalId);
+        try {
+            const response = await fetch(`${API_BASE_URL}/goal_tracking/${goalId}`);
+            if (!response.ok) throw new Error('Failed to fetch goal details');
+            const data = await response.json();
+            goalProgressResponse = data.result;
+            renderGoalDetails();
+        } catch (err) {
+            error = 'Failed to fetch goal details or contributions';
+            renderError();
+        }
+    }
+
+    async function fetchGoalProgressData() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/goal_tracking/list_progress/${goalId}`);
+            if (!response.ok) throw new Error('Failed to fetch goal progress data');
+            const data = await response.json();
+            return data.result.content;
+        } catch (error) {
+            console.error('Error fetching goal progress data:', error);
+            return null;
+        }
+    }
+
+    async function fetchGoalContributionData(goalId) {
+        try {
+            const contributionsResponse = await fetch(`${API_BASE_URL}/contributions/${goalId}`);
+            if (!contributionsResponse.ok) throw new Error('Failed to fetch goal contributions');
+            const contributionsData = await contributionsResponse.json();
+            return contributionsData.result.content;
+        } catch (error) {
+            console.error('Error fetching goal contribution data:', error);
+            return null;
+        }
+    }
+
+    // Render goal details
+    function renderGoalDetails() {
+        pageTitle.textContent = `${goalProgressResponse.name} Progress`;
+        document.getElementById('goalName').textContent = goalProgressResponse.name;
+        document.getElementById('goalIsLongTerm').textContent = goalProgressResponse.isLongTerm ? 'Long Term' : 'Short Term';
+        const el = document.getElementById('goalIsLongTerm');
+
+        if (goalProgressResponse.isLongTerm) {
+            el.classList.remove('bg-yellow-100', 'text-yellow-800');
+            el.classList.add('bg-green-100', 'text-green-800');
+        } else {
+            el.classList.remove('bg-green-100', 'text-green-800');
+            el.classList.add('bg-yellow-100', 'text-yellow-800');
+        }
+
+        if (goalProgressResponse.status === "IN_PROGRESS") {
+            cancelButton.classList.remove('hidden');
+            addContributionButton.classList.remove('hidden');
+            editButton.classList.remove('hidden');
+        } else {
+            cancelButton.classList.add('hidden');
+            addContributionButton.classList.add('hidden');
+            editButton.classList.add('hidden');
+        }
+
+        document.getElementById('goalStatus').textContent = goalProgressResponse.status;
+        document.getElementById('goalStatus').className = `px-4 py-2 rounded-full text-sm font-medium ${getStatusColor(goalProgressResponse.status)}`;
+
+        document.getElementById('currentAmount').textContent = formatCurrency(goalProgressResponse.amount);
+        document.getElementById('targetAmount').textContent = formatCurrency(goalProgressResponse.targetAmount);
+        document.getElementById('progressPercentage').textContent = `${goalProgressResponse.percentage}%`;
+        document.getElementById('timeRemaining').textContent = goalProgressResponse.timeRemaining || 'N/A';
+        document.getElementById('progressText').textContent = `${goalProgressResponse.percentage}%`;
+        document.getElementById('progressBar').style.width = `${goalProgressResponse.percentage}%`;
+        document.getElementById('progressBar').className = `h-4 rounded-full transition-all duration-300 ${getProgressColor(goalProgressResponse.percentage)}`;
+
+        if (chartType === 'bar') {
+            barChartButton.classList.add('bg-green-100', 'text-teal-600');
+            lineChartButton.classList.remove('bg-green-100', 'text-teal-600');
+        } else {
+            lineChartButton.classList.add('bg-green-100', 'text-teal-600');
+            barChartButton.classList.remove('bg-green-100', 'text-teal-600');
+        }
+
+        renderChart();
+        renderContributions();
+    }
+
+    // Render chart
+    async function renderChart() {
+        console.log("start render chart");
+        if (!goalProgressResponse) return;
+
+        const goalProgressList = await fetchGoalProgressData();
+        if (!goalProgressList) return;
+
+        const labels = goalProgressList.map(progress => formatDate_ddMMyyyy(progress.progressDate));
+        const values = goalProgressList.map(progress => progress.amount);
+
+        if (progressChart) progressChart.destroy();
+        const ctx = progressChartCanvas.getContext('2d');
+        progressChart = new Chart(ctx, {
+            type: chartType,
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Amount',
+                    data: values,
+                    backgroundColor: chartType === 'bar' ? '#0d9488' : 'transparent',
+                    borderColor: '#0d9488',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    y: {beginAtZero: true}
+                }
+            }
+        });
+        console.log("end render chart");
+    }
+
+    // Render contributions
+    async function renderContributions() {
+        console.log("start renderContributions");
+
+        if (!goalProgressResponse) return;
+
+        const goalContributions = await fetchGoalContributionData(goalProgressResponse.goalId) || [];
+        if (!goalContributions) return;
+
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const contributionsList = document.getElementById('contributionsList');
+
+        // Validate startDate <= endDate
+        if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+            contributionsList.innerHTML = `
+            <div class="py-8 text-center text-red-600">
+                <svg class="mx-auto h-12 w-12 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <p class="mt-2 font-medium">Error: Start date cannot be later than end date.</p>
+            </div>
+        `;
+            return;
+        }
+
+        const filteredContributions = goalContributions
+            .filter(contribution => {
+                const contributionDate = new Date(contribution.contributionDate);
+                const startDateValue = startDate ? new Date(startDate) : null;
+                const endDateValue = endDate ? new Date(endDate) : null;
+
+                // Ensure contribution date is within the range (inclusive)
+                return (!startDateValue || contributionDate >= startDateValue) &&
+                    (!endDateValue || contributionDate <= endDateValue);
+            })
+            .sort((a, b) => new Date(b.contributionDate) - new Date(a.contributionDate)); // Sort by date descending
+
+        contributionsList.innerHTML = filteredContributions.length > 0 ? filteredContributions.map(contribution => `
+        <div class="py-4 flex items-center justify-between hover:bg-gray-50 transition-colors rounded-lg px-4">
+            <div>
+                <p class="font-medium text-gray-900">${contribution.note || 'Contribution'}</p>
+                <p class="text-sm text-gray-500">${formatDate_ddMMyyyy(contribution.contributionDate)}</p>
+            </div>
+            <div class="text-right">
+                <p class="font-semibold text-teal-600">
+                    +${formatCurrency(contribution.amount)}
+                </p>
+            </div>
+        </div>
+    `).join('') : `
+        <div class="py-8 text-center text-gray-500">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            <p class="mt-2">No contributions found for the selected date range.</p>
+        </div>
+    `;
+        console.log("end renderContributions");
+    }
+
+    // function
+    async function cancelGoal(goalId) {
+        console.log("trying to cancel Goal", goalId);
+        try {
+            const response = await fetch(`${API_BASE_URL}/goal/cancel/${goalId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to cancel goal')
+            }
+
+            window.location.href = "goal.html";
+        } catch (err) {
+            showResult(err, "warning");
+        }
+    }
+
+    // Modal handling
+    function openModalAddContribution() {
+        addContributionModal.classList.remove('hidden');
+        document.getElementById('contributionDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('contributionAmount').value = '';
+        document.getElementById('contributionNote').value = '';
+        formError.classList.add('hidden');
+    }
+
+    function closeModalAddContribution() {
+        addContributionModal.classList.add('hidden');
+        formError.classList.add('hidden');
+    }
+
+
+    // Open edit modal and populate fields
+    function openEditModal() {
+        editGoalModal.classList.remove('hidden');
+        document.getElementById('editGoalName').value = goalProgressResponse.name;
+        document.getElementById('editTargetAmount').value = goalProgressResponse.targetAmount.toFixed(2);
+        document.getElementById('editDeadline').value = goalProgressResponse.deadline;
+        document.getElementById('editNotificationEnabled').checked = goalProgressResponse.notificationEnabled || false;
+        editFormError.classList.add('hidden');
+
+        // Store initial form values
+        initialFormValues = {
+            name: goalProgressResponse.name,
+            targetAmount: goalProgressResponse.targetAmount.toFixed(2),
+            deadline: goalProgressResponse.deadline,
+            notificationEnabled: goalProgressResponse.notificationEnabled || false
+        };
+
+        updateSaveButtonState();
+    }
+
+    // Close edit modal
+    function closeEditModal() {
+        editGoalModal.classList.add('hidden');
+        editFormError.classList.add('hidden');
+    }
+
+    // Check if form values have changed
+    function hasFormChanged() {
+        const currentValues = {
+            name: document.getElementById('editGoalName').value.trim(),
+            targetAmount: document.getElementById('editTargetAmount').value,
+            deadline: document.getElementById('editDeadline').value,
+            notificationEnabled: document.getElementById('editNotificationEnabled').checked
+        };
+
+        return (
+            currentValues.name !== initialFormValues.name ||
+            currentValues.targetAmount !== initialFormValues.targetAmount ||
+            currentValues.deadline !== initialFormValues.deadline ||
+            currentValues.notificationEnabled !== initialFormValues.notificationEnabled
+        );
+    }
+
+    // Update Save button state
+    function updateSaveButtonState() {
+        if (hasFormChanged()) {
+            saveEditButton.disabled = false;
+            saveEditButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+            saveEditButton.classList.add('bg-gradient-to-r', 'from-teal-600', 'to-teal-700', 'hover:from-teal-700', 'hover:to-teal-800');
+        } else {
+            saveEditButton.disabled = true;
+            saveEditButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+            saveEditButton.classList.remove('bg-gradient-to-r', 'from-teal-600', 'to-teal-700', 'hover:from-teal-700', 'hover:to-teal-800');
+        }
+    }
+
+    // Event listeners for modal and buttons
+    addContributionButton.addEventListener('click', openModalAddContribution);
+    closeModalButton.addEventListener('click', closeModalAddContribution);
+    cancelModalButton.addEventListener('click', closeModalAddContribution);
+
+    editButton.addEventListener('click', openEditModal);
+    closeEditModalButton.addEventListener('click', closeEditModal);
+    cancelEditModalButton.addEventListener('click', closeEditModal);
+
+    // Add input event listeners to update Save button state
+    document.getElementById('editGoalName').addEventListener('input', updateSaveButtonState);
+    document.getElementById('editTargetAmount').addEventListener('input', updateSaveButtonState);
+    document.getElementById('editDeadline').addEventListener('input', updateSaveButtonState);
+    document.getElementById('editNotificationEnabled').addEventListener('change', updateSaveButtonState);
+
+    lineChartButton.addEventListener('click', () => {
+        chartType = 'line';
+        lineChartButton.classList.add('bg-green-100', 'text-teal-600');
+        barChartButton.classList.remove('bg-green-100', 'text-teal-600');
+        renderChart();
+    });
+
+    barChartButton.addEventListener('click', () => {
+        chartType = 'bar';
+        barChartButton.classList.add('bg-green-100', 'text-teal-600');
+        lineChartButton.classList.remove('bg-green-100', 'text-teal-600');
+        renderChart();
+    });
+
+    document.getElementById('startDate').addEventListener('change', renderContributions);
+    document.getElementById('endDate').addEventListener('change', renderContributions);
+    document.getElementById('refreshGoalContributionsButton').addEventListener('click', renderContributions);
+    document.getElementById('clearFiltersButton').addEventListener('click', () => {
+        document.getElementById('startDate').value = '';
+        document.getElementById('endDate').value = '';
+        renderContributions();
+    });
+
+    cancelButton.addEventListener('click', () => {
+        cancelGoal(goalId)
+    });
+
+    // Form submission
+    contributionForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const amount = parseFloat(document.getElementById('contributionAmount').value);
+        const note = document.getElementById('contributionNote').value;
+        const contributionDate = document.getElementById('contributionDate').value;
+
+        // Validate inputs
+        const today = new Date();
+        today.setHours(23, 59, 59, 999); // Allow contributions for today
+        if (amount <= 0) {
+            formError.classList.remove('hidden');
+            formError.textContent = 'Amount must be greater than 0.';
+            return;
+        }
+        if (new Date(contributionDate) > today) {
+            formError.classList.remove('hidden');
+            formError.textContent = 'Contribution date cannot be in the future.';
+            return;
+        }
+
+        const contribution = {
+            goalId: goalProgressResponse.goalId,
+            amount,
+            note: note || null,
+            contributionDate
+        };
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/contributions/${goalProgressResponse.goalId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(contribution)
+            });
+            if (!response.ok) throw new Error('Failed to add contribution');
+            showResult("Congratulations you have successfully created a new goal contribution!", "success");
+            closeModalAddContribution();
+            await fetchGoalDetails(goalProgressResponse.goalId);
+        } catch (error) {
+            console.error('Error adding contribution:', error);
+            return false;
+        }
+    });
+
+    editGoalForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!hasFormChanged()) {
+            closeEditModal();
+            return;
+        }
+
+        const name = document.getElementById('editGoalName').value.trim();
+        const targetAmount = parseFloat(document.getElementById('editTargetAmount').value);
+        const deadline = document.getElementById('editDeadline').value;
+        const notificationEnabled = document.getElementById('editNotificationEnabled').checked;
+
+        // Validate inputs
+        if (!name) {
+            editFormError.classList.remove('hidden');
+            editErrorMessageModal.textContent = 'Goal name is required.';
+            return;
+        }
+        if (targetAmount <= 0) {
+            editFormError.classList.remove('hidden');
+            editErrorMessageModal.textContent = 'Target amount must be greater than 0.';
+            return;
+        }
+        if (!deadline) {
+            editFormError.classList.remove('hidden');
+            editErrorMessageModal.textContent = 'Deadline is required.';
+            return;
+        }
+        const today = new Date();
+        today.setHours(23, 59, 59, 999); // Allow today as deadline
+        if (new Date(deadline) < today) {
+            editFormError.classList.remove('hidden');
+            editErrorMessageModal.textContent = 'Deadline cannot be in the past.';
+            return;
+        }
+
+        const updatedGoal = {
+            name,
+            targetAmount,
+            deadline,
+            notificationEnabled
+        };
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/goal/${goalId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedGoal)
+            });
+            if (!response.ok) throw new Error('Failed to update goal');
+            showResult("Goal updated successfully!", "success");
+            closeEditModal();
+            await fetchGoalDetails();
+        } catch (error) {
+            editFormError.classList.remove('hidden');
+            editErrorMessageModal.textContent = 'Failed to update goal. Please try again.';
+            showResult('Error updating goal:', "error")
+        }
+    });
+
+    fetchGoalDetails();
+</script>
+</body>
+
+</html>
