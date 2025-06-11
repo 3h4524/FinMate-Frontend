@@ -1,5 +1,5 @@
 const API_BASE_URL = 'http://localhost:8080/api/transactions';
-const CURRENT_USER_ID = 2;
+const CURRENT_USER_ID = 4;
 let currentPage = 0;
 let totalPages = 0;
 let editingTransactionId = null;
@@ -26,6 +26,20 @@ const closeModalBtn = document.getElementById('closeModalBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 const closeSearchModalBtn = document.getElementById('closeSearchModalBtn');
 const cancelSearchBtn = document.getElementById('cancelSearchBtn');
+const walletLoading = document.getElementById('walletLoading');
+const walletBalance = document.getElementById('walletBalance');
+const walletError = document.getElementById('walletError');
+const balanceAmount = document.getElementById('balanceAmount');
+const balanceCurrency = document.getElementById('balanceCurrency');
+const editWalletBtn = document.getElementById('editWalletBtn');
+const walletModal = document.getElementById('walletModal');
+const closeWalletModalBtn = document.getElementById('closeWalletModalBtn');
+const cancelWalletBtn = document.getElementById('cancelWalletBtn');
+const walletForm = document.getElementById('walletForm');
+const currentBalanceDisplay = document.getElementById('currentBalanceDisplay');
+const newBalanceInput = document.getElementById('newBalance');
+const currencySelect = document.getElementById('currency');
+
 
 // Form Fields
 const formFields = {
@@ -44,8 +58,8 @@ const formFields = {
 const searchFields = {
     minAmount: document.getElementById('minAmount'),
     maxAmount: document.getElementById('maxAmount'),
-    startDate: document.getElementById('startDate'),
-    endDate: document.getElementById('endDate'),
+    startDate: document.getElementById('searchStartDate'), // Fixed ID
+    endDate: document.getElementById('searchEndDate'), // Fixed ID
     paymentMethod: document.getElementById('paymentMethodSearch'),
     location: document.getElementById('locationSearch'),
     note: document.getElementById('noteSearch'),
@@ -54,14 +68,14 @@ const searchFields = {
 
 // Utility Functions
 const formatAmount = (amount) => {
-    return new Intl.NumberFormat('vi-VN', {
+    return new Intl.NumberFormat('en-US', {
         style: 'currency',
-        currency: 'VND'
+        currency: 'USD'
     }).format(amount);
 };
 
 const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('vi-VN');
+    return new Date(dateString).toLocaleDateString('en-US');
 };
 
 const showLoading = () => {
@@ -86,42 +100,51 @@ const resetTransactionForm = () => {
     transactionForm.reset();
     formFields.transactionDate.value = new Date().toISOString().split('T')[0];
     formFields.categorySelect.value = '';
-    modalTitle.textContent = 'Tạo giao dịch mới';
-    submitBtn.textContent = 'Tạo giao dịch';
+    modalTitle.textContent = 'Create New Transaction';
+    submitBtn.textContent = 'Create Transaction';
     editingTransactionId = null;
+
+    const recurringDatesDiv = document.querySelector('.recurring-dates');
+    if (recurringDatesDiv) {
+        recurringDatesDiv.classList.add('hidden');
+    }
+    if (formFields.startDate) formFields.startDate.required = false;
+    if (formFields.endDate) formFields.endDate.required = false;
 };
 
 const resetSearchForm = () => {
     searchForm.reset();
-    searchFields.isRecurring.value = '';
+    if (searchFields.isRecurring) {
+        searchFields.isRecurring.value = '';
+    }
 };
 
 const validateTransactionForm = () => {
     if (!formFields.amount.value || parseFloat(formFields.amount.value) <= 0) {
-        alert('Số tiền phải lớn hơn 0');
+        alert('Amount must be greater than 0');
         return false;
     }
     if (!formFields.transactionDate.value) {
-        alert('Ngày giao dịch là bắt buộc');
+        alert('Transaction date is required');
         return false;
     }
     if (!formFields.categorySelect.value) {
-        alert('Category là bắt buộc');
+        alert('Category is required');
         return false;
     }
 
     if (formFields.recurringPattern.value) {
         if (!formFields.startDate.value) {
-            alert('Ngày bắt đầu là bắt buộc khi chọn mẫu lặp lại');
+            alert('Start date is required when selecting a recurring pattern');
             return false;
         }
         if (!formFields.endDate.value) {
-            alert('Ngày kết thúc là bắt buộc khi chọn mẫu lặp lại');
+            alert('End date is required when selecting a recurring pattern');
             return false;
         }
         // Ensure endDate is not before startDate
         if (new Date(formFields.endDate.value) < new Date(formFields.startDate.value)) {
-            alert('Ngày kết thúc phải sau ngày bắt đầu');
+            alert('End date must be after start date');
             return false;
         }
     }
@@ -148,13 +171,13 @@ const loadTransactions = async (searchParams = {}) => {
             renderTransactions(data.result.content || []);
             renderPagination(data.result.totalPages || 0);
         } else {
-            alert(`Lỗi: ${data.message || 'Không thể tải giao dịch'}`);
-            transactionTableBody.innerHTML = '<tr><td colspan="7" class="empty-state">Không có giao dịch nào</td></tr>';
+            alert(`Error: ${data.message || 'Unable to load transactions'}`);
+            transactionTableBody.innerHTML = '<tr><td colspan="9" class="empty-state">No transactions</td></tr>';
         }
     } catch (error) {
         console.error('Error loading transactions:', error);
-        alert('Lỗi khi tải danh sách giao dịch');
-        transactionTableBody.innerHTML = '<tr><td colspan="7" class="empty-state">Không có giao dịch nào</td></tr>';
+        alert('Error loading transaction list');
+        transactionTableBody.innerHTML = '<tr><td colspan="9" class="empty-state">No transactions</td></tr>';
     } finally {
         hideLoading();
     }
@@ -179,7 +202,7 @@ const createTransaction = async (formData) => {
                 endDate: formFields.endDate.value,
                 isActive: true
             };
-        } else {    
+        } else {
             // Non-recurring transaction
             body = {
                 userId: CURRENT_USER_ID,
@@ -204,21 +227,23 @@ const createTransaction = async (formData) => {
         const data = await response.json();
 
         if (data.code === 1000) {
-            alert('Tạo giao dịch thành công!');
+            alert('Transaction created successfully!');
             hideModal(transactionModal);
             resetTransactionForm();
             loadTransactions();
+            loadWalletBalance();
         } else {
-            alert(`Lỗi: ${data.message || 'Không thể tạo giao dịch'}`);
+            alert(`Error: ${data.message || 'Unable to create transaction'}`);
         }
     } catch (error) {
         console.error('Error creating transaction:', error);
-        alert('Lỗi khi tạo giao dịch');
+        alert('Error creating transaction');
     }
 };
 
 const updateTransaction = async (transactionId, formData) => {
     try {
+        console.log('Date: ', formData.transactionDate);
         const response = await fetch(`${API_BASE_URL}/${transactionId}?userId=${CURRENT_USER_ID}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -238,63 +263,68 @@ const updateTransaction = async (transactionId, formData) => {
         const data = await response.json();
 
         if (data.code === 1000) {
-            alert('Cập nhật giao dịch thành công!');
+            alert('Transaction updated successfully!');
             hideModal(transactionModal);
             resetTransactionForm();
             loadTransactions();
+            loadWalletBalance();
         } else {
-            alert(`Lỗi: ${data.message || 'Không thể cập nhật giao dịch'}`);
+            alert(`Error: ${data.message || 'Unable to update transaction'}`);
         }
     } catch (error) {
         console.error('Error updating transaction:', error);
-        alert('Lỗi khi cập nhật giao dịch');
+        alert('Error updating transaction');
     }
 };
 
 const deleteTransaction = async (transactionId) => {
-    if (!confirm('Bạn có chắc chắn muốn xóa giao dịch này?')) return;
+    if (!confirm('Are you sure you want to delete this transaction?')) return;
     try {
         const response = await fetch(`${API_BASE_URL}/${transactionId}?userId=${CURRENT_USER_ID}`, {
             method: 'DELETE'
         });
         if (response.ok) {
-            alert('Xóa giao dịch thành công!');
+            alert('Transaction deleted successfully!');
             loadTransactions();
+            loadWalletBalance();
         } else {
             const data = await response.json();
-            alert(`Lỗi: ${data.message || 'Không thể xóa giao dịch'}`);
+            alert(`Error: ${data.message || 'Unable to delete transaction'}`);
         }
     } catch (error) {
         console.error('Error deleting transaction:', error);
-        alert('Lỗi khi xóa giao dịch');
+        alert('Error deleting transaction');
     }
 };
 
 const searchTransactions = async () => {
-    const [type, id] = document.getElementById('category-search').value.split('-');
+    if (!searchFields.startDate || !searchFields.endDate) {
+        console.warn('Search date fields not found');
+        return;
+    }
+
+    console.log('startDate: ', searchFields.startDate.value);
+    console.log('endDate:', searchFields.endDate.value);
+
+    const categorySearch = document.getElementById('category-search');
+    const [type, id] = categorySearch ? categorySearch.value.split('-') : ['', ''];
+
     const searchParams = {
         categoryId: (type === 'system') ? id : null,
         userCategoryId: (type === 'user') ? id : null,
-        minAmount: searchFields.minAmount.value ? parseFloat(searchFields.minAmount.value) : null,
-        maxAmount: searchFields.maxAmount.value ? parseFloat(searchFields.maxAmount.value) : null,
+        minAmount: searchFields.minAmount?.value ? parseFloat(searchFields.minAmount.value) : null,
+        maxAmount: searchFields.maxAmount?.value ? parseFloat(searchFields.maxAmount.value) : null,
         startDate: searchFields.startDate.value || null,
         endDate: searchFields.endDate.value || null,
-        paymentMethod: searchFields.paymentMethod.value || null,
-        location: searchFields.location.value || null,
-        note: searchFields.note.value || null,
-        isRecurring: searchFields.isRecurring.value === '' ? null : searchFields.isRecurring.value === 'true'
+        paymentMethod: searchFields.paymentMethod?.value || null,
+        location: searchFields.location?.value || null,
+        isRecurring: searchFields.isRecurring?.value === '' ? null : searchFields.isRecurring?.value === 'true',
+        note: searchFields.note?.value || null
     };
-
-    if (type === 'system') {
-        categoryId = id;
-    } else if (type === 'user') {
-        userCategoryId = id;
-    }
-
 
     showLoading();
     try {
-        const response = await fetch(`${"http://localhost:8080/api/transactions"}/search`, {
+        const response = await fetch(`${API_BASE_URL}/search`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -314,13 +344,13 @@ const searchTransactions = async () => {
             hideModal(searchModal);
             resetSearchForm();
         } else {
-            alert(`Lỗi: ${data.message || 'Không thể tìm kiếm giao dịch'}`);
-            transactionTableBody.innerHTML = '<tr><td colspan="7" class="empty-state">Không có giao dịch nào</td></tr>';
+            alert(`Error: ${data.message || 'Unable to search transactions'}`);
+            transactionTableBody.innerHTML = '<tr><td colspan="9" class="empty-state">No transactions</td></tr>';
         }
     } catch (error) {
         console.error('Error searching transactions:', error);
-        alert('Lỗi khi tìm kiếm giao dịch');
-        transactionTableBody.innerHTML = '<tr><td colspan="7" class="empty-state">Không có giao dịch nào</td></tr>';
+        alert('Error searching transactions');
+        transactionTableBody.innerHTML = '<tr><td colspan="9" class="empty-state">No transactions</td></tr>';
     } finally {
         hideLoading();
     }
@@ -330,7 +360,7 @@ const renderTransactions = (transactions) => {
     transactionTableBody.innerHTML = '';
     console.log('Rendering transactions:', transactions); // Debug log
     if (transactions.length === 0) {
-        transactionTableBody.innerHTML = '<tr><td colspan="7" class="empty-state">Không có giao dịch nào</td></tr>';
+        transactionTableBody.innerHTML = '<tr><td colspan="9" class="empty-state">No transactions</td></tr>';
         return;
     }
     transactions.forEach(transaction => {
@@ -342,27 +372,28 @@ const renderTransactions = (transactions) => {
         tr.innerHTML = `
             <td>${formatDate(transaction.transactionDate)}</td>
             <td>${transaction.categoryName == null ? transaction.userCategoryName : transaction.categoryName}</td>
+            <td>${transaction.type || '-'}</td>
             <td><span class="${transaction.amount < 0 ? 'amount-negative' : 'amount-positive'}">${formatAmount(transaction.amount)}</span></td>
             <td><div class="max-w-32 truncate" title="${transaction.note || ''}">${transaction.note || '-'}</div></td>
             <td>${transaction.paymentMethod || '-'}</td>
             <td>${transaction.location || '-'}</td>
-            <td><span class="badge badge-${transaction.isRecurring ? 'recurring' : 'non-recurring'}">${transaction.isRecurring ? 'Có' : 'Không'}</span></td>
+            <td><span class="badge badge-${transaction.isRecurring ? 'recurring' : 'non-recurring'}">${transaction.isRecurring ? 'Yes' : 'No'}</span></td>
             <td class="action-buttons">
-            <button class="action-btn edit-btn" data-id="${transaction.transactionId}">
-            <svg width="16" height="16" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M15.232 5.232l3.536 3.536m-2.036-5.036
-                        a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
-                </path>
-            </svg>
-            </button>
-            <button class="action-btn delete-btn" data-id="${transaction.transactionId}">
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4M7 7h10">
-                </path>
-            </svg>
-            </button>
+                <button class="action-btn edit-btn" data-id="${transaction.transactionId}">
+                    <svg width="16" height="16" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15.232 5.232l3.536 3.536m-2.036-5.036
+                                a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                        </path>
+                    </svg>
+                </button>
+                <button class="action-btn delete-btn" data-id="${transaction.transactionId}">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4M7 7h10">
+                        </path>
+                    </svg>
+                </button>
             </td>
         `;
         transactionTableBody.appendChild(tr);
@@ -412,6 +443,7 @@ navItems.forEach(item => {
         if (tab === 'transactions') {
             currentPage = 0;
             loadTransactions();
+            loadWalletBalance();
         }
     });
 });
@@ -481,7 +513,7 @@ transactionForm.addEventListener('submit', (e) => {
 });
 
 formFields.recurringPattern.addEventListener('change', () => {
-    const recurringDatesDiv = document.querySelector('.recurring-datesdates');
+    const recurringDatesDiv = document.querySelector('.recurring-dates');
     if (formFields.recurringPattern.value) {
         recurringDatesDiv.classList.remove('hidden');
         formFields.startDate.required = true;
@@ -491,7 +523,7 @@ formFields.recurringPattern.addEventListener('change', () => {
         formFields.startDate.required = false;
         formFields.endDate.required = false;
     }
-})
+});
 
 searchForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -527,19 +559,19 @@ transactionTableBody.addEventListener('click', (e) => {
                         formFields.note.value = transaction.note || '';
                         formFields.imageUrl.value = transaction.imageUrl || '';
                         formFields.recurringPattern.value = transaction.recurringPattern || '';
-                        modalTitle.textContent = 'Cập nhật giao dịch';
-                        submitBtn.textContent = 'Cập nhật';
+                        modalTitle.textContent = 'Update Transaction';
+                        submitBtn.textContent = 'Update';
                         editingTransactionId = id;
 
                         showModal(transactionModal);
                     });
                 } else {
-                    alert(`Lỗi: ${data.message || 'Không thể tải giao dịch'}`);
+                    alert(`Error: ${data.message || 'Unable to load transaction'}`);
                 }
             })
             .catch(error => {
                 console.error('Error loading transaction:', error);
-                alert('Lỗi khi tải giao dịch');
+                alert('Error loading transaction');
             });
     } else if (button.classList.contains('delete-btn')) {
         // Delete logic
@@ -575,10 +607,9 @@ const loadCategories = async () => {
         const selectElements = document.querySelectorAll('.categorySelect');
 
         selectElements.forEach(select => {
+            select.innerHTML = '<option value="">Select transaction type</option>';
 
-            select.innerHTML = '<option value="">Chọn loại giao dịch</option>';
-
-            // Hiển thị SYSTEM categories
+            // Display SYSTEM categories
             systemCategories.forEach(category => {
                 const option = document.createElement('option');
                 option.value = `system-${category.categoryId}`;
@@ -586,19 +617,156 @@ const loadCategories = async () => {
                 select.appendChild(option);
             });
 
-            // Hiển thị USER categories
+            // Display USER categories
             userCategories.forEach(category => {
                 const option = document.createElement('option');
-                option.value = `user-${category.userCategoryId}`; // Fixed typo
+                option.value = `user-${category.userCategoryId}`;
                 option.textContent = category.userCategoryName;
                 select.appendChild(option);
             });
         });
 
     } catch (error) {
-        console.error('Lỗi tải categories:', error);
+        console.error('Error loading categories:', error);
         document.querySelectorAll('.categorySelect').forEach(select => {
-            select.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
+            select.innerHTML = '<option value="">Error loading data</option>';
         });
     }
+
 };
+
+let currentWallet = null;
+
+const showElement = (element) => {
+    element.classList.remove('hidden');
+};
+
+const hideElement = (element) => {
+    element.classList.add('hidden');
+};
+
+const showError = (message) => {
+    alert(message); // In real app, use a proper notification system
+};
+
+const showSuccess = (message) => {
+    alert(message); // In real app, use a proper notification system
+};
+
+// API Functions
+const loadWalletBalance = async () => {
+    try {
+        showElement(walletLoading);
+        hideElement(walletBalance);
+        hideElement(walletError);
+
+        // Simulate API call - replace with actual API endpoint
+        const response = await fetch(`http://localhost:8080/api/wallet?userId=${CURRENT_USER_ID}`);
+
+        const data = await response.json();
+
+        if (data.code === 1000) {
+            currentWallet = data.result;
+            balanceAmount.textContent = formatAmount(data.result.balance);
+            balanceCurrency.textContent = data.result.currency;
+
+            hideElement(walletLoading);
+            showElement(walletBalance);
+        } else {
+            throw new Error(data.message || 'Failed to load wallet');
+        }
+    } catch (error) {
+        console.error('Error loading wallet:', error);
+        hideElement(walletLoading);
+        showElement(walletError);
+        hideElement(walletLoading);
+        showElement(walletBalance);
+    }
+};
+
+const updateWalletBalance = async (newBalance, currency) => {
+    try {
+        const response = await fetch('http://localhost:8080/api/wallet', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: CURRENT_USER_ID,
+                balance: parseFloat(newBalance),
+                currency: currency
+            })
+        });
+
+    
+
+        const data = await response.json();
+
+        if (data.code === 1000) {
+            currentWallet = data.result;
+            balanceAmount.textContent = formatAmount(data.result.balance);
+            balanceCurrency.textContent = data.result.currency;
+            showSuccess('Wallet balance updated successfully!');
+            loadTransactions();
+            return true;
+        } else {
+            throw new Error(data.message || 'Failed to update wallet');
+        }
+    } catch (error) {
+        console.error('Error updating wallet:', error);
+        return true;
+    }
+};
+
+// Modal Functions
+const openWalletModal = () => {
+    if (currentWallet) {
+        currentBalanceDisplay.textContent = `${formatAmount(currentWallet.balance)} ${currentWallet.currency}`;
+        newBalanceInput.value = currentWallet.balance;
+        currencySelect.value = currentWallet.currency;
+    }
+    showElement(walletModal);
+};
+
+const closeWalletModal = () => {
+    hideElement(walletModal);
+    walletForm.reset();
+};
+
+// Event Listeners
+editWalletBtn.addEventListener('click', openWalletModal);
+closeWalletModalBtn.addEventListener('click', closeWalletModal);
+cancelWalletBtn.addEventListener('click', closeWalletModal);
+
+walletModal.addEventListener('click', (e) => {
+    if (e.target === walletModal) {
+        closeWalletModal();
+    }
+});
+
+walletForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const newBalance = newBalanceInput.value;
+    const currency = currencySelect.value;
+
+    if (!newBalance || isNaN(newBalance) || parseFloat(newBalance) < 0) {
+        showError('Please enter a valid balance amount');
+        return;
+    }
+
+    const updateBtn = document.getElementById('updateWalletBtn');
+    const originalText = updateBtn.innerHTML;
+    updateBtn.innerHTML = '⏳ Updating...';
+    updateBtn.disabled = true;
+
+    try {
+        const success = await updateWalletBalance(newBalance, currency);
+        if (success) {
+            closeWalletModal();
+        }
+    } finally {
+        updateBtn.innerHTML = originalText;
+        updateBtn.disabled = false;
+    }
+});
