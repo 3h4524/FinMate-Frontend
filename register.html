@@ -502,14 +502,14 @@
             </div>
 
             <div class="welcome-text">
-                <h2>Create Account</h2>
+                <h2>Sign Up</h2>
                 <p>Join our community and start managing your finances smarter</p>
             </div>
         </div>
 
         <div class="right-panel">
             <div class="register-header">
-                <h2>Create Account</h2>
+                <h2>Sign Up</h2>
                 <p>Join our community and start managing your finances smarter</p>
             </div>
 
@@ -554,7 +554,7 @@
                     <div id="confirmPasswordError" class="error-message"></div>
                 </div>
 
-                <button type="submit" class="register-btn">Create Account</button>
+                <button type="submit" class="register-btn">Sign Up</button>
             </form>
 
             <div class="divider">
@@ -572,219 +572,17 @@
         </div>
     </div>
 
-    <script>
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const toggleIcon = document.querySelector('.password-toggle');
-
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
-            } else {
-                passwordInput.type = 'password';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
-            }
-        }
-
-        function toggleConfirmPassword() {
-            const confirmPasswordInput = document.getElementById('confirm-password');
-            const toggleIcon = document.querySelectorAll('.password-toggle')[1];
-
-            if (confirmPasswordInput.type === 'password') {
-                confirmPasswordInput.type = 'text';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
-            } else {
-                confirmPasswordInput.type = 'password';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
-            }
-        }
-
-        // Add notification functions
-        function showNotification(message, type = 'info') {
-            const notification = document.getElementById('notification');
-            const messageElement = document.getElementById('notification-message');
-            
-            // Remove existing classes
-            notification.classList.remove('success', 'error', 'info');
-            // Add new type class
-            notification.classList.add(type);
-            
-            messageElement.textContent = message;
-            notification.classList.add('show');
-            
-            // Auto hide after 5 seconds
-            setTimeout(() => {
-                hideNotification();
-            }, 5000);
-        }
-
-        function hideNotification() {
-            const notification = document.getElementById('notification');
-            notification.classList.remove('show');
-        }
-
-        // Password validation
-        const password = document.getElementById('password');
-        const requirements = {
-            length: document.getElementById('length'),
-            uppercase: document.getElementById('uppercase'),
-            lowercase: document.getElementById('lowercase'),
-            number: document.getElementById('number'),
-            special: document.getElementById('special')
-        };
-
-        // Initially mark all requirements as invalid
-        Object.values(requirements).forEach(li => li.classList.add('invalid'));
-
-        password.addEventListener('input', function() {
-            const value = this.value;
-            
-            // Check length
-            if (value.length >= 8) {
-                requirements.length.classList.add('valid');
-                requirements.length.classList.remove('invalid');
-            } else {
-                requirements.length.classList.remove('valid');
-                requirements.length.classList.add('invalid');
-            }
-            
-            // Check uppercase
-            if (/[A-Z]/.test(value)) {
-                requirements.uppercase.classList.add('valid');
-                requirements.uppercase.classList.remove('invalid');
-            } else {
-                requirements.uppercase.classList.remove('valid');
-                requirements.uppercase.classList.add('invalid');
-            }
-            
-            // Check lowercase
-            if (/[a-z]/.test(value)) {
-                requirements.lowercase.classList.add('valid');
-                requirements.lowercase.classList.remove('invalid');
-            } else {
-                requirements.lowercase.classList.remove('valid');
-                requirements.lowercase.classList.add('invalid');
-            }
-            
-            // Check number
-            if (/[0-9]/.test(value)) {
-                requirements.number.classList.add('valid');
-                requirements.number.classList.remove('invalid');
-            } else {
-                requirements.number.classList.remove('valid');
-                requirements.number.classList.add('invalid');
-            }
-            
-            // Check special character
-            if (/[!@#$%^&*]/.test(value)) {
-                requirements.special.classList.add('valid');
-                requirements.special.classList.remove('invalid');
-            } else {
-                requirements.special.classList.remove('valid');
-                requirements.special.classList.add('invalid');
-            }
+    <script type="module">
+        import { initGoogleSignIn } from './js/googleAuth.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Force English language
+            document.documentElement.lang = 'en';
+            // Initialize Google Sign-In with default text
+            initGoogleSignIn('signup_with');
         });
-
-        // Xử lý đăng ký
-        document.getElementById('register-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-
-            // Kiểm tra mật khẩu
-            if (password !== confirmPassword) {
-                showNotification('Mật khẩu không khớp!', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch('http://localhost:8080/api/auth/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({ name, email, password })
-                });
-
-                const data = await response.json();
-                console.log('Register response:', data);
-
-                if (response.ok) {
-                    showNotification('Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.', 'success');
-                    // Chuyển hướng đến trang xác thực email
-                    window.location.href = 'verify-email.html?email=' + encodeURIComponent(email);
-                } else {
-                    showNotification(data.message || 'Đăng ký thất bại!', 'error');
-                }
-            } catch (error) {
-                console.error('Register error:', error);
-                showNotification('Có lỗi xảy ra khi đăng ký!', 'error');
-            }
-        });
-
-        // Xử lý đăng nhập bằng Google
-        async function handleCredentialResponse(response) {
-            try {
-                const result = await fetch('http://localhost:8080/api/auth/google', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({ token: response.credential })
-                });
-
-                const data = await result.json();
-                console.log('Google login response:', data);
-
-                if (result.ok) {
-                    // Store user data in session storage
-                    sessionStorage.setItem('user', JSON.stringify(data));
-                    showNotification('Đăng nhập Google thành công!', 'success');
-                    // Redirect to home page
-                    window.location.href = 'home.html';
-                } else {
-                    showNotification(data.message || 'Đăng nhập Google thất bại!', 'error');
-                }
-            } catch (error) {
-                console.error('Google login error:', error);
-                showNotification('Có lỗi xảy ra khi đăng nhập bằng Google!', 'error');
-            }
-        }
-
-        // Khởi tạo Google Sign-In
-        window.onload = function () {
-            google.accounts.id.initialize({
-                client_id: "455189339360-ah566hols1au0npc7mou7halnl7ba4uk.apps.googleusercontent.com",
-                callback: handleCredentialResponse,
-                auto_select: false,
-                cancel_on_tap_outside: true,
-                context: 'signin',
-                ux_mode: 'popup',
-                origin: 'http://127.0.0.1:5500'
-            });
-            // Render the Google button
-            google.accounts.id.renderButton(
-                document.getElementById("google-button"),
-                {   
-                    type: "standard",
-                    size: "large",
-                    theme: "outline",
-                    text: "signin_with",
-                    shape: "rectangular",
-                    logo_alignment: "left",
-                    width: "280"
-                }
-            );
-        };
     </script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://accounts.google.com/gsi/client?hl=en" async defer></script>
+    <script type="module" src="js/auth.js"></script>
 </body>
 </html> 

@@ -10,6 +10,7 @@ const showRegisterLink = document.getElementById('showRegisterLink');
 const showLoginLink = document.getElementById('showLoginLink');
 const loginSection = document.getElementById('loginSection');
 const registerSection = document.getElementById('registerSection');
+const logoutBtn = document.getElementById('logoutBtn');
 
 // Password toggle function
 function togglePassword() {
@@ -55,7 +56,6 @@ function hideNotification() {
 async function loginUser(email, password) {
     try {
         const response = await apiService.login({ email, password });
-        console.log('Login response:', response);
         
         if (response.requiresVerification) {
             sessionStorage.setItem('requiresVerification', 'true');
@@ -68,16 +68,14 @@ async function loginUser(email, password) {
         showNotification('Login successful! Redirecting...', 'success');
         
         // Store authentication state and user data
-        sessionStorage.setItem('isAuthenticated', 'true');
-        sessionStorage.setItem('currentUser', JSON.stringify(response));
-        sessionStorage.setItem('userId', response.userId);
-        sessionStorage.setItem('userEmail', response.email);
-        sessionStorage.setItem('userName', response.name);
-        sessionStorage.setItem('userRole', response.role);
-        sessionStorage.setItem('isPremium', response.premium);
-        
-        // Store token
         localStorage.setItem('token', response.token);
+        localStorage.setItem('userData', JSON.stringify({
+            userId: response.userId,
+            email: response.email,
+            name: response.name,
+            role: response.role,
+            premium: response.premium
+        }));
         
         // Delay redirect to show notification
         setTimeout(() => {
@@ -104,16 +102,14 @@ async function sendGoogleTokenToBackend(idToken) {
         showNotification('Google login successful! Redirecting...', 'success');
         
         // Store authentication state and user data
-        sessionStorage.setItem('isAuthenticated', 'true');
-        sessionStorage.setItem('currentUser', JSON.stringify(response));
-        sessionStorage.setItem('userId', response.userId);
-        sessionStorage.setItem('userEmail', response.email);
-        sessionStorage.setItem('userName', response.name);
-        sessionStorage.setItem('userRole', response.role);
-        sessionStorage.setItem('isPremium', response.premium);
-        
-        // Store token
         localStorage.setItem('token', response.token);
+        localStorage.setItem('userData', JSON.stringify({
+            userId: response.userId,
+            email: response.email,
+            name: response.name,
+            role: response.role,
+            premium: response.premium
+        }));
         
         setTimeout(() => {
             window.location.href = 'home.html';
@@ -130,6 +126,32 @@ async function sendGoogleTokenToBackend(idToken) {
         } else {
             showNotification(error.message || 'An error occurred during Google login', 'error');
         }
+    }
+}
+
+// Logout function
+async function logout() {
+    try {
+        const token = localStorage.getItem('token');
+        if (token) {
+            await apiService.logout();
+        }
+        
+        // Clear all stored data
+        localStorage.removeItem('token');
+        localStorage.removeItem('userData');
+        sessionStorage.clear();
+        
+        // Show notification
+        showNotification('Logged out successfully', 'success');
+        
+        // Redirect to login page
+        setTimeout(() => {
+            window.location.href = '/login.html';
+        }, 1000);
+    } catch (error) {
+        console.error('Logout error:', error);
+        showNotification('Error during logout', 'error');
     }
 }
 
@@ -160,14 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('loginPassword').value;
             
             try {
-                const response = await apiService.login({ email, password });
-                console.log('Login response:', response);
-                
-                if (response.token) {
-                    localStorage.setItem('token', response.token);
-                    showNotification('Login successful!', 'success');
-                    window.location.href = '/dashboard.html';
-                }
+                await loginUser(email, password);
             } catch (error) {
                 console.error('Login error:', error);
                 showNotification(error.message || 'Login failed', 'error');
@@ -181,56 +196,35 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             console.log('Register form submitted');
             
-            const name = document.getElementById('registerName').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
+            const formData = new FormData(registerForm);
+            const userData = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                password: formData.get('password')
+            };
             
             try {
-                const response = await apiService.register({ name, email, password });
-                console.log('Register response:', response);
-                showNotification('Registration successful! Please check your email for verification.', 'success');
-                showLoginForm();
+                await apiService.register(userData);
+                showNotification('Registration successful! Please verify your email.', 'success');
+                setTimeout(() => {
+                    window.location.href = '/verify-email.html?email=' + encodeURIComponent(userData.email);
+                }, 1000);
             } catch (error) {
-                console.error('Register error:', error);
+                console.error('Registration error:', error);
                 showNotification(error.message || 'Registration failed', 'error');
             }
         });
     }
 
-    // Google login button
-    if (googleLoginBtn) {
-        googleLoginBtn.addEventListener('click', () => {
-            console.log('Google login button clicked');
-        });
+    // Logout button
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
     }
 
-    // Forgot password link
-    if (forgotPasswordLink) {
-        forgotPasswordLink.addEventListener('click', async (e) => {
-            e.preventDefault();
-            console.log('Forgot password link clicked');
-            
-            const email = document.getElementById('loginEmail').value;
-            if (!email) {
-                showNotification('Please enter your email address', 'error');
-                return;
-            }
-            
-            try {
-                await apiService.forgotPassword(email);
-                showNotification('Password reset instructions sent to your email', 'success');
-            } catch (error) {
-                console.error('Forgot password error:', error);
-                showNotification(error.message || 'Failed to process request', 'error');
-            }
-        });
-    }
-
-    // Toggle between login and register forms
+    // Show/hide forms
     if (showRegisterLink) {
         showRegisterLink.addEventListener('click', (e) => {
             e.preventDefault();
-            console.log('Switching to register form');
             showRegisterForm();
         });
     }
@@ -238,46 +232,31 @@ document.addEventListener('DOMContentLoaded', () => {
     if (showLoginLink) {
         showLoginLink.addEventListener('click', (e) => {
             e.preventDefault();
-            console.log('Switching to login form');
             showLoginForm();
         });
     }
+
+    // Initialize Google Sign-In if on login page
+    if (googleLoginBtn) {
+        initGoogleSignIn();
+    }
 });
 
-// Form visibility functions
 function showLoginForm() {
-    console.log('Showing login form');
-    if (loginSection) loginSection.style.display = 'block';
-    if (registerSection) registerSection.style.display = 'none';
+    loginSection.style.display = 'block';
+    registerSection.style.display = 'none';
 }
 
 function showRegisterForm() {
-    console.log('Showing register form');
-    if (loginSection) loginSection.style.display = 'none';
-    if (registerSection) registerSection.style.display = 'block';
+    loginSection.style.display = 'none';
+    registerSection.style.display = 'block';
 }
 
-// Google Sign-In handler
 async function handleGoogleSignIn(response) {
-    console.log('Google Sign-In response received');
     try {
-        const result = await apiService.googleLogin(response.credential);
-        console.log('Google login response:', result);
-        
-        if (result.token) {
-            localStorage.setItem('token', result.token);
-            showNotification('Login successful!', 'success');
-            window.location.href = '/dashboard.html';
-        }
+        await sendGoogleTokenToBackend(response.credential);
     } catch (error) {
-        console.error('Google login error:', error);
-        showNotification(error.message || 'Google login failed', 'error');
+        console.error('Google sign-in error:', error);
+        showNotification(error.message || 'Google sign-in failed', 'error');
     }
-}
-
-// Initialize Google Sign-In when the script loads
-if (typeof google !== 'undefined') {
-    initGoogleSignIn();
-} else {
-    console.log('Google Sign-In script not loaded yet');
 } 

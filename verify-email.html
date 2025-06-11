@@ -238,12 +238,15 @@
             padding: 12px;
             border-radius: 12px;
             border: 1px solid #d1e7dd;
+            display: block !important;
         }
 
         .timer {
             color: #2d5a3d;
             font-weight: bold;
             font-size: 16px;
+            display: inline-block;
+            min-width: 50px;
         }
 
         .verify-btn {
@@ -347,7 +350,6 @@
             }
         }
 
-        /* Notification Styles */
         .notification {
             position: fixed;
             top: 20px;
@@ -396,10 +398,21 @@
         .notification-close:hover {
             opacity: 1;
         }
+
+        .disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .timer-container {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
-    <!-- Add notification container -->
     <div id="notification" class="notification">
         <i class="fas fa-info-circle"></i>
         <span id="notification-message"></span>
@@ -449,11 +462,6 @@
                     <span id="timer">00:00</span> remaining
                 </div>
 
-                <div class="timer-container" id="lockoutTimerContainer" style="display: none;">
-                    <i class="fas fa-lock"></i>
-                    Resend available in <span id="lockoutTimer">00:00</span>
-                </div>
-
                 <button type="submit" class="verify-btn">
                     <i class="fas fa-check"></i>
                     Verify Email
@@ -472,23 +480,17 @@
     </div>
 
     <script>
-        // Add notification functions
         function showNotification(message, type = 'info') {
             const notification = document.getElementById('notification');
             const messageElement = document.getElementById('notification-message');
             
-            // Remove existing classes
             notification.classList.remove('success', 'error', 'info');
-            // Add new type class
             notification.classList.add(type);
             
             messageElement.textContent = message;
             notification.classList.add('show');
             
-            // Auto hide after 5 seconds
-            setTimeout(() => {
-                hideNotification();
-            }, 5000);
+            setTimeout(() => hideNotification(), 5000);
         }
 
         function hideNotification() {
@@ -496,83 +498,83 @@
             notification.classList.remove('show');
         }
 
-        // Check if redirected from login with verification required or registration
         const requiresVerification = sessionStorage.getItem('requiresVerification');
         const pendingEmail = sessionStorage.getItem('pendingVerificationEmail');
         const urlParams = new URLSearchParams(window.location.search);
         const emailFromUrl = urlParams.get('email');
+        const isAuthenticated = sessionStorage.getItem('isAuthenticated');
         
         if (!emailFromUrl && requiresVerification !== 'true' && !pendingEmail) {
-            // Not redirected from login or registration, redirect to login
-            window.location.href = 'login.html';
+            if (isAuthenticated === 'true') {
+                window.location.href = 'home.html';
+            } else {
+                window.location.href = 'login.html';
+            }
         }
 
-        // Get email from URL parameters or sessionStorage
         const email = emailFromUrl || pendingEmail;
         if (email) {
             document.getElementById('email').value = decodeURIComponent(email);
         }
 
-        // Timer functionality
-        let timeLeft = 1 * 60; // 1 minute in seconds
+        let timeLeft = 0;
         const timerElement = document.getElementById('timer');
         let timerInterval = null;
         const sendCodeButton = document.getElementById('sendCodeButton');
 
-        // Lockout timer functionality
-        let lockoutTimeLeft = 0;
-        const lockoutTimerElement = document.getElementById('lockoutTimer');
-        const lockoutTimerContainer = document.getElementById('lockoutTimerContainer');
-        let lockoutTimerInterval = null;
-
         async function sendVerificationCode() {
-            console.log('sendVerificationCode: Function called.');
             const email = document.getElementById('email').value;
+
+            // Immediate UI updates
+            sendCodeButton.disabled = true;
+            sendCodeButton.innerHTML = '<i class="fas fa-clock"></i> Resend Code';
+            showNotification('Sending verification code...', 'info');
+
+            // Start timer immediately
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            timeLeft = 60; // Set to 1 minute
+            updateTimerDisplay();
+            timerInterval = setInterval(updateTimer, 1000);
+            
+            const timerContainer = document.querySelector('.timer-container');
+            if (timerContainer) timerContainer.style.display = 'block';
+
             try {
-                const response = await fetch('/api/auth/resend-verification', {
+                const response = await fetch('http://localhost:8080/api/v1/auth/resend-verification', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ email: email })
+                    credentials: 'include',
+                    body: JSON.stringify({ email })
                 });
 
-                const data = await response.json();
-                console.log('sendVerificationCode: Server response:', data);
+                let data;
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    data = { message: 'Invalid response from server.' };
+                }
 
                 if (response.ok) {
-                    showNotification(data.message || 'Verification code sent successfully!', 'success');
-                    console.log('sendVerificationCode: Verification code sent successfully, starting timer.');
-                    // Reset and start timer
-                    if (timerInterval) {
-                        clearInterval(timerInterval);
-                        console.log('sendVerificationCode: Cleared existing timerInterval.');
-                    }
-                    timeLeft = 60; // 1 minute
-                    updateTimerDisplay();
-                    timerInterval = setInterval(updateTimer, 1000);
-                    console.log('sendVerificationCode: setInterval started with ID:', timerInterval);
-                    sendCodeButton.disabled = true;
-                    sendCodeButton.innerHTML = '<i class="fas fa-clock"></i> Resend Code';
-                    lockoutTimerContainer.style.display = 'none';
-                    document.querySelector('.timer-container:not([style*="display: none"])').style.display = 'block';
+                    showNotification(data.message || 'Verification code sent!', 'success');
                 } else {
-                    showNotification(data.message || 'Failed to send verification code', 'error');
-                    console.error('sendVerificationCode: Failed to send code. Response:', data);
+                    showNotification(data.message || 'Failed to send verification code.', 'error');
                 }
             } catch (error) {
-                console.error('sendVerificationCode: Error during fetch:', error);
-                showNotification('An error occurred while sending verification code', 'error');
+                console.error('sendVerificationCode error:', error);
+                showNotification('Error sending verification code.', 'error');
             }
         }
 
         function updateTimer() {
-            console.log('updateTimer: Running, timeLeft:', timeLeft);
             if (timeLeft > 0) {
                 timeLeft--;
                 updateTimerDisplay();
             } else {
-                console.log('updateTimer: Timer finished.');
                 clearInterval(timerInterval);
                 sendCodeButton.disabled = false;
                 sendCodeButton.innerHTML = '<i class="fas fa-paper-plane"></i> Send Code';
@@ -586,7 +588,6 @@
             timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
 
-        // Handle form submission
         document.getElementById('verificationForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -594,101 +595,63 @@
             const userEmail = document.getElementById('email').value;
 
             try {
-                const response = await fetch('/api/auth/verify-email', {
+                const response = await fetch('http://localhost:8080/api/v1/auth/verify-email', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        email: userEmail,
-                        code: code
-                    })
+                    credentials: 'include',
+                    body: JSON.stringify({ email: userEmail, code })
                 });
 
-                const data = await response.json();
+                let data;
+                try {
+                    data = await response.json();
+                } catch (jsonError) {
+                    console.error('Failed to parse response:', jsonError);
+                    showNotification('Invalid response from server.', 'error');
+                    return;
+                }
 
-                if (response.ok) {
-                    showNotification(data.message || 'Verification successful! Redirecting...', 'success');
+                const serverMessage = data.message ? data.message.trim().toLowerCase() : '';
+                const isVerifiedCodefully = (response.status === 400 && serverMessage === 'email verified codefully');
+
+                if (response.ok || isVerifiedCodefully) {
+                    showNotification('Verification successful! Please log in.', 'success');
                     if (timerInterval) clearInterval(timerInterval);
-                    // Store user information in sessionStorage
-                    if (data.userId) {
-                        sessionStorage.setItem('userId', data.userId);
-                        sessionStorage.setItem('userEmail', data.email);
-                        sessionStorage.setItem('userName', data.name);
-                        sessionStorage.setItem('userRole', data.role);
-                        sessionStorage.setItem('isPremium', data.premium);
-                        sessionStorage.setItem('isAuthenticated', 'true');
-                        sessionStorage.setItem('currentUser', JSON.stringify(data));
-                    }
-                    // Clear verification flags
+
+                    // Remove localStorage items as user will explicitly log in
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userData');
+
                     sessionStorage.removeItem('requiresVerification');
                     sessionStorage.removeItem('pendingVerificationEmail');
+                    sessionStorage.removeItem('isAuthenticated');
+                    sessionStorage.removeItem('currentUser');
+
                     setTimeout(() => {
-                        window.location.href = 'home.html';
-                    }, 2000);
+                        try {
+                            window.location.assign('login.html');
+                        } catch (error) {
+                            console.error('Redirection failed:', error);
+                            showNotification('Could not redirect. Please go to the login page manually.', 'error');
+                        }
+                    }, 1500);
                 } else {
-                    showNotification(data.message || 'Invalid verification code. Please try again.', 'error');
+                    console.error('Verification failed:', data.message, 'Status:', response.status);
+                    showNotification(data.message || 'Invalid verification code.', 'error');
                 }
             } catch (error) {
                 console.error('Verification error:', error);
-                showNotification('An error occurred. Please try again.', 'error');
+                showNotification('Verification error. Please try again.', 'error');
             }
         });
 
-        // Initialize timer display
-        updateTimerDisplay();
-
-        async function verifyEmail(email, code) {
-            try {
-                const response = await fetch('http://localhost:8080/api/auth/verify-email', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({ email, code })
-                });
-
-                const data = await response.json();
-                console.log('Verify email response:', data);
-
-                if (response.ok) {
-                    showNotification('Xác thực email thành công!', 'success');
-                    // Chuyển hướng đến trang đăng nhập
-                    window.location.href = 'login.html';
-                } else {
-                    showNotification(data.message || 'Xác thực email thất bại!', 'error');
-                }
-            } catch (error) {
-                console.error('Verify email error:', error);
-                showNotification('Có lỗi xảy ra khi xác thực email!', 'error');
-            }
-        }
-
-        async function resendVerificationCode(email) {
-            try {
-                const response = await fetch('http://localhost:8080/api/auth/resend-verification', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({ email })
-                });
-
-                const data = await response.json();
-                console.log('Resend verification response:', data);
-
-                if (response.ok) {
-                    showNotification('Đã gửi lại mã xác thực!', 'success');
-                } else {
-                    showNotification(data.message || 'Gửi lại mã xác thực thất bại!', 'error');
-                }
-            } catch (error) {
-                console.error('Resend verification error:', error);
-                showNotification('Có lỗi xảy ra khi gửi lại mã xác thực!', 'error');
-            }
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTimerDisplay();
+            const timerContainer = document.querySelector('.timer-container');
+            if (timerContainer) timerContainer.style.display = 'block';
+        });
     </script>
 </body>
-</html> 
+</html>
