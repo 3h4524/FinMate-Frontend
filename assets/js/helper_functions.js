@@ -52,3 +52,17 @@ function showResult(title, status) {
         timerProgressBar: true
     });
 }
+
+async function showConfirmDialog(title, text) {
+    const result = await Swal.fire({
+        title: title,
+        text: text,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#f56565',
+        cancelButtonColor: '#a0aec0',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
+    });
+    return result.isConfirmed;
+}
