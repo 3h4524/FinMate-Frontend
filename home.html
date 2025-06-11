@@ -46,7 +46,6 @@
             flex-direction: column;
             position: fixed;
             height: 100%;
-            /* border-radius: 24px 0 0 24px; */
             border-radius: 0;
             box-shadow: 0 8px 32px rgba(56, 142, 60, 0.10);
             z-index: 10;
@@ -145,7 +144,7 @@
             margin-left: 270px;
             flex-grow: 1;
             padding: 40px 32px 32px 32px;
-            display: flex;
+            display: none;
             flex-direction: column;
         }
         .header {
@@ -284,7 +283,28 @@
         .transaction-amount.debit {
             color: var(--danger);
         }
-        /* Responsive */
+        #loadingSpinner {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            display: block;
+        }
+        #loadingSpinner::before {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--main-green);
+            border-top: 4px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         @media (max-width: 1100px) {
             .main-content { padding: 24px 8px 8px 8px; }
             .dashboard-layout { gap: 16px; }
@@ -301,78 +321,167 @@
         }
     </style>
     <script>
-        // Kiểm tra xác thực khi trang được tải
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Checking authentication...');
-            const user = JSON.parse(sessionStorage.getItem('user'));
-            console.log('User data from sessionStorage:', user);
+        // Check authentication status when page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            const token = localStorage.getItem('token');
+            const userData = localStorage.getItem('userData');
             
-            if (!user || !user.userId) {
-                console.log('No user data found, redirecting to login...');
+            console.log('[AUTH] No token or user data found:', { token, userData });
+            if (!token || !userData) {
+                console.log('[AUTH] No token or user data found, redirecting to login');
                 window.location.href = 'login.html';
                 return;
             }
 
-            // Hiển thị nội dung chính
-            document.querySelector('.main-content').style.display = 'block';
-
-            // Cập nhật thông tin người dùng
-            const userNameElements = document.querySelectorAll('.user-name, #userFullNameHeader');
-            userNameElements.forEach(element => {
-                element.textContent = user.name || user.email;
-            });
-
-            if (user.profilePicture) {
-                document.querySelector('.user-info img').src = user.profilePicture;
-            }
-
-            // Xử lý đăng xuất
-            document.querySelector('.logout-btn').addEventListener('click', async function() {
-                try {
-                    const response = await fetch('http://localhost:8080/api/auth/logout', {
-                        method: 'POST',
-                        credentials: 'include'
-                    });
-                    
-                    if (response.ok) {
-                        sessionStorage.removeItem('user');
-                        sessionStorage.removeItem('userName');
-                        window.location.href = 'login.html';
+            try {
+                const response = await fetch('http://localhost:8080/api/v1/auth/verify-token', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
-                } catch (error) {
-                    console.error('Logout error:', error);
-                }
-            });
+                });
 
-            // Xử lý tìm kiếm
-            const searchInput = document.querySelector('.search-bar input');
-            const searchIcon = document.querySelector('.search-bar i');
-            
-            searchIcon.addEventListener('click', function() {
-                const searchTerm = searchInput.value.trim();
-                if (searchTerm) {
-                    // Thực hiện tìm kiếm
-                    console.log('Searching for:', searchTerm);
+                if (!response.ok) {
+                    console.log('[AUTH] Token verification failed, status:', response.status);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userData');
+                    window.location.href = 'login.html';
+                    return;
                 }
-            });
 
-            searchInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    searchIcon.click();
+                const data = await response.json();
+                if (!data.success) {
+                    console.log('[AUTH] Token verification failed:', data.message);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userData');
+                    window.location.href = 'login.html';
+                    return;
                 }
-            });
+
+                // Token is valid, show the main content
+                const mainContent = document.querySelector('.main-content');
+                const loadingSpinner = document.getElementById('loadingSpinner');
+                if (mainContent) mainContent.style.display = 'flex';
+                if (loadingSpinner) loadingSpinner.style.display = 'none';
+
+                // Update user info
+                const user = JSON.parse(userData);
+                document.querySelectorAll('.user-name, #userFullNameHeader').forEach(element => {
+                    element.textContent = user.name || user.email;
+                });
+
+                if (user.profilePicture) {
+                    document.querySelector('.user-info img').src = user.profilePicture;
+                }
+
+                // Load sidebar
+                fetch('sidebar.html')
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('sidebar-container').innerHTML = html;
+                        const sidebarUserNameSpan = document.querySelector('.sidebar .user-info .user-name');
+                        if (sidebarUserNameSpan && user.name) {
+                            sidebarUserNameSpan.textContent = user.name;
+                        }
+                    });
+
+                // Load profile sidebar
+                fetch('profile-sidebar.html')
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('profile-sidebar-container').innerHTML = html;
+                    });
+
+                // Update current date
+                updateCurrentDate();
+
+                // Search functionality
+                const searchInput = document.querySelector('.search-bar input');
+                const searchIcon = document.querySelector('.search-bar i');
+                if (searchIcon && searchInput) {
+                    searchIcon.addEventListener('click', () => {
+                        const searchTerm = searchInput.value.trim();
+                        if (searchTerm) {
+                            console.log('[SEARCH] Searching for:', searchTerm);
+                        }
+                    });
+                    searchInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            searchIcon.click();
+                        }
+                    });
+                }
+
+                // Logout button
+                const logoutButton = document.querySelector('.logout-btn');
+                if (logoutButton) {
+                    logoutButton.addEventListener('click', handleLogout);
+                }
+            } catch (error) {
+                console.error('[AUTH] Error verifying token:', error);
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                window.location.href = 'login.html';
+            }
         });
+
+        // Update current date on header
+        function updateCurrentDate() {
+            const dateElement = document.querySelector('.header .date');
+            if (dateElement) {
+                const now = new Date();
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                dateElement.textContent = now.toLocaleDateString('en-US', options);
+            }
+        }
+
+        // Handle logout
+        async function handleLogout() {
+            console.log('[LOGOUT] Logout triggered');
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    const response = await fetch('http://localhost:8080/api/v1/auth/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        console.error('[LOGOUT] Logout failed on server');
+                    }
+                }
+            } catch (error) {
+                console.error('[LOGOUT] Error during logout:', error);
+            } finally {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 5000);
+        }
     </script>
 </head>
 <body>
+    <div id="loadingSpinner"></div>
     <div class="app-container">
         <div id="sidebar-container"></div>
         <div id="profile-sidebar-container"></div>
         
-        <div class="main-content" style="display: none;">
+        <div class="main-content" id="mainContent" style="display: none;">
             <header class="header">
                 <div class="greeting">Hello <span id="userFullNameHeader">Loading...</span></div>
-                <div class="date">May 19, 2023</div>
+                <div class="date">Loading...</div>
                 <div class="search-bar">
                     <input type="text" placeholder="Search here">
                     <i class="fas fa-search"></i>
@@ -386,7 +495,7 @@
                 <div class="card total-balance-card">
                     <div class="card-header">
                         <h3>Total Balance</h3>
-                        <a href="#" class="view-all">All Accounts</a>
+                        <a href="/accounts.html" class="view-all">All Accounts</a>
                     </div>
                     <div class="card-body">
                         <div class="balance-info">
@@ -405,7 +514,7 @@
                 <div class="card goals-card">
                     <div class="card-header">
                         <h3>Goals</h3>
-                        <a href="#" class="view-all">View All</a>
+                        <a href="/goals.html" class="view-all">View All</a>
                     </div>
                     <div class="card-body">
                         <div class="goal-item"><i class="fas fa-bullseye"></i> Target Achieved: $12,500</div>
@@ -417,7 +526,7 @@
                 <div class="card upcoming-bill-card">
                     <div class="card-header">
                         <h3>Upcoming Bill</h3>
-                        <a href="#" class="view-all">View All</a>
+                        <a href="/bills.html" class="view-all">View All</a>
                     </div>
                     <div class="card-body">
                         <div class="bill-item">
@@ -440,7 +549,7 @@
                 <div class="card recent-transaction-card" style="grid-column: span 2;">
                     <div class="card-header">
                         <h3>Recent Transaction</h3>
-                        <a href="#" class="view-all">View All</a>
+                        <a href="/transactions.html" class="view-all">View All</a>
                     </div>
                     <div class="card-body">
                         <ul>
@@ -481,7 +590,7 @@
                 <div class="card statistics-card">
                     <div class="card-header">
                         <h3>Statistics</h3>
-                        <a href="#" class="view-all">View All</a>
+                        <a href="/statistics.html" class="view-all">View All</a>
                     </div>
                     <div class="card-body">
                         <span style="color: #a3c9a8;">(Chart Placeholder)</span>
@@ -490,493 +599,5 @@
             </div>
         </div>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Load main sidebar
-            fetch('sidebar.html')
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('sidebar-container').innerHTML = html;
-                    // After sidebar is loaded, update the username in the sidebar
-                    const sidebarUserNameSpan = document.querySelector('.sidebar .user-info .user-name');
-                    const storedUserName = sessionStorage.getItem('userName');
-                    if (sidebarUserNameSpan && storedUserName) {
-                        sidebarUserNameSpan.textContent = storedUserName;
-                    }
-                });
-
-            // Load profile sidebar
-            fetch('profile-sidebar.html')
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('profile-sidebar-container').innerHTML = html;
-                });
-
-            updateCurrentDate();
-
-            // Immediately update header with stored user name
-            const userHeaderSpan = document.getElementById('userFullNameHeader');
-            const storedUserName = sessionStorage.getItem('userName');
-            if (userHeaderSpan && storedUserName) {
-                userHeaderSpan.textContent = storedUserName;
-            }
-
-            checkAuthStatus(); // Call authentication check after initial DOM load
-        });
-
-        // Check authentication status and load user data
-        async function checkAndLoadUserData() {
-            try {
-                // Check auth status and fetch user data from the backend
-                const response = await fetch('/api/auth/check');
-                const data = await response.json();
-
-                if (response.ok && data.authenticated) {
-                    currentUser = data; // Store user data
-                    originalUserData = { ...data }; // Store a copy for cancelling
-
-                    // Update sessionStorage with the latest data from the backend
-                    sessionStorage.setItem('userId', data.userId);
-                    sessionStorage.setItem('userEmail', data.email);
-                    sessionStorage.setItem('userName', data.name);
-                    sessionStorage.setItem('userRole', data.role);
-                    sessionStorage.setItem('isPremium', data.premium);
-                    sessionStorage.setItem('isAuthenticated', 'true');
-                    sessionStorage.setItem('currentUser', JSON.stringify(data));
-
-                    // Update UI with user information
-                    updateUserInterface(data);
-                } else {
-                    // Check sessionStorage as fallback
-                    const isAuthenticated = sessionStorage.getItem('isAuthenticated');
-                    const userId = sessionStorage.getItem('userId');
-                    const userEmail = sessionStorage.getItem('userEmail');
-                    
-                    if (isAuthenticated === 'true' && userId && userEmail) {
-                        // Use sessionStorage data if backend check fails
-                        updateUserInterface({
-                            userId: userId,
-                            email: userEmail,
-                            name: sessionStorage.getItem('userName'),
-                            role: sessionStorage.getItem('userRole'),
-                            premium: sessionStorage.getItem('isPremium') === 'true'
-                        });
-                    } else {
-                        // No valid authentication data found
-                        console.warn('No valid authentication data found. Redirecting to login.');
-                        sessionStorage.clear();
-                        window.location.href = 'login.html';
-                    }
-                }
-            } catch (error) {
-                console.error('Error checking auth or fetching user data:', error);
-                // Check sessionStorage as fallback
-                const isAuthenticated = sessionStorage.getItem('isAuthenticated');
-                const userId = sessionStorage.getItem('userId');
-                const userEmail = sessionStorage.getItem('userEmail');
-                
-                if (isAuthenticated === 'true' && userId && userEmail) {
-                    // Use sessionStorage data if API call fails
-                    updateUserInterface({
-                        userId: userId,
-                        email: userEmail,
-                        name: sessionStorage.getItem('userName'),
-                        role: sessionStorage.getItem('userRole'),
-                        premium: sessionStorage.getItem('isPremium') === 'true'
-                    });
-                } else {
-                    console.error('No valid user data in sessionStorage after API failure. Redirecting.');
-                    sessionStorage.clear();
-                    window.location.href = 'login.html';
-                }
-            }
-        }
-
-        // Helper function to update UI with user data
-        function updateUserInterface(data) {
-            const userName = data.name;
-            const userEmail = data.email;
-            const avatarUrl = data.avatarUrl;
-            
-            // Update user info in sidebar
-            const sidebarUserName = document.querySelector('.user-info .details .user-name');
-            if (sidebarUserName) {
-                sidebarUserName.textContent = userName || 'User';
-            }
-            const sidebarUserEmail = document.querySelector('.user-info .details .user-email');
-            if (sidebarUserEmail) {
-                sidebarUserEmail.textContent = userEmail || '';
-            }
-            const sidebarAvatar = document.getElementById('sidebarAvatar');
-            if (sidebarAvatar && avatarUrl) {
-                sidebarAvatar.src = avatarUrl;
-            }
-            
-            // Update header greeting
-            const greeting = document.querySelector('.header .greeting');
-            if (greeting) {
-                greeting.textContent = `Welcome back, ${userName || 'User'}!`;
-            }
-            
-            // Update header user full name
-            const userFullNameHeader = document.getElementById('userFullNameHeader');
-            if (userFullNameHeader) {
-                userFullNameHeader.textContent = userName || 'User';
-            }
-        }
-
-        // --- Profile Section Functions --- (Keep these as they are)
-        let currentUser = null; // Variable to store current user data
-        let originalUserData = null; // To store data before editing
-
-        // Function to update the profile section with current user data
-        function updateProfileSection() {
-            if (currentUser) {
-                 document.getElementById('profileNameDisplay').textContent = currentUser.name || 'N/A';
-                 document.getElementById('profileEmailDisplay').textContent = currentUser.email || 'N/A';
-                 document.getElementById('profileRoleDisplay').textContent = currentUser.role || 'N/A';
-                 document.getElementById('profileLastLoginDisplay').textContent = currentUser.lastLoginAt ? new Date(currentUser.lastLoginAt).toLocaleString() : 'N/A'; // Format date
-
-                 // Fill input fields (for edit mode)
-                 document.getElementById('profileNameInput').value = currentUser.name || '';
-                 document.getElementById('profileEmailInput').value = currentUser.email || '';
-                 document.getElementById('profileRoleInput').value = currentUser.role || '';
-                 document.getElementById('profileLastLoginInput').value = currentUser.lastLoginAt ? new Date(currentUser.lastLoginAt).toLocaleString() : '';
-
-                 // Update profile avatar - using a placeholder for now
-                // const profileAvatar = document.getElementById('profileAvatar');
-                // if (profileAvatar && currentUser.avatarUrl) {
-                //      profileAvatar.src = currentUser.avatarUrl;
-                // }
-            }
-        }
-
-        // Function to toggle edit mode for profile details
-        function toggleEditMode(isEditing) {
-            const displayElements = document.querySelectorAll('.profile-details span:not(.change-avatar-link)');
-            const inputElements = document.querySelectorAll('.profile-details .edit-input');
-            const editBtn = document.querySelector('.profile-actions .edit-btn');
-            const saveBtn = document.querySelector('.profile-actions .save-btn');
-            const cancelBtn = document.querySelector('.profile-actions .cancel-btn');
-
-            displayElements.forEach(el => el.style.display = isEditing ? 'none' : 'block');
-            inputElements.forEach(el => {
-                el.disabled = !isEditing;
-                el.style.display = isEditing ? 'block' : 'none';
-            });
-
-            editBtn.style.display = isEditing ? 'none' : 'block';
-            saveBtn.style.display = isEditing ? 'inline-block' : 'none';
-            cancelBtn.style.display = isEditing ? 'inline-block' : 'none';
-
-            // If entering edit mode, store original data
-            if (isEditing && currentUser) {
-                originalUserData = { ...currentUser };
-            } else if (!isEditing && originalUserData) {
-                 // If cancelling edit mode, restore original data
-                 currentUser = { ...originalUserData };
-                 updateProfileSection(); // Refresh displayed data
-             }
-        }
-
-        // Function to save profile changes (frontend part)
-        async function saveProfile() {
-            const updatedName = document.getElementById('profileNameInput').value;
-            const updatedEmail = document.getElementById('profileEmailInput').value;
-            // Add other fields here as needed (e.g., address)
-
-            // Basic validation (can add more sophisticated validation)
-            if (!updatedName || !updatedEmail) {
-                alert('Full Name and Email are required.');
-                return;
-            }
-             // Basic email format validation
-             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-             if (!emailPattern.test(updatedEmail)) {
-                 alert('Please enter a valid email address.');
-                 return;
-             }
-
-            // Prepare data to send to backend
-            const updatedData = {
-                name: updatedName,
-                email: updatedEmail,
-                // Include other fields here
-            };
-
-            // *** TODO: Implement backend API and fetch request here ***
-            // console.log('Attempting to save profile with data:', updatedData);
-            //  alert('Save functionality not fully implemented yet. Data logged to console.');
-            // Example Fetch (requires backend endpoint /api/users/{userId} PUT)
-            try {
-                const response = await fetch(`/api/users/${currentUser.userId}`, {
-                    method: 'PUT',
-                headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(updatedData)
-                });
-
-                if (response.ok) {
-                    // const result = await response.json(); // Assuming backend returns the updated user data
-                    currentUser = { ...currentUser, ...updatedData }; // Update currentUser with saved data
-                    alert('Profile updated successfully!');
-                    toggleEditMode(false); // Switch back to view mode
-                    // Optionally update header/sidebar name if email was also updated and used there
-                    document.getElementById('userFullNameHeader').textContent = currentUser.name;
-                    document.querySelector('.sidebar .user-info .user-name').textContent = currentUser.name;
-
-                } else {
-                    const errorData = await response.json();
-                    alert('Failed to update profile: ' + (errorData.error || 'Unknown error'));
-                }
-            } catch (error) {
-                console.error('Error saving profile:', error);
-                alert('An error occurred while saving profile.');
-            }
-        }
-
-        // Function to cancel profile editing
-        function cancelEdit() {
-            // Restore original data (handled in toggleEditMode(false))
-            toggleEditMode(false);
-        }
-
-        // Function to show the profile section
-        function showProfile() {
-            document.getElementById('profileSidebar').classList.add('active');
-            // Removed loadAndDisplayUserProfile() as it's now handled by profile-sidebar.html
-            // The MutationObserver in profile-sidebar.html will call loadUserProfile() when the sidebar becomes active.
-        }
-
-         // Function to hide the profile section
-        function hideProfile() {
-             document.getElementById('profileSidebar').classList.remove('active');
-        }
-
-        // Function to load and display user profile data (this will be handled by profile-sidebar.html)
-        // async function loadAndDisplayUserProfile() {
-        //     try {
-        //         const response = await fetch('/api/users/profile');
-        //         const data = await response.json();
-
-        //         if (response.ok && data.user) {
-        //             // Update currentUser global variable
-        //             currentUser = data.user;
-
-        //             // Update sidebar and profile section
-        //             updateUserInterface(data.user);
-
-        //             const profileSidebar = document.getElementById('profileSidebar');
-        //             if (profileSidebar && profileSidebar.classList.contains('active')) {
-        //                 document.getElementById('fullName').value = data.user.name || data.fullName || 'N/A';
-        // Fetch user data when the page loads
-        window.onload = function() {
-            checkAndLoadUserData(); // Call the combined function
-        };
-
-        // Check auth periodically
-        setInterval(checkAndLoadUserData, 30000); // Keep periodic check for now
-
-        // Function to preview avatar image before upload
-        function previewAvatar(event) {
-            const reader = new FileReader();
-            reader.onload = function(){
-                const output = document.getElementById('profileAvatar');
-                output.src = reader.result;
-            };
-            reader.readAsDataURL(event.target.files[0]);
-        }
-
-        // Function to load user profile and update both header and sidebar
-        async function loadAndDisplayUserProfile() {
-            console.log("loadAndDisplayUserProfile: Function started.");
-            try {
-                console.log("loadAndDisplayUserProfile: Attempting to fetch /api/users/profile");
-                const response = await fetch('/api/users/profile');
-                console.log("loadAndDisplayUserProfile: Fetch response received.", response);
-
-                const data = await response.json();
-                console.log("loadAndDisplayUserProfile: JSON data received.", data);
-
-                if (response.ok && data.success && data.user) {
-                    const userName = data.user.name || data.fullName || 'User';
-                    console.log("loadAndDisplayUserProfile: User name extracted:", userName);
-
-                    // Update header username
-                    const userHeaderSpan = document.getElementById('userFullNameHeader');
-                    if (userHeaderSpan) {
-                        userHeaderSpan.textContent = userName;
-                        console.log("loadAndDisplayUserProfile: Header user name updated.");
-                    }
-
-                    // Update sidebar username
-                    const sidebarUserNameSpan = document.querySelector('.sidebar .user-info .user-name');
-                    if (sidebarUserNameSpan) {
-                        sidebarUserNameSpan.textContent = userName;
-                        console.log("loadAndDisplayUserProfile: Sidebar user name updated.");
-                    }
-
-                    // Update sidebar avatar (if applicable)
-                    const sidebarAvatar = document.getElementById('sidebarAvatar');
-                    if (sidebarAvatar) {
-                        sidebarAvatar.src = data.user.avatarUrl || 'https://via.placeholder.com/40';
-                        console.log("loadAndDisplayUserProfile: Sidebar avatar updated.");
-                    }
-
-                    // Update profile sidebar if it's open
-                    const profileSidebar = document.getElementById('profileSidebar');
-                    if (profileSidebar && profileSidebar.classList.contains('active')) {
-                        document.getElementById('fullName').value = data.user.name || data.fullName || 'N/A';
-                        document.getElementById('email').value = data.user.email || 'N/A';
-                        document.getElementById('phone').value = data.user.phone || 'N/A';
-                        document.getElementById('joinDate').value = data.user.createdAt ? new Date(data.user.createdAt).toLocaleDateString() : 'N/A';
-                        document.getElementById('profileAvatar').src = data.user.avatarUrl || 'https://via.placeholder.com/120';
-                        console.log("loadAndDisplayUserProfile: Profile sidebar updated.");
-                    }
-
-                } else {
-                    console.error("loadAndDisplayUserProfile: Failed to load user profile. Response not OK or data missing.", data.message);
-                    // Fallback to default if user data is not available
-                    const userHeaderSpan = document.getElementById('userFullNameHeader');
-                    if (userHeaderSpan) {
-                        userHeaderSpan.textContent = 'Guest';
-                    }
-                    const sidebarUserNameSpan = document.querySelector('.sidebar .user-info .user-name');
-                    if (sidebarUserNameSpan) {
-                        sidebarUserNameSpan.textContent = 'Guest';
-                    }
-                }
-            } catch (error) {
-                console.error("loadAndDisplayUserProfile: Error fetching user profile:", error);
-                // Fallback to default on error
-                const userHeaderSpan = document.getElementById('userFullNameHeader');
-                if (userHeaderSpan) {
-                    userHeaderSpan.textContent = 'Guest';
-                }
-                const sidebarUserNameSpan = document.querySelector('.sidebar .user-info .user-name');
-                if (sidebarUserNameSpan) {
-                    sidebarUserNameSpan.textContent = 'Guest';
-                }
-            }
-        }
-
-        // Function to handle logout
-        function handleLogout() {
-            // Implement logout logic here
-            // For example, redirect to login page
-            window.location.href = '/login.html';
-        }
-
-        // Function to check authentication status
-        async function checkAuthStatus() {
-            try {
-                console.log("checkAuthStatus: Checking authentication status.");
-                const response = await fetch('/api/auth/check-auth'); // Corrected endpoint
-                const data = await response.json();
-                console.log("checkAuthStatus: Response received.", data);
-
-                if (!data.isAuthenticated) {
-                    window.location.href = '/login.html'; // Redirect to login if not authenticated
-                } else {
-                    // Show the main content only after successful authentication
-                    document.querySelector('.main-content').style.display = 'flex'; // or 'block' depending on its original display type
-                    loadAndDisplayUserProfile();
-                }
-            } catch (error) {
-                console.error("checkAuthStatus: Error checking authentication status:", error);
-                window.location.href = '/login.html'; // Redirect on error
-            }
-        }
-
-        // Call checkAuthStatus when the DOM is fully loaded
-        document.addEventListener('DOMContentLoaded', checkAuthStatus);
-
-        // Cập nhật ngày tháng năm hiện tại trên header
-        function updateCurrentDate() {
-            const dateElement = document.querySelector('.header .date');
-            if (dateElement) {
-                const now = new Date();
-                const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                dateElement.textContent = now.toLocaleDateString('en-US', options);
-            }
-        }
-
-        // Profile sidebar functions
-        // The showProfile and hideProfile functions are above.
-        // The old loadUserProfile function has been removed.
-         
-        loadUserProfile(); // Call this to load initial user data on page load
-    </script>
-
-    <!-- Add event listeners for profile sidebar elements after DOM is loaded -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const profileSidebar = document.getElementById('profileSidebar');
-
-            // Event listener for profile sidebar visibility changes
-            if (profileSidebar) {
-                const observer = new MutationObserver((mutations) => {
-                    mutations.forEach((mutation) => {
-                        if (mutation.attributeName === 'class') {
-                            if (profileSidebar.classList.contains('active')) {
-                                loadUserProfile();
-                            }
-                        }
-                    });
-                });
-                observer.observe(profileSidebar, { attributes: true });
-            }
-
-            // Attach event listeners to buttons and input fields
-            const closeProfileBtn = document.getElementById('closeProfileBtn');
-            if (closeProfileBtn) {
-                closeProfileBtn.addEventListener('click', hideProfile);
-            }
-
-            const editProfileBtn = document.getElementById('editProfileBtn');
-            if (editProfileBtn) {
-                editProfileBtn.addEventListener('click', () => toggleEditMode(true));
-            }
-
-            const saveProfileBtn = document.getElementById('saveProfileBtn');
-            if (saveProfileBtn) {
-                saveProfileBtn.addEventListener('click', saveProfile);
-            }
-
-            const cancelEditBtn = document.getElementById('cancelEditBtn');
-            if (cancelEditBtn) {
-                cancelEditBtn.addEventListener('click', () => toggleEditMode(false));
-            }
-
-            const changePasswordBtn = document.getElementById('changePasswordBtn');
-            if (changePasswordBtn) {
-                changePasswordBtn.addEventListener('click', showChangePassword);
-            }
-
-            const avatarInput = document.getElementById('avatarInput');
-            if (avatarInput) {
-                avatarInput.addEventListener('change', handleAvatarChange);
-            }
-
-            const closeChangePasswordModalBtn = document.getElementById('closeChangePasswordModalBtn');
-            if (closeChangePasswordModalBtn) {
-                closeChangePasswordModalBtn.addEventListener('click', hideChangePasswordModal);
-            }
-
-            const cancelChangePasswordBtn = document.getElementById('cancelChangePasswordBtn');
-            if (cancelChangePasswordBtn) {
-                cancelChangePasswordBtn.addEventListener('click', hideChangePasswordModal);
-            }
-
-            const confirmChangePasswordBtn = document.getElementById('confirmChangePasswordBtn');
-            if (confirmChangePasswordBtn) {
-                confirmChangePasswordBtn.addEventListener('click', changePassword);
-            }
-
-            // Initial load of user profile data when the page loads, in case sidebar is open by default or needs pre-filling
-            loadUserProfile();
-        });
-    </script>
 </body>
-</html> 
+</html>
