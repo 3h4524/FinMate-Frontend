@@ -7,7 +7,7 @@
     <title>Financial Reports</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="helper_functions.js"></script>
+    <script src="../assets/js/helper_functions.js"></script>
 </head>
 
 <body class="min-h-screen bg-gray-50 flex font-sans">
@@ -302,17 +302,7 @@
 
     async function fetchUserId() {
         console.log("Fetching user id");
-        try {
-            const response = await fetch(`${API_BASE_URL}/users/get_user_id_from_session`);
-
-            if (!response.ok) throw new Error('Failed to fetch user id');
-
-            const data = await response.json();
-            userId = data.result;
-            console.log("fetch user id: ", userId);
-        } catch (error) {
-            console.log(error);
-        }
+        userId = 6;
     }
 
     async function fetchGoalProgress() {
