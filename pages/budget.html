@@ -1,953 +1,339 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinMate - Budget Management</title>
+    <title>FinMate - Quản lý Ngân sách</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../assets/js/budget.js" defer></script>
 </head>
+
 <body class="font-sans text-gray-900 bg-green-50">
-<div class="flex min-h-screen">
-    <!-- Sidebar -->
-    <aside id="sidebar" class="w-64 bg-teal-900 text-white p-5 fixed h-full overflow-y-auto transition-transform transform md:translate-x-0 -translate-x-full z-50">
-        <div class="flex items-center gap-2 mb-8 text-2xl font-bold">
-            <i class="fas fa-chart-line text-lime-300"></i> FinMate
-        </div>
-        <nav>
-            <ul class="space-y-2 flex-1">
-                <li><a href="index.html" class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i class="fas fa-tachometer-alt mr-3"></i> Dashboard</a></li>
-                <li><a href="#" class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i class="fas fa-bullseye mr-3"></i> Goals</a></li>
-                <li><a href="#" class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i class="fas fa-exchange-alt mr-3"></i> Transactions</a></li>
-                <li><a href="#" class="flex items-center p-3 rounded-lg bg-green-700 text-lime-300 border-l-4 border-lime-300"><i class="fas fa-calculator mr-3"></i> Budget</a></li>
-                <li><a href="#" class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i class="fas fa-chart-pie mr-3"></i> Reports</a></li>
-                <li><a href="#" class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i class="fas fa-user mr-3"></i> Profile</a></li>
-                <li><a href="#" class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i class="fas fa-cog mr-3"></i> Settings</a></li>
-            </ul>
-        </nav>
-        <div class="mt-auto pt-5 border-t border-white/10 flex items-center cursor-pointer" onclick="showProfile()">
-            <img id="userAvatar" src="https://via.placeholder.com/40" alt="User avatar" class="w-10 h-10 rounded-full">
-            <div class="ml-3">
-                <span id="userName" class="block font-medium">Guest</span>
-                <span class="text-sm text-gray-300">guest@finmate.com</span>
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside id="sidebar"
+            class="w-64 bg-teal-900 text-white p-5 fixed h-full overflow-y-auto transition-transform transform md:translate-x-0 -translate-x-full z-50">
+            <div class="flex items-center gap-2 mb-8 text-2xl font-bold">
+                <i class="fas fa-chart-line text-lime-300"></i> FinMate
             </div>
-        </div>
-        <button class="flex items-center w-full p-3 mt-2 rounded-lg bg-transparent text-white hover:bg-teal-700 transition" onclick="logout()">
-            <i class="fas fa-sign-out-alt mr-3"></i> Logout
-        </button>
-    </aside>
+            <nav>
+                <ul class="space-y-2 flex-1">
+                    <li><a href="index.html"
+                            class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
+                                class="fas fa-tachometer-alt mr-3"></i> Bảng điều khiển</a></li>
+                    <li><a href="#"
+                            class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
+                                class="fas fa-bullseye mr-3"></i> Mục tiêu</a></li>
+                    <li><a href="#"
+                            class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
+                                class="fas fa-exchange-alt mr-3"></i> Giao dịch</a></li>
+                    <li><a href="#"
+                            class="flex items-center p-3 rounded-lg bg-green-700 text-lime-300 border-l-4 border-lime-300"><i
+                                class="fas fa-calculator mr-3"></i> Ngân sách</a></li>
+                    <li><a href="#"
+                            class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
+                                class="fas fa-chart-pie mr-3"></i> Báo cáo</a></li>
+                    <li><a href="#"
+                            class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
+                                class="fas fa-user mr-3"></i> Hồ sơ</a></li>
+                    <li><a href="#"
+                            class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
+                                class="fas fa-cog mr-3"></i> Cài đặt</a></li>
+                </ul>
+            </nav>
+            <div class="mt-auto pt-5 border-t border-white/10 flex items-center cursor-pointer" onclick="showProfile()">
+                <img id="userAvatar" src="https://via.placeholder.com/40" alt="User avatar"
+                    class="w-10 h-10 rounded-full">
+                <div class="ml-3">
+                    <span id="userName" class="block font-medium">Khách</span>
+                    <span class="text-sm text-gray-300">guest@finmate.com</span>
+                </div>
+            </div>
+            <button
+                class="flex items-center w-full p-3 mt-2 rounded-lg bg-transparent text-white hover:bg-teal-700 transition"
+                onclick="logout()">
+                <i class="fas fa-sign-out-alt mr-3"></i> Đăng xuất
+            </button>
+        </aside>
 
-    <!-- Main Content -->
-    <main class="flex-1 md:ml-64 p-5 transition-all">
-        <header class="bg-white rounded-lg p-4 shadow-md flex justify-between items-center mb-5">
-            <div>
-                <h1 class="text-xl font-semibold">Budget Management</h1>
-                <div class="text-sm text-gray-600" id="current-date-time">Monday, June 09, 2025, 10:15 PM +07</div>
-            </div>
-            <div class="relative flex-1 max-w-md mx-4">
-                <input type="text" id="searchInput" placeholder="Search budgets..." aria-label="Search budgets" class="w-full p-2 pl-4 pr-10 border border-gray-300 rounded-full bg-gray-100 focus:border-green-600 focus:ring-2 focus:ring-green-300">
-                <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
-            </div>
-            <div class="flex items-center gap-2">
-                <button class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2" onclick="openModal('createBudgetModal')">
-                    <i class="fas fa-plus"></i> Create Budget Plan
-                </button>
-                <button id="menuToggle" class="p-2 rounded-full bg-gray-200 hover:bg-gray-300 md:hidden"><i class="fas fa-bars"></i></button>
-            </div>
-        </header>
-
-        <div class="flex flex-col gap-5 items-center">
-            <!-- Budget Monitoring -->
-            <div class="bg-white rounded-lg p-5 shadow-md w-full">
-                <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold flex items-center gap-2"><i class="fas fa-chart-line"></i> Budget Monitoring</h2>
-                    <button class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2" onclick="monitorBudgets(0)">
-                        <i class="fas fa-sync-alt"></i> Refresh
+        <!-- Main Content -->
+        <main class="flex-1 md:ml-64 p-5 transition-all">
+            <header class="bg-white rounded-lg p-4 shadow-md flex justify-between items-center mb-5">
+                <div>
+                    <h1 class="text-xl font-semibold">Quản lý Ngân sách</h1>
+                    <div class="text-sm text-gray-600" id="current-date-time">Thứ Tư, 11 Tháng 6, 2025, 05:46 CH +07
+                    </div>
+                </div>
+                <div class="relative flex-1 max-w-md mx-4">
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm ngân sách..."
+                        aria-label="Tìm kiếm ngân sách"
+                        class="w-full p-2 pl-4 pr-10 border border-gray-300 rounded-full bg-gray-100 focus:border-green-600 focus:ring-2 focus:ring-green-300">
+                    <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button
+                        class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2"
+                        onclick="openModal('createBudgetModal')">
+                        <i class="fas fa-plus"></i> Tạo Kế hoạch Ngân sách
                     </button>
+                    <button id="menuToggle" class="p-2 rounded-full bg-gray-200 hover:bg-gray-300 md:hidden"><i
+                            class="fas fa-bars"></i></button>
                 </div>
-                <div id="toastContainer" class="fixed top-5 right-5 z-50"></div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-center">
-                        <thead>
-                        <tr class="bg-gray-100">
-                            <th class="p-3 font-semibold">Category</th>
-                            <th class="p-3 font-semibold">Usage</th>
-                            <th class="p-3 font-semibold">Progress</th>
-                            <th class="p-3 font-semibold">Remaining</th>
-                            <th class="p-3 font-semibold">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody id="monitor-table-body"></tbody>
-                    </table>
-                </div>
-                <div id="monitor-pagination" class="flex justify-center mt-4 gap-2"></div>
-            </div>
+            </header>
 
-            <!-- Budget vs Actual Analysis -->
-            <div class="bg-white rounded-lg p-5 shadow-md w-full">
-                <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold flex items-center gap-2"><i class="fas fa-chart-bar"></i> Budget vs Actual Analysis</h2>
-                    <div class="flex gap-2">
-                        <select id="analysisPeriod" class="border border-gray-300 rounded-lg px-4 py-2">
-                            <option value="current_day">Day</option>
-                            <option value="current_week">Week</option>
-                            <option value="current_month" selected>Month</option>
+            <div class="flex flex-col gap-5 items-center">
+                <!-- Budget Monitoring -->
+                <div class="bg-white rounded-lg p-5 shadow-md w-full">
+                    <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold flex items-center gap-2"><i class="fas fa-chart-line"></i> Theo
+                            dõi Ngân sách</h2>
+                        <button
+                            class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2"
+                            onclick="monitorBudgets(0)">
+                            <i class="fas fa-sync-alt"></i> Làm mới
+                        </button>
+                    </div>
+                    <div id="toastContainer" class="fixed top-5 right-5 z-50"></div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-center">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="p-3 font-semibold">Danh mục</th>
+                                    <th class="p-3 font-semibold">Sử dụng</th>
+                                    <th class="p-3 font-semibold">Tiến độ</th>
+                                    <th class="p-3 font-semibold">Còn lại</th>
+                                    <th class="p-3 font-semibold">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monitor-table-body"></tbody>
+                        </table>
+                    </div>
+                    <div id="monitor-pagination" class="flex justify-center mt-4 gap-2"></div>
+                </div>
+
+                <!-- Budget vs Actual Analysis -->
+                <div class="bg-white rounded-lg p-5 shadow-md w-full">
+                    <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold flex items-center gap-2"><i class="fas fa-chart-bar"></i> Phân
+                            tích Ngân sách so với Thực tế</h2>
+                        <div class="flex gap-2">
+                            <select id="analysisPeriod" class="border border-gray-300 rounded-lg px-4 py-2">
+                                <option value="current_day">Ngày</option>
+                                <option value="current_week">Tuần</option>
+                                <option value="current_month" selected>Tháng</option>
+                                <option value="current_year">Năm</option>
+                            </select>
+                            <button
+                                class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2"
+                                onclick="toggleChartType()">
+                                <i id="chartIcon" class="fas fa-chart-bar"></i> <span id="chartTypeLabel">Biểu đồ
+                                    Cột</span>
+                            </button>
+                            <button
+                                class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2"
+                                onclick="exportToCSV()">
+                                <i class="fas fa-download"></i> Xuất CSV
+                            </button>
+                        </div>
+                    </div>
+                    <div class="h-64 mb-5">
+                        <canvas id="budgetChart"></canvas>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <p class="text-gray-600 text-xs">Tổng Ngân sách</p>
+                            <p id="totalBudgeted" class="font-bold text-lg">$0</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <p class="text-gray-600 text-xs">Tổng Chi tiêu</p>
+                            <p id="totalSpent" class="font-bold text-lg">$0</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <p class="text-gray-600 text-xs">Chênh lệch</p>
+                            <p id="varianceAmount" class="font-bold text-lg">$0</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <p class="text-gray-600 text-xs">Tỷ lệ Chi tiêu</p>
+                            <p id="spendingRate" class="font-bold text-lg">0%</p>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-center">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="p-3 font-semibold">Danh mục</th>
+                                    <th class="p-3 font-semibold">Số tiền Kế hoạch</th>
+                                    <th class="p-3 font-semibold">Chi tiêu Thực tế</th>
+                                    <th class="p-3 font-semibold">Chênh lệch</th>
+                                    <th class="p-3 font-semibold">Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody id="analysis-table"></tbody>
+                        </table>
+                    </div>
+                    <div id="analysis-pagination" class="flex justify-center mt-4 gap-2"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Create Budget Modal -->
+        <div id="createBudgetModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[1000]">
+            <div class="bg-white rounded-lg p-6 w-11/12 max-w-lg shadow-lg relative">
+                <span class="absolute top-2 right-2 text-2xl text-gray-500 hover:text-green-600 cursor-pointer"
+                    onclick="closeModal('createBudgetModal')">×</span>
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-plus-circle"></i> Tạo Kế
+                    hoạch Ngân sách</h3>
+                <form id="create-budget-form">
+                    <div class="mb-4">
+                        <label for="periodType" class="block text-sm font-medium mb-1">Kỳ hạn</label>
+                        <select name="periodType" id="periodType"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300"
+                            required>
+                            <option value="" selected>Chọn Kỳ hạn</option>
+                            <option value="DAILY">Hàng ngày</option>
+                            <option value="WEEKLY">Hàng tuần</option>
+                            <option value="MONTHLY">Hàng tháng</option>
                         </select>
-                        <button class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2" onclick="toggleChartType()">
-                            <i id="chartIcon" class="fas fa-chart-bar"></i> <span id="chartTypeLabel">Bar Chart</span>
-                        </button>
-                        <button class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2" onclick="exportToCSV()">
-                            <i class="fas fa-download"></i> Export CSV
-                        </button>
                     </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">Danh mục và Giới hạn</label>
+                        <div id="category-list" class="mb-3"></div>
+                        <div class="flex justify-end mt-3 mb-2">
+                            <button type="button"
+                                class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-3 py-1 rounded-lg hover:shadow-md hover:-translate-y-0.5 transition flex items-center gap-1 text-sm"
+                                onclick="addBudgetCategory()">
+                                <i class="fas fa-plus"></i> Thêm Danh mục
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="mb-4">
+                            <label for="startDate" class="block text-sm font-medium mb-1">Ngày Bắt đầu</label>
+                            <input type="date" name="startDate" id="startDate"
+                                class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300"
+                                required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="endDate" class="block text-sm font-medium mb-1">Ngày Kết thúc</label>
+                            <input type="date" name="endDate" id="endDate"
+                                class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300"
+                                required>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="threshold" class="block text-sm font-medium mb-1">Ngưỡng Cảnh báo (%)</label>
+                        <input type="number" name="threshold" id="threshold" min="1" max="100" value="80"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300"
+                            required>
+                    </div>
+                    <button type="submit"
+                        class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2">
+                        <i class="fas fa-save"></i> Lưu Kế hoạch
+                    </button>
+                </form>
+            </div>
+        </div>
+        <!-- Update Budget Modal -->
+        <div id="updateBudgetModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[1000]">
+            <div class="bg-white rounded-lg p-6 w-11/12 max-w-lg shadow-lg relative">
+                <span class="absolute top-2 right-2 text-2xl text-gray-500 hover:text-green-600 cursor-pointer"
+                    onclick="closeModal('updateBudgetModal')">×</span>
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-edit"></i> Cập nhật Kế
+                    hoạch Ngân sách</h3>
+                <form id="update-budget-form">
+                    <input type="hidden" id="update-budget-id" name="budgetId">
+                    <div class="mb-4">
+                        <label for="update-periodType" class="block text-sm font-medium mb-1">Kỳ hạn</label>
+                        <select name="periodType" id="update-periodType"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300"
+                            required>
+                            <option value="" selected>Chọn Kỳ hạn</option>
+                            <option value="DAILY">Hàng ngày</option>
+                            <option value="WEEKLY">Hàng tuần</option>
+                            <option value="MONTHLY">Hàng tháng</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">Danh mục và Giới hạn</label>
+                        <div id="update-category-list" class="mb-3"></div>
+                        <div class="flex justify-end mt-3 mb-2">
+                            <button type="button"
+                                class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-3 py-1 rounded-lg hover:shadow-md hover:-translate-y-0.5 transition flex items-center gap-1 text-sm"
+                                onclick="addBudgetCategory('update')">
+                                <i class="fas fa-plus"></i> Thêm Danh mục
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="mb-4">
+                            <label for="update-startDate" class="block text-sm font-medium mb-1">Ngày Bắt đầu</label>
+                            <input type="date" name="startDate" id="update-startDate"
+                                class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300"
+                                required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="update-endDate" class="block text-sm font-medium mb-1">Ngày Kết thúc</label>
+                            <input type="date" name="endDate" id="update-endDate"
+                                class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300"
+                                required>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="update-threshold" class="block text-sm font-medium mb-1">Ngưỡng Cảnh báo (%)</label>
+                        <input type="number" name="threshold" id="update-threshold" min="1" max="100" value="80"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300"
+                            required>
+                    </div>
+                    <button type="submit"
+                        class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2">
+                        <i class="fas fa-save"></i> Cập nhật Kế hoạch
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Budget History Modal -->
+        <div id="budgetHistoryModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[1000]">
+            <div class="bg-white rounded-lg p-6 w-11/12 max-w-4xl shadow-lg relative">
+                <span class="absolute top-2 right-2 text-2xl text-gray-500 hover:text-green-600 cursor-pointer"
+                    onclick="closeModal('budgetHistoryModal')">×</span>
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-history"></i> Lịch sử
+                    Ngân sách</h3>
+                <div class="mb-4">
+                    <input type="text" id="historySearch" placeholder="Tìm kiếm lịch sử ngân sách..."
+                        aria-label="Tìm kiếm lịch sử ngân sách"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300">
                 </div>
-                <div class="h-64 mb-5">
-                    <canvas id="budgetChart"></canvas>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <div class="bg-gray-50 p-4 rounded-lg text-center">
-                        <p class="text-gray-600 text-xs">Total Budgeted</p>
-                        <p id="totalBudgeted" class="font-bold text-lg">$0</p>
-                    </div>
-                    <div class="bg-gray-50 p-4 rounded-lg text-center">
-                        <p class="text-gray-600 text-xs">Total Spent</p>
-                        <p id="totalSpent" class="font-bold text-lg">$0</p>
-                    </div>
-                    <div class="bg-gray-50 p-4 rounded-lg text-center">
-                        <p class="text-gray-600 text-xs">Variance</p>
-                        <p id="varianceAmount" class="font-bold text-lg">$0</p>
-                    </div>
-                    <div class="bg-gray-50 p-4 rounded-lg text-center">
-                        <p class="text-gray-600 text-xs">Spending Rate</p>
-                        <p id="spendingRate" class="font-bold text-lg">0%</p>
-                    </div>
-                </div>
-                <div class="overflow-x-auto">
+                <div class="overflow-y-auto max-h-96">
                     <table class="w-full text-center">
                         <thead>
-                        <tr class="bg-gray-100">
-                            <th class="p-3 font-semibold">Category</th>
-                            <th class="p-3 font-semibold">Planned Amount</th>
-                            <th class="p-3 font-semibold">Actual Spending</th>
-                            <th class="p-3 font-semibold">Variance</th>
-                            <th class="p-3 font-semibold">Status</th>
-                        </tr>
+                            <tr class="bg-gray-100">
+                                <th class="p-3 font-semibold">Kỳ hạn</th>
+                                <th class="p-3 font-semibold">Danh mục</th>
+                                <th class="p-3 font-semibold">Số tiền</th>
+                                <th class="p-3 font-semibold">Ngày</th>
+                            </tr>
                         </thead>
-                        <tbody id="analysis-table"></tbody>
+                        <tbody id="budget-history-table"></tbody>
                     </table>
                 </div>
-                <div id="analysis-pagination" class="flex justify-center mt-4 gap-2"></div>
             </div>
         </div>
-    </main>
 
-    <!-- Create Budget Modal -->
-    <div id="createBudgetModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[1000]">
-        <div class="bg-white rounded-lg p-6 w-11/12 max-w-lg shadow-lg relative">
-            <span class="absolute top-2 right-2 text-2xl text-gray-500 hover:text-green-600 cursor-pointer" onclick="closeModal('createBudgetModal')">×</span>
-            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-plus-circle"></i> Create Budget Plan</h3>
-            <form id="create-budget-form">
-                <div class="mb-4">
-                    <label for="periodType" class="block text-sm font-medium mb-1">Period</label>
-                    <select name="periodType" id="periodType" class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-                        <option value="" selected>Select Period</option>
-                        <option value="DAILY">Daily</option>
-                        <option value="WEEKLY">Weekly</option>
-                        <option value="MONTHLY">Monthly</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-1">Categories and Limits</label>
-                    <div id="category-list" class="mb-3"></div>
-                    <div class="flex justify-end mt-3 mb-2">
-                        <button type="button" class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-3 py-1 rounded-lg hover:shadow-md hover:-translate-y-0.5 transition flex items-center gap-1 text-sm" onclick="addBudgetCategory()">
-                            <i class="fas fa-plus"></i> Add Category
-                        </button>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="mb-4">
-                        <label for="startDate" class="block text-sm font-medium mb-1">Start Date</label>
-                        <input type="date" name="startDate" id="startDate" class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-                    </div>
-                    <div class="mb-4">
-                        <label for="endDate" class="block text-sm font-medium mb-1">End Date</label>
-                        <input type="date" name="endDate" id="endDate" class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <label for="threshold" class="block text-sm font-medium mb-1">Alert Threshold (%)</label>
-                    <input type="number" name="threshold" id="threshold" min="1" max="100" value="80" class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-                </div>
-                <button type="submit" class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2">
-                    <i class="fas fa-save"></i> Save Plan
-                </button>
-            </form>
-        </div>
-    </div>
-    <!-- Update Budget Modal -->
-    <div id="updateBudgetModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[1000]">
-        <div class="bg-white rounded-lg p-6 w-11/12 max-w-lg shadow-lg relative">
-            <span class="absolute top-2 right-2 text-2xl text-gray-500 hover:text-green-600 cursor-pointer" onclick="closeModal('updateBudgetModal')">×</span>
-            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-edit"></i> Update Budget Plan</h3>
-            <form id="update-budget-form">
-                <input type="hidden" id="update-budget-id" name="budgetId">
-                <div class="mb-4">
-                    <label for="update-periodType" class="block text-sm font-medium mb-1">Period</label>
-                    <select name="periodType" id="update-periodType" class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-                        <option value="" selected>Select Period</option>
-                        <option value="DAILY">Daily</option>
-                        <option value="WEEKLY">Weekly</option>
-                        <option value="MONTHLY">Monthly</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-1">Categories and Limits</label>
-                    <div id="update-category-list" class="mb-3"></div>
-                    <div class="flex justify-end mt-3 mb-2">
-                        <button type="button" class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-3 py-1 rounded-lg hover:shadow-md hover:-translate-y-0.5 transition flex items-center gap-1 text-sm" onclick="addBudgetCategory('update')">
-                            <i class="fas fa-plus"></i> Add Category
-                        </button>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="mb-4">
-                        <label for="update-startDate" class="block text-sm font-medium mb-1">Start Date</label>
-                        <input type="date" name="startDate" id="update-startDate" class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-                    </div>
-                    <div class="mb-4">
-                        <label for="update-endDate" class="block text-sm font-medium mb-1">End Date</label>
-                        <input type="date" name="endDate" id="update-endDate" class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <label for="update-threshold" class="block text-sm font-medium mb-1">Alert Threshold (%)</label>
-                    <input type="number" name="threshold" id="update-threshold" min="1" max="100" value="80" class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-                </div>
-                <button type="submit" class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2">
-                    <i class="fas fa-save"></i> Update Plan
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Budget History Modal -->
-    <div id="budgetHistoryModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[1000]">
-        <div class="bg-white rounded-lg p-6 w-11/12 max-w-4xl shadow-lg relative">
-            <span class="absolute top-2 right-2 text-2xl text-gray-500 hover:text-green-600 cursor-pointer" onclick="closeModal('budgetHistoryModal')">×</span>
-            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-history"></i> Budget History</h3>
-            <div class="mb-4">
-                <input type="text" id="historySearch" placeholder="Search budget history..." aria-label="Search budget history" class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300">
-            </div>
-            <div class="overflow-y-auto max-h-96">
-                <table class="w-full text-center">
-                    <thead>
-                    <tr class="bg-gray-100">
-                        <th class="p-3 font-semibold">Period</th>
-                        <th class="p-3 font-semibold">Category</th>
-                        <th class="p-3 font-semibold">Amount</th>
-                        <th class="p-3 font-semibold">Date</th>
-                    </tr>
-                    </thead>
-                    <tbody id="budget-history-table"></tbody>
-                </table>
+        <!-- Budget Details Modal -->
+        <div id="budgetDetailsModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[1000]">
+            <div class="bg-white rounded-lg p-6 w-11/12 max-w-lg shadow-lg relative">
+                <span class="absolute top-2 right-2 text-2xl text-gray-500 hover:text-green-600 cursor-pointer"
+                    onclick="closeModal('budgetDetailsModal')">×</span>
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-info-circle"></i> Chi
+                    tiết Ngân sách</h3>
+                <div id="budgetDetailsContent" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-900"></div>
             </div>
         </div>
     </div>
-
-    <!-- Budget Details Modal -->
-    <div id="budgetDetailsModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[1000]">
-        <div class="bg-white rounded-lg p-6 w-11/12 max-w-lg shadow-lg relative">
-            <span class="absolute top-2 right-2 text-2xl text-gray-500 hover:text-green-600 cursor-pointer" onclick="closeModal('budgetDetailsModal')">×</span>
-            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-info-circle"></i> Budget Details</h3>
-            <div id="budgetDetailsContent" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-900"></div>
-        </div>
-    </div>
-</div>
-
-<script>
-    let budgetChart = null;
-    let chartType = 'bar';
-    let budgetHistory = [];
-    let userId;
-    let monitorPage = 0;
-    let analysisPage = 0;
-    const pageSize = 10;
-
-    async function initializeUI() {
-        await fetchUserId();
-        await updateDateTime();
-        await fetchUserData();
-        await monitorBudgets(0);
-        await loadAnalysis(0);
-        await setDefaultModalDates();
-        await addBudgetCategory();
-        await setupEventListeners();
-    }
-
-    function updateDateTime() {
-        const now = new Date();
-        document.getElementById('current-date-time').textContent = now.toLocaleString('en-US', {
-            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-            hour: '2-digit', minute: '2-digit', timeZoneName: 'short', timeZone: 'Asia/Ho_Chi_Minh'
-        });
-        setTimeout(updateDateTime, 60000);
-    }
-
-    function fetchUserData() {
-        document.getElementById('userName').textContent = 'Guest';
-        document.getElementById('userAvatar').src = 'https://via.placeholder.com/40';
-    }
-
-    function showProfile() {
-        alert('Profile view functionality not implemented.');
-    }
-
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('-translate-x-full');
-        document.getElementById('sidebar').classList.toggle('translate-x-0');
-    }
-
-    function openModal(modalId) {
-        document.getElementById(modalId).classList.remove('hidden');
-        document.getElementById(modalId).classList.add('flex');
-    }
-
-    function closeModal(modalId) {
-        const modal = document.getElementById(modalId);
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-        if (modalId === 'createBudgetModal') {
-            document.getElementById('create-budget-form').reset();
-            document.getElementById('category-list').innerHTML = '';
-            addBudgetCategory();
-            setDefaultModalDates();
-        } else if (modalId === 'updateBudgetModal') {
-            document.getElementById('update-budget-form').reset();
-            document.getElementById('update-category-list').innerHTML = '';
-        }
-    }
-
-    function addBudgetCategory() {
-        const categoryList = document.getElementById('category-list');
-        const row = document.createElement('div');
-        row.className = 'flex items-center gap-2 mb-2';
-        row.innerHTML = `
-            <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-                <option value="">Select Category</option>
-                <option value="Salary">Salary</option>
-                <option value="Bonus">Bonus</option>
-                <option value="Investment">Investment</option>
-                <option value="Gift">Gift</option>
-                <option value="Food">Food</option>
-                <option value="Shopping">Shopping</option>
-                <option value="Transportation">Transportation</option>
-                <option value="Housing">Housing</option>
-                <option value="Entertainment">Entertainment</option>
-                <option value="Health">Health</option>
-                <option value="Education">Education</option>
-                <option value="Bill">Bill</option>
-                <option value="Other">Other</option>
-            </select>
-            <input type="number" name="amounts[]" step="0.01" min="0" placeholder="Amount ($)" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-            <button type="button" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700" onclick="removeBudgetCategory(this)">×</button>
-        `;
-        categoryList.appendChild(row);
-    }
-
-    function removeBudgetCategory(button) {
-        const categoryList = document.getElementById('category-list');
-        if (categoryList.children.length > 1) {
-            button.parentElement.remove();
-        } else {
-            alert('Must have at least one category.');
-        }
-    }
-
-    function addUpdateBudgetCategory() {
-        const categoryList = document.getElementById('update-category-list');
-        const row = document.createElement('div');
-        row.className = 'flex items-center gap-2 mb-2';
-        row.innerHTML = `
-            <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-                <option value="">Select Category</option>
-                <option value="Salary">Salary</option>
-                <option value="Bonus">Bonus</option>
-                <option value="Investment">Investment</option>
-                <option value="Gift">Gift</option>
-                <option value="Food">Food</option>
-                <option value="Shopping">Shopping</option>
-                <option value="Transportation">Transportation</option>
-                <option value="Housing">Housing</option>
-                <option value="Entertainment">Entertainment</option>
-                <option value="Health">Health</option>
-                <option value="Education">Education</option>
-                <option value="Bill">Bill</option>
-                <option value="Other">Other</option>
-            </select>
-            <input type="number" name="amounts[]" step="0.01" min="0" placeholder="Amount ($)" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-            <button type="button" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700" onclick="removeUpdateBudgetCategory(this)">×</button>
-        `;
-        categoryList.appendChild(row);
-    }
-
-    function removeUpdateBudgetCategory(button) {
-        const categoryList = document.getElementById('update-category-list');
-        if (categoryList.children.length > 1) {
-            button.parentElement.remove();
-        } else {
-            alert('Must have at least one category.');
-        }
-    }
-
-    document.getElementById("create-budget-form").addEventListener("submit", async function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        const data = {
-            periodType: formData.get('periodType'),
-            startDate: formData.get('startDate'),
-            endDate: formData.get('endDate'),
-            threshold: parseInt(formData.get('threshold')),
-            categories: formData.getAll('categories[]').map((category, index) => ({
-                category, amount: parseFloat(formData.getAll('amounts[]')[index])
-            }))
-        };
-
-        const startDate = new Date(data.startDate);
-        const endDate = new Date(data.endDate);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (endDate <= startDate) { alert("End date must be after start date."); return; }
-        if (startDate < today) { alert("Start date must be today or in the future."); return; }
-        if (!data.periodType) { alert("Please select a budget period."); return; }
-        if (data.categories.some(cat => !cat.category || cat.amount <= 0)) { alert("Please fill all category fields with valid amounts."); return; }
-
-        const categoryMap = {
-            "Salary": 1, "Bonus": 2, "Investment": 3, "Gift": 4, "Food": 5,
-            "Shopping": 6, "Transportation": 7, "Housing": 8, "Entertainment": 9, "Health": 10,
-            "Education": 11, "Bill": 12, "Other": 13
-        };
-        for (const cat of data.categories) {
-            const categoryId = categoryMap[cat.category];
-            if (!categoryId) { alert(`Invalid category: ${cat.category}`); return; }
-
-            const budgetData = {
-                userId, categoryId, userCategoryId: null, amount: cat.amount,
-                periodType: data.periodType, startDate: data.startDate, endDate: data.endDate,
-                notificationThreshold: data.threshold
-            };
-            try {
-                const response = await fetch('http://localhost:8080/budget', {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json", "userId": userId.toString() },
-                    body: JSON.stringify(budgetData)
-                });
-                const responseData = await response.json();
-                if (!response.ok || responseData.code !== 1000) {
-                    alert(`Error creating budget for ${cat.category}: ${responseData.message || "Unknown error"}`);
-                    return;
-                }
-                budgetHistory.push({ ...budgetData, categoryName: cat.category });
-            } catch (error) {
-                console.error("Error:", error);
-                alert("Network error. Please check your connection.");
-                return;
-            }
-        }
-
-        alert("Budget plan created successfully!");
-        this.reset();
-        closeModal('createBudgetModal');
-        monitorBudgets(0);
-        loadAnalysis(0);
-    });
-
-    document.getElementById("update-budget-form").addEventListener("submit", async function(e) {
-        e.preventDefault();
-        const budgetId = document.getElementById('update-budget-id').value;
-        const formData = new FormData(this);
-        const data = {
-            periodType: formData.get('periodType'),
-            startDate: formData.get('startDate'),
-            endDate: formData.get('endDate'),
-            threshold: parseInt(formData.get('threshold')),
-            categories: formData.getAll('categories[]').map((category, index) => ({
-                category, amount: parseFloat(formData.getAll('amounts[]')[index])
-            }))
-        };
-
-        const startDate = new Date(data.startDate);
-        const endDate = new Date(data.endDate);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (endDate <= startDate) { alert("End date must be after start date."); return; }
-        if (startDate < today) { alert("Start date must be today or in the future."); return; }
-        if (!data.periodType) { alert("Please select a budget period."); return; }
-        if (data.categories.some(cat => !cat.category || cat.amount <= 0)) { alert("Please fill all category fields with valid amounts."); return; }
-
-        const categoryMap = {
-            "Salary": 1, "Bonus": 2, "Investment": 3, "Gift": 4, "Food": 5,
-            "Shopping": 6, "Transportation": 7, "Housing": 8, "Entertainment": 9, "Health": 10,
-            "Education": 11, "Bill": 12, "Other": 13
-        };
-        const budgetData = {
-            userId,
-            categoryId: categoryMap[data.categories[0].category],
-            userCategoryId: null,
-            amount: data.categories[0].amount,
-            periodType: data.periodType,
-            startDate: data.startDate,
-            endDate: data.endDate,
-            notificationThreshold: data.threshold
-        };
-        try {
-            const response = await fetch(`http://localhost:8080/budget/${budgetId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json", "userId": userId.toString() },
-                body: JSON.stringify(budgetData)
-            });
-            const responseData = await response.json();
-            if (!response.ok || responseData.code !== 1000) {
-                alert(`Error updating budget: ${responseData.message || "Unknown error"}`);
-                return;
-            }
-            alert("Budget plan updated successfully!");
-            closeModal('updateBudgetModal');
-            monitorBudgets(0);
-            loadAnalysis(0);
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Network error. Please check your connection.");
-        }
-    });
-
-    async function monitorBudgets(page) {
-        monitorPage = page;
-        const monitorTableBody = document.getElementById("monitor-table-body");
-        const toastContainer = document.getElementById("toastContainer");
-        const paginationContainer = document.getElementById("monitor-pagination");
-        monitorTableBody.innerHTML = '<tr><td colspan="5" class="p-3"><i class="fas fa-spinner fa-spin"></i> Loading budgets...</td></tr>';
-        toastContainer.innerHTML = '';
-        paginationContainer.innerHTML = '';
-
-        try {
-            const response = await fetch(`http://localhost:8080/budget/list?page=${page}&size=${pageSize}`, { headers: { "userId": userId.toString() } });
-            const data = await response.json();
-            if (response.ok && data.result.content.length > 0) {
-                monitorTableBody.innerHTML = '';
-                data.result.content.forEach(budget => {
-                    const usagePercent = budget.percentageUsed.toFixed(2);
-                    const remaining = budget.amount - (budget.currentSpending || 0);
-                    let progressClass = 'bg-green-500';
-                    let statusText = 'On Track';
-
-                    if (usagePercent >= 100) {
-                        progressClass = 'bg-red-500';
-                        statusText = 'Over Budget';
-                        showToast(`Over Budget: ${budget.categoryName}`, 'danger');
-                    } else if (usagePercent >= budget.notificationThreshold) {
-                        progressClass = 'bg-yellow-500';
-                        statusText = 'Near Limit';
-                        showToast(`Warning: ${budget.categoryName}`, 'warning');
-                    }
-
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td class="p-3">${budget.categoryName}</td>
-                        <td class="p-3">${usagePercent}%</td>
-                        <td class="p-3">
-                            <div class="w-full max-w-[180px] h-2 bg-gray-200 rounded-full mx-auto">
-                                <div class="${progressClass} h-full rounded-full" style="width: ${Math.min(usagePercent, 100)}%"></div>
-                            </div>
-                        </td>
-                        <td class="p-3">${formatCurrency(remaining)}</td>
-                        <td class="p-3">
-                            <button onclick="viewBudgetDetails(${budget.id}, '${budget.categoryName}', ${budget.amount}, ${budget.currentSpending}, ${budget.notificationThreshold}, '${budget.startDate}', '${budget.endDate}', '${budget.periodType}')" class="text-teal-600 hover:text-teal-800 mr-2"><i class="fas fa-eye"></i></button>
-                            <button onclick="openUpdateModal(${budget.id}, '${budget.periodType}', '${budget.startDate}', '${budget.endDate}', ${budget.notificationThreshold}, '${budget.categoryName}', ${budget.amount})" class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
-                            <button onclick="deleteBudget(${budget.id})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
-                        </td>
-                    `;
-                    monitorTableBody.appendChild(row);
-                });
-
-                renderPagination(paginationContainer, data.result, monitorBudgets);
-            } else {
-                monitorTableBody.innerHTML = '<tr><td colspan="5" class="p-3">No active budgets found.</td></tr>';
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            monitorTableBody.innerHTML = '<tr><td colspan="5" class="p-3 text-red-600">Error loading budgets. Please try again.</td></tr>';
-        }
-    }
-
-    async function fetchUserId() {
-        console.log("Fetching user id");
-        try {
-            const response = await fetch(`http://localhost:8080/users/get_user_id_from_session`);
-
-            if (!response.ok) throw new Error('Failed to fetch user id');
-
-            const data = await response.json();
-            userId = data.result;
-            console.log("fetch user id: ", userId);
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    function showToast(message, type) {
-        const toastContainer = document.getElementById("toastContainer");
-        const toast = document.createElement("div");
-        toast.className = `p-2 rounded text-sm bg-${type === 'warning' ? 'yellow' : 'red'}-100 text-${type === 'warning' ? 'yellow' : 'red'}-700 flex items-center gap-1 mb-1 animate-fade-in-out`;
-        toast.innerHTML = `<i class="fas fa-${type === 'warning' ? 'exclamation-triangle' : 'times-circle'}"></i> ${message}`;
-        toastContainer.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
-    }
-
-    function viewBudgetDetails(id, categoryName, amount, currentSpending, threshold, startDate, endDate, periodType) {
-        const usagePercent = (currentSpending / amount * 100).toFixed(2) || 0;
-        const remaining = amount - (currentSpending || 0);
-        const detailsContent = `
-            <div class="p-4 bg-teal-50 rounded-lg border border-teal-100">
-                <p><strong class="text-teal-700">Category:</strong> <span class="text-teal-800">${categoryName}</span></p>
-            </div>
-            <div class="p-4 bg-green-50 rounded-lg border border-green-100">
-                <p><strong class="text-green-700">Budget Amount:</strong> <span class="text-green-800">${formatCurrency(amount)}</span></p>
-            </div>
-            <div class="p-4 bg-red-50 rounded-lg border border-red-100">
-                <p><strong class="text-red-700">Current Spending:</strong> <span class="text-red-800">${formatCurrency(currentSpending || 0)}</span></p>
-            </div>
-            <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-100">
-                <p><strong class="text-yellow-700">Usage Percentage:</strong> <span class="text-yellow-800">${usagePercent}%</span></p>
-            </div>
-            <div class="p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <p><strong class="text-blue-700">Alert Threshold:</strong> <span class="text-blue-800">${threshold}%</span></p>
-            </div>
-            <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
-                <p><strong class="text-gray-700">Start Date:</strong> <span class="text-gray-800">${startDate}</span></p>
-            </div>
-            <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
-                <p><strong class="text-gray-700">End Date:</strong> <span class="text-gray-800">${endDate}</span></p>
-            </div>
-            <div class="p-4 bg-purple-50 rounded-lg border border-purple-100">
-                <p><strong class="text-purple-700">Period:</strong> <span class="text-purple-800">${periodType === 'DAILY' ? 'Daily' : periodType === 'WEEKLY' ? 'Weekly' : 'Monthly'}</span></p>
-            </div>
-            <div class="p-4 bg-green-50 rounded-lg border border-green-100">
-                <p><strong class="text-green-700">Remaining:</strong> <span class="text-green-800">${formatCurrency(remaining)}</span></p>
-            </div>
-        `;
-        document.getElementById('budgetDetailsContent').innerHTML = detailsContent;
-        openModal('budgetDetailsModal');
-    }
-
-    function openUpdateModal(budgetId, periodType, startDate, endDate, threshold, categoryName, amount) {
-        document.getElementById('update-budget-id').value = budgetId;
-        document.getElementById('update-periodType').value = periodType;
-        document.getElementById('update-startDate').value = startDate;
-        document.getElementById('update-endDate').value = endDate;
-        document.getElementById('update-threshold').value = threshold;
-
-        const categoryList = document.getElementById('update-category-list');
-        categoryList.innerHTML = '';
-        const row = document.createElement('div');
-        row.className = 'flex items-center gap-2 mb-2';
-        row.innerHTML = `
-            <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-                <option value="Salary" ${categoryName === 'Salary' ? 'selected' : ''}>Salary</option>
-                <option value="Bonus" ${categoryName === 'Bonus' ? 'selected' : ''}>Bonus</option>
-                <option value="Investment" ${categoryName === 'Investment' ? 'selected' : ''}>Investment</option>
-                <option value="Gift" ${categoryName === 'Gift' ? 'selected' : ''}>Gift</option>
-                <option value="Food" ${categoryName === 'Food' ? 'selected' : ''}>Food</option>
-                <option value="Shopping" ${categoryName === 'Shopping' ? 'selected' : ''}>Shopping</option>
-                <option value="Transportation" ${categoryName === 'Transportation' ? 'selected' : ''}>Transportation</option>
-                <option value="Housing" ${categoryName === 'Housing' ? 'selected' : ''}>Housing</option>
-                <option value="Entertainment" ${categoryName === 'Entertainment' ? 'selected' : ''}>Entertainment</option>
-                <option value="Health" ${categoryName === 'Health' ? 'selected' : ''}>Health</option>
-                <option value="Education" ${categoryName === 'Education' ? 'selected' : ''}>Education</option>
-                <option value="Bill" ${categoryName === 'Bill' ? 'selected' : ''}>Bill</option>
-                <option value="Other" ${categoryName === 'Other' ? 'selected' : ''}>Other</option>
-            </select>
-            <input type="number" name="amounts[]" step="0.01" min="0" value="${amount}" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-            <button type="button" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700" onclick="removeUpdateBudgetCategory(this)">×</button>
-        `;
-        categoryList.appendChild(row);
-        openModal('updateBudgetModal');
-    }
-
-    async function deleteBudget(budgetId) {
-        if (confirm('Are you sure you want to delete this budget?')) {
-            try {
-                const response = await fetch(`http://localhost:8080/budget/${budgetId}`, {
-                    method: "DELETE",
-                    headers: { "userId": userId.toString() }
-                });
-                if (response.ok) {
-                    alert("Budget deleted successfully!");
-                    monitorBudgets(0);
-                    loadAnalysis(0);
-                } else {
-                    const errorData = await response.json();
-                    alert(`Error deleting budget: ${errorData.message || "Unknown error"}`);
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("Network error. Please check your connection.");
-            }
-        }
-    }
-
-    async function loadAnalysis(page) {
-        analysisPage = page;
-        const table = document.getElementById("analysis-table");
-        const period = document.getElementById("analysisPeriod").value;
-        const paginationContainer = document.getElementById("analysis-pagination");
-        table.innerHTML = '<tr><td colspan="5" class="p-3"><i class="fas fa-spinner fa-spin"></i> Loading analysis...</td></tr>';
-        paginationContainer.innerHTML = '';
-        document.getElementById('totalBudgeted').textContent = '$0';
-        document.getElementById('totalSpent').textContent = '$0';
-        document.getElementById('varianceAmount').textContent = '$0';
-        document.getElementById('spendingRate').textContent = '0%';
-
-        try {
-            const response = await fetch(`http://localhost:8080/budget/analysis?period=${period}&page=${page}&size=${pageSize}`, { headers: { "userId": userId.toString() } });
-            const data = await response.json();
-            if (response.ok && data.result.content.length > 0) {
-                table.innerHTML = '';
-                const chartLabels = [];
-                const plannedData = [];
-                const actualData = [];
-                let totalBudgeted = 0;
-                let totalSpent = 0;
-
-                data.result.content.forEach(budget => {
-                    const usagePercent = (budget.actualSpending / budget.plannedAmount * 100).toFixed(2) || 0;
-                    const variance = budget.plannedAmount - (budget.actualSpending || 0);
-                    totalBudgeted += budget.plannedAmount;
-                    totalSpent += budget.actualSpending || 0;
-                    const statusText = usagePercent >= 100 ? 'Over Budget' : usagePercent >= budget.notificationThreshold ? 'Near Limit' : 'On Track';
-                    const statusClass = usagePercent >= 100 ? 'bg-red-100 text-red-600' : usagePercent >= budget.notificationThreshold ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600';
-
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td class="p-3">${budget.categoryName || budget.userCategoryName}</td>
-                        <td class="p-3">${formatCurrency(budget.plannedAmount)}</td>
-                        <td class="p-3">${formatCurrency(budget.actualSpending || 0)}</td>
-                        <td class="p-3 ${variance < 0 ? 'text-red-600' : 'text-green-600'}">${formatCurrency(variance)}</td>
-                        <td class="p-3"><span class="px-3 py-1 rounded-full ${statusClass}">${statusText}</span></td>
-                    `;
-                    table.appendChild(row);
-
-                    chartLabels.push(budget.categoryName || budget.userCategoryName);
-                    plannedData.push(budget.plannedAmount);
-                    actualData.push(budget.actualSpending || 0);
-                });
-
-                const variance = totalBudgeted - totalSpent;
-                const spendingRate = ((totalSpent / totalBudgeted) * 100).toFixed(1);
-                document.getElementById('totalBudgeted').textContent = formatCurrency(totalBudgeted);
-                document.getElementById('totalSpent').textContent = formatCurrency(totalSpent);
-                document.getElementById('varianceAmount').textContent = formatCurrency(variance);
-                document.getElementById('varianceAmount').className = `font-bold text-lg ${variance < 0 ? 'text-red-600' : 'text-green-600'}`;
-                document.getElementById('spendingRate').textContent = `${spendingRate}%`;
-                document.getElementById('spendingRate').className = `font-bold text-lg ${spendingRate >= 100 ? 'text-red-600' : spendingRate >= 80 ? 'text-yellow-600' : 'text-green-600'}`;
-
-                if (budgetChart) budgetChart.destroy();
-                const ctx = document.getElementById('budgetChart').getContext('2d');
-                const chartConfig = {
-                    data: {
-                        labels: chartLabels,
-                        datasets: [
-                            { label: 'Budget', data: plannedData, backgroundColor: 'rgba(46, 125, 50, 0.6)', borderColor: 'rgba(46, 125, 50, 1)', borderWidth: 1 },
-                            { label: 'Actual', data: actualData, backgroundColor: 'rgba(211, 47, 47, 0.6)', borderColor: 'rgba(211, 47, 47, 1)', borderWidth: 1 }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: { beginAtZero: true, title: { display: true, text: 'Amount ($)' } },
-                            x: { title: { display: true, text: period.includes('day') ? 'Hour' : period.includes('week') ? 'Day' : 'Week' } }
-                        },
-                        plugins: {
-                            legend: { position: 'top' },
-                            title: { display: true, text: `Budget vs Actual - ${period === 'current_day' ? 'Day' : period === 'current_week' ? 'Week' : 'Month'}` }
-                        }
-                    }
-                };
-
-                if (chartType === 'bar') {
-                    chartConfig.type = 'bar';
-                } else if (chartType === 'line') {
-                    chartConfig.type = 'line';
-                    chartConfig.data.datasets.forEach(dataset => {
-                        dataset.fill = false;
-                        dataset.tension = 0.1;
-                    });
-                } else if (chartType === 'pie') {
-                    chartConfig.type = 'pie';
-                    chartConfig.data.datasets = [
-                        { label: 'Budget vs Actual', data: [totalBudgeted, totalSpent], backgroundColor: ['rgba(46, 125, 50, 0.6)', 'rgba(211, 47, 47, 0.6)'], borderColor: ['rgba(46, 125, 50, 1)', 'rgba(211, 47, 47, 1)'], borderWidth: 1 }
-                    ];
-                    chartConfig.data.labels = ['Budget', 'Actual'];
-                    chartConfig.options.scales = {};
-                }
-
-                budgetChart = new Chart(ctx, chartConfig);
-
-                renderPagination(paginationContainer, data.result, loadAnalysis);
-            } else {
-                table.innerHTML = '<tr><td colspan="5" class="p-3">No budget data for the selected period.</td></tr>';
-                if (budgetChart) { budgetChart.destroy(); budgetChart = null; }
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            table.innerHTML = '<tr><td colspan="5" class="p-3 text-red-600">Error loading analysis. Please try again.</td></tr>';
-            if (budgetChart) { budgetChart.destroy(); budgetChart = null; }
-        }
-    }
-
-    function renderPagination(container, pageData, fetchFunction) {
-        container.innerHTML = '';
-        const { number, totalPages } = pageData;
-        if (totalPages <= 1) return;
-
-        const prevButton = document.createElement('button');
-        prevButton.className = `px-4 py-2 rounded-lg ${number === 0 ? 'bg-gray-300' : 'bg-green-600 hover:bg-green-700'} text-white`;
-        prevButton.disabled = number === 0;
-        prevButton.innerHTML = '<i class="fas fa-chevron-left"></i> Previous';
-        prevButton.onclick = () => fetchFunction(number - 1);
-        container.appendChild(prevButton);
-
-        for (let i = 0; i < totalPages; i++) {
-            const pageButton = document.createElement('button');
-            pageButton.className = `px-4 py-2 rounded-lg ${i === number ? 'bg-green-700' : 'bg-green-600 hover:bg-green-700'} text-white`;
-            pageButton.textContent = i + 1;
-            pageButton.onclick = () => fetchFunction(i);
-            container.appendChild(pageButton);
-        }
-
-        const nextButton = document.createElement('button');
-        nextButton.className = `px-4 py-2 rounded-lg ${number === totalPages - 1 ? 'bg-gray-300' : 'bg-green-600 hover:bg-green-700'} text-white`;
-        nextButton.disabled = number === totalPages - 1;
-        nextButton.innerHTML = 'Next <i class="fas fa-chevron-right"></i>';
-        nextButton.onclick = () => fetchFunction(number + 1);
-        container.appendChild(nextButton);
-    }
-
-    function toggleChartType() {
-        const chartIcon = document.getElementById('chartIcon');
-        const chartTypeLabel = document.getElementById('chartTypeLabel');
-        if (chartType === 'bar') {
-            chartType = 'line';
-            chartIcon.className = 'fas fa-chart-line';
-            chartTypeLabel.textContent = 'Line Chart';
-        } else if (chartType === 'line') {
-            chartType = 'pie';
-            chartIcon.className = 'fas fa-chart-pie';
-            chartTypeLabel.textContent = 'Pie Chart';
-        } else {
-            chartType = 'bar';
-            chartIcon.className = 'fas fa-chart-bar';
-            chartTypeLabel.textContent = 'Bar Chart';
-        }
-        loadAnalysis(analysisPage);
-    }
-
-    function exportToCSV() {
-        const period = document.getElementById("analysisPeriod").value;
-        fetch(`http://localhost:8080/budget/analysis?period=${period}&page=${analysisPage}&size=${pageSize}`, { headers: { "userId": userId.toString() } })
-            .then(response => response.json())
-            .then(data => {
-                if (data.result.content && data.result.content.length > 0) {
-                    const headers = ['Category', 'Planned Amount', 'Actual Spending', 'Variance', 'Status'];
-                    const rows = data.result.content.map(budget => {
-                        const usagePercent = (budget.actualSpending / budget.plannedAmount * 100).toFixed(2) || 0;
-                        const variance = budget.plannedAmount - (budget.actualSpending || 0);
-                        const status = usagePercent >= 100 ? 'Over Budget' : usagePercent >= budget.notificationThreshold ? 'Near Limit' : 'On Track';
-                        return [budget.categoryName || budget.userCategoryName, budget.plannedAmount.toFixed(2), (budget.actualSpending || 0).toFixed(2), variance.toFixed(2), status];
-                    });
-
-                    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
-                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = `budget_analysis_${period}_${new Date().toISOString().split('T')[0]}.csv`;
-                    link.click();
-                    URL.revokeObjectURL(link.href);
-                } else {
-                    alert('No data to export.');
-                }
-            })
-            .catch(error => {
-                console.error('Export CSV error:', error);
-                alert('Error exporting data. Please try again.');
-            });
-    }
-
-    function viewBudgetHistory() {
-        loadBudgetHistory();
-        openModal('budgetHistoryModal');
-    }
-
-    function loadBudgetHistory() {
-        const tableBody = document.getElementById('budget-history-table');
-        tableBody.innerHTML = budgetHistory.length ? '' : '<tr><td colspan="4" class="p-3">No budget history.</td></tr>';
-        budgetHistory.forEach(budget => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td class="p-3">${budget.periodType === 'DAILY' ? 'Daily' : budget.periodType === 'WEEKLY' ? 'Weekly' : 'Monthly'}</td>
-                <td class="p-3">${budget.categoryName}</td>
-                <td class="p-3">${formatCurrency(budget.amount)}</td>
-                <td class="p-3">${budget.startDate} to ${budget.endDate}</td>
-            `;
-            tableBody.appendChild(row);
-        });
-    }
-
-    function searchBudgets() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        document.querySelectorAll('#monitor-table-body tr').forEach(row => {
-            const category = row.cells[0]?.textContent.toLowerCase();
-            row.style.display = category && category.includes(searchTerm) ? '' : 'none';
-        });
-        document.querySelectorAll('#analysis-table tr').forEach(row => {
-            const category = row.cells[0]?.textContent.toLowerCase();
-            row.style.display = category && category.includes(searchTerm) ? '' : 'none';
-        });
-    }
-
-    function searchBudgetHistory() {
-        const searchTerm = document.getElementById('historySearch').value.toLowerCase();
-        document.querySelectorAll('#budget-history-table tr').forEach(row => {
-            const category = row.cells[1]?.textContent.toLowerCase();
-            row.style.display = category && category.includes(searchTerm) ? '' : 'none';
-        });
-    }
-
-    function formatCurrency(amount) {
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-    }
-
-    function setDefaultModalDates() {
-        document.getElementById('startDate').value = new Date().toISOString().split('T')[0];
-        const endDate = new Date();
-        endDate.setMonth(endDate.getMonth() + 1);
-        document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
-    }
-
-    function setupEventListeners() {
-        document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
-        document.getElementById('searchInput').addEventListener('input', searchBudgets);
-        document.getElementById('historySearch').addEventListener('input', searchBudgetHistory);
-        document.getElementById('analysisPeriod').addEventListener('change', () => loadAnalysis(0));
-        document.querySelectorAll('.fixed').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) closeModal(modal.id);
-            });
-        });
-    }
-    window.onload = initializeUI;
-</script>
 </body>
+
 </html>
