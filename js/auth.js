@@ -159,7 +159,7 @@ export function initRegisterForm() {
             const data = await response.json();
             console.log('Register response:', data);
 
-            if (data.success) {
+            if (data.code === 1000) {
                 showNotification('Registration successful! Please check your email to verify your account.', 'success');
                 // Redirect to email verification page
                 setTimeout(() => {
@@ -171,10 +171,10 @@ export function initRegisterForm() {
                 showNotification(errorMessage, 'error');
                 
                 // If it's an email already exists error, show it in the email field
-                if (errorMessage.includes('already registered')) {
+                if (data.code === 1014) {
                     const emailError = document.getElementById('email-error');
                     if (emailError) {
-                        emailError.textContent = errorMessage;
+                        emailError.textContent = 'Email already registered';
                         emailError.style.display = 'block';
                     }
                 }
@@ -186,53 +186,53 @@ export function initRegisterForm() {
     });
 }
 
-export function initLoginForm() {
-    const loginForm = document.getElementById('loginForm');
-    if (!loginForm) return;
+// export function initLoginForm() {
+//     const loginForm = document.getElementById('loginForm');
+//     if (!loginForm) return;
 
-    loginForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const email = document.getElementById('loginEmail').value;
-        const password = document.getElementById('loginPassword').value;
+//     loginForm.addEventListener('submit', async function(e) {
+//         e.preventDefault();
+//         const email = document.getElementById('loginEmail').value;
+//         const password = document.getElementById('loginPassword').value;
 
-        try {
-            const response = await fetch('http://localhost:8080/api/v1/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify({ email, password })
-            });
+//         try {
+//             const response = await fetch('http://localhost:8080/api/v1/auth/login', {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                     'Accept': 'application/json'
+//                 },
+//                 credentials: 'include',
+//                 body: JSON.stringify({ email, password })
+//             });
 
-            const data = await response.json();
-            console.log('Login response:', data);
+//             const data = await response.json();
+//             console.log('Login response:', data);
 
-            if (data.success && data.result) {
-                // Store user data
-                localStorage.setItem('token', data.result.token);
-                localStorage.setItem('userData', JSON.stringify({
-                    userId: data.result.userId,
-                    email: data.result.email,
-                    name: data.result.name,
-                    role: data.result.role,
-                    premium: data.result.premium
-                }));
+//             if (data.success && data.result) {
+//                 // Store user data
+//                 localStorage.setItem('token', data.result.token);
+//                 localStorage.setItem('userData', JSON.stringify({
+//                     userId: data.result.userId,
+//                     email: data.result.email,
+//                     name: data.result.name,
+//                     role: data.result.role,
+//                     premium: data.result.premium
+//                 }));
 
-                showNotification('Login successful! Redirecting...', 'success');
-                setTimeout(() => {
-                    window.location.href = 'home.html';
-                }, 1000);
-            } else {
-                showNotification(data.message || 'Login failed!', 'error');
-            }
-        } catch (error) {
-            console.error('Login error:', error);
-            showNotification('An error occurred during login! Please try again later.', 'error');
-        }
-    });
-}
+//                 showNotification('Login successful! Redirecting...', 'success');
+//                 setTimeout(() => {
+//                     window.location.href = 'home.html';
+//                 }, 1000);
+//             } else {
+//                 showNotification(data.message || 'Login failed!', 'error');
+//             }
+//         } catch (error) {
+//             console.error('Login error:', error);
+//             showNotification('An error occurred during login! Please try again later.', 'error');
+//         }
+//     });
+// }
 
 // Initialize Google Sign-In
 document.addEventListener('DOMContentLoaded', () => {

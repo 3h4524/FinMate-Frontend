@@ -1,3 +1,5 @@
+import apiService from './services/api.js';
+
 // Google authentication configuration
 const googleAuthConfig = {
     clientId: '455189339360-ah566hols1au0npc7mou7halnl7ba4uk.apps.googleusercontent.com',
@@ -16,7 +18,7 @@ async function handleGoogleSignIn(response) {
     try {
         const result = await apiService.processGoogleLogin(response.credential);
         
-        if (result.requiresVerification) {
+        if (!result.verified) {
             sessionStorage.setItem('requiresVerification', 'true');
             sessionStorage.setItem('pendingVerificationEmail', result.email);
             window.location.href = 'verify-email.html?email=' + encodeURIComponent(result.email);
@@ -32,13 +34,7 @@ async function handleGoogleSignIn(response) {
 
         // Store authentication state and user data in localStorage
         localStorage.setItem('token', result.token);
-        localStorage.setItem('userData', JSON.stringify({
-            userId: result.userId,
-            email: result.email,
-            name: result.name,
-            role: result.role,
-            isPremium: result.premium
-        }));
+
 
         // Verify token is stored correctly
         const storedToken = localStorage.getItem('token');
@@ -64,7 +60,7 @@ async function handleGoogleSignIn(response) {
             if (!finalToken) {
                 showNotification('Authentication failed. Please try again.', 'error');
                 return;
-            }
+            }   
             window.location.href = 'home.html';
         }, 1000);
     } catch (error) {

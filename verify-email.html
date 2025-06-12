@@ -591,7 +591,7 @@
         document.getElementById('verificationForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const code = document.getElementById('verificationCode').value;
+            const otp = document.getElementById('verificationCode').value;
             const userEmail = document.getElementById('email').value;
 
             try {
@@ -601,7 +601,7 @@
                         'Content-Type': 'application/json'
                     },
                     credentials: 'include',
-                    body: JSON.stringify({ email: userEmail, code })
+                    body: JSON.stringify({ email: userEmail, otp })
                 });
 
                 let data;
@@ -614,7 +614,7 @@
                 }
 
                 const serverMessage = data.message ? data.message.trim().toLowerCase() : '';
-                const isVerifiedCodefully = (response.status === 400 && serverMessage === 'email verified codefully');
+                const isVerifiedCodefully = (data.code === 1000 && serverMessage === 'Email verified successfully');
 
                 if (response.ok || isVerifiedCodefully) {
                     showNotification('Verification successful! Please log in.', 'success');
@@ -623,12 +623,7 @@
                     // Remove localStorage items as user will explicitly log in
                     localStorage.removeItem('token');
                     localStorage.removeItem('userData');
-
-                    sessionStorage.removeItem('requiresVerification');
-                    sessionStorage.removeItem('pendingVerificationEmail');
-                    sessionStorage.removeItem('isAuthenticated');
-                    sessionStorage.removeItem('currentUser');
-
+                    
                     setTimeout(() => {
                         try {
                             window.location.assign('login.html');
