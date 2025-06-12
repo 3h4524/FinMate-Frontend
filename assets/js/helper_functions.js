@@ -16,7 +16,7 @@ function getStatusColor(status) {
             return 'bg-green-200 text-green-800';
         case 'FAILED':
             return 'bg-red-200 text-red-800';
-        case 'CANCEL':
+        case 'CANCELLED':
             return 'bg-gray-200 text-gray-600';
         default:
             return 'bg-yellow-200 text-yellow-800';
@@ -51,4 +51,18 @@ function showResult(title, status) {
         timer: 2000,
         timerProgressBar: true
     });
+}
+
+async function showConfirmDialog(title, text) {
+    const result = await Swal.fire({
+        title: title,
+        text: text,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#f56565',
+        cancelButtonColor: '#a0aec0',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
+    });
+    return result.isConfirmed;
 }
