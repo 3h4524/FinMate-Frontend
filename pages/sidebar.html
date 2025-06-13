@@ -1,0 +1,98 @@
+<!-- Sidebar Component -->
+<div class="sidebar">
+    <div class="logo" style="display: flex; align-items: center; gap: 12px; margin-bottom: 40px;">
+        <i class="fas fa-chart-line" style="font-size: 28px; color: #a3c9a8; background: rgba(163, 201, 168, 0.15); padding: 12px; border-radius: 12px; border: 1px solid rgba(163, 201, 168, 0.25);"></i>
+        <span style="font-size: 26px; font-weight: 700; color: #fff; letter-spacing: 1px;">FINMATE</span>
+    </div>
+    <nav>
+        <ul style="font-size: 17px;">
+            <li><a href="home.html" class="active"><i class="fas fa-border-all"></i> <span>Overview</span></a></li>
+            <li><a href="accounts.html"><i class="fas fa-wallet"></i> <span>Accounts</span></a></li>
+            <li><a href="transactions.html"><i class="fas fa-exchange-alt"></i> <span>Transactions</span></a></li>
+            <li><a href="goal.html"><i class="fas fa-bullseye"></i> <span>Goals</span></a></li>
+            <li><a href="budget.html"><i class="fas fa-calculator"></i> <span>Budget</span></a></li>
+            <li><a href="financial_report.html"><i class="fas fa-chart-pie"></i> <span>Reports</span></a></li>
+            <li><a href="profile.html"><i class="fas fa-user"></i> <span>Profile</span></a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+        </ul>
+    </nav>
+    <button class="logout-btn" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></button>
+    <div class="user-info" id="viewProfileBtn">
+        <img id="sidebarAvatar" src="https://via.placeholder.com/40" alt="User Avatar">
+        <div class="details">
+            <span class="user-name">Loading...</span>
+            <span class="view-profile">View profile</span>
+        </div>
+        <i class="fas fa-ellipsis-v" style="margin-left: auto; color: rgba(255,255,255,0.7);"></i>
+    </div>
+</div>
+<style>
+.sidebar {
+    background: linear-gradient(135deg, #1a2e22 0%, #183226 100%);
+}
+.sidebar nav ul li a {
+    font-size: 17px;
+    color: #e0e8e0;
+    padding: 14px 18px;
+    border-radius: 12px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+.sidebar nav ul li a i {
+    margin-right: 12px;
+    width: 20px;
+    text-align: center;
+}
+.sidebar nav ul li a.active, .sidebar nav ul li a:hover {
+    background: #2d5a3d;
+    color: #fff;
+}
+.sidebar .logout-btn {
+    background: #203c2c;
+    color: #e0e8e0;
+    font-size: 16px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+.sidebar .logout-btn:hover {
+    background: #2d5a3d;
+    color: #fff;
+}
+.sidebar .logout-btn i {
+    margin-right: 12px;
+}
+.sidebar .user-info .user-name {
+    font-size: 15px;
+}
+.sidebar .user-info .view-profile {
+    font-size: 13px;
+}
+</style>
+
+<script>
+function showProfile() {
+    const profileSidebar = document.getElementById('profileSidebar');
+    if (profileSidebar) {
+        if (profileSidebar.classList.contains('active')) {
+            profileSidebar.classList.remove('active');
+        } else {
+            profileSidebar.classList.add('active');
+            // Call the global function to load and display user profile
+            if (typeof loadAndDisplayUserProfile === 'function') {
+                loadAndDisplayUserProfile();
+            } else {
+                console.error("loadAndDisplayUserProfile function not found.");
+            }
+        }
+    }
+}
+// The old loadUserProfile function has been removed from here.
+</script> 
