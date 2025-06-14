@@ -186,7 +186,53 @@ export function initRegisterForm() {
     });
 }
 
+// export function initLoginForm() {
+//     const loginForm = document.getElementById('loginForm');
+//     if (!loginForm) return;
 
+//     loginForm.addEventListener('submit', async function(e) {
+//         e.preventDefault();
+//         const email = document.getElementById('loginEmail').value;
+//         const password = document.getElementById('loginPassword').value;
+
+//         try {
+//             const response = await fetch('http://localhost:8080/api/v1/auth/login', {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                     'Accept': 'application/json'
+//                 },
+//                 credentials: 'include',
+//                 body: JSON.stringify({ email, password })
+//             });
+
+//             const data = await response.json();
+//             console.log('Login response:', data);
+
+//             if (data.success && data.result) {
+//                 // Store user data
+//                 localStorage.setItem('token', data.result.token);
+//                 localStorage.setItem('userData', JSON.stringify({
+//                     userId: data.result.userId,
+//                     email: data.result.email,
+//                     name: data.result.name,
+//                     role: data.result.role,
+//                     premium: data.result.premium
+//                 }));
+
+//                 showNotification('Login successful! Redirecting...', 'success');
+//                 setTimeout(() => {
+//                     window.location.href = 'home.html';
+//                 }, 1000);
+//             } else {
+//                 showNotification(data.message || 'Login failed!', 'error');
+//             }
+//         } catch (error) {
+//             console.error('Login error:', error);
+//             showNotification('An error occurred during login! Please try again later.', 'error');
+//         }
+//     });
+// }
 
 // Initialize Google Sign-In
 document.addEventListener('DOMContentLoaded', () => {

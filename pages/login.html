@@ -590,38 +590,35 @@
                 const data = await response.json();
                 console.log('Login response:', data);
 
-
-
-                if (data.code === 1000) {
+                if (data.code === 1000 && data.result) {
+                    // Store user data
+                    localStorage.setItem('token', data.result.token);
                     
-                    if (data.result.token) {
-                        localStorage.setItem('token', data.result.token);
-                        console.log('Token stored:', data.result.token);
-                    }
-                    if (!data.result.verified) {
-                        showNotification('Email chưa được xác thực. Vui lòng kiểm tra email của bạn.', 'error');
-                        setTimeout(() => {
-                            window.location.href = 'verify-email.html?email=' + encodeURIComponent(email);
-                        }, 2000);
-                        return;
-                    }
-                    showNotification('Đăng nhập thành công! Đang chuyển hướng...', 'success');
+                    // Store user data from response
+                    const userData = {
+                        email: data.result.email,
+                        name: data.result.name,
+                        role: data.result.role
+                    };
+                    
+                    localStorage.setItem('userData', JSON.stringify(userData));
+                    console.log('Stored user data:', userData);
+
+                    showNotification('Login successful! Redirecting...', 'success');
                     setTimeout(() => {
                         window.location.href = '/pages/home.html';
                     }, 1000);
                 } else {
-                    showNotification('Đăng nhập thất bại', 'error');
+                    showNotification(data.message || 'Login failed!', 'error');
                 }
             } catch (error) {
                 console.error('Login error:', error);
                 showNotification('Có lỗi xảy ra khi đăng nhập', 'error');
             }
         });
-
-
     </script>
     <script type="module">
-        import { initGoogleSignIn } from './js/googleAuth.js';
+        import { initGoogleSignIn } from '../assets/js/auth.js';
 
         document.addEventListener('DOMContentLoaded', () => {
             // Force English language
