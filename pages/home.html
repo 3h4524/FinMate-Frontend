@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,16 +28,24 @@
             --text-dark: #2d5a3d;
             --text-light: #546e7a;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--main-bg);
             min-height: 100vh;
         }
+
         .app-container {
             display: flex;
             min-height: 100vh;
         }
+
         .sidebar {
             width: 250px;
             background: var(--sidebar-bg);
@@ -50,6 +59,7 @@
             box-shadow: 0 8px 32px rgba(56, 142, 60, 0.10);
             z-index: 10;
         }
+
         .sidebar .logo {
             display: flex;
             align-items: center;
@@ -59,6 +69,7 @@
             margin-bottom: 32px;
             color: #fff;
         }
+
         .sidebar .logo i {
             font-size: 24px;
             color: var(--main-green-light);
@@ -67,14 +78,17 @@
             border-radius: 10px;
             border: 1px solid rgba(163, 201, 168, 0.25);
         }
+
         .sidebar nav ul {
             list-style: none;
             padding: 0;
             flex-grow: 1;
         }
+
         .sidebar nav ul li {
             margin-bottom: 6px;
         }
+
         .sidebar nav ul li a {
             display: flex;
             align-items: center;
@@ -86,14 +100,18 @@
             font-weight: 500;
             transition: background 0.2s, color 0.2s;
         }
+
         .sidebar nav ul li a i {
             margin-right: 10px;
             font-size: 16px;
         }
-        .sidebar nav ul li a.active, .sidebar nav ul li a:hover {
+
+        .sidebar nav ul li a.active,
+        .sidebar nav ul li a:hover {
             background: var(--main-green);
             color: #fff;
         }
+
         .sidebar .logout-btn {
             margin-top: 16px;
             background: none;
@@ -109,37 +127,44 @@
             border-radius: 7px;
             transition: background 0.2s;
         }
+
         .sidebar .logout-btn:hover {
             background: var(--main-green-dark);
         }
+
         .sidebar .user-info {
             display: flex;
             align-items: center;
             margin-top: auto;
             gap: 10px;
             padding-top: 18px;
-            border-top: 1px solid rgba(255,255,255,0.12);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
             cursor: pointer;
         }
+
         .sidebar .user-info img {
             width: 32px;
             height: 32px;
             border-radius: 50%;
             object-fit: cover;
         }
+
         .sidebar .user-info .details {
             display: flex;
             flex-direction: column;
         }
+
         .sidebar .user-info .user-name {
             font-weight: 700;
             color: #fff;
             font-size: 13px;
         }
+
         .sidebar .user-info .view-profile {
             font-size: 11px;
             color: #a3c9a8;
         }
+
         .main-content {
             margin-left: 270px;
             flex-grow: 1;
@@ -147,6 +172,7 @@
             display: none;
             flex-direction: column;
         }
+
         .header {
             background: var(--header-bg);
             border-radius: var(--header-radius);
@@ -158,16 +184,19 @@
             margin-bottom: 18px;
             min-height: 48px;
         }
+
         .header .greeting {
             font-size: 18px;
             font-weight: 700;
             color: var(--main-green-dark);
         }
+
         .header .date {
             font-size: 14px;
             color: var(--text-light);
             margin-left: 12px;
         }
+
         .header .search-bar {
             display: flex;
             align-items: center;
@@ -176,6 +205,7 @@
             flex: 1;
             margin: 0 12px;
         }
+
         .header .search-bar input {
             width: 100%;
             padding: 7px 32px 7px 12px;
@@ -185,6 +215,7 @@
             background: #f8f9fa;
             color: var(--main-green-dark);
         }
+
         .header .search-bar i {
             position: absolute;
             right: 10px;
@@ -193,17 +224,20 @@
             color: #a3c9a8;
             cursor: pointer;
         }
+
         .header .icons i {
             font-size: 18px;
             margin-left: 10px;
             color: #a3c9a8;
             cursor: pointer;
         }
+
         .dashboard-layout {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 28px;
         }
+
         .card {
             background: var(--card-bg);
             border-radius: var(--card-radius);
@@ -214,35 +248,42 @@
             min-height: 180px;
             transition: box-shadow 0.2s;
         }
+
         .card:hover {
             box-shadow: 0 12px 32px rgba(56, 142, 60, 0.18);
         }
+
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 18px;
         }
+
         .card-header h3 {
             font-size: 18px;
             font-weight: 700;
             color: var(--main-green-dark);
         }
+
         .card-header .view-all {
             font-size: 14px;
             color: var(--main-green);
             text-decoration: none;
             font-weight: 600;
         }
+
         .card-header .view-all:hover {
             text-decoration: underline;
         }
+
         .total-balance-card .balance-amount {
             font-size: 36px;
             font-weight: 800;
             color: var(--main-green-dark);
             margin-bottom: 12px;
         }
+
         .account-card {
             background: linear-gradient(135deg, #388e3c 0%, #a3c9a8 100%);
             color: #fff;
@@ -253,13 +294,16 @@
             align-items: center;
             margin-top: 10px;
         }
+
         .account-card .account-type {
             font-weight: 700;
             margin-bottom: 4px;
         }
+
         .account-card .card-logo i {
             font-size: 32px;
         }
+
         .goal-progress-circle {
             width: 90px;
             height: 90px;
@@ -273,16 +317,20 @@
             color: var(--main-green);
             margin: 18px auto;
         }
+
         .bill-amount {
             font-weight: 700;
             color: var(--danger);
         }
+
         .transaction-amount.credit {
             color: var(--success);
         }
+
         .transaction-amount.debit {
             color: var(--danger);
         }
+
         #loadingSpinner {
             position: fixed;
             top: 50%;
@@ -291,6 +339,7 @@
             z-index: 1000;
             display: block;
         }
+
         #loadingSpinner::before {
             content: '';
             display: block;
@@ -301,31 +350,63 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
+
         @media (max-width: 1100px) {
-            .main-content { padding: 24px 8px 8px 8px; }
-            .dashboard-layout { gap: 16px; }
+            .main-content {
+                padding: 24px 8px 8px 8px;
+            }
+
+            .dashboard-layout {
+                gap: 16px;
+            }
         }
+
         @media (max-width: 900px) {
-            .sidebar { display: none; }
-            .main-content { margin-left: 0; }
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
         }
+
         @media (max-width: 600px) {
-            .main-content { padding: 8px; }
-            .header { flex-direction: column; padding: 8px; gap: 6px; }
-            .header .search-bar { margin: 0 0 6px 0; }
-            .dashboard-layout { grid-template-columns: 1fr; }
+            .main-content {
+                padding: 8px;
+            }
+
+            .header {
+                flex-direction: column;
+                padding: 8px;
+                gap: 6px;
+            }
+
+            .header .search-bar {
+                margin: 0 0 6px 0;
+            }
+
+            .dashboard-layout {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
     <script>
         // Check authentication status when page loads
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', async function () {
             const token = localStorage.getItem('token');
             const userData = localStorage.getItem('userData');
-            
+
             if (!token || !userData) {
                 console.log('[AUTH] No token or user data found, redirecting to login');
                 window.location.href = 'login.html';
@@ -333,114 +414,83 @@
             }
 
             console.log('[AUTH] Checking authentication status with token');
-            try {
-                const response = await fetch('http://localhost:8080/api/v1/auth/verify-token', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
+
+
+            // Token is valid, show the main content
+            const mainContent = document.querySelector('.main-content');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            if (mainContent) mainContent.style.display = 'flex';
+            if (loadingSpinner) loadingSpinner.style.display = 'none';
+
+            // Update user info
+            const user = JSON.parse(userData);
+            const userName = user.name || user.email.split('@')[0];
+
+            // Update header
+            const headerUserName = document.getElementById('userFullNameHeader');
+            if (headerUserName) {
+                headerUserName.textContent = userName;
+            }
+
+            // Update sidebar
+            fetch('sidebar.html')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('sidebar-container').innerHTML = html;
+                    const sidebarUserNameSpan = document.querySelector('.sidebar .user-info .user-name');
+                    if (sidebarUserNameSpan) {
+                        sidebarUserNameSpan.textContent = userName;
+                    }
+                    // Update avatar
+                    const sidebarAvatar = document.querySelector('.sidebar .user-info img');
+                    if (sidebarAvatar) {
+                        sidebarAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=388e3c&color=fff`;
                     }
                 });
 
-                let data;
-                try {
-                    data = await response.json();
-                } catch (e) {
-                    console.error('[AUTH] Error parsing response:', e);
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('userData');
-                    window.location.href = 'login.html';
-                    return;
-                }
+            // Load profile sidebar
+            fetch('profile-sidebar.html')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('profile-sidebar-container').innerHTML = html;
+                    // Update profile sidebar
+                    const profileName = document.getElementById('fullName');
+                    const profileEmail = document.getElementById('email');
+                    const profileAvatar = document.getElementById('profileAvatar');
 
-                if (data.code !== 1000) {
-                    console.log('[AUTH] Token verification failed:', data.message);
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('userData');
-                    window.location.href = 'login.html';
-                    return;
-                }
+                    if (profileName) profileName.value = userName;
+                    if (profileEmail) profileEmail.value = user.email;
+                    if (profileAvatar) {
+                        profileAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=388e3c&color=fff`;
+                    }
+                });
 
-                // Token is valid, show the main content
-                const mainContent = document.querySelector('.main-content');
-                const loadingSpinner = document.getElementById('loadingSpinner');
-                if (mainContent) mainContent.style.display = 'flex';
-                if (loadingSpinner) loadingSpinner.style.display = 'none';
+            // Update current date
+            updateCurrentDate();
 
-                // Update user info
-                const user = JSON.parse(userData);
-                const userName = user.name || user.email.split('@')[0];
-                
-                // Update header
-                const headerUserName = document.getElementById('userFullNameHeader');
-                if (headerUserName) {
-                    headerUserName.textContent = userName;
-                }
-
-                // Update sidebar
-                fetch('sidebar.html')
-                    .then(response => response.text())
-                    .then(html => {
-                        document.getElementById('sidebar-container').innerHTML = html;
-                        const sidebarUserNameSpan = document.querySelector('.sidebar .user-info .user-name');
-                        if (sidebarUserNameSpan) {
-                            sidebarUserNameSpan.textContent = userName;
-                        }
-                        // Update avatar
-                        const sidebarAvatar = document.querySelector('.sidebar .user-info img');
-                        if (sidebarAvatar) {
-                            sidebarAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=388e3c&color=fff`;
-                        }
-                    });
-
-                // Load profile sidebar
-                fetch('profile-sidebar.html')
-                    .then(response => response.text())
-                    .then(html => {
-                        document.getElementById('profile-sidebar-container').innerHTML = html;
-                        // Update profile sidebar
-                        const profileName = document.getElementById('fullName');
-                        const profileEmail = document.getElementById('email');
-                        const profileAvatar = document.getElementById('profileAvatar');
-                        
-                        if (profileName) profileName.value = userName;
-                        if (profileEmail) profileEmail.value = user.email;
-                        if (profileAvatar) {
-                            profileAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=388e3c&color=fff`;
-                        }
-                    });
-
-                // Update current date
-                updateCurrentDate();
-
-                // Search functionality
-                const searchInput = document.querySelector('.search-bar input');
-                const searchIcon = document.querySelector('.search-bar i');
-                if (searchIcon && searchInput) {
-                    searchIcon.addEventListener('click', () => {
-                        const searchTerm = searchInput.value.trim();
-                        if (searchTerm) {
-                            console.log('[SEARCH] Searching for:', searchTerm);
-                        }
-                    });
-                    searchInput.addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter') {
-                            searchIcon.click();
-                        }
-                    });
-                }
-
-                // Logout button
-                const logoutButton = document.querySelector('.logout-btn');
-                if (logoutButton) {
-                    logoutButton.addEventListener('click', handleLogout);
-                }
-            } catch (error) {
-                console.error('[AUTH] Error verifying token:', error);
-                localStorage.removeItem('token');
-                localStorage.removeItem('userData');
-                window.location.href = 'login.html';
+            // Search functionality
+            const searchInput = document.querySelector('.search-bar input');
+            const searchIcon = document.querySelector('.search-bar i');
+            if (searchIcon && searchInput) {
+                searchIcon.addEventListener('click', () => {
+                    const searchTerm = searchInput.value.trim();
+                    if (searchTerm) {
+                        console.log('[SEARCH] Searching for:', searchTerm);
+                    }
+                });
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        searchIcon.click();
+                    }
+                });
             }
+
+            // Logout button
+            const logoutButton = document.querySelector('.logout-btn');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', handleLogout);
+            }
+
         });
 
         // Update current date on header
@@ -489,12 +539,13 @@
         }
     </script>
 </head>
+
 <body>
     <div id="loadingSpinner"></div>
     <div class="app-container">
         <div id="sidebar-container"></div>
         <div id="profile-sidebar-container"></div>
-        
+
         <div class="main-content" id="mainContent" style="display: none;">
             <header class="header">
                 <div class="greeting">Hello <span id="userFullNameHeader">Loading...</span></div>
@@ -565,12 +616,13 @@
                             <p class="no-transactions-message" style="display: none;">No recent transactions.</p>
                         </div>
                     </div>
-                    <button class="add-new-btn" id="addTransactionBtn"><i class="fas fa-plus"></i> Add New Transaction</button>
+                    <button class="add-new-btn" id="addTransactionBtn"><i class="fas fa-plus"></i> Add New
+                        Transaction</button>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <!-- Transaction Modal -->
     <div id="transactionModal" class="modal">
         <div class="modal-content">
@@ -611,12 +663,13 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Notification element -->
     <div id="notification" class="notification">
         <span id="notificationText"></span>
     </div>
-    
+
     <script src="../assets/js/home.js" type="module"></script>
 </body>
+
 </html>
