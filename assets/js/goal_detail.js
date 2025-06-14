@@ -70,7 +70,6 @@ const barChartButton = document.getElementById('barChartButton');
 const addContributionBtn = document.getElementById('addContributionBtn');
 const modifyGoalBtn = document.getElementById('modifyGoalBtn');
 
-
 const addContributionButton = document.getElementById('addContributionButton');
 const addContributionModal = document.getElementById('addContributionModal');
 const closeModalButton = document.getElementById('closeModalButton');
@@ -146,16 +145,7 @@ async function fetchGoalContributionData(goalId) {
 function renderGoalDetails() {
     pageTitle.textContent = `${goalProgressResponse.name} Progress`;
     document.getElementById('goalName').textContent = goalProgressResponse.name;
-    document.getElementById('goalIsLongTerm').textContent = goalProgressResponse.isLongTerm ? 'Long Term' : 'Short Term';
-    const el = document.getElementById('goalIsLongTerm');
 
-    if (goalProgressResponse.isLongTerm) {
-        el.classList.remove('bg-yellow-100', 'text-yellow-800');
-        el.classList.add('bg-green-100', 'text-green-800');
-    } else {
-        el.classList.remove('bg-green-100', 'text-green-800');
-        el.classList.add('bg-yellow-100', 'text-yellow-800');
-    }
 
     if (goalProgressResponse.status === "IN_PROGRESS") {
         cancelButton.classList.remove('hidden');
@@ -587,7 +577,6 @@ addContributionBtn.addEventListener('click', openModalAddContribution);
 modifyGoalBtn.addEventListener('click', openEditModal);
 
 
-
 document.getElementById('startDate').addEventListener('change', renderContributions);
 document.getElementById('endDate').addEventListener('change', renderContributions);
 document.getElementById('refreshGoalContributionsButton').addEventListener('click', renderContributions);
@@ -629,21 +618,10 @@ contributionForm.addEventListener('submit', async (e) => {
         contributionDate
     };
 
-    try {
-        const response = await fetch(`${API_BASE_URL}/contributions/${goalProgressResponse.goalId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(contribution)
-        });
-        if (!response.ok) throw new Error('Failed to add contribution');
-        showResult("Congratulations you have successfully created a new goal contribution!", "success");
+
+    if (await addGoalContribution(contribution)) {
         closeModalAddContribution();
         await fetchGoalDetails();
-    } catch (error) {
-        console.error('Error adding contribution:', error);
-        return false;
     }
 });
 
