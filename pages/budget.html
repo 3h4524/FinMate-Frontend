@@ -9,58 +9,31 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="../assets/js/budget.js" defer></script>
+    <style>
+        /* Add basic styles for app-container and main-content consistent with other pages */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .main-content {
+            margin-left: 270px; /* Adjust based on sidebar width */
+            flex-grow: 1;
+            /* padding: 40px 32px 32px 32px; */
+            display: flex;
+            flex-direction: column;
+            /* align-items: center; */
+        }
+        @media (max-width: 900px) {
+            .main-content { margin-left: 0; }
+        }
+    </style>
 </head>
 
 <body class="font-sans text-gray-900 bg-green-50">
-    <div class="flex min-h-screen">
-        <!-- Sidebar -->
-        <aside id="sidebar"
-            class="w-64 bg-teal-900 text-white p-5 fixed h-full overflow-y-auto transition-transform transform md:translate-x-0 -translate-x-full z-50">
-            <div class="flex items-center gap-2 mb-8 text-2xl font-bold">
-                <i class="fas fa-chart-line text-lime-300"></i> FinMate
-            </div>
-            <nav>
-                <ul class="space-y-2 flex-1">
-                    <li><a href="index.html"
-                            class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
-                                class="fas fa-tachometer-alt mr-3"></i> Bảng điều khiển</a></li>
-                    <li><a href="#"
-                            class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
-                                class="fas fa-bullseye mr-3"></i> Mục tiêu</a></li>
-                    <li><a href="#"
-                            class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
-                                class="fas fa-exchange-alt mr-3"></i> Giao dịch</a></li>
-                    <li><a href="#"
-                            class="flex items-center p-3 rounded-lg bg-green-700 text-lime-300 border-l-4 border-lime-300"><i
-                                class="fas fa-calculator mr-3"></i> Ngân sách</a></li>
-                    <li><a href="#"
-                            class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
-                                class="fas fa-chart-pie mr-3"></i> Báo cáo</a></li>
-                    <li><a href="#"
-                            class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
-                                class="fas fa-user mr-3"></i> Hồ sơ</a></li>
-                    <li><a href="#"
-                            class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
-                                class="fas fa-cog mr-3"></i> Cài đặt</a></li>
-                </ul>
-            </nav>
-            <div class="mt-auto pt-5 border-t border-white/10 flex items-center cursor-pointer" onclick="showProfile()">
-                <img id="userAvatar" src="https://via.placeholder.com/40" alt="User avatar"
-                    class="w-10 h-10 rounded-full">
-                <div class="ml-3">
-                    <span id="userName" class="block font-medium">Khách</span>
-                    <span class="text-sm text-gray-300">guest@finmate.com</span>
-                </div>
-            </div>
-            <button
-                class="flex items-center w-full p-3 mt-2 rounded-lg bg-transparent text-white hover:bg-teal-700 transition"
-                onclick="logout()">
-                <i class="fas fa-sign-out-alt mr-3"></i> Đăng xuất
-            </button>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="flex-1 md:ml-64 p-5 transition-all">
+    <div class="app-container">
+        <!-- Include sidebar component -->
+        <div id="sidebar-container"></div>
+        <div class="main-content" id="mainContent">
             <header class="bg-white rounded-lg p-4 shadow-md flex justify-between items-center mb-5">
                 <div>
                     <h1 class="text-xl font-semibold">Quản lý Ngân sách</h1>
@@ -177,7 +150,8 @@
                     <div id="analysis-pagination" class="flex justify-center mt-4 gap-2"></div>
                 </div>
             </div>
-        </main>
+        </div>
+    </div>
 
         <!-- Create Budget Modal -->
         <div id="createBudgetModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[1000]">
@@ -333,7 +307,148 @@
                 <div id="budgetDetailsContent" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-900"></div>
             </div>
         </div>
-    </div>
+
+    <script>
+        // Check authentication status when page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            const token = localStorage.getItem('token');
+            const userData = localStorage.getItem('userData');
+            
+            if (!token || !userData) {
+                console.log('[AUTH] No token or user data found, redirecting to login');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            console.log('[AUTH] Checking authentication status with token');
+            try {
+                const response = await fetch('http://localhost:8080/api/v1/auth/verify-token', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    console.error('[AUTH] Error parsing response:', e);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userData');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                if (data.code !== 1000) {
+                    console.log('[AUTH] Token verification failed:', data.message);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userData');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Token is valid, show the main content
+                const mainContent = document.getElementById('mainContent');
+                if (mainContent) mainContent.style.display = 'flex';
+
+                // Update user info
+                const user = JSON.parse(userData);
+                const userName = user.name || user.email.split('@')[0];
+                
+                // Load sidebar
+                fetch('sidebar.html')
+                    .then(response => response.text())
+                    .then(data => {
+                        document.getElementById('sidebar-container').innerHTML = data;
+                        const sidebarUserNameSpan = document.querySelector('.sidebar .user-info .user-name');
+                        if (sidebarUserNameSpan) {
+                            sidebarUserNameSpan.textContent = userName;
+                        }
+                        const sidebarAvatar = document.querySelector('.sidebar .user-info img');
+                        if (sidebarAvatar) {
+                            sidebarAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=388e3c&color=fff`;
+                        }
+
+                        // Set active class for current page in sidebar
+                        setActiveSidebarLink();
+                    });
+
+            } catch (error) {
+                console.error('[AUTH] Error verifying token:', error);
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Helper function to set active class on sidebar links
+        function setActiveSidebarLink() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const links = document.querySelectorAll('.sidebar nav ul li a');
+            
+            links.forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        // Handle logout
+        async function handleLogout() {
+            console.log('[LOGOUT] Logout triggered');
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    const response = await fetch('http://localhost:8080/api/v1/auth/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        console.error('[LOGOUT] Logout failed on server');
+                    }
+                }
+            } catch (error) {
+                console.error('[LOGOUT] Error during logout:', error);
+            } finally {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Responsive adjustments for main-content (already handled by CSS)
+        /*
+        window.addEventListener('resize', () => {
+            const mainContent = document.getElementById('mainContent');
+            if (mainContent) {
+                if (window.innerWidth <= 900) {
+                    mainContent.style.marginLeft = '0';
+                } else {
+                    mainContent.style.marginLeft = '270px';
+                }
+            }
+        });
+        // Initial check on load (already handled by CSS)
+        document.addEventListener('DOMContentLoaded', () => {
+            const mainContent = document.getElementById('mainContent');
+            if (mainContent) {
+                if (window.innerWidth <= 900) {
+                    mainContent.style.marginLeft = '0';
+                } else {
+                    mainContent.style.marginLeft = '270px';
+                }
+            }
+        });
+        */
+
+    </script>
 </body>
 
 </html>

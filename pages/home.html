@@ -5,6 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FinMate - Home</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        // Check authentication status when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            const userData = localStorage.getItem('userData');
+            
+            if (!token || !userData) {
+                console.log('[AUTH] No token or user data found, redirecting to login');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Parse user data
+            const user = JSON.parse(userData);
+            document.getElementById('userFullNameHeader').textContent = user.name;
+            
+            // Show main content after authentication check
+            document.getElementById('mainContent').style.display = 'flex';
+        });
+    </script>
     <style>
         :root {
             --main-green: #388e3c;
@@ -14,10 +34,6 @@
             --card-bg: #fff;
             --card-radius: 18px;
             --card-shadow: 0 8px 32px rgba(56, 142, 60, 0.10);
-            --sidebar-bg: linear-gradient(135deg, #2d5a3d 0%, #1a3d2e 50%, #0f2922 100%);
-            --sidebar-color: #fff;
-            --sidebar-active: #a3c9a8;
-            --sidebar-hover: #388e3c;
             --header-bg: #fff;
             --header-radius: 16px;
             --header-shadow: 0 4px 16px rgba(56, 142, 60, 0.08);
@@ -36,109 +52,6 @@
         .app-container {
             display: flex;
             min-height: 100vh;
-        }
-        .sidebar {
-            width: 250px;
-            background: var(--sidebar-bg);
-            color: var(--sidebar-color);
-            padding: 32px 20px 20px 20px;
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100%;
-            border-radius: 0;
-            box-shadow: 0 8px 32px rgba(56, 142, 60, 0.10);
-            z-index: 10;
-        }
-        .sidebar .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 32px;
-            color: #fff;
-        }
-        .sidebar .logo i {
-            font-size: 24px;
-            color: var(--main-green-light);
-            background: rgba(163, 201, 168, 0.15);
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid rgba(163, 201, 168, 0.25);
-        }
-        .sidebar nav ul {
-            list-style: none;
-            padding: 0;
-            flex-grow: 1;
-        }
-        .sidebar nav ul li {
-            margin-bottom: 6px;
-        }
-        .sidebar nav ul li a {
-            display: flex;
-            align-items: center;
-            color: #fff;
-            text-decoration: none;
-            padding: 8px 12px;
-            border-radius: 7px;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background 0.2s, color 0.2s;
-        }
-        .sidebar nav ul li a i {
-            margin-right: 10px;
-            font-size: 16px;
-        }
-        .sidebar nav ul li a.active, .sidebar nav ul li a:hover {
-            background: var(--main-green);
-            color: #fff;
-        }
-        .sidebar .logout-btn {
-            margin-top: 16px;
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 7px;
-            transition: background 0.2s;
-        }
-        .sidebar .logout-btn:hover {
-            background: var(--main-green-dark);
-        }
-        .sidebar .user-info {
-            display: flex;
-            align-items: center;
-            margin-top: auto;
-            gap: 10px;
-            padding-top: 18px;
-            border-top: 1px solid rgba(255,255,255,0.12);
-            cursor: pointer;
-        }
-        .sidebar .user-info img {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        .sidebar .user-info .details {
-            display: flex;
-            flex-direction: column;
-        }
-        .sidebar .user-info .user-name {
-            font-weight: 700;
-            color: #fff;
-            font-size: 13px;
-        }
-        .sidebar .user-info .view-profile {
-            font-size: 11px;
-            color: #a3c9a8;
         }
         .main-content {
             margin-left: 270px;
@@ -310,7 +223,6 @@
             .dashboard-layout { gap: 16px; }
         }
         @media (max-width: 900px) {
-            .sidebar { display: none; }
             .main-content { margin-left: 0; }
         }
         @media (max-width: 600px) {
@@ -377,11 +289,11 @@
                     headerUserName.textContent = userName;
                 }
 
-                // Update sidebar
+                // Load sidebar
                 fetch('sidebar.html')
                     .then(response => response.text())
-                    .then(html => {
-                        document.getElementById('sidebar-container').innerHTML = html;
+                    .then(data => {
+                        document.getElementById('sidebar-container').innerHTML = data;
                         const sidebarUserNameSpan = document.querySelector('.sidebar .user-info .user-name');
                         if (sidebarUserNameSpan) {
                             sidebarUserNameSpan.textContent = userName;
@@ -391,23 +303,9 @@
                         if (sidebarAvatar) {
                             sidebarAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=388e3c&color=fff`;
                         }
-                    });
 
-                // Load profile sidebar
-                fetch('profile-sidebar.html')
-                    .then(response => response.text())
-                    .then(html => {
-                        document.getElementById('profile-sidebar-container').innerHTML = html;
-                        // Update profile sidebar
-                        const profileName = document.getElementById('fullName');
-                        const profileEmail = document.getElementById('email');
-                        const profileAvatar = document.getElementById('profileAvatar');
-                        
-                        if (profileName) profileName.value = userName;
-                        if (profileEmail) profileEmail.value = user.email;
-                        if (profileAvatar) {
-                            profileAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=388e3c&color=fff`;
-                        }
+                        // Set active class for current page in sidebar
+                        setActiveSidebarLink();
                     });
 
                 // Update current date
@@ -453,6 +351,20 @@
             }
         }
 
+        // Helper function to set active class on sidebar links
+        function setActiveSidebarLink() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const links = document.querySelectorAll('.sidebar nav ul li a');
+            
+            links.forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
         // Handle logout
         async function handleLogout() {
             console.log('[LOGOUT] Logout triggered');
@@ -492,8 +404,8 @@
 <body>
     <div id="loadingSpinner"></div>
     <div class="app-container">
+        <!-- Include sidebar component -->
         <div id="sidebar-container"></div>
-        <div id="profile-sidebar-container"></div>
         
         <div class="main-content" id="mainContent" style="display: none;">
             <header class="header">

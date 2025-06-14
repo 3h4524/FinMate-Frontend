@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINEbank.IO - Transaction Management</title>
+    <link rel="stylesheet" href="../assets/css/transaction.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Include sidebar component -->
+        <div id="sidebar-container"></div>
+        <div class="main-content" id="mainContent">
+            <!-- Header -->
+            <div class="main-header">
+                <div class="header-content">
+                    <div>
+                        <h1 class="header-title" id="headerTitle">Transaction Management</h1>
+                    </div>
+                    <div class="header-actions">
+                        <div class="search-box">
+                            <div class="search-icon">🔍</div>
+                            <input type="text" class="search-input" placeholder="Search here">
+                        </div>
+                        <div class="user-avatar">👤</div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Transactions Content -->
+            <div id="transactions-content" class="content-area">
+
+                <div class="wallet-card">
+                    <div class="wallet-header">
+                        <div class="wallet-title">💳 My Wallet</div>
+                        <button class="wallet-edit-btn" id="editWalletBtn">
+                            ✏️ Edit
+                        </button>
+                    </div>
+                    <div id="walletContent">
+                        <div id="walletLoading" class="wallet-loading">
+                            <div class="wallet-spinner"></div>
+                            <span>Loading wallet...</span>
+                        </div>
+                        <div id="walletBalance" class="hidden">
+                            <div class="wallet-balance" id="balanceAmount">0.00</div>
+                            <div class="wallet-currency" id="balanceCurrency">VND</div>
+                        </div>
+                        <div id="walletError" class="hidden">
+                            <div style="color: rgba(255, 255, 255, 0.8);">Error loading wallet</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="transaction-header">
+                    <h2 class="transaction-title">Transaction Management</h2>
+                    <div class="transaction-actions">
+                        <button class="btn btn-secondary" id="searchBtn">
+                            🔍 Search
+                        </button>
+                        <button class="btn btn-primary" id="createBtn">
+                            ➕ Add Transaction
+                        </button>
+                    </div>
+                </div>
+
+                <div id="loadingDiv" class="loading hidden">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 8px; color: #6b7280;">Loading...</p>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Transaction Type</th>
+                                <th>Amount</th>
+                                <th>Note</th>
+                                <th>Payment Method</th>
+                                <th>Location</th>
+                                <th>Recurring</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionTableBody">
+                            <tr>
+                                <td colspan="9" class="empty-state">No transactions</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="paginationDiv" class="pagination hidden">
+                    <button class="pagination-btn" id="prevBtn" disabled>Previous</button>
+                    <div class="pagination-numbers" id="pageNumbers"></div>
+                    <button class="pagination-btn" id="nextBtn" disabled>Next</button>
+                </div>
+            </div>
+
+            <!-- Bills Content -->
+            <div id="bills-content" class="content-area hidden">
+                <div style="text-align: center; padding: 48px;">
+                    <h2 style="font-size: 24px; font-weight: bold; color: #1f2937; margin-bottom: 16px;">
+                        Bills
+                    </h2>
+                    <p style="color: #6b7280;">
+                        This feature is under development...
+                    </p>
+                </div>
+            </div>
+
+            <!-- Expenses Content -->
+            <div id="expenses-content" class="content-area hidden">
+                <div style="text-align: center; padding: 48px;">
+                    <h2 style="font-size: 24px; font-weight: bold; color: #1f2937; margin-bottom: 16px;">
+                        Expenses
+                    </h2>
+                    <p style="color: #6b7280;">
+                        This feature is under development...
+                    </p>
+                </div>
+            </div>
+
+            <!-- Goals Content -->
+            <div id="goals-content" class="content-area hidden">
+                <div style="text-align: center; padding: 48px;">
+                    <h2 style="font-size: 24px; font-weight: bold; color: #1f2937; margin-bottom: 16px;">
+                        Goals
+                    </h2>
+                    <p style="color: #6b7280;">
+                        This feature is under development...
+                    </p>
+                </div>
+            </div>
+
+            <!-- Settings Content -->
+            <div id="settings-content" class="content-area hidden">
+                <div style="text-align: center; padding: 48px;">
+                    <h2 style="font-size: 24px; font-weight: bold; color: #1f2937; margin-bottom: 16px;">
+                        Settings
+                    </h2>
+                    <p style="color: #6b7280;">
+                        This feature is under development...
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="walletModal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Wallet Balance</h2>
+                <button class="close-btn" id="closeWalletModalBtn">×</button>
+            </div>
+
+            <form id="walletForm">
+                <div style="padding: 24px;">
+                    <div class="form-group">
+                        <label class="form-label">💰 Current Balance</label>
+                        <div style="background: #f3f4f6; padding: 12px; border-radius: 8px; color: #6b7280;">
+                            <span id="currentBalanceDisplay">Loading...</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">💰 New Balance *</label>
+                        <input type="number" step="0.01" class="form-input" id="newBalanceInput" required
+                            placeholder="Enter new balance">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">💱 Currency</label>
+                        <select class="form-input" id="currencySelect">
+                            <option value="VND">VND - Vietnamese Dong</option>
+                            <option value="USD">USD - US Dollar</option>
+                            <option value="EUR">EUR - Euro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="updateWalletBtn">
+                        💾 Update Balance
+                    </button>
+                    <button type="button" class="btn btn-outline" id="cancelWalletBtn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Create/Edit Transaction Modal -->
+    <div id="transactionModal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Create New Transaction</h2>
+                <button class="close-btn" id="closeModalBtn">×</button>
+            </div>
+
+            <form id="transactionForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">💰 Amount *</label>
+                        <input type="number" step="0.01" class="form-input" id="amount" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">📅 Transaction Date *</label>
+                        <input type="date" class="form-input" id="transactionDate" required>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label class="form-label">📋 Transaction Type</label>
+                        <select class="form-input categorySelect" id="category-edit" required>
+                            <option value="">Select transaction type</option>
+                            <!-- Options will be populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">💳 Payment Method</label>
+                        <input type="text" class="form-input" id="paymentMethod" maxlength="255">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">📍 Location</label>
+                        <input type="text" class="form-input" id="location" maxlength="255">
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label class="form-label">📝 Note</label>
+                    <textarea class="form-input form-textarea" id="note" maxlength="255"></textarea>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Image URL</label>
+                        <input type="url" class="form-input" id="imageUrl" maxlength="255">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">🔄 Recurring Pattern</label>
+                        <select class="form-input" id="recurringPattern">
+                            <option value="">Non-recurring</option>
+                            <option value="Daily">Daily</option>
+                            <option value="Weekly">Weekly</option>
+                            <option value="Monthly">Monthly</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid recurring-dates hidden">
+                    <div class="form-group">
+                        <label class="form-label">📅 Start Date *</label>
+                        <input type="date" class="form-input" id="startDate">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">📅 End Date *</label>
+                        <input type="date" class="form-input" id="endDate">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Create Transaction</button>
+                    <button type="button" class="btn btn-outline" id="cancelBtn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div id="searchModal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Search Transactions</h2>
+                <button class="close-btn" id="closeSearchModalBtn">×</button>
+            </div>
+            <form id="searchForm">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label class="form-label">📋 Transaction Type</label>
+                        <select class="form-input categorySelect" id="category-search">
+                            <option value="">Select transaction type</option>
+                            <!-- Options will be populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">💰 Minimum Amount</label>
+                        <input type="number" step="0.01" class="form-input" id="minAmount">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">💰 Maximum Amount</label>
+                        <input type="number" step="0.01" class="form-input" id="maxAmount">
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">📅 From Date</label>
+                        <input type="date" class="form-input" id="searchStartDate">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">📅 To Date</label>
+                        <input type="date" class="form-input" id="searchEndDate">
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">💳 Payment Method</label>
+                        <input type="text" class="form-input" id="paymentMethodSearch" maxlength="255">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">📍 Location</label>
+                        <input type="text" class="form-input" id="locationSearch" maxlength="255">
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <label class="form-label">📝 Note</label>
+                    <input type="text" class="form-input" id="noteSearch" maxlength="255">
+                </div>
+                <div class="form-group full-width">
+                    <label class="form-label">🔄 Recurring Transactions</label>
+                    <select class="form-input" id="isRecurringSearch">
+                        <option value="">All</option>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submitSearchBtn">Search</button>
+                    <button type="button" class="btn btn-outline" id="cancelSearchBtn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../assets/js/transaction.js"></script>
+    <script>
+        // Check authentication status when page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            const token = localStorage.getItem('token');
+            const userData = localStorage.getItem('userData');
+            
+            if (!token || !userData) {
+                console.log('[AUTH] No token or user data found, redirecting to login');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            console.log('[AUTH] Checking authentication status with token');
+            try {
+                const response = await fetch('http://localhost:8080/api/v1/auth/verify-token', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    console.error('[AUTH] Error parsing response:', e);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userData');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                if (data.code !== 1000) {
+                    console.log('[AUTH] Token verification failed:', data.message);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userData');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Token is valid, show the main content
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) mainContent.style.display = 'flex';
+
+                // Update user info
+                const user = JSON.parse(userData);
+                const userName = user.name || user.email.split('@')[0];
+                
+                // Load sidebar
+                fetch('sidebar.html')
+                    .then(response => response.text())
+                    .then(data => {
+                        document.getElementById('sidebar-container').innerHTML = data;
+                        const sidebarUserNameSpan = document.querySelector('.sidebar .user-info .user-name');
+                        if (sidebarUserNameSpan) {
+                            sidebarUserNameSpan.textContent = userName;
+                        }
+                        const sidebarAvatar = document.querySelector('.sidebar .user-info img');
+                        if (sidebarAvatar) {
+                            sidebarAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=388e3c&color=fff`;
+                        }
+
+                        // Set active class for current page in sidebar
+                        setActiveSidebarLink();
+                    });
+
+            } catch (error) {
+                console.error('[AUTH] Error verifying token:', error);
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Helper function to set active class on sidebar links
+        function setActiveSidebarLink() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const links = document.querySelectorAll('.sidebar nav ul li a');
+            
+            links.forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        // Handle logout
+        async function handleLogout() {
+            console.log('[LOGOUT] Logout triggered');
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    const response = await fetch('http://localhost:8080/api/v1/auth/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        console.error('[LOGOUT] Logout failed on server');
+                    }
+                }
+            } catch (error) {
+                console.error('[LOGOUT] Error during logout:', error);
+            } finally {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+
+</html>

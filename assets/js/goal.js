@@ -1,4 +1,3 @@
-
 // State management
 let goals = [];
 let error = '';
@@ -8,7 +7,6 @@ const newGoalButton = document.getElementById('newGoalButton');
 const errorMessage = document.getElementById('errorMessage');
 const errorText = errorMessage.querySelector('span');
 const noGoalsView = document.getElementById('noGoalsView');
-const goalListView = document.getElementById('goalListView');
 const goalsList = document.getElementById('goalsList');
 const createFirstGoalButton = document.getElementById('createFirstGoalButton');
 const newGoalModal = document.getElementById('newGoalModal');
@@ -39,11 +37,17 @@ async function fetchGoalProgress() {
         const response = await fetch(`${API_BASE_URL}/goal_tracking/list`, {
             headers: { 'userId': userId.toString() }
         });
-        if (!response.ok) throw new Error('Failed to fetch goals');
         const data = await response.json();
-        goals = data.result.content;
-        console.log("fetch goals", goals);
-        renderGoals();
+
+        console.log("Da vao load goal progress");
+
+        if (data.code === 1000) {
+            goals = data.result.content;
+            console.log("fetch goals", goals);
+            renderGoals();
+        } else {
+            throw Error("Failed to fetch goals progress");
+        }
     } catch (err) {
         error = 'Failed to fetch goals';
         renderError();
@@ -52,7 +56,8 @@ async function fetchGoalProgress() {
 
 async function fetchUserId() {
     console.log("Fetching user id");
-    userId = 13;
+    userId = 1;
+    console.log("User ID: ", userId);
 }
 
 // Event listener for status filter
@@ -87,18 +92,37 @@ function renderGoals() {
         goalsList.innerHTML = filteredGoals.map(goal => `
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:bg-gray-50 hover:shadow-md transition-all">
                 <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-gray-900 truncate max-w-[70%]">${goal.name}</h3>
-                            ${goal.status === 'IN_PROGRESS' ? `
-                            <button onclick="confirmCancelGoal('${goal.goalId}');" class="flex items-center text-red-600 hover:text-red-700 font-medium">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                Cancel
-                            </button>` : ''}
+                    <h3 class="text-lg font-semibold text-gray-900 truncate max-w-[70%]">${goal.name}</h3>
+                    ${goal.status === 'IN_PROGRESS' ? `
+                        <button onclick="confirmCancelGoal('${goal.goalId}');" class="flex items-center text-red-600 hover:text-red-700 font-medium">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            Cancel
+                        </button>` : `
+                        <button disabled class="flex items-center text-red-600 opacity-50 font-medium cursor-not-allowed">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Cancel
+                        </button>`}
                 </div>
 
-                <div class="flex items-center justify-between mb-4">
-                    <p class="text-sm text-gray-600 rounded-full inline-block px-2 py-1 ${goal.isLongTerm ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
-                        ${goal.isLongTerm ? 'Long Term' : 'Short Term'}
-                    </p>
+                <div class="flex items-center justify-between mb-4 w-full">
+                    <div>
+                        ${goal.status === 'IN_PROGRESS' ? `
+                            <button onclick="markAsComplete('${goal.goalId}')" class="inline-flex items-center text-sm text-green-600 hover:text-green-700 font-semibold px-3 py-1.5 rounded-md hover:bg-green-50 transition-all duration-200">
+                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Mark as Complete
+                            </button>` : `
+                            <button disabled class="inline-flex items-center text-sm text-green-600 opacity-50 font-semibold px-3 py-1.5 rounded-md cursor-not-allowed">
+                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Mark as Complete
+                            </button>`}
+                    </div>
+                    
                     <div class="flex items-center space-x-4">
                         <div class="px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(goal.status)}">${goal.status}</div>
                         <button onclick="window.location.href = 'goal_detail.html?goalId=${goal.goalId}';" class="flex items-center text-teal-600 hover:text-teal-700 font-medium">
@@ -144,7 +168,7 @@ async function confirmCancelGoal(goalId) {
 
 // function
 async function cancelGoal(goalId) {
-    console.log("trying to cancel Goal", goalId);
+    console.log("trying to cancel Goal: ", goalId);
     try {
         const response = await fetch(`${API_BASE_URL}/goal/cancel/${goalId}`, {
             method: 'PATCH',
@@ -166,6 +190,35 @@ async function cancelGoal(goalId) {
     }
 }
 
+
+async function markAsComplete(goalId) {
+    console.log("Trying to mark as completed goal: ", goalId);
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/goal/${goalId}`);
+        const data = await response.json();
+
+        if (data.code === 1000) {
+            const goalResponse = data.result;
+            const contribution = {
+                goalId: goalId,
+                amount: remainingAmount = goalResponse.targetAmount - goalResponse.currentAmount,
+                note: 'Mark As Completed',
+                contributionDate: new Date()
+            };
+            if (await addGoalContribution(contribution)) {
+                showResult("Mark as completed successfully", 'success');
+                await fetchGoalProgress();
+            } else {
+                throw new Error("Fail to mark as completed");
+            }
+        } else {
+            throw new Error("Fail to mark as completed");
+        }
+    } catch (err) {
+        showResult(err, 'error');
+    }
+}
 
 // Modal functionality
 function closeModal() {
@@ -226,7 +279,6 @@ newGoalForm.addEventListener('submit', async (e) => {
         currentAmount: parseFloat(formData.get('currentAmountModal')),
         startDate: formData.get('startDateModal'),
         deadline: formData.get('deadlineModal'),
-        isLongTerm: formData.get('isLongTermModal') === 'on'
     };
 
     const now = new Date();
@@ -261,13 +313,22 @@ newGoalForm.addEventListener('submit', async (e) => {
             },
             body: JSON.stringify(goalData)
         });
-        if (!response.ok) throw new Error('Failed to create goal');
-        showResult("Congratulations you have successfully created a new goal!", "success");
-        closeModal();
-        newGoalModal.classList.add('hidden');
-        newGoalForm.reset();
-        hideError();
-        await fetchGoalProgress();
+
+        console.log("Xong fetch");
+        const data = await response.json();
+        console.log("Xong chuyen data thanh json: ", data);
+
+        if (data.code === 1000) {
+            showResult(data.message, "success");
+            closeModal();
+            newGoalModal.classList.add('hidden');
+            newGoalForm.reset();
+            hideError();
+            await fetchGoalProgress();
+        } else {
+            throw Error("Failed to create goal");
+        }
+
     } catch (err) {
         showError(err.message || 'Failed to create goal');
     }
@@ -292,6 +353,8 @@ async function initializeApp() {
     try {
         await fetchUserId(); // Wait for userId to be fetched
         await fetchGoalProgress(); // Then fetch goals
+
+
         // await Promise.all([fetchGoalProgress(), fetchTransaction()]); // nếu muốn fetch 2 cái khác song song
     } catch (err) {
         error = 'Failed to initialize app: ' + err.message;
@@ -300,4 +363,54 @@ async function initializeApp() {
     }
 }
 
-initializeApp();
+// Initialize
+window.addEventListener('load', () => {
+    if (checkAuth()) {
+        initializeApp();
+    }
+});
+
+const checkAuth = () => {
+    if (!getToken() || isTokenExpired()) {
+        redirectToLogin();
+        return false;
+    }
+    return true;
+};
+
+const getToken = () => {
+    return localStorage.getItem('token');
+};
+
+const isTokenExpired = () => {
+    const user = getCurrentUser();
+    if (!user) return true;
+    return Date.now() >= user.exp * 1000;
+};
+
+const getCurrentUser = () => {
+    const token = getToken();
+    if (!token) return null;
+    
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return {
+            userId: payload.userId || payload.sub,
+            username: payload.username || payload.name,
+            exp: payload.exp
+        };
+    } catch (error) {
+        console.error('Error parsing token:', error);
+        return null;
+    }
+};
+
+const redirectToLogin = () => {
+    localStorage.removeItem('token');
+    window.location.href = '../pages/login.html';
+};
+
+const getAuthHeaders = () => {
+    const token = getToken();
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
+};

@@ -1,19 +1,16 @@
 <!-- Sidebar Component -->
 <div class="sidebar">
-    <div class="logo" style="display: flex; align-items: center; gap: 12px; margin-bottom: 40px;">
-        <i class="fas fa-chart-line" style="font-size: 28px; color: #a3c9a8; background: rgba(163, 201, 168, 0.15); padding: 12px; border-radius: 12px; border: 1px solid rgba(163, 201, 168, 0.25);"></i>
-        <span style="font-size: 26px; font-weight: 700; color: #fff; letter-spacing: 1px;">FINMATE</span>
+    <div class="logo">
+        <i class="fas fa-chart-line"></i>
+        <span>FINMATE</span>
     </div>
     <nav>
-        <ul style="font-size: 17px;">
-            <li><a href="home.html" class="active"><i class="fas fa-border-all"></i> <span>Overview</span></a></li>
-            <li><a href="accounts.html"><i class="fas fa-wallet"></i> <span>Accounts</span></a></li>
-            <li><a href="transactions.html"><i class="fas fa-exchange-alt"></i> <span>Transactions</span></a></li>
+        <ul>
+            <li><a href="home.html"><i class="fas fa-home"></i> <span>Home</span></a></li>
+            <li><a href="transaction.html"><i class="fas fa-exchange-alt"></i> <span>Transactions</span></a></li>
             <li><a href="goal.html"><i class="fas fa-bullseye"></i> <span>Goals</span></a></li>
             <li><a href="budget.html"><i class="fas fa-calculator"></i> <span>Budget</span></a></li>
             <li><a href="financial_report.html"><i class="fas fa-chart-pie"></i> <span>Reports</span></a></li>
-            <li><a href="profile.html"><i class="fas fa-user"></i> <span>Profile</span></a></li>
-            <li><a href="settings.html"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
         </ul>
     </nav>
     <button class="logout-btn" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></button>
@@ -23,76 +20,174 @@
             <span class="user-name">Loading...</span>
             <span class="view-profile">View profile</span>
         </div>
-        <i class="fas fa-ellipsis-v" style="margin-left: auto; color: rgba(255,255,255,0.7);"></i>
+        <i class="fas fa-ellipsis-v"></i>
     </div>
 </div>
+
 <style>
 .sidebar {
-    background: linear-gradient(135deg, #1a2e22 0%, #183226 100%);
+    width: 250px;
+    background-color: #1a3d2e; /* Màu xanh đậm mới */
+    color: #fff;
+    padding: 32px 20px 0px; /* Loại bỏ padding dưới cùng */
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100%;
+    border-radius: 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    z-index: 10;
 }
+
+.sidebar .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 32px;
+    color: #fff;
+}
+
+.sidebar .logo i {
+    font-size: 28px;
+    color: #fff; /* Icon màu trắng */
+    background: transparent; /* Không nền */
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.25); /* Viền trắng mờ */
+}
+
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    flex-grow: 1;
+}
+
+.sidebar nav ul li {
+    margin-bottom: 10px;
+}
+
 .sidebar nav ul li a {
-    font-size: 17px;
-    color: #e0e8e0;
-    padding: 14px 18px;
-    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    color: #fff;
     text-decoration: none;
-    display: flex;
-    align-items: center;
-    transition: all 0.3s ease;
+    padding: 12px 14px;
+    border-radius: 7px;
+    font-size: 17px;
+    font-weight: 500;
 }
+
 .sidebar nav ul li a i {
-    margin-right: 12px;
-    width: 20px;
-    text-align: center;
+    margin-right: 14px;
+    font-size: 19px;
+    color: #fff; /* Icon màu trắng */
 }
+
 .sidebar nav ul li a.active, .sidebar nav ul li a:hover {
-    background: #2d5a3d;
+    background-color: #0f2922; /* Màu xanh đậm hơn nữa cho hover/active */
     color: #fff;
 }
+
 .sidebar .logout-btn {
-    background: #203c2c;
-    color: #e0e8e0;
-    font-size: 16px;
-    padding: 14px 18px;
-    border-radius: 12px;
+    margin-top: 24px;
+    background: none;
     border: none;
-    cursor: pointer;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 600;
     display: flex;
     align-items: center;
-    width: 100%;
-    transition: all 0.3s ease;
+    gap: 10px;
+    cursor: pointer;
+    padding: 12px 14px;
+    border-radius: 7px;
 }
+
 .sidebar .logout-btn:hover {
-    background: #2d5a3d;
+    background-color: #0f2922; /* Màu xanh đậm hơn nữa khi hover */
     color: #fff;
 }
+
 .sidebar .logout-btn i {
-    margin-right: 12px;
+    margin-right: 14px;
+    color: #fff; /* Icon màu trắng */
 }
+
+.sidebar .user-info {
+    display: flex;
+    align-items: center;
+    margin-top: auto;
+    gap: 12px;
+    padding: 15px 0; /* Giảm padding dọc */
+    border-top: 1px solid rgba(255,255,255,0.15);
+    cursor: pointer;
+}
+
+.sidebar .user-info img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.sidebar .user-info .details {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    line-height: 1.4; /* Tăng khoảng cách dòng */
+}
+
 .sidebar .user-info .user-name {
-    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    font-size: 16px;
+    margin-bottom: 4px; /* Tăng khoảng cách giữa tên và view profile */
 }
+
 .sidebar .user-info .view-profile {
-    font-size: 13px;
+    font-size: 14px;
+    color: #fff;
+}
+
+.sidebar .user-info i {
+    margin-left: 15px;
+    color: #fff;
+    font-size: 20px;
+}
+
+@media (max-width: 900px) {
+    .sidebar {
+        display: none;
+    }
 }
 </style>
 
 <script>
-function showProfile() {
-    const profileSidebar = document.getElementById('profileSidebar');
-    if (profileSidebar) {
-        if (profileSidebar.classList.contains('active')) {
-            profileSidebar.classList.remove('active');
-        } else {
-            profileSidebar.classList.add('active');
-            // Call the global function to load and display user profile
-            if (typeof loadAndDisplayUserProfile === 'function') {
-                loadAndDisplayUserProfile();
-            } else {
-                console.error("loadAndDisplayUserProfile function not found.");
+// Handle logout
+async function handleLogout() {
+    console.log('[LOGOUT] Logout triggered');
+    try {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const response = await fetch('http://localhost:8080/api/v1/auth/logout', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                console.error('[LOGOUT] Logout failed on server');
             }
         }
+    } catch (error) {
+        console.error('[LOGOUT] Error during logout:', error);
+    } finally {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userData');
+        window.location.href = 'login.html';
     }
 }
-// The old loadUserProfile function has been removed from here.
 </script> 
