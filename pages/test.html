@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Icon Selector</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            margin-bottom: 30px;
+            color: #1a202c;
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 16px;
+        }
+
+        /* Modern Icon Grid Selector */
+        .icon-selector-container {
+            position: relative;
+        }
+
+        .icon-selector-trigger {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 60px;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .icon-selector-trigger:hover {
+            border-color: #cbd5e0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .icon-selector-trigger.active {
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        .selected-icon-display {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .selected-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+        }
+
+        .dropdown-arrow {
+            transition: transform 0.3s ease;
+            color: #a0aec0;
+        }
+
+        .dropdown-arrow.rotated {
+            transform: rotate(180deg);
+        }
+
+        .icon-selector-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            z-index: 1000;
+            max-height: 400px;
+            overflow: hidden;
+            display: none;
+            margin-top: 8px;
+        }
+
+        .icon-selector-dropdown.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .icon-search {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .icon-search input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .icon-search input:focus {
+            border-color: #4299e1;
+        }
+
+        .icon-grid-container {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 12px;
+        }
+
+        .icon-option {
+            aspect-ratio: 1;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 12px 8px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .icon-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .icon-option.selected {
+            border-color: #4299e1;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(66, 153, 225, 0.2);
+        }
+
+        .icon-option-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            margin-bottom: 6px;
+        }
+
+        .icon-option-label {
+            font-size: 11px;
+            color: #4a5568;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        /* Color Classes */
+        .income-color { background: linear-gradient(135deg, #48bb78, #38a169); }
+        .expense-color { background: linear-gradient(135deg, #f56565, #e53e3e); }
+        .food-color { background: linear-gradient(135deg, #ed8936, #dd6b20); }
+        .transport-color { background: linear-gradient(135deg, #4299e1, #3182ce); }
+        .entertainment-color { background: linear-gradient(135deg, #9f7aea, #805ad5); }
+        .health-color { background: linear-gradient(135deg, #38b2ac, #319795); }
+        .education-color { background: linear-gradient(135deg, #4299e1, #2b6cb0); }
+        .shopping-color { background: linear-gradient(135deg, #ec4899, #db2777); }
+        .home-color { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .business-color { background: linear-gradient(135deg, #10b981, #059669); }
+        .travel-color { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+        .gift-color { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+        /* Custom scrollbar */
+        .icon-grid-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .icon-grid-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        .icon-grid-container::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 3px;
+        }
+
+        .icon-grid-container::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+
+        .category-section {
+            margin-bottom: 25px;
+        }
+
+        .category-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+
+        .selected-value {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f7fafc;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            color: #2d3748;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .icon-grid {
+                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h2>🎨 Modern Icon Selector with Colors</h2>
+        
+        <div class="form-group">
+            <label class="form-label">🖼️ Chọn Biểu Tượng Danh Mục</label>
+            <div class="icon-selector-container">
+                <div class="icon-selector-trigger" id="iconTrigger">
+                    <div class="selected-icon-display">
+                        <div class="selected-icon income-color" id="selectedIcon">
+                            <i class="fas fa-question"></i>
+                        </div>
+                        <span id="selectedText">Chọn biểu tượng</span>
+                    </div>
+                    <i class="fas fa-chevron-down dropdown-arrow" id="dropdownArrow"></i>
+                </div>
+                
+                <div class="icon-selector-dropdown" id="iconDropdown">
+                    <div class="icon-search">
+                        <input type="text" placeholder="🔍 Tìm kiếm biểu tượng..." id="iconSearchInput">
+                    </div>
+                    
+                    <div class="icon-grid-container">
+                        <div class="category-section">
+                            <div class="category-title">💰 Thu nhập & Tài chính</div>
+                            <div class="icon-grid" data-category="income">
+                                <div class="icon-option" data-value="money-bag" data-label="Túi tiền">
+                                    <div class="icon-option-icon income-color">
+                                        <i class="fas fa-sack-dollar"></i>
+                                    </div>
+                                    <div class="icon-option-label">Túi tiền</div>
+                                </div>
+                                <div class="icon-option" data-value="coins" data-label="Tiền xu">
+                                    <div class="icon-option-icon income-color">
+                                        <i class="fas fa-coins"></i>
+                                    </div>
+                                    <div class="icon-option-label">Tiền xu</div>
+                                </div>
+                                <div class="icon-option" data-value="wallet" data-label="Ví tiền">
+                                    <div class="icon-option-icon income-color">
+                                        <i class="fas fa-wallet"></i>
+                                    </div>
+                                    <div class="icon-option-label">Ví tiền</div>
+                                </div>
+                                <div class="icon-option" data-value="piggy-bank" data-label="Heo đất">
+                                    <div class="icon-option-icon income-color">
+                                        <i class="fas fa-piggy-bank"></i>
+                                    </div>
+                                    <div class="icon-option-label">Heo đất</div>
+                                </div>
+                                <div class="icon-option" data-value="trending-up" data-label="Tăng trưởng">
+                                    <div class="icon-option-icon business-color">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <div class="icon-option-label">Tăng trưởng</div>
+                                </div>
+                                <div class="icon-option" data-value="receipt" data-label="Hóa đơn">
+                                    <div class="icon-option-icon business-color">
+                                        <i class="fas fa-receipt"></i>
+                                    </div>
+                                    <div class="icon-option-label">Hóa đơn</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="category-section">
+                            <div class="category-title">🛒 Mua sắm & Chi tiêu</div>
+                            <div class="icon-grid" data-category="shopping">
+                                <div class="icon-option" data-value="shopping-cart" data-label="Giỏ hàng">
+                                    <div class="icon-option-icon shopping-color">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </div>
+                                    <div class="icon-option-label">Giỏ hàng</div>
+                                </div>
+                                <div class="icon-option" data-value="shopping-bag" data-label="Túi mua sắm">
+                                    <div class="icon-option-icon shopping-color">
+                                        <i class="fas fa-shopping-bag"></i>
+                                    </div>
+                                    <div class="icon-option-label">Túi mua sắm</div>
+                                </div>
+                                <div class="icon-option" data-value="store" data-label="Cửa hàng">
+                                    <div class="icon-option-icon shopping-color">
+                                        <i class="fas fa-store"></i>
+                                    </div>
+                                    <div class="icon-option-label">Cửa hàng</div>
+                                </div>
+                                <div class="icon-option" data-value="tshirt" data-label="Quần áo">
+                                    <div class="icon-option-icon shopping-color">
+                                        <i class="fas fa-tshirt"></i>
+                                    </div>
+                                    <div class="icon-option-label">Quần áo</div>
+                                </div>
+                                <div class="icon-option" data-value="gem" data-label="Trang sức">
+                                    <div class="icon-option-icon shopping-color">
+                                        <i class="fas fa-gem"></i>
+                                    </div>
+                                    <div class="icon-option-label">Trang sức</div>
+                                </div>
+                                <div class="icon-option" data-value="gift" data-label="Quà tặng">
+                                    <div class="icon-option-icon gift-color">
+                                        <i class="fas fa-gift"></i>
+                                    </div>
+                                    <div class="icon-option-label">Quà tặng</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="category-section">
+                            <div class="category-title">🍽️ Ăn uống</div>
+                            <div class="icon-grid" data-category="food">
+                                <div class="icon-option" data-value="utensils" data-label="Ăn uống">
+                                    <div class="icon-option-icon food-color">
+                                        <i class="fas fa-utensils"></i>
+                                    </div>
+                                    <div class="icon-option-label">Ăn uống</div>
+                                </div>
+                                <div class="icon-option" data-value="coffee" data-label="Cà phê">
+                                    <div class="icon-option-icon food-color">
+                                        <i class="fas fa-mug-hot"></i>
+                                    </div>
+                                    <div class="icon-option-label">Cà phê</div>
+                                </div>
+                                <div class="icon-option" data-value="pizza" data-label="Pizza">
+                                    <div class="icon-option-icon food-color">
+                                        <i class="fas fa-pizza-slice"></i>
+                                    </div>
+                                    <div class="icon-option-label">Pizza</div>
+                                </div>
+                                <div class="icon-option" data-value="hamburger" data-label="Hamburger">
+                                    <div class="icon-option-icon food-color">
+                                        <i class="fas fa-hamburger"></i>
+                                    </div>
+                                    <div class="icon-option-label">Hamburger</div>
+                                </div>
+                                <div class="icon-option" data-value="wine" data-label="Rượu">
+                                    <div class="icon-option-icon food-color">
+                                        <i class="fas fa-wine-glass"></i>
+                                    </div>
+                                    <div class="icon-option-label">Rượu</div>
+                                </div>
+                                <div class="icon-option" data-value="apple" data-label="Trái cây">
+                                    <div class="icon-option-icon food-color">
+                                        <i class="fas fa-apple-alt"></i>
+                                    </div>
+                                    <div class="icon-option-label">Trái cây</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="category-section">
+                            <div class="category-title">🚗 Giao thông</div>
+                            <div class="icon-grid" data-category="transport">
+                                <div class="icon-option" data-value="car" data-label="Xe hơi">
+                                    <div class="icon-option-icon transport-color">
+                                        <i class="fas fa-car"></i>
+                                    </div>
+                                    <div class="icon-option-label">Xe hơi</div>
+                                </div>
+                                <div class="icon-option" data-value="motorcycle" data-label="Xe máy">
+                                    <div class="icon-option-icon transport-color">
+                                        <i class="fas fa-motorcycle"></i>
+                                    </div>
+                                    <div class="icon-option-label">Xe máy</div>
+                                </div>
+                                <div class="icon-option" data-value="bus" data-label="Xe bus">
+                                    <div class="icon-option-icon transport-color">
+                                        <i class="fas fa-bus"></i>
+                                    </div>
+                                    <div class="icon-option-label">Xe bus</div>
+                                </div>
+                                <div class="icon-option" data-value="train" data-label="Tàu hỏa">
+                                    <div class="icon-option-icon transport-color">
+                                        <i class="fas fa-train"></i>
+                                    </div>
+                                    <div class="icon-option-label">Tàu hỏa</div>
+                                </div>
+                                <div class="icon-option" data-value="plane" data-label="Máy bay">
+                                    <div class="icon-option-icon travel-color">
+                                        <i class="fas fa-plane"></i>
+                                    </div>
+                                    <div class="icon-option-label">Máy bay</div>
+                                </div>
+                                <div class="icon-option" data-value="gas-pump" data-label="Xăng dầu">
+                                    <div class="icon-option-icon transport-color">
+                                        <i class="fas fa-gas-pump"></i>
+                                    </div>
+                                    <div class="icon-option-label">Xăng dầu</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="category-section">
+                            <div class="category-title">🏠 Nhà cửa & Tiện ích</div>
+                            <div class="icon-grid" data-category="home">
+                                <div class="icon-option" data-value="home" data-label="Nhà">
+                                    <div class="icon-option-icon home-color">
+                                        <i class="fas fa-house"></i>
+                                    </div>
+                                    <div class="icon-option-label">Nhà</div>
+                                </div>
+                                <div class="icon-option" data-value="lightbulb" data-label="Điện">
+                                    <div class="icon-option-icon home-color">
+                                        <i class="fas fa-lightbulb"></i>
+                                    </div>
+                                    <div class="icon-option-label">Điện</div>
+                                </div>
+                                <div class="icon-option" data-value="water" data-label="Nước">
+                                    <div class="icon-option-icon home-color">
+                                        <i class="fas fa-tint"></i>
+                                    </div>
+                                    <div class="icon-option-label">Nước</div>
+                                </div>
+                                <div class="icon-option" data-value="wifi" data-label="Internet">
+                                    <div class="icon-option-icon home-color">
+                                        <i class="fas fa-wifi"></i>
+                                    </div>
+                                    <div class="icon-option-label">Internet</div>
+                                </div>
+                                <div class="icon-option" data-value="tools" data-label="Sửa chữa">
+                                    <div class="icon-option-icon home-color">
+                                        <i class="fas fa-tools"></i>
+                                    </div>
+                                    <div class="icon-option-label">Sửa chữa</div>
+                                </div>
+                                <div class="icon-option" data-value="couch" data-label="Nội thất">
+                                    <div class="icon-option-icon home-color">
+                                        <i class="fas fa-couch"></i>
+                                    </div>
+                                    <div class="icon-option-label">Nội thất</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="category-section">
+                            <div class="category-title">🎬 Giải trí</div>
+                            <div class="icon-grid" data-category="entertainment">
+                                <div class="icon-option" data-value="film" data-label="Phim ảnh">
+                                    <div class="icon-option-icon entertainment-color">
+                                        <i class="fas fa-film"></i>
+                                    </div>
+                                    <div class="icon-option-label">Phim ảnh</div>
+                                </div>
+                                <div class="icon-option" data-value="music" data-label="Âm nhạc">
+                                    <div class="icon-option-icon entertainment-color">
+                                        <i class="fas fa-music"></i>
+                                    </div>
+                                    <div class="icon-option-label">Âm nhạc</div>
+                                </div>
+                                <div class="icon-option" data-value="gamepad" data-label="Game">
+                                    <div class="icon-option-icon entertainment-color">
+                                        <i class="fas fa-gamepad"></i>
+                                    </div>
+                                    <div class="icon-option-label">Game</div>
+                                </div>
+                                <div class="icon-option" data-value="book" data-label="Sách">
+                                    <div class="icon-option-icon education-color">
+                                        <i class="fas fa-book"></i>
+                                    </div>
+                                    <div class="icon-option-label">Sách</div>
+                                </div>
+                                <div class="icon-option" data-value="camera" data-label="Nhiếp ảnh">
+                                    <div class="icon-option-icon entertainment-color">
+                                        <i class="fas fa-camera"></i>
+                                    </div>
+                                    <div class="icon-option-label">Nhiếp ảnh</div>
+                                </div>
+                                <div class="icon-option" data-value="dumbbell" data-label="Thể thao">
+                                    <div class="icon-option-icon health-color">
+                                        <i class="fas fa-dumbbell"></i>
+                                    </div>
+                                    <div class="icon-option-label">Thể thao</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="category-section">
+                            <div class="category-title">❤️ Sức khỏe & Giáo dục</div>
+                            <div class="icon-grid" data-category="health">
+                                <div class="icon-option" data-value="heart" data-label="Sức khỏe">
+                                    <div class="icon-option-icon health-color">
+                                        <i class="fas fa-heart"></i>
+                                    </div>
+                                    <div class="icon-option-label">Sức khỏe</div>
+                                </div>
+                                <div class="icon-option" data-value="pills" data-label="Thuốc">
+                                    <div class="icon-option-icon health-color">
+                                        <i class="fas fa-pills"></i>
+                                    </div>
+                                    <div class="icon-option-label">Thuốc</div>
+                                </div>
+                                <div class="icon-option" data-value="hospital" data-label="Bệnh viện">
+                                    <div class="icon-option-icon health-color">
+                                        <i class="fas fa-hospital"></i>
+                                    </div>
+                                    <div class="icon-option-label">Bệnh viện</div>
+                                </div>
+                                <div class="icon-option" data-value="graduation-cap" data-label="Giáo dục">
+                                    <div class="icon-option-icon education-color">
+                                        <i class="fas fa-graduation-cap"></i>
+                                    </div>
+                                    <div class="icon-option-label">Giáo dục</div>
+                                </div>
+                                <div class="icon-option" data-value="laptop" data-label="Công nghệ">
+                                    <div class="icon-option-icon business-color">
+                                        <i class="fas fa-laptop"></i>
+                                    </div>
+                                    <div class="icon-option-label">Công nghệ</div>
+                                </div>
+                                <div class="icon-option" data-value="phone" data-label="Điện thoại">
+                                    <div class="icon-option-icon business-color">
+                                        <i class="fas fa-mobile-alt"></i>
+                                    </div>
+                                    <div class="icon-option-label">Điện thoại</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="categoryIconValue" name="categoryIcon">
+        </div>
+
+        <div class="selected-value">
+            <strong>Giá trị đã chọn:</strong> <span id="valueDisplay">Chưa chọn</span>
+        </div>
+    </div>
+
+    <script>
+        class ModernIconSelector {
+            constructor(triggerSelector, dropdownSelector) {
+                this.trigger = document.querySelector(triggerSelector);
+                this.dropdown = document.querySelector(dropdownSelector);
+                this.arrow = document.getElementById('dropdownArrow');
+                this.selectedIcon = document.getElementById('selectedIcon');
+                this.selectedText = document.getElementById('selectedText');
+                this.hiddenInput = document.getElementById('categoryIconValue');
+                this.searchInput = document.getElementById('iconSearchInput');
+                this.valueDisplay = document.getElementById('valueDisplay');
+                
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.initSearch();
+            }
+
+            bindEvents() {
+                // Toggle dropdown
+                this.trigger.addEventListener('click', () => this.toggleDropdown());
+                
+                // Select icon
+                this.dropdown.addEventListener('click', (e) => {
+                    const option = e.target.closest('.icon-option');
+                    if (option) {
+                        this.selectIcon(option);
+                    }
+                });
+
+                // Close on outside click
+                document.addEventListener('click', (e) => {
+                    if (!this.trigger.contains(e.target) && !this.dropdown.contains(e.target)) {
+                        this.closeDropdown();
+                    }
+                });
+
+                // Close on escape
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        this.closeDropdown();
+                    }
+                });
+            }
+
+            initSearch() {
+                this.searchInput.addEventListener('input', (e) => {
+                    this.filterIcons(e.target.value.toLowerCase());
+                });
+            }
+
+            toggleDropdown() {
+                if (this.dropdown.classList.contains('show')) {
+                    this.closeDropdown();
+                } else {
+                    this.openDropdown();
+                }
+            }
+
+            openDropdown() {
+                this.dropdown.classList.add('show');
+                this.trigger.classList.add('active');
+                this.arrow.classList.add('rotated');
+                this.searchInput.focus();
+            }
+
+            closeDropdown() {
+                this.dropdown.classList.remove('show');
+                this.trigger.classList.remove('active');
+                this.arrow.classList.remove('rotated');
+                this.searchInput.value = '';
+                this.filterIcons('');
+            }
+
+           selectIcon(option) {
+        const value = option.dataset.value;
+        const label = option.dataset.label;
+        const iconElement = option.querySelector('.icon-option-icon');
+        const iconClass = iconElement.querySelector('i').className;
+        const colorClass = iconElement.className.replace('icon-option-icon', '').trim();
+
+        // Remove previous selection
+        document.querySelectorAll('.icon-option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+
+        // Add selection
+        option.classList.add('selected');
+
+        // Update trigger display
+        this.selectedText.textContent = label;
+        this.selectedIcon.innerHTML = `<i class="${iconClass}"></i>`;
+        this.selectedIcon.className = `selected-icon ${colorClass}`; // Update color
+
+        // Update hidden input for form submission
+        this.hiddenInput.value = value;
+
+        // Update value display
+        this.valueDisplay.textContent = `${label} (${value})`;
+
+        // Close dropdown after selection
+        this.closeDropdown();
+    }
+
+    filterIcons(searchTerm) {
+        const iconOptions = document.querySelectorAll('.icon-option');
+        const categories = document.querySelectorAll('.category-section');
+
+        iconOptions.forEach(option => {
+            const label = option.dataset.label.toLowerCase();
+            const isVisible = label.includes(searchTerm);
+            option.style.display = isVisible ? 'flex' : 'none';
+        });
+
+        // Show/hide categories based on visible icons
+        categories.forEach(category => {
+            const visibleIcons = category.querySelectorAll('.icon-option[style="display: flex;"]');
+            category.style.display = visibleIcons.length > 0 ? 'block' : 'none';
+        });
+    }
+}
+
+// Initialize the icon selector
+new ModernIconSelector('#iconTrigger', '#iconDropdown');
+</script>

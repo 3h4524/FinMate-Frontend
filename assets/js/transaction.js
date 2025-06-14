@@ -4,6 +4,7 @@ let totalPages = 0;
 let editingTransactionId = null;
 let currentWallet = null;
 
+
 // DOM Elements
 const balanceAmount = document.getElementById('balanceAmount');
 const balanceCurrency = document.getElementById('balanceCurrency');
@@ -12,13 +13,18 @@ const walletBalance = document.getElementById('walletBalance');
 const walletError = document.getElementById('walletError');
 const walletModal = document.getElementById('walletModal');
 const walletForm = document.getElementById('walletForm');
-const newBalanceInput = document.getElementById('newBalanceInput');
+const newBalanceInput = document.getElementById('newBalance');
+const currencySelect = document.getElementById('currency');
 const currentBalanceDisplay = document.getElementById('currentBalanceDisplay');
-const currencySelect = document.getElementById('currencySelect');
 const editWalletBtn = document.getElementById('editWalletBtn');
 const closeWalletModalBtn = document.getElementById('closeWalletModalBtn');
 const cancelWalletBtn = document.getElementById('cancelWalletBtn');
 const updateWalletBtn = document.getElementById('updateWalletBtn');
+const createCategoryModal = document.getElementById('createCategoryModal');
+const createCategoryForm = document.getElementById('createCategoryForm');
+const closeCreateCategoryModalBtn = document.getElementById('closeCreateCategoryModalBtn');
+const cancelCategoryBtn = document.getElementById('cancelCategoryBtn');
+const submitCategoryBtn = document.getElementById('submitCategoryBtn');
 
 // JWT and User Management
 const getToken = () => {
@@ -87,11 +93,11 @@ const hideElement = (element) => {
 };
 
 const showSuccess = (message) => {
-    alert(message); // Thay bằng thông báo đẹp hơn nếu cần
+    alert(message); // Thay bằng Toastify nếu cần
 };
 
 const showError = (message) => {
-    alert(message); // Thay bằng thông báo đẹp hơn nếu cần
+    alert(message); // Thay bằng Toastify nếu cần
 };
 
 const showLoading = () => {
@@ -131,6 +137,7 @@ const resetWalletForm = () => {
     if (currentWallet) {
         newBalanceInput.value = currentWallet.balance;
         currencySelect.value = currentWallet.currency;
+        currentBalanceDisplay.textContent = formatAmount(currentWallet.balance) + ' ' + currentWallet.currency;
     }
 };
 
@@ -176,7 +183,7 @@ const validateTransactionForm = () => {
 };
 
 const validateWalletForm = () => {
-    if (!newBalanceInput.value || isNaN(newBalanceInput.value) || parseFloat(newBalanceInput.value) < 0) {
+    if (!newBalanceInput.value || isNaN(parseFloat(newBalanceInput.value)) || parseFloat(newBalanceInput.value) < 0) {
         showError('Vui lòng nhập số dư hợp lệ');
         return false;
     }
@@ -234,6 +241,7 @@ const loadWalletBalance = async () => {
             currentWallet = data.result;
             balanceAmount.textContent = formatAmount(currentWallet.balance);
             balanceCurrency.textContent = currentWallet.currency;
+            currentBalanceDisplay.textContent = formatAmount(currentWallet.balance) + ' ' + currentWallet.currency;
 
             hideElement(walletLoading);
             showElement(walletBalance);
@@ -270,6 +278,7 @@ const updateWalletBalance = async (newBalance, currency) => {
             currentWallet = data.result;
             balanceAmount.textContent = formatAmount(data.result.balance);
             balanceCurrency.textContent = data.result.currency;
+            currentBalanceDisplay.textContent = formatAmount(data.result.balance) + ' ' + data.result.currency;
             showSuccess('Cập nhật số dư ví thành công!');
             loadTransactions();
             return true;
@@ -278,7 +287,7 @@ const updateWalletBalance = async (newBalance, currency) => {
         }
     } catch (error) {
         console.error('Error updating wallet:', error);
-        showError(error.message || 'Lỗi khi cập nhật số dư ví');
+        showError(error.message || 'Lỗi khi cập nhật wallet');
         return false;
     }
 };
@@ -310,12 +319,12 @@ const loadTransactions = async (searchParams = {}) => {
             await loadWalletBalance();
         } else {
             showError(`Lỗi: ${data.message || 'Không thể tải giao dịch'}`);
-            document.getElementById('transactionTableBody').innerHTML = '<tr><td colspan="7" class="empty-state">Không có giao dịch nào</td></tr>';
+            document.getElementById('transactionTableBody').innerHTML = '<tr><td colspan="9" class="empty-state">Không có giao dịch nào</td></tr>';
         }
     } catch (error) {
         console.error('Error loading transactions:', error);
         showError('Lỗi khi tải danh sách giao dịch');
-        document.getElementById('transactionTableBody').innerHTML = '<tr><td colspan="7" class="empty-state">Không có giao dịch nào</td></tr>';
+        document.getElementById('transactionTableBody').innerHTML = '<tr><td colspan="9" class="empty-state">Không có giao dịch nào</td></tr>';
     } finally {
         hideLoading();
     }
@@ -365,6 +374,7 @@ const createTransaction = async (formData) => {
         });
         
         if (!response) return;
+
         const data = await response.json();
 
         if (data.code === 1000) {
@@ -404,6 +414,7 @@ const updateTransaction = async (transactionId, formData) => {
         });
         
         if (!response) return;
+
         const data = await response.json();
 
         if (data.code === 1000) {
@@ -459,8 +470,8 @@ const searchTransactions = async () => {
         userCategoryId: (type === 'user') ? id : null,
         minAmount: document.getElementById('minAmount').value ? parseFloat(document.getElementById('minAmount').value) : null,
         maxAmount: document.getElementById('maxAmount').value ? parseFloat(document.getElementById('maxAmount').value) : null,
-        startDate: document.getElementById('startDate').value || null,
-        endDate: document.getElementById('endDate').value || null,
+        startDate: document.getElementById('searchStartDate').value || null,
+        endDate: document.getElementById('searchEndDate').value || null,
         paymentMethod: document.getElementById('paymentMethodSearch').value || null,
         location: document.getElementById('locationSearch').value || null,
         note: document.getElementById('noteSearch').value || null,
@@ -480,8 +491,9 @@ const searchTransactions = async () => {
                 sortDirection: 'DESC'
             })
         });
-        
+
         if (!response) return;
+
         const data = await response.json();
 
         if (data.code === 1000) {
@@ -492,12 +504,12 @@ const searchTransactions = async () => {
             await loadWalletBalance();
         } else {
             showError(`Lỗi: ${data.message || 'Không thể tìm kiếm giao dịch'}`);
-            document.getElementById('transactionTableBody').innerHTML = '<tr><td colspan="7" class="empty-state">Không có giao dịch nào</td></tr>';
+            document.getElementById('transactionTableBody').innerHTML = '<tr><td colspan="9" class="empty-state">Không có giao dịch nào</td></tr>';
         }
     } catch (error) {
         console.error('Error searching transactions:', error);
         showError('Lỗi khi tìm kiếm giao dịch');
-        document.getElementById('transactionTableBody').innerHTML = '<tr><td colspan="7" class="empty-state">Không có giao dịch nào</td></tr>';
+        document.getElementById('transactionTableBody').innerHTML = '<tr><td colspan="9" class="empty-state">Không có giao dịch nào</td></tr>';
     } finally {
         hideLoading();
     }
@@ -508,7 +520,7 @@ const renderTransactions = (transactions) => {
     transactionTableBody.innerHTML = '';
     
     if (transactions.length === 0) {
-        transactionTableBody.innerHTML = '<tr><td colspan="7" class="empty-state">Không có giao dịch nào</td></tr>';
+        transactionTableBody.innerHTML = '<tr><td colspan="9" class="empty-state">Không có giao dịch nào</td></tr>';
         return;
     }
     
@@ -518,10 +530,18 @@ const renderTransactions = (transactions) => {
             return;
         }
         
+        const transactionType = transaction.categoryId ? 
+            (transaction.categoryType || 'EXPENSE') : 
+            (transaction.userCategoryType || 'EXPENSE');
+
+        const categoryIcon = transaction.categoryIcon || transaction.userCategoryIcon || '';
+        const categoryName = transaction.categoryName == null ? transaction.userCategoryName : transaction.categoryName;
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${formatDate(transaction.transactionDate)}</td>
-            <td>${transaction.categoryName == null ? transaction.userCategoryName : transaction.categoryName}</td>
+            <td>${'<i class="fas fa-question"></i>'} ${categoryName}</td>
+            <td>${transactionType}</td>
             <td><span class="${transaction.amount < 0 ? 'amount-negative' : 'amount-positive'}">${formatAmount(transaction.amount)}</span></td>
             <td><div class="max-w-32 truncate" title="${transaction.note || ''}">${transaction.note || '-'}</div></td>
             <td>${transaction.paymentMethod || '-'}</td>
@@ -599,25 +619,69 @@ const loadCategories = async () => {
 
         const systemCategories = systemData.result || [];
         const userCategories = userData.result || [];
+        console.info('System Categories:', systemCategories);
+        console.info('User Categories:', userCategories);
 
         const selectElements = document.querySelectorAll('.categorySelect');
 
         selectElements.forEach(select => {
             select.innerHTML = '<option value="">Chọn loại giao dịch</option>';
 
-            systemCategories.forEach(category => {
-                const option = document.createElement('option');
-                option.value = `system-${category.categoryId}`;
-                option.textContent = category.categoryName;
-                select.appendChild(option);
-            });
+            // Danh mục Thu nhập (INCOME)
+            const incomeSystemCategories = systemCategories.filter(cat => cat.type === 'INCOME');
+            const incomeUserCategories = userCategories.filter(cat => cat.type === 'INCOME');
 
-            userCategories.forEach(category => {
-                const option = document.createElement('option');
-                option.value = `user-${category.userCategoryId}`;
-                option.textContent = category.userCategoryName;
-                select.appendChild(option);
-            });
+            if (incomeSystemCategories.length > 0 || incomeUserCategories.length > 0) {
+                const incomeOptgroup = document.createElement('optgroup');
+                incomeOptgroup.label = 'Danh mục - Thu nhập';
+
+                incomeSystemCategories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = `system-${category.categoryId}`;
+                    option.innerHTML = `${'<i class="category.icon"></i>' || '<i class="fas fa-question"></i>'} ${category.categoryName}`;
+                    incomeOptgroup.appendChild(option);
+                });
+
+                incomeUserCategories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = `user-${category.userCategoryId}`;
+                    option.innerHTML = `${'<i class="category.icon"></i>' || '<i class="fas fa-question"></i>'} ${category.categoryName}`;
+                    incomeOptgroup.appendChild(option);
+                });
+
+                select.appendChild(incomeOptgroup);
+            }
+
+            // Danh mục Chi tiêu (EXPENSE)
+            const expenseSystemCategories = systemCategories.filter(cat => cat.type === 'EXPENSE');
+            const expenseUserCategories = userCategories.filter(cat => cat.type === 'EXPENSE');
+
+            if (expenseSystemCategories.length > 0 || expenseUserCategories.length > 0) {
+                const expenseOptgroup = document.createElement('optgroup');
+                expenseOptgroup.label = 'Danh mục - Chi tiêu';
+
+                expenseSystemCategories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = `system-${category.categoryId}`;
+                    option.innerHTML = `${'<i class="category.icon"></i>' || '<i class="fas fa-question"></i>'} ${category.categoryName}`;
+                    expenseOptgroup.appendChild(option);
+                });
+
+                expenseUserCategories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = `user-${category.userCategoryId}`;
+                    option.innerHTML = `${'<i class="category.icon"></i>' || '<i class="fas fa-question"></i>'} ${category.categoryName}`;
+                    expenseOptgroup.appendChild(option);
+                });
+
+                select.appendChild(expenseOptgroup);
+            }
+
+            // Thêm tùy chọn "Tạo danh mục mới"
+            const createOption = document.createElement('option');
+            createOption.value = 'create-new';
+            createOption.textContent = 'Tạo danh mục mới';
+            select.appendChild(createOption);
         });
 
     } catch (error) {
@@ -628,12 +692,58 @@ const loadCategories = async () => {
     }
 };
 
+const openCreateCategoryModal = () => {
+    createCategoryForm.reset();
+    showModal(createCategoryModal);
+};
+
+const closeCreateCategoryModal = () => {
+    hideModal(createCategoryModal);
+    createCategoryForm.reset();
+};
+
+const createUserCategory = async (formData) => {
+    if (!checkAuth()) return;
+    
+    const user = getCurrentUser();
+    
+    try {
+        const response = await apiRequest('http://localhost:8080/api/userCategories', {
+            method: 'POST',
+            body: JSON.stringify({
+                userId: user.userId,
+                userCategoryName: formData.categoryName,
+                type: formData.categoryType,
+                icon: formData.categoryIcon,
+                color: formData.categoryColor
+            })
+        });
+
+        if (!response) return;
+
+        const data = await response.json();
+
+        if (data.code === 1000) {
+            showSuccess('Tạo danh mục thành công!');
+            closeCreateCategoryModal();
+            await loadCategories();
+        } else {
+            showError(`Lỗi: ${data.message || 'Không thể tạo danh mục'}`);
+        }
+    } catch (error) {
+        console.error('Error creating user category:', error);
+        showError('Lỗi khi tạo danh mục');
+    }
+};
+
 // Modal Functions
 const openWalletModal = () => {
     if (currentWallet) {
-        currentBalanceDisplay.innerHTML = currentWallet.balance;
-        newBalanceInput.value = 0;
+        newBalanceInput.value = currentWallet.balance;
         currencySelect.value = currentWallet.currency;
+        currentBalanceDisplay.textContent = formatAmount(currentWallet.balance) + ' ' + currentWallet.currency;
+    } else {
+        currentBalanceDisplay.textContent = 'N/A';
     }
     showModal(walletModal);
 };
@@ -676,7 +786,61 @@ walletForm.addEventListener('submit', async (e) => {
     }
 });
 
-// Other Event Listeners
+if (createCategoryModal) {
+    closeCreateCategoryModalBtn.addEventListener('click', closeCreateCategoryModal);
+    cancelCategoryBtn.addEventListener('click', closeCreateCategoryModal);
+
+    createCategoryModal.addEventListener('click', (e) => {
+        if (e.target === createCategoryModal) {
+            closeCreateCategoryModal();
+        }
+    });
+
+    createCategoryForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const categoryName = document.getElementById('categoryName').value.trim();
+        const categoryType = document.getElementById('categoryType').value;
+        const categoryIcon = document.getElementById('categoryIcon').value;
+        const categoryColor = document.getElementById('categoryColor').value;
+
+        if (!categoryName) {
+            showError('Tên danh mục là bắt buộc');
+            return;
+        }
+        if (!categoryType) {
+            showError('Loại danh mục là bắt buộc');
+            return;
+        }
+        if (!categoryIcon) {
+            showError('Biểu tượng là bắt buộc');
+            return;
+        }
+
+        submitCategoryBtn.innerHTML = '⏳ Đang lưu...';
+        submitCategoryBtn.disabled = true;
+
+        try {
+            await createUserCategory({
+                categoryName,
+                categoryType,
+                categoryIcon,
+                categoryColor
+            });
+        } finally {
+            submitCategoryBtn.innerHTML = 'Lưu Danh Mục';
+            submitCategoryBtn.disabled = false;
+        }
+    });
+}
+
+document.addEventListener('change', (e) => {
+    if (e.target.classList.contains('categorySelect') && e.target.value === 'create-new') {
+        openCreateCategoryModal();
+        e.target.value = '';
+    }
+});
+
 document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', () => {
         document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
@@ -859,3 +1023,4 @@ window.addEventListener('load', () => {
         loadWalletBalance();
     }
 });
+
