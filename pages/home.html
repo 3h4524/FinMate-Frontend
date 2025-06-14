@@ -326,13 +326,13 @@
             const token = localStorage.getItem('token');
             const userData = localStorage.getItem('userData');
             
-            console.log('[AUTH] No token or user data found:', { token, userData });
             if (!token || !userData) {
                 console.log('[AUTH] No token or user data found, redirecting to login');
                 window.location.href = 'login.html';
                 return;
             }
 
+            console.log('[AUTH] Checking authentication status with token');
             try {
                 const response = await fetch('http://localhost:8080/api/v1/auth/verify-token', {
                     method: 'GET',
@@ -342,16 +342,18 @@
                     }
                 });
 
-                if (!response.ok) {
-                    console.log('[AUTH] Token verification failed, status:', response.status);
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    console.error('[AUTH] Error parsing response:', e);
                     localStorage.removeItem('token');
                     localStorage.removeItem('userData');
                     window.location.href = 'login.html';
                     return;
                 }
 
-                const data = await response.json();
-                if (!data.success) {
+                if (data.code !== 1000) {
                     console.log('[AUTH] Token verification failed:', data.message);
                     localStorage.removeItem('token');
                     localStorage.removeItem('userData');
@@ -367,22 +369,27 @@
 
                 // Update user info
                 const user = JSON.parse(userData);
-                document.querySelectorAll('.user-name, #userFullNameHeader').forEach(element => {
-                    element.textContent = user.name || user.email;
-                });
-
-                if (user.profilePicture) {
-                    document.querySelector('.user-info img').src = user.profilePicture;
+                const userName = user.name || user.email.split('@')[0];
+                
+                // Update header
+                const headerUserName = document.getElementById('userFullNameHeader');
+                if (headerUserName) {
+                    headerUserName.textContent = userName;
                 }
 
-                // Load sidebar
+                // Update sidebar
                 fetch('sidebar.html')
                     .then(response => response.text())
                     .then(html => {
                         document.getElementById('sidebar-container').innerHTML = html;
                         const sidebarUserNameSpan = document.querySelector('.sidebar .user-info .user-name');
-                        if (sidebarUserNameSpan && user.name) {
-                            sidebarUserNameSpan.textContent = user.name;
+                        if (sidebarUserNameSpan) {
+                            sidebarUserNameSpan.textContent = userName;
+                        }
+                        // Update avatar
+                        const sidebarAvatar = document.querySelector('.sidebar .user-info img');
+                        if (sidebarAvatar) {
+                            sidebarAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=388e3c&color=fff`;
                         }
                     });
 
@@ -391,6 +398,16 @@
                     .then(response => response.text())
                     .then(html => {
                         document.getElementById('profile-sidebar-container').innerHTML = html;
+                        // Update profile sidebar
+                        const profileName = document.getElementById('fullName');
+                        const profileEmail = document.getElementById('email');
+                        const profileAvatar = document.getElementById('profileAvatar');
+                        
+                        if (profileName) profileName.value = userName;
+                        if (profileEmail) profileEmail.value = user.email;
+                        if (profileAvatar) {
+                            profileAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=388e3c&color=fff`;
+                        }
                     });
 
                 // Update current date
@@ -499,7 +516,7 @@
                     </div>
                     <div class="card-body">
                         <div class="balance-info">
-                            <span class="balance-amount">$240,399</span>
+                            <span class="balance-amount" id="totalBalance">$0.00</span>
                         </div>
                         <div class="account-card">
                             <div class="account-details">
@@ -514,90 +531,92 @@
                 <div class="card goals-card">
                     <div class="card-header">
                         <h3>Goals</h3>
-                        <a href="/goals.html" class="view-all">View All</a>
+                        <a href="#" class="view-all">View All</a>
                     </div>
                     <div class="card-body">
-                        <div class="goal-item"><i class="fas fa-bullseye"></i> Target Achieved: $12,500</div>
-                        <div class="goal-item"><i class="fas fa-dollar-sign"></i> This month Target: $20,000</div>
-                        <div class="goal-progress-circle">70%</div>
-                    </div>
-                </div>
-                <!-- Upcoming Bill Card -->
-                <div class="card upcoming-bill-card">
-                    <div class="card-header">
-                        <h3>Upcoming Bill</h3>
-                        <a href="/bills.html" class="view-all">View All</a>
-                    </div>
-                    <div class="card-body">
-                        <div class="bill-item">
-                            <div class="bill-details">
-                                <span class="bill-date">May 15</span>
-                                <span>Figma - Monthly</span>
-                            </div>
-                            <div class="bill-amount">$150</div>
-                        </div>
-                        <div class="bill-item">
-                            <div class="bill-details">
-                                <span class="bill-date">Jun 16</span>
-                                <span>Adobe - Yearly</span>
-                            </div>
-                            <div class="bill-amount">$559</div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Recent Transaction Card -->
-                <div class="card recent-transaction-card" style="grid-column: span 2;">
-                    <div class="card-header">
-                        <h3>Recent Transaction</h3>
-                        <a href="/transactions.html" class="view-all">View All</a>
-                    </div>
-                    <div class="card-body">
-                        <ul>
-                            <li class="transaction-item">
-                                <div class="transaction-details">
-                                    <div class="transaction-icon"><i class="fas fa-gamepad"></i></div>
-                                    <div class="transaction-info">
-                                        <span class="transaction-name">GTR 5</span>
-                                        <span>Gadget & Gear - May 17, 2023</span>
-                                    </div>
-                                </div>
-                                <div class="transaction-amount credit">+$160.00</div>
-                            </li>
-                            <li class="transaction-item">
-                                <div class="transaction-details">
-                                    <div class="transaction-icon"><i class="fas fa-shopping-bag"></i></div>
-                                    <div class="transaction-info">
-                                        <span class="transaction-name">Polo Shirt</span>
-                                        <span>XL fashions - May 17, 2023</span>
-                                    </div>
-                                </div>
-                                <div class="transaction-amount debit">-$20.00</div>
-                            </li>
-                            <li class="transaction-item">
-                                <div class="transaction-details">
-                                    <div class="transaction-icon"><i class="fas fa-utensils"></i></div>
-                                    <div class="transaction-info">
-                                        <span class="transaction-name">Biriyani</span>
-                                        <span>Hajir Biriyani - May 17, 2023</span>
-                                    </div>
-                                </div>
-                                <div class="transaction-amount debit">-$10.00</div>
-                            </li>
+                        <ul class="goals-list">
+                            <!-- Goal items will be inserted here by JavaScript -->
                         </ul>
+                        <p class="no-goals-message" style="display: none;">No goals set yet.</p>
                     </div>
+                    <button class="add-new-btn"><i class="fas fa-plus"></i> Add New Goal</button>
                 </div>
-                <!-- Statistics Card -->
-                <div class="card statistics-card">
+                <!-- Recent Transactions Card -->
+                <div class="card recent-transactions-card">
                     <div class="card-header">
-                        <h3>Statistics</h3>
-                        <a href="/statistics.html" class="view-all">View All</a>
+                        <h3>Recent Transactions</h3>
+                        <a href="#" class="view-all">View All</a>
                     </div>
                     <div class="card-body">
-                        <span style="color: #a3c9a8;">(Chart Placeholder)</span>
+                        <div class="transaction-summary">
+                            <div class="summary-item">
+                                <span class="summary-label">Income</span>
+                                <span class="summary-amount income" id="incomeAmount">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Expenses</span>
+                                <span class="summary-amount expense" id="expenseAmount">$0.00</span>
+                            </div>
+                        </div>
+                        <div class="transaction-list-container">
+                            <ul class="transaction-list" id="transactionList">
+                                <!-- Transaction items will be inserted here by JavaScript -->
+                            </ul>
+                            <p class="no-transactions-message" style="display: none;">No recent transactions.</p>
+                        </div>
                     </div>
+                    <button class="add-new-btn" id="addTransactionBtn"><i class="fas fa-plus"></i> Add New Transaction</button>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- Transaction Modal -->
+    <div id="transactionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add/Edit Transaction</h3>
+                <button class="close-modal-btn" id="closeModalBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="transactionForm">
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <input type="text" id="description" name="description" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Amount</label>
+                        <input type="number" id="amount" name="amount" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="type">Type</label>
+                        <select id="type" name="type" required>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <input type="text" id="category" name="category" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="save-btn">Save Transaction</button>
+                        <button type="button" class="cancel-btn" id="cancelTransactionBtn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification element -->
+    <div id="notification" class="notification">
+        <span id="notificationText"></span>
+    </div>
+    
+    <script src="../assets/js/home.js" type="module"></script>
 </body>
 </html>
