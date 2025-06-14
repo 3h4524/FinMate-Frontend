@@ -1,3 +1,4 @@
+
 let budgetChart = null;
 let chartType = 'bar';
 let budgetHistory = [];
@@ -5,6 +6,18 @@ let userId;
 let monitorPage = 0;
 let analysisPage = 0;
 const pageSize = 10;
+
+const periodMap = {
+    DAILY: 'Hàng ngày',
+    WEEKLY: 'Hàng tuần',
+    MONTHLY: 'Hàng tháng'
+};
+
+const analysisPeriodMap = {
+    current_day: 'Ngày',
+    current_week: 'Tuần',
+    current_month: 'Tháng'
+};
 
 async function initializeUI() {
     await fetchUserId();
@@ -65,21 +78,21 @@ function addBudgetCategory() {
     const row = document.createElement('div');
     row.className = 'flex items-center gap-2 mb-2';
     row.innerHTML = `
-            <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-                <option value="">Chọn danh mục</option>
-                <option value="6">Ăn uống</option>
-                <option value="7">Mua sắm</option>
-                <option value="8">Di chuyển</option>
-                <option value="9">Nhà cửa</option>
-                <option value="10">Giải trí</option>
-                <option value="11">Sức khỏe</option>
-                <option value="12">Giáo dục</option>
-                <option value="13">Hóa đơn</option>
-                <option value="14">Khác</option>
-            </select>
-            <input type="number" name="amounts[]" step="0.01" min="0" placeholder="Số tiền ($)" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-            <button type="button" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700" onclick="removeBudgetCategory(this)">×</button>
-        `;
+        <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
+            <option value="">Chọn danh mục</option>
+            <option value="6">Ăn uống</option>
+            <option value="7">Mua sắm</option>
+            <option value="8">Di chuyển</option>
+            <option value="9">Nhà cửa</option>
+            <option value="10">Giải trí</option>
+            <option value="11">Sức khỏe</option>
+            <option value="12">Giáo dục</option>
+            <option value="13">Hóa đơn</option>
+            <option value="14">Khác</option>
+        </select>
+        <input type="number" name="amounts[]" step="0.01" min="0" placeholder="Số tiền ($)" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
+        <button type="button" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700" onclick="removeBudgetCategory(this)">×</button>
+    `;
     categoryList.appendChild(row);
 }
 
@@ -97,21 +110,21 @@ function addUpdateBudgetCategory() {
     const row = document.createElement('div');
     row.className = 'flex items-center gap-2 mb-2';
     row.innerHTML = `
-            <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-                <option value="">Chọn danh mục</option>
-                <option value="6">Ăn uống</option>
-                <option value="7">Mua sắm</option>
-                <option value="8">Di chuyển</option>
-                <option value="9">Nhà cửa</option>
-                <option value="10">Giải trí</option>
-                <option value="11">Sức khỏe</option>
-                <option value="12">Giáo dục</option>
-                <option value="13">Hóa đơn</option>
-                <option value="14">Khác</option>
-            </select>
-            <input type="number" name="amounts[]" step="0.01" min="0" placeholder="Số tiền ($)" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-            <button type="button" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700" onclick="removeUpdateBudgetCategory(this)">×</button>
-        `;
+        <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
+            <option value="">Chọn danh mục</option>
+            <option value="6">Ăn uống</option>
+            <option value="7">Mua sắm</option>
+            <option value="8">Di chuyển</option>
+            <option value="9">Nhà cửa</option>
+            <option value="10">Giải trí</option>
+            <option value="11">Sức khỏe</option>
+            <option value="12">Giáo dục</option>
+            <option value="13">Hóa đơn</option>
+            <option value="14">Khác</option>
+        </select>
+        <input type="number" name="amounts[]" step="0.01" min="0" placeholder="Số tiền ($)" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
+        <button type="button" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700" onclick="removeUpdateBudgetCategory(this)">×</button>
+    `;
     categoryList.appendChild(row);
 }
 
@@ -240,7 +253,6 @@ document.getElementById("update-budget-form").addEventListener("submit", async f
         notificationThreshold: data.threshold
     };
 
-
     try {
         const response = await fetch(`http://localhost:8080/budget/${budgetId}`, {
             method: "PUT",
@@ -294,20 +306,20 @@ async function monitorBudgets(page) {
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                        <td class="p-3">${budget.categoryName}</td>
-                        <td class="p-3">${usagePercent}%</td>
-                        <td class="p-3">
-                            <div class="w-full max-w-[180px] h-2 bg-gray-200 rounded-full mx-auto">
-                                <div class="${progressClass} h-full rounded-full" style="width: ${Math.min(usagePercent, 100)}%"></div>
-                            </div>
-                        </td>
-                        <td class="p-3">${formatCurrency(remaining)}</td>
-                        <td class="p-3">
-                            <button onclick="viewBudgetDetails(${budget.id}, '${budget.categoryName}', ${budget.amount}, ${budget.currentSpending}, ${budget.notificationThreshold}, '${budget.startDate}', '${budget.endDate}', '${budget.periodType}')" class="text-teal-600 hover:text-teal-800 mr-2"><i class="fas fa-eye"></i></button>
-                            <button onclick="openUpdateModal(${budget.id}, '${budget.periodType}', '${budget.startDate}', '${budget.endDate}', ${budget.notificationThreshold}, '${budget.categoryName}', ${budget.amount})" class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
-                            <button onclick="deleteBudget(${budget.id})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
-                        </td>
-                    `;
+                    <td class="p-3">${budget.categoryName}</td>
+                    <td class="p-3">${usagePercent}%</td>
+                    <td class="p-3">
+                        <div class="w-full max-w-[180px] h-2 bg-gray-200 rounded-full mx-auto">
+                            <div class="${progressClass} h-full rounded-full" style="width: ${Math.min(usagePercent, 100)}%"></div>
+                        </div>
+                    </td>
+                    <td class="p-3">${formatCurrency(remaining)}</td>
+                    <td class="p-3">
+                        <button onclick="viewBudgetDetails(${budget.id}, '${budget.categoryName}', ${budget.amount}, ${budget.currentSpending}, ${budget.notificationThreshold}, '${budget.startDate}', '${budget.endDate}', '${budget.periodType}')" class="text-teal-600 hover:text-teal-800 mr-2"><i class="fas fa-eye"></i></button>
+                        <button onclick="openUpdateModal(${budget.id}, '${budget.periodType}', '${budget.startDate}', '${budget.endDate}', ${budget.notificationThreshold}, '${budget.categoryName}', ${budget.amount})" class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteBudget(${budget.id})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
                 monitorTableBody.appendChild(row);
             });
 
@@ -324,7 +336,6 @@ async function monitorBudgets(page) {
 async function fetchUserId() {
     console.log("Đang lấy user id");
     try {
-
         userId = 1;
         console.log("user id: ", userId);
     } catch (error) {
@@ -345,34 +356,34 @@ function viewBudgetDetails(id, categoryName, amount, currentSpending, threshold,
     const usagePercent = (currentSpending / amount * 100).toFixed(2) || 0;
     const remaining = amount - (currentSpending || 0);
     const detailsContent = `
-            <div class="p-4 bg-teal-50 rounded-lg border border-teal-100">
-                <p><strong class="text-teal-700">Danh mục:</strong> <span class="text-teal-800">${categoryName}</span></p>
-            </div>
-            <div class="p-4 bg-green-50 rounded-lg border border-green-100">
-                <p><strong class="text-green-700">Số tiền Ngân sách:</strong> <span class="text-green-800">${formatCurrency(amount)}</span></p>
-            </div>
-            <div class="p-4 bg-red-50 rounded-lg border border-red-100">
-                <p><strong class="text-red-700">Chi tiêu Hiện tại:</strong> <span class="text-red-800">${formatCurrency(currentSpending || 0)}</span></p>
-            </div>
-            <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-100">
-                <p><strong class="text-yellow-700">Phần trăm Sử dụng:</strong> <span class="text-yellow-800">${usagePercent}%</span></p>
-            </div>
-            <div class="p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <p><strong class="text-blue-700">Ngưỡng Cảnh báo:</strong> <span class="text-blue-800">${threshold}%</span></p>
-            </div>
-            <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
-                <p><strong class="text-gray-700">Ngày Bắt đầu:</strong> <span class="text-gray-800">${startDate}</span></p>
-            </div>
-            <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
-                <p><strong class="text-gray-700">Ngày Kết thúc:</strong> <span class="text-gray-800">${endDate}</span></p>
-            </div>
-            <div class="p-4 bg-purple-50 rounded-lg border border-purple-100">
-                <p><strong class="text-purple-700">Kỳ hạn:</strong> <span class="text-purple-800">${periodType === 'DAILY' ? 'Hàng ngày' : periodType === 'WEEKLY' ? 'Hàng tuần' : periodType === 'MONTHLY' ? 'Hàng tháng' : 'Hàng năm'}</span></p>
-            </div>
-            <div class="p-4 bg-green-50 rounded-lg border border-green-100">
-                <p><strong class="text-green-700">Còn lại:</strong> <span class="text-green-800">${formatCurrency(remaining)}</span></p>
-            </div>
-        `;
+        <div class="p-4 bg-teal-50 rounded-lg border border-teal-100">
+            <p><strong class="text-teal-700">Danh mục:</strong> <span class="text-teal-800">${categoryName}</span></p>
+        </div>
+        <div class="p-4 bg-green-50 rounded-lg border border-green-100">
+            <p><strong class="text-green-700">Số tiền Ngân sách:</strong> <span class="text-green-800">${formatCurrency(amount)}</span></p>
+        </div>
+        <div class="p-4 bg-red-50 rounded-lg border border-red-100">
+            <p><strong class="text-red-700">Chi tiêu Hiện tại:</strong> <span class="text-red-800">${formatCurrency(currentSpending || 0)}</span></p>
+        </div>
+        <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-100">
+            <p><strong class="text-yellow-700">Phần trăm Sử dụng:</strong> <span class="text-yellow-800">${usagePercent}%</span></p>
+        </div>
+        <div class="p-4 bg-blue-50 rounded-lg border border-blue-100">
+            <p><strong class="text-blue-700">Ngưỡng Cảnh báo:</strong> <span class="text-blue-800">${threshold}%</span></p>
+        </div>
+        <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
+            <p><strong class="text-gray-700">Ngày Bắt đầu:</strong> <span class="text-gray-800">${startDate}</span></p>
+        </div>
+        <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
+            <p><strong class="text-gray-700">Ngày Kết thúc:</strong> <span class="text-gray-800">${endDate}</span></p>
+        </div>
+        <div class="p-4 bg-purple-50 rounded-lg border border-purple-100">
+            <p><strong class="text-purple-700">Kỳ hạn:</strong> <span class="text-purple-800">${periodMap[periodType] || 'Không xác định'}</span></p>
+        </div>
+        <div class="p-4 bg-green-50 rounded-lg border border-green-100">
+            <p><strong class="text-green-700">Còn lại:</strong> <span class="text-green-800">${formatCurrency(remaining)}</span></p>
+        </div>
+    `;
     document.getElementById('budgetDetailsContent').innerHTML = detailsContent;
     openModal('budgetDetailsModal');
 }
@@ -389,21 +400,21 @@ function openUpdateModal(budgetId, periodType, startDate, endDate, threshold, ca
     const row = document.createElement('div');
     row.className = 'flex items-center gap-2 mb-2';
     row.innerHTML = `
-            <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-                <option value="">Chọn danh mục</option>
-                <option value="6" ${categoryName === 'Ăn uống' ? 'selected' : ''}>Ăn uống</option>
-                <option value="7" ${categoryName === 'Mua sắm' ? 'selected' : ''}>Mua sắm</option>
-                <option value="8" ${categoryName === 'Di chuyển' ? 'selected' : ''}>Di chuyển</option>
-                <option value="9" ${categoryName === 'Nhà cửa' ? 'selected' : ''}>Nhà cửa</option>
-                <option value="10" ${categoryName === 'Giải trí' ? 'selected' : ''}>Giải trí</option>
-                <option value="11" ${categoryName === 'Sức khỏe' ? 'selected' : ''}>Sức khỏe</option>
-                <option value="12" ${categoryName === 'Giáo dục' ? 'selected' : ''}>Giáo dục</option>
-                <option value="13" ${categoryName === 'Hóa đơn' ? 'selected' : ''}>Hóa đơn</option>
-                <option value="14" ${categoryName === 'Khác' ? 'selected' : ''}>Khác</option>
-            </select>
-            <input type="number" name="amounts[]" step="0.01" min="0" value="${amount}" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-            <button type="button" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700" onclick="removeUpdateBudgetCategory(this)">×</button>
-        `;
+        <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
+            <option value="">Chọn danh mục</option>
+            <option value="6" ${categoryName === 'Ăn uống' ? 'selected' : ''}>Ăn uống</option>
+            <option value="7" ${categoryName === 'Mua sắm' ? 'selected' : ''}>Mua sắm</option>
+            <option value="8" ${categoryName === 'Di chuyển' ? 'selected' : ''}>Di chuyển</option>
+            <option value="9" ${categoryName === 'Nhà cửa' ? 'selected' : ''}>Nhà cửa</option>
+            <option value="10" ${categoryName === 'Giải trí' ? 'selected' : ''}>Giải trí</option>
+            <option value="11" ${categoryName === 'Sức khỏe' ? 'selected' : ''}>Sức khỏe</option>
+            <option value="12" ${categoryName === 'Giáo dục' ? 'selected' : ''}>Giáo dục</option>
+            <option value="13" ${categoryName === 'Hóa đơn' ? 'selected' : ''}>Hóa đơn</option>
+            <option value="14" ${categoryName === 'Khác' ? 'selected' : ''}>Khác</option>
+        </select>
+        <input type="number" name="amounts[]" step="0.01" min="0" value="${amount}" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
+        <button type="button" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700" onclick="removeUpdateBudgetCategory(this)">×</button>
+    `;
     categoryList.appendChild(row);
     openModal('updateBudgetModal');
 }
@@ -463,12 +474,12 @@ async function loadAnalysis(page) {
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                        <td class="p-3">${budget.categoryName || budget.userCategoryName}</td>
-                        <td class="p-3">${formatCurrency(budget.plannedAmount)}</td>
-                        <td class="p-3">${formatCurrency(budget.actualSpending || 0)}</td>
-                        <td class="p-3 ${variance < 0 ? 'text-red-600' : 'text-green-600'}">${formatCurrency(variance)}</td>
-                        <td class="p-3"><span class="px-3 py-1 rounded-full ${statusClass}">${statusText}</span></td>
-                    `;
+                    <td class="p-3">${budget.categoryName || budget.userCategoryName}</td>
+                    <td class="p-3">${formatCurrency(budget.plannedAmount)}</td>
+                    <td class="p-3">${formatCurrency(budget.actualSpending || 0)}</td>
+                    <td class="p-3 ${variance < 0 ? 'text-red-600' : 'text-green-600'}">${formatCurrency(variance)}</td>
+                    <td class="p-3"><span class="px-3 py-1 rounded-full ${statusClass}">${statusText}</span></td>
+                `;
                 table.appendChild(row);
 
                 chartLabels.push(budget.categoryName || budget.userCategoryName);
@@ -500,11 +511,11 @@ async function loadAnalysis(page) {
                     maintainAspectRatio: false,
                     scales: {
                         y: { beginAtZero: true, title: { display: true, text: 'Số tiền ($)' } },
-                        x: { title: { display: true, text: period.includes('day') ? 'Giờ' : period.includes('week') ? 'Ngày' : period.includes('month') ? 'Tuần' : 'Tháng' } }
+                        x: { title: { display: true, text: analysisPeriodMap[period] || 'Không xác định' } }
                     },
                     plugins: {
                         legend: { position: 'top' },
-                        title: { display: true, text: `Ngân sách so với Thực tế - ${period === 'current_day' ? 'Ngày' : period === 'current_week' ? 'Tuần' : period === 'current_month' ? 'Tháng' : 'Năm'}` }
+                        title: { display: true, text: `Ngân sách so với Thực tế - ${analysisPeriodMap[period] || 'Không xác định'}` }
                     }
                 }
             };
@@ -629,11 +640,11 @@ function loadBudgetHistory() {
     budgetHistory.forEach(budget => {
         const row = document.createElement('tr');
         row.innerHTML = `
-                <td class="p-3">${budget.periodType === 'DAILY' ? 'Hàng ngày' : budget.periodType === 'WEEKLY' ? 'Hàng tuần' : budget.periodType === 'MONTHLY' ? 'Hàng tháng' : 'Hàng năm'}</td>
-                <td class="p-3">${budget.categoryName}</td>
-                <td class="p-3">${formatCurrency(budget.amount)}</td>
-                <td class="p-3">${budget.startDate} đến ${budget.endDate}</td>
-            `;
+            <td class="p-3">${periodMap[budget.periodType] || 'Không xác định'}</td>
+            <td class="p-3">${budget.categoryName}</td>
+            <td class="p-3">${formatCurrency(budget.amount)}</td>
+            <td class="p-3">${budget.startDate} đến ${budget.endDate}</td>
+        `;
         tableBody.appendChild(row);
     });
 }
@@ -680,4 +691,5 @@ function setupEventListeners() {
         });
     });
 }
+
 window.onload = initializeUI;
