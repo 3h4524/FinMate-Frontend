@@ -1,6 +1,6 @@
 let transactions;
 let goalProgress;
-let userId;
+let user;
 
 let filteredData;
 
@@ -19,16 +19,11 @@ let goalProgressPercentage = document.getElementById('goalProgressPercentage');
 let noTransaction = document.getElementById('noTransaction');
 let transactionIncludeTitle = document.getElementById('transactionIncludeTitle');
 
-async function fetchUserId() {
-    console.log("Fetching user id");
-    userId = 6;
-}
-
 async function fetchGoalProgress() {
     console.log("fetching Goal Progress");
     try {
-        const response = await fetch(`${API_BASE_URL}/goal_tracking/list`, {
-            headers: { 'userId': userId.toString() }
+        const response = await apiRequest(`${API_BASE_URL}/goal_tracking/list`, {
+            headers: { 'userId': user.userId.toString() }
         });
 
         if (!response.ok) throw new Error("Failed to fetch Goal Progress");
@@ -43,7 +38,7 @@ async function fetchGoalProgress() {
 async function fetchTransactions() {
     console.log("fetching Transactions");
     try {
-        const response = await fetch(`${API_BASE_URL}/api/transactions?userId=${userId}`);
+        const response = await apiRequest(`${API_BASE_URL}/api/transactions?userId=${user.userId}`);
         if (!response.ok) throw new Error('Failed to fetch transactions');
         const data = await response.json();
         transactions = data.result.content;
@@ -291,7 +286,6 @@ function initPercenGoalProgress() {
 
 async function initializeUI() {
     try {
-        await fetchUserId(); // Wait for userId to be fetched
         await Promise.all([fetchTransactions(), fetchGoalProgress()]); // nếu muốn fetch 3 cái gần như cùng lúc
 
         initPercenGoalProgress();
@@ -303,4 +297,9 @@ async function initializeUI() {
     }
 }
 
-initializeUI();
+window.addEventListener('load', () => {
+    if (checkAuth()) {
+        user = getCurrentUser();
+        initializeUI();
+    }
+});

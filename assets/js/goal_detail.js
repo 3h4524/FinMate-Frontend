@@ -56,6 +56,15 @@ const NOTIFICATION_TYPES = {
         icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />`,
         showActions: false
+    },
+    NOT_STARTED: {
+        bgClass: 'bg-gradient-to-r from-yellow-50 to-amber-50 border-l-4 border-yellow-400',
+        iconClass: 'text-yellow-500',
+        titleClass: 'text-yellow-800',
+        messageClass: 'text-yellow-700',
+        badgeClass: 'text-yellow-600 bg-yellow-100',
+        icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>`,
+        showActions: false
     }
 };
 
@@ -105,7 +114,7 @@ function renderError() {
 async function fetchGoalDetails() {
     console.log("fetchGoalDetails: " + goalId);
     try {
-        const response = await fetch(`${API_BASE_URL}/goal_tracking/${goalId}`);
+        const response = await apiRequest(`${API_BASE_URL}/goal_tracking/${goalId}`);
         if (!response.ok) throw new Error('Failed to fetch goal details');
         const data = await response.json();
         goalProgressResponse = data.result;
@@ -119,7 +128,7 @@ async function fetchGoalDetails() {
 
 async function fetchGoalProgressData() {
     try {
-        const response = await fetch(`${API_BASE_URL}/goal_tracking/list_progress/${goalId}`);
+        const response = await apiRequest(`${API_BASE_URL}/goal_tracking/list_progress/${goalId}`);
         if (!response.ok) throw new Error('Failed to fetch goal progress data');
         const data = await response.json();
         return data.result.content;
@@ -131,7 +140,7 @@ async function fetchGoalProgressData() {
 
 async function fetchGoalContributionData(goalId) {
     try {
-        const contributionsResponse = await fetch(`${API_BASE_URL}/contributions/${goalId}`);
+        const contributionsResponse = await apiRequest(`${API_BASE_URL}/contributions/${goalId}`);
         if (!contributionsResponse.ok) throw new Error('Failed to fetch goal contributions');
         const contributionsData = await contributionsResponse.json();
         return contributionsData.result.content;
@@ -281,7 +290,7 @@ async function renderGoalMessage() {
     console.log("Vao render message");
 
     try {
-        const response = await fetch(`${API_BASE_URL}/goal/${goalId}`);
+        const response = await apiRequest(`${API_BASE_URL}/goal/${goalId}`);
 
         if (!response.ok) throw new Error("Cannot track goal to alert.");
 
@@ -319,6 +328,9 @@ async function renderGoalMessage() {
 
             if (daysPassed < 0) {
                 console.warn(`Goal ${goal.id} has startDate after today: ${startDate}`);
+
+                showNotStartedNotification();
+
                 return;
             }
 
@@ -377,11 +389,8 @@ async function confirmCancelGoal(goalId) {
 async function cancelGoal(goalId) {
     console.log("trying to cancel Goal", goalId);
     try {
-        const response = await fetch(`${API_BASE_URL}/goal/cancel/${goalId}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+        const response = await apiRequest(`${API_BASE_URL}/goal/cancel/${goalId}`, {
+            method: 'PATCH'
         });
 
         if (!response.ok) {
@@ -431,8 +440,16 @@ function showCompletedNotification() {
 function showFailedNotification() {
     updateProgressNotification(
         'FAILED',
-        'Goal Incomplete ❌',
+        'Goal Not Achieved ❌',
         'You didn’t meet your goal this time. Keep pushing!'
+    );
+}
+
+function showNotStartedNotification() {
+    updateProgressNotification(
+        'NOT_STARTED',
+        'Goal Not Started ⏳',
+        'Your goal hasn’t started yet. Get ready for the kickoff!'
     );
 }
 
@@ -488,23 +505,37 @@ function closeModalAddContribution() {
 
 
 // Open edit modal and populate fields
-function openEditModal() {
+async function openEditModal() {
     editGoalModal.classList.remove('hidden');
-    document.getElementById('editGoalName').value = goalProgressResponse.name;
-    document.getElementById('editTargetAmount').value = goalProgressResponse.targetAmount.toFixed(2);
-    document.getElementById('editDeadline').value = goalProgressResponse.deadline;
-    document.getElementById('editNotificationEnabled').checked = goalProgressResponse.notificationEnabled || false;
-    editFormError.classList.add('hidden');
+    try {
+        const response = await apiRequest(`${API_BASE_URL}/goal/${goalId}`);
+        const data = await response.json();
 
-    // Store initial form values
-    initialFormValues = {
-        name: goalProgressResponse.name,
-        targetAmount: goalProgressResponse.targetAmount.toFixed(2),
-        deadline: goalProgressResponse.deadline,
-        notificationEnabled: goalProgressResponse.notificationEnabled || false
-    };
+        if (data.code === 1000) {
+            const goalResponse = data.result;
 
-    updateSaveButtonState();
+            document.getElementById('editGoalName').value = goalResponse.name;
+            document.getElementById('editTargetAmount').value = goalResponse.targetAmount.toFixed(2);
+            document.getElementById('editDeadline').value = goalResponse.deadline;
+            document.getElementById('editNotificationEnabled').checked = goalResponse.notificationEnabled || false;
+            editFormError.classList.add('hidden');
+
+            // Store initial form values
+            initialFormValues = {
+                name: goalResponse.name,
+                targetAmount: goalResponse.targetAmount.toFixed(2),
+                deadline: goalResponse.deadline,
+                notificationEnabled: goalResponse.notificationEnabled || false
+            };
+
+            updateSaveButtonState();
+
+        } else {
+            throw new Error("Fail to mark as completed");
+        }
+    } catch (err) {
+        showResult(err, 'error');
+    }
 }
 
 // Close edit modal
@@ -669,11 +700,8 @@ editGoalForm.addEventListener('submit', async (e) => {
     };
 
     try {
-        const response = await fetch(`${API_BASE_URL}/goal/${goalId}`, {
+        const response = await apiRequest(`${API_BASE_URL}/goal/${goalId}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify(updatedGoal)
         });
         if (!response.ok) throw new Error('Failed to update goal');
@@ -687,4 +715,9 @@ editGoalForm.addEventListener('submit', async (e) => {
     }
 });
 
-fetchGoalDetails();
+window.addEventListener('load', () => {
+    if (checkAuth()) {
+        fetchGoalDetails();
+    }
+});
+

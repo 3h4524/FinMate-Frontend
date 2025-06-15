@@ -1,10 +1,7 @@
 async function addGoalContribution(contribution) {
     try {
-        const response = await fetch(`${API_BASE_URL}/contributions/${contribution.goalId}`, {
+        const response = await apiRequest(`${API_BASE_URL}/contributions/${contribution.goalId}`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify(contribution)
         });
 

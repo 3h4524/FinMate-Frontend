@@ -23,7 +23,7 @@ const statusFilter = document.getElementById('statusFilter');
 // API configuration
 const API_BASE_URL = 'http://localhost:8080';
 
-let userId;
+let user;
 
 function renderError() {
     errorMessage.classList.remove('hidden');
@@ -34,8 +34,8 @@ function renderError() {
 async function fetchGoalProgress() {
     console.log('fetching Goals Progress...');
     try {
-        const response = await fetch(`${API_BASE_URL}/goal_tracking/list`, {
-            headers: { 'userId': userId.toString() }
+        const response = await apiRequest(`${API_BASE_URL}/goal_tracking/list`, {
+            headers: { 'userId': user.userId.toString() }
         });
         const data = await response.json();
 
@@ -52,12 +52,6 @@ async function fetchGoalProgress() {
         error = 'Failed to fetch goals';
         renderError();
     }
-}
-
-async function fetchUserId() {
-    console.log("Fetching user id");
-    userId = 1;
-    console.log("User ID: ", userId);
 }
 
 // Event listener for status filter
@@ -170,11 +164,8 @@ async function confirmCancelGoal(goalId) {
 async function cancelGoal(goalId) {
     console.log("trying to cancel Goal: ", goalId);
     try {
-        const response = await fetch(`${API_BASE_URL}/goal/cancel/${goalId}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+        const response = await apiRequest(`${API_BASE_URL}/goal/cancel/${goalId}`, {
+            method: 'PATCH'
         });
 
 
@@ -195,7 +186,7 @@ async function markAsComplete(goalId) {
     console.log("Trying to mark as completed goal: ", goalId);
 
     try {
-        const response = await fetch(`${API_BASE_URL}/goal/${goalId}`);
+        const response = await apiRequest(`${API_BASE_URL}/goal/${goalId}`);
         const data = await response.json();
 
         if (data.code === 1000) {
@@ -273,7 +264,7 @@ newGoalForm.addEventListener('submit', async (e) => {
     const formData = new FormData(newGoalForm);
     const goalData = {
         name: formData.get('nameModal'),
-        userId: userId,
+        userId: user.userId,
         description: formData.get('descriptionModal'),
         targetAmount: parseFloat(formData.get('targetAmountModal')),
         currentAmount: parseFloat(formData.get('currentAmountModal')),
@@ -306,15 +297,12 @@ newGoalForm.addEventListener('submit', async (e) => {
     }
 
     try {
-        const response = await fetch(`${API_BASE_URL}/goal`, {
+        const response = await apiRequest(`${API_BASE_URL}/goal`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify(goalData)
         });
 
-        console.log("Xong fetch");
+        console.log("Xong fetch, ", response);
         const data = await response.json();
         console.log("Xong chuyen data thanh json: ", data);
 
@@ -349,10 +337,11 @@ function validateAmounts() {
 targetAmountInput.addEventListener('input', validateAmounts);
 currentAmountInput.addEventListener('input', validateAmounts);
 
-async function initializeApp() {
+async function initializeUI() {
     try {
-        await fetchUserId(); // Wait for userId to be fetched
         await fetchGoalProgress(); // Then fetch goals
+
+
         // await Promise.all([fetchGoalProgress(), fetchTransaction()]); // nếu muốn fetch 2 cái khác song song
     } catch (err) {
         error = 'Failed to initialize app: ' + err.message;
@@ -361,4 +350,11 @@ async function initializeApp() {
     }
 }
 
-initializeApp();
+// Initialize
+window.addEventListener('load', () => {
+    if (checkAuth()) {
+        user = getCurrentUser()
+        initializeUI();
+    }
+});
+

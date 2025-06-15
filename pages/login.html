@@ -578,6 +578,8 @@
             document.getElementById('emailError').style.display = 'none';
             document.getElementById('passwordError').style.display = 'none';
 
+
+
             try {
                 const response = await fetch('http://localhost:8080/api/v1/auth/login', {
                     method: 'POST',
@@ -602,12 +604,13 @@
                     };
                     
                     localStorage.setItem('userData', JSON.stringify(userData));
+
                     console.log('Stored user data:', userData);
 
                     showNotification('Login successful! Redirecting...', 'success');
                     setTimeout(() => {
-                        window.location.href = '/pages/home.html';
-                    }, 1000);
+                        window.location.href = '/pages/goal.html';
+                    }, 0);
                 } else {
                     showNotification(data.message || 'Login failed!', 'error');
                 }
