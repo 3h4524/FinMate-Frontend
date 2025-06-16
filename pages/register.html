@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -113,9 +112,11 @@
             width: 90px;
             height: 90px;
             border-radius: 50%;
-            background: conic-gradient(#388e3c 0deg 120deg,
-                    #66bb6a 120deg 240deg,
-                    #a5d6a7 240deg 360deg);
+            background: conic-gradient(
+                #388e3c 0deg 120deg,
+                #66bb6a 120deg 240deg,
+                #a5d6a7 240deg 360deg
+            );
             display: flex;
             align-items: center;
             justify-content: center;
@@ -411,9 +412,9 @@
                 flex-direction: column;
                 gap: 12px;
             }
-
-            .social-btn {
-                width: 100%;
+            
+            .social-btn { 
+                width: 100%; 
             }
 
             .register-header h2 {
@@ -476,7 +477,6 @@
         }
     </style>
 </head>
-
 <body>
     <!-- Add notification container -->
     <div id="notification" class="notification">
@@ -548,8 +548,7 @@
                 <div class="form-group">
                     <label for="confirm-password">Confirm Password</label>
                     <div class="input-wrapper">
-                        <input type="password" id="confirm-password" name="confirm-password"
-                            placeholder="Confirm your password" required>
+                        <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
                         <i class="fas fa-eye-slash password-toggle" onclick="toggleConfirmPassword()"></i>
                     </div>
                     <div id="confirmPasswordError" class="error-message"></div>
@@ -586,5 +585,4 @@
     <script src="https://accounts.google.com/gsi/client?hl=en" async defer></script>
     <script type="module" src="../assets/js/auth.js"></script>
 </body>
-
-</html>
+</html> 

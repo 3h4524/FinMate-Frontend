@@ -251,4 +251,3 @@ document.addEventListener('DOMContentLoaded', () => {
         initLoginForm();
     }
 }); 
-
