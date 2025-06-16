@@ -358,3 +358,30 @@ window.addEventListener('load', () => {
     }
 });
 
+
+async function initiatePayment() {
+    const paymentData = {
+        address: "123 Main St, Hanoi",
+        bankCode: "NCB",
+        language: "vn",
+        amount: 100.00
+    };
+
+    try {
+        const response = await apiRequest(`${API_BASE_URL}/api/payment`, {
+            method: 'POST',
+            body: JSON.stringify(paymentData)
+        });
+
+        const data = await response.json();
+        if (data.code === 1000) {
+            window.location.href = data.result.paymentUrl;
+        } else {
+            console.error('Payment initiation failed:', data.message);
+            alert('Failed to initiate payment: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while initiating payment');
+    }
+}
