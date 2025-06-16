@@ -340,8 +340,7 @@ currentAmountInput.addEventListener('input', validateAmounts);
 async function initializeUI() {
     try {
         await fetchGoalProgress(); // Then fetch goals
-
-
+        await loadSideBar(user);
         // await Promise.all([fetchGoalProgress(), fetchTransaction()]); // nếu muốn fetch 2 cái khác song song
     } catch (err) {
         error = 'Failed to initialize app: ' + err.message;
@@ -353,6 +352,7 @@ async function initializeUI() {
 // Initialize
 window.addEventListener('load', () => {
     if (checkAuth()) {
+        console.log("hjaha");
         user = getCurrentUser()
         initializeUI();
     }

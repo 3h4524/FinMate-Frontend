@@ -11,6 +11,8 @@
     <script src="../assets/js/helper_functions.js?v=1"></script>
     <script src="../assets/js/goal.js" defer></script>
     <script src="../assets/js/goal-contribution.js" defer></script>
+    <script src="../assets/js/autho_helper.js" defer></script>
+    <script src="../assets/js/sidebar.js" defer></script>
 
     <script>
         tailwind.config = {
@@ -226,368 +228,136 @@
                             class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900 placeholder-gray-400 resize-none"
                             rows="3" placeholder="Describe your goal and why it's important to you..."></textarea>
                     </div>
+                </div>
 
-                    <div class="md:col-span-1">
-                        <label for="targetAmountModal" class="block text-sm font-semibold text-gray-700 mb-2">
-                            Target Amount *
-                        </label>
-                        <input type="number" step="0.01" id="targetAmountModal" name="targetAmountModal"
-                            class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900 placeholder-gray-400"
-                            placeholder="e.g., 5000" required>
-                    </div>
+                <!-- Financial Details -->
+                <div class="bg-gray-50 rounded-xl p-5">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <svg class="w-5 h-5 text-teal-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                            </path>
+                        </svg>
+                        Financial Details
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="targetAmountModal" class="block text-sm font-semibold text-gray-700 mb-2">
+                                Target Amount ($) *
+                            </label>
+                            <div class="relative">
+                                <span
+                                    class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">$</span>
+                                <input type="number" id="targetAmountModal" name="targetAmountModal" step="0.01"
+                                    class="w-full border-2 border-gray-200 rounded-xl pl-8 pr-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900"
+                                    placeholder="10,000.00" required>
+                            </div>
+                        </div>
 
-                    <div class="md:col-span-1">
-                        <label for="currentAmountModal" class="block text-sm font-semibold text-gray-700 mb-2">
-                            Current Amount *
-                        </label>
-                        <input type="number" step="0.01" id="currentAmountModal" name="currentAmountModal"
-                            class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900 placeholder-gray-400"
-                            placeholder="e.g., 100" required>
-                    </div>
-
-                    <div class="md:col-span-1">
-                        <label for="targetDateModal" class="block text-sm font-semibold text-gray-700 mb-2">
-                            Target Date *
-                        </label>
-                        <input type="date" id="targetDateModal" name="targetDateModal"
-                            class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900"
-                            required>
-                    </div>
-
-                    <div class="md:col-span-1">
-                        <label for="priorityModal" class="block text-sm font-semibold text-gray-700 mb-2">
-                            Priority
-                        </label>
-                        <select id="priorityModal" name="priorityModal"
-                            class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900">
-                            <option value="LOW">Low</option>
-                            <option value="MEDIUM">Medium</option>
-                            <option value="HIGH">High</option>
-                        </select>
+                        <div>
+                            <label for="currentAmountModal" class="block text-sm font-semibold text-gray-700 mb-2">
+                                Current Amount ($) *
+                            </label>
+                            <div class="relative">
+                                <span
+                                    class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">$</span>
+                                <input type="number" id="currentAmountModal" name="currentAmountModal" step="0.01"
+                                    class="w-full border-2 border-gray-200 rounded-xl pl-8 pr-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900"
+                                    placeholder="0.00" required>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Recurring Contributions Section -->
-                <div class="border-t border-gray-200 pt-6 mt-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Recurring Contributions</h3>
-                    <div class="flex items-center space-x-2 mb-4">
-                        <input type="checkbox" id="enableRecurringModal" class="form-checkbox h-5 w-5 text-teal-600 rounded focus:ring-teal-500">
-                        <label for="enableRecurringModal" class="text-gray-700">Enable Recurring Contributions</label>
-                    </div>
+                <!-- Timeline -->
+                <div class="bg-blue-50 rounded-xl p-5">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                        Timeline
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="startDateModal" class="block text-sm font-semibold text-gray-700 mb-2">
+                                Start Date (mm/dd/yyyy) *
+                            </label>
+                            <input type="date" id="startDateModal" name="startDateModal"
+                                class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-gray-900"
+                                required>
+                        </div>
 
-                    <div id="recurringDetailsModal" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
                         <div>
-                            <label for="contributionAmountModal" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Contribution Amount *
+                            <label for="deadlineModal" class="block text-sm font-semibold text-gray-700 mb-2">
+                                Target Date (mm/dd/yyyy) *
                             </label>
-                            <input type="number" step="0.01" id="contributionAmountModal" name="contributionAmountModal"
-                                class="w-full border-2 border-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900 placeholder-gray-400"
-                                placeholder="e.g., 50">
+                            <input type="date" id="deadlineModal" name="deadlineModal"
+                                class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 text-gray-900"
+                                required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Goal Type -->
+                <div class="bg-purple-50 rounded-xl p-5">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                        <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        Goal Type
+                    </h3>
+                    <label class="flex items-center space-x-3 cursor-pointer group">
+                        <div class="relative">
+                            <input type="checkbox" id="isLongTermModal" name="isLongTermModal" class="sr-only peer">
+                            <div
+                                class="w-6 h-6 border-2 border-gray-300 rounded-md peer-checked:bg-purple-600 peer-checked:border-purple-600 transition-all duration-200 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity"
+                                    fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
                         </div>
                         <div>
-                            <label for="frequencyModal" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Frequency *
-                            </label>
-                            <select id="frequencyModal" name="frequencyModal"
-                                class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900">
-                                <option value="DAILY">Daily</option>
-                                <option value="WEEKLY">Weekly</option>
-                                <option value="MONTHLY">Monthly</option>
-                                <option value="QUARTERLY">Quarterly</option>
-                                <option value="YEARLY">Yearly</option>
-                            </select>
+                            <span
+                                class="text-gray-700 font-semibold group-hover:text-purple-700 transition-colors">Long-term
+                                Goal</span>
+                            <p class="text-sm text-gray-500">Goals that take more than a year to achieve</p>
                         </div>
+                    </label>
+                </div>
+
+                <!-- Error Display -->
+                <div id="errorDisplay" class="hidden bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        <span id="errorMessageModal" class="text-red-700 font-medium"></span>
                     </div>
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="flex justify-end space-x-4 pt-6 mt-6 border-t border-gray-200">
-                    <button type="button" id="cancelNewGoalBtn"
-                        class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors font-semibold">
+                <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
+                    <button type="button" id="cancelButton"
+                        class="flex-1 px-6 py-3 text-gray-600 hover:text-gray-800 border-2 border-gray-200 hover:border-gray-300 rounded-xl font-semibold transition-all duration-200 hover:bg-gray-50">
                         Cancel
                     </button>
-                    <button type="submit" id="saveNewGoalBtn"
-                        class="px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-semibold">
-                        Save Goal
+                    <button type="submit"
+                        class="flex-1 px-6 py-3 bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]">
+                        Create Goal
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Goal Detail Modal -->
-    <div id="goalDetailModal"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
-        <div
-            class="bg-white rounded-2xl shadow-2xl p-0 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto animate-slide-up">
-            <!-- Header -->
-            <div class="bg-gradient-to-r from-teal-600 to-teal-700 text-white p-6 rounded-t-2xl">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h2 class="text-2xl font-bold" id="goalDetailTitle"></h2>
-                        <p class="text-teal-100 text-sm mt-1" id="goalDetailDescription"></p>
-                    </div>
-                    <button id="closeDetailModalBtn"
-                        class="text-white/80 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Goal Detail Content -->
-            <div class="p-6 space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <p class="text-sm font-semibold text-gray-700">Target Amount:</p>
-                        <p class="text-lg font-bold text-gray-900" id="detailTargetAmount"></p>
-                    </div>
-                    <div>
-                        <p class="text-sm font-semibold text-gray-700">Current Amount:</p>
-                        <p class="text-lg font-bold text-gray-900" id="detailCurrentAmount"></p>
-                    </div>
-                    <div>
-                        <p class="text-sm font-semibold text-gray-700">Target Date:</p>
-                        <p class="text-lg font-bold text-gray-900" id="detailTargetDate"></p>
-                    </div>
-                    <div>
-                        <p class="text-sm font-semibold text-gray-700">Priority:</p>
-                        <p class="text-lg font-bold text-gray-900" id="detailPriority"></p>
-                    </div>
-                </div>
-
-                <div class="border-t border-gray-200 pt-6 mt-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Progress</h3>
-                    <div class="w-full bg-gray-200 rounded-full h-4 mb-2">
-                        <div id="goalProgressBar"
-                            class="bg-teal-500 h-4 rounded-full text-xs font-medium text-white text-center p-0.5 leading-none"
-                            style="width: 0%">0%</div>
-                    </div>
-                    <p class="text-sm text-gray-600" id="progressMessage"></p>
-                </div>
-
-                <div class="border-t border-gray-200 pt-6 mt-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Contributions</h3>
-                    <table class="min-w-full divide-y divide-gray-200 mb-4">
-                        <thead>
-                            <tr>
-                                <th
-                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Amount</th>
-                                <th
-                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Date</th>
-                                <th
-                                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Description</th>
-                                <th class="px-4 py-2"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="contributionsTableBody" class="bg-white divide-y divide-gray-200"></tbody>
-                    </table>
-                    <div id="noContributionsMessage" class="text-center text-gray-500 text-sm py-4 hidden">
-                        No contributions yet.
-                    </div>
-                    <button id="addContributionBtn"
-                        class="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors text-sm font-semibold">
-                        Add Contribution
-                    </button>
-                </div>
-
-                <div class="flex justify-end space-x-4 pt-6 mt-6 border-t border-gray-200">
-                    <button type="button" id="editGoalBtn"
-                        class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors font-semibold">
-                        Edit
-                    </button>
-                    <button type="button" id="deleteGoalBtn"
-                        class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-semibold">
-                        Delete
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add Contribution Modal -->
-    <div id="addContributionModal"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
-        <div
-            class="bg-white rounded-2xl shadow-2xl p-0 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto animate-slide-up">
-            <!-- Header -->
-            <div class="bg-gradient-to-r from-teal-600 to-teal-700 text-white p-6 rounded-t-2xl">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h2 class="text-xl font-bold">Add Contribution</h2>
-                        <p class="text-teal-100 text-sm mt-1">Add funds to your goal</p>
-                    </div>
-                    <button id="closeContributionModalBtn"
-                        class="text-white/80 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Form Content -->
-            <form id="addContributionForm" class="p-6 space-y-6">
-                <div>
-                    <label for="contributionAmount" class="block text-sm font-semibold text-gray-700 mb-2">
-                        Amount *
-                    </label>
-                    <input type="number" step="0.01" id="contributionAmount" name="contributionAmount"
-                        class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900 placeholder-gray-400"
-                        placeholder="e.g., 50" required>
-                </div>
-                <div>
-                    <label for="contributionDate" class="block text-sm font-semibold text-gray-700 mb-2">
-                        Date *
-                    </label>
-                    <input type="date" id="contributionDate" name="contributionDate"
-                        class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900"
-                        required>
-                </div>
-                <div>
-                    <label for="contributionDescription" class="block text-sm font-semibold text-gray-700 mb-2">
-                        Description
-                    </label>
-                    <textarea id="contributionDescription" name="contributionDescription"
-                        class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900 placeholder-gray-400 resize-none"
-                        rows="3" placeholder="Optional description..."></textarea>
-                </div>
-
-                <div class="flex justify-end space-x-4">
-                    <button type="button" id="cancelContributionBtn"
-                        class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors font-semibold">
-                        Cancel
-                    </button>
-                    <button type="submit" id="saveContributionBtn"
-                        class="px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-semibold">
-                        Add Contribution
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        // Check authentication status when page loads
-        document.addEventListener('DOMContentLoaded', async function() {
-            const token = localStorage.getItem('token');
-            const userData = localStorage.getItem('userData');
-            
-            if (!token || !userData) {
-                console.log('[AUTH] No token or user data found, redirecting to login');
-                window.location.href = 'login.html';
-                return;
-            }
-
-            console.log('[AUTH] Checking authentication status with token');
-            try {
-                const response = await fetch('http://localhost:8080/api/v1/auth/verify-token', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                let data;
-                try {
-                    data = await response.json();
-                } catch (e) {
-                    console.error('[AUTH] Error parsing response:', e);
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('userData');
-                    window.location.href = 'login.html';
-                    return;
-                }
-
-                if (data.code !== 1000) {
-                    console.log('[AUTH] Token verification failed:', data.message);
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('userData');
-                    window.location.href = 'login.html';
-                    return;
-                }
-
-                // Token is valid, show the main content
-                const mainContent = document.getElementById('mainContent');
-                if (mainContent) mainContent.style.display = 'flex'; // Assuming mainContent is hidden by default
-
-                // Update user info
-                const user = JSON.parse(userData);
-                const userName = user.name || user.email.split('@')[0];
-                
-                // Load sidebar
-                fetch('sidebar.html')
-                    .then(response => response.text())
-                    .then(data => {
-                        document.getElementById('sidebar-container').innerHTML = data;
-                        const sidebarUserNameSpan = document.querySelector('.sidebar .user-info .user-name');
-                        if (sidebarUserNameSpan) {
-                            sidebarUserNameSpan.textContent = userName;
-                        }
-                        const sidebarAvatar = document.querySelector('.sidebar .user-info img');
-                        if (sidebarAvatar) {
-                            sidebarAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=388e3c&color=fff`;
-                        }
-
-                        // Set active class for current page in sidebar
-                        setActiveSidebarLink();
-                    });
-
-            } catch (error) {
-                console.error('[AUTH] Error verifying token:', error);
-                localStorage.removeItem('token');
-                localStorage.removeItem('userData');
-                window.location.href = 'login.html';
-            }
-        });
-
-        // Helper function to set active class on sidebar links
-        function setActiveSidebarLink() {
-            const currentPage = window.location.pathname.split('/').pop();
-            const links = document.querySelectorAll('.sidebar nav ul li a');
-            
-            links.forEach(link => {
-                if (link.getAttribute('href') === currentPage) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
-            });
-        }
-
-        // Handle logout
-        async function handleLogout() {
-            console.log('[LOGOUT] Logout triggered');
-            try {
-                const token = localStorage.getItem('token');
-                if (token) {
-                    const response = await fetch('http://localhost:8080/api/v1/auth/logout', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-
-                    if (!response.ok) {
-                        console.error('[LOGOUT] Logout failed on server');
-                    }
-                }
-            } catch (error) {
-                console.error('[LOGOUT] Error during logout:', error);
-            } finally {
-                localStorage.removeItem('token');
-                localStorage.removeItem('userData');
-                window.location.href = 'login.html';
-            }
-        }
-    </script>
 </body>
 
 </html>

@@ -21,7 +21,7 @@ const getCurrentUser = () => {
         const payload = JSON.parse(atob(token.split('.')[1]));
         cachedUser = {
             userId: payload.userId || payload.sub,
-            username: payload.username || payload.name,
+            username: payload.username || payload.username,
             exp: payload.exp
         };
         return cachedUser;
