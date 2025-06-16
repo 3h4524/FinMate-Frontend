@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FINEbank.IO - Transaction Management</title>
     <link rel="stylesheet" href="../assets/css/transaction.css">
-    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
 </head>
 
@@ -405,68 +406,49 @@
     </div>
 
     <div id="createCategoryModal" class="modal-overlay hidden">
-    <div class="modal">
-        <div class="modal-header">
-            <h2 class="modal-title">Tạo Danh Mục Mới</h2>
-            <button class="close-btn" id="closeCreateCategoryModalBtn">×</button>
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Tạo Danh Mục Mới</h2>
+                <button class="close-btn" id="closeCreateCategoryModalBtn">×</button>
+            </div>
+            <form id="createCategoryForm">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label class="form-label">📋 Tên Danh Mục *</label>
+                        <input type="text" class="form-input" id="categoryName" required maxlength="50"
+                            placeholder="Nhập tên danh mục">
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">🎨 Loại Danh Mục *</label>
+                        <select class="form-input" id="categoryType" required>
+                            <option value="">Chọn loại</option>
+                            <option value="INCOME">Thu nhập</option>
+                            <option value="EXPENSE">Chi tiêu</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">🎨 Màu Sắc</label>
+                        <input type="color" class="form-input" id="categoryColor" value="#4CAF50">
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label class="form-label">🖼️ Chọn Biểu Tượng *</label>
+                        <div class="icon-grid" id="iconGrid">
+                            <!-- Icons sẽ được tạo bằng JavaScript -->
+                        </div>
+                        <input type="hidden" id="categoryIcon" required>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submitCategoryBtn">Lưu Danh Mục</button>
+                    <button type="button" class="btn btn-outline" id="cancelCategoryBtn">Hủy</button>
+                </div>
+            </form>
         </div>
-        <form id="createCategoryForm">
-            <div class="form-grid">
-                <div class="form-group full-width">
-                    <label class="form-label">📋 Tên Danh Mục *</label>
-                    <input type="text" class="form-input" id="categoryName" required maxlength="50"
-                        placeholder="Nhập tên danh mục">
-                </div>
-            </div>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label class="form-label">🎨 Loại Danh Mục *</label>
-                    <select class="form-input" id="categoryType" required>
-                        <option value="">Chọn loại</option>
-                        <option value="INCOME">Thu nhập</option>
-                        <option value="EXPENSE">Chi tiêu</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">🖼️ Biểu Tượng *</label>
-                    <select class="form-input" id="categoryIcon" required>
-                        <option value="">Chọn biểu tượng</option>
-                        <option value="money-bag"><i class="fas fa-sack-dollar"></i></option>
-                        <option value="gift"><i class="fas fa-gift"></i></option>
-                        <option value="trending-up"><i class="fas fa-chart-line"></i></option>
-                        <option value="present"><i class="fas fa-box"></i></option>
-                        <option value="food"><i class="fas fa-utensils"></i></option>
-                        <option value="shopping-cart"><i class="fas fa-shopping-cart"></i></option>
-                        <option value="car"><i class="fas fa-car"></i></option>
-                        <option value="home"><i class="fas fa-house"></i></option>
-                        <option value="movie"><i class="fas fa-film"></i></option>
-                        <option value="heart"><i class="fas fa-heart"></i></option>
-                        <option value="book"><i class="fas fa-book"></i></option>
-                        <option value="receipt"><i class="fas fa-receipt"></i></option>
-                        <option value="wallet"><i class="fas fa-wallet"></i></option>
-                        <option value="piggy-bank"><i class="fas fa-piggy-bank"></i></option>
-                        <option value="coins"><i class="fas fa-coins"></i></option>
-                        <option value="coffee"><i class="fas fa-mug-hot"></i></option>
-                        <option value="phone"><i class="fas fa-mobile-alt"></i></option>
-                        <option value="lightbulb"><i class="fas fa-lightbulb"></i></option>
-                        <option value="plane"><i class="fas fa-plane"></i></option>
-                        <option value="tshirt"><i class="fas fa-tshirt"></i></option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-grid">
-                <div class="form-group full-width">
-                    <label class="form-label">🎨 Màu Sắc</label>
-                    <input type="color" class="form-input" id="categoryColor" value="#4CAF50">
-                </div>
-            </div>
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary" id="submitCategoryBtn">Lưu Danh Mục</button>
-                <button type="button" class="btn btn-outline" id="cancelCategoryBtn">Hủy</button>
-            </div>
-        </form>
     </div>
-</div>
 
 
     <script src="../assets/js/transaction.js"></script>
