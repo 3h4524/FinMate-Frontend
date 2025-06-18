@@ -1,5 +1,29 @@
 import apiService from './services/api.js';
 
+// Notification functions
+function showNotification(message, type = 'info') {
+    const notification = document.getElementById('notification');
+    const messageElement = document.getElementById('notification-message');
+    
+    // Remove existing classes
+    notification.classList.remove('success', 'error', 'info');
+    // Add new type class
+    notification.classList.add(type);
+    
+    messageElement.textContent = message;
+    notification.classList.add('show');
+    
+    // Auto hide after 5 seconds
+    setTimeout(() => {
+        hideNotification();
+    }, 5000);
+}
+
+function hideNotification() {
+    const notification = document.getElementById('notification');
+    notification.classList.remove('show');
+}
+
 // Google authentication configuration
 const googleAuthConfig = {
     clientId: '455189339360-ah566hols1au0npc7mou7halnl7ba4uk.apps.googleusercontent.com',
@@ -18,13 +42,7 @@ async function handleGoogleSignIn(response) {
     try {
         const result = await apiService.processGoogleLogin(response.credential);
         
-        if (!result.verified) {
-            sessionStorage.setItem('requiresVerification', 'true');
-            sessionStorage.setItem('pendingVerificationEmail', result.email);
-            window.location.href = 'verify-email.html?email=' + encodeURIComponent(result.email);
-            return;
-        }
-        
+        // Google users don't need email verification since Google already verified their email
         showNotification('Google login successful! Redirecting...', 'success');
         
         // Validate token before storing
@@ -70,7 +88,7 @@ async function handleGoogleSignIn(response) {
                 showNotification('Authentication failed. Please try again.', 'error');
                 return;
             }   
-            window.location.href = 'home.html';
+            window.location.href = '/pages/home.html';
         }, 1000);
     } catch (error) {
         console.error('Google login error:', error);

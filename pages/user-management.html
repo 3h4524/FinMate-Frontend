@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - FinMate</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../assets/js/helper_functions.js"></script>
+    <script src="../assets/js/autho_helper.js" defer></script>
+    <script src="../assets/js/sidebar.js" defer></script>
+    <style>
+        /* Add basic styles for app-container and main-content consistent with other pages */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .main-content {
+            margin-left: 270px; /* Adjust based on sidebar width */
+            flex-grow: 1;
+            padding: 40px 32px 32px 32px;
+            display: none; /* Hide initially until authentication succeeds */
+            flex-direction: column;
+        }
+        @media (max-width: 900px) {
+            .main-content { margin-left: 0; }
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: #1a3d2e;
+        }
+
+        .search-btn {
+            padding: 12px 24px;
+            background-color: #1a3d2e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .search-btn:hover {
+            background-color: #0f2922;
+        }
+
+        .users-table {
+            width: 100%;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .users-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .users-table th,
+        .users-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .users-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #1a3d2e;
+        }
+
+        .users-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: #e3fcef;
+            color: #00a854;
+        }
+
+        .status-inactive {
+            background-color: #fff1f0;
+            color: #f5222d;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .edit-btn {
+            background-color: #e6f7ff;
+            color: #1890ff;
+        }
+
+        .edit-btn:hover {
+            background-color: #bae7ff;
+        }
+
+        .delete-btn {
+            background-color: #fff1f0;
+            color: #f5222d;
+        }
+
+        .delete-btn:hover {
+            background-color: #ffa39e;
+        }
+
+        .restore-btn {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+
+        .restore-btn:hover {
+            background-color: #b7eb8f;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+        }
+
+        .pagination-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pagination-btn:hover {
+            border-color: #1a3d2e;
+            color: #1a3d2e;
+        }
+
+        .pagination-btn.active {
+            background-color: #1a3d2e;
+            color: white;
+            border-color: #1a3d2e;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 24px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a3d2e;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #1a3d2e;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .cancel-btn {
+            padding: 12px 24px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: white;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cancel-btn:hover {
+            border-color: #1a3d2e;
+            color: #1a3d2e;
+        }
+
+        .save-btn {
+            padding: 12px 24px;
+            background-color: #1a3d2e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .save-btn:hover {
+            background-color: #0f2922;
+        }
+
+        .user-details {
+            margin-bottom: 24px;
+        }
+
+        .detail-group {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-group:last-child {
+            border-bottom: none;
+        }
+
+        .detail-group label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .detail-group span {
+            color: #666;
+        }
+
+        .premium-packages {
+            margin-top: 8px;
+        }
+
+        .premium-package-item {
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .premium-package-item h4 {
+            font-weight: 600;
+            color: #1a3d2e;
+            margin-bottom: 4px;
+        }
+
+        .premium-package-item p {
+            color: #666;
+            font-size: 14px;
+            margin: 2px 0;
+        }
+
+        .no-premium {
+            color: #666;
+            font-style: italic;
+            font-size: 13px;
+        }
+
+        .ban-btn {
+            background-color: #fff1f0;
+            color: #f5222d;
+            border: 1px solid #ffd6d6;
+        }
+        .ban-btn:hover {
+            background-color: #ffa39e;
+            color: #fff;
+        }
+        .unban-btn {
+            background-color: #f6ffed;
+            color: #52c41a;
+            border: 1px solid #b7eb8f;
+        }
+        .unban-btn:hover {
+            background-color: #b7eb8f;
+            color: #fff;
+        }
+        .detail-btn {
+            background-color: #e6f7ff;
+            color: #1890ff;
+            border: 1px solid #91d5ff;
+        }
+        .detail-btn:hover {
+            background-color: #bae7ff;
+            color: #0050b3;
+        }
+
+        .ban-unban-btn {
+            width: 130px;
+            min-width: 130px;
+            max-width: 130px;
+            height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 8px;
+            gap: 8px;
+            padding: 0 20px;
+            border: 1px solid transparent;
+            transition: background 0.2s, color 0.2s;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="app-container">
+        <!-- Include sidebar component -->
+        <div id="sidebar-container"></div>
+        <div class="main-content" id="mainContent">
+            <div class="bg-white shadow-sm border-b px-8 py-4">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl font-bold text-gray-900">User Management</h1>
+                </div>
+            </div>
+
+            <div class="flex-1 p-8">
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="Search users by name or email...">
+                    <button class="search-btn" onclick="searchUsers()">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+
+                <div class="users-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Premium</th>
+                                <th>Last Login</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Users will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination" id="pagination">
+                    <!-- Pagination will be added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit User</h2>
+                <button class="close-btn" onclick="closeModal('editUserModal')">&times;</button>
+            </div>
+            <form id="editUserForm">
+                <input type="hidden" id="editUserId">
+                <div class="form-group">
+                    <label for="editName">Name</label>
+                    <input type="text" id="editName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEmail">Email</label>
+                    <input type="email" id="editEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="editRole">Role</label>
+                    <select id="editRole" required>
+                        <option value="USER">User</option>
+                        <option value="ADMIN">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editIsPremium">Premium Status</label>
+                    <select id="editIsPremium" required>
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editVerified">Verified Status</label>
+                    <select id="editVerified" required>
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="cancel-btn" onclick="closeModal('editUserModal')">Cancel</button>
+                    <button type="submit" class="save-btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- User Detail Modal -->
+    <div id="userDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">User Details</h2>
+                <button class="close-btn" onclick="closeModal('userDetailModal')">&times;</button>
+            </div>
+            <div class="user-details">
+                <div class="detail-group">
+                    <label>ID:</label>
+                    <span id="detailId"></span>
+                </div>
+                <div class="detail-group">
+                    <label>Name:</label>
+                    <span id="detailName"></span>
+                </div>
+                <div class="detail-group">
+                    <label>Email:</label>
+                    <span id="detailEmail"></span>
+                </div>
+                <div class="detail-group">
+                    <label>Role:</label>
+                    <span id="detailRole"></span>
+                </div>
+                <div class="detail-group">
+                    <label>Premium Status:</label>
+                    <span id="detailPremium"></span>
+                </div>
+                <div class="detail-group">
+                    <label>Verified:</label>
+                    <span id="detailVerified"></span>
+                </div>
+                <div class="detail-group">
+                    <label>Last Login:</label>
+                    <span id="detailLastLogin"></span>
+                </div>
+                <div class="detail-group">
+                    <label>Created At:</label>
+                    <span id="detailCreatedAt"></span>
+                </div>
+                <div class="detail-group">
+                    <label>Premium Packages:</label>
+                    <div id="detailPremiumPackages" class="premium-packages">
+                        <!-- Premium packages will be loaded here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeModal('userDetailModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 0;
+        const pageSize = 10;
+        let user;
+
+        // Check authentication status when page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            const token = localStorage.getItem('token');
+            const userData = localStorage.getItem('userData');
+            
+            if (!token || !userData) {
+                console.log('[AUTH] No token or user data found, redirecting to login');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            console.log('[AUTH] Checking authentication status with token');
+            try {
+                const response = await fetch('http://localhost:8080/api/v1/auth/verify-token', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    console.error('[AUTH] Error parsing response:', e);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userData');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                if (data.code !== 1000) {
+                    console.log('[AUTH] Token verification failed:', data.message);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userData');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Check if user has ADMIN role
+                const currentUser = getCurrentUser();
+                if (!currentUser) {
+                    console.log('[AUTH] Cannot get current user info');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userData');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Parse token to get role
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    // Role được lưu trong trường 'scope' của JWT token
+                    const userRole = payload.scope;
+                    console.log('[AUTH] User role from token:', userRole);
+                    if (userRole !== 'ADMIN') {
+                        console.log('[AUTH] Access denied: User does not have ADMIN role');
+                        alert('Access denied. This page is only available for administrators.');
+                        window.location.href = 'home.html';
+                        return;
+                    }
+                } catch (e) {
+                    console.error('[AUTH] Error parsing token payload:', e);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userData');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Token is valid and user is admin, show the main content
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) mainContent.style.display = 'flex';
+
+                // Update user info
+                const userInfo = JSON.parse(userData);
+                const userName = userInfo.name || userInfo.email.split('@')[0];
+                user = currentUser;
+                
+                // Load sidebar
+                loadSideBarSimple(userName);
+
+                // Load users data
+                await loadUsers();
+
+            } catch (error) {
+                console.error('[AUTH] Error verifying token:', error);
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Initialize UI and load sidebar
+        async function initializeUI() {
+            try {
+                user = getCurrentUser();
+                await loadSideBar(user);
+                await loadUsers();
+            } catch (err) {
+                console.error('Failed to initialize app:', err);
+                window.location.href = 'login.html';
+            }
+        }
+
+        async function loadUsers(page = 0) {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const response = await fetch(`http://localhost:8080/api/admin/users?page=${page}&size=${pageSize}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load users');
+                }
+
+                const data = await response.json();
+                displayUsers(data.content);
+                setupPagination(data.totalPages, page);
+            } catch (error) {
+                console.error('Error loading users:', error);
+                alert('Failed to load users. Please try again.');
+            }
+        }
+
+        function displayUsers(users) {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+
+            users.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.role}</td>
+                    <td>
+                        <span class="status-badge ${user.isDelete ? 'status-inactive' : 'status-active'}">
+                            ${user.isDelete ? 'Banned' : 'Active'}
+                        </span>
+                    </td>
+                    <td>${user.isPremium ? 'Premium' : 'Free'}</td>
+                    <td>${formatDate(user.lastLoginAt)}</td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="openDetailModal(${user.id})">
+                            <i class="fas fa-info-circle"></i> Detail
+                        </button>
+                        <button class="action-btn ban-unban-btn ${user.isDelete ? 'unban-btn' : 'ban-btn'}" onclick="${user.isDelete ? 'restoreUser' : 'banUser'}(${user.id})">
+                            <i class="fas fa-${user.isDelete ? 'undo' : 'ban'}"></i> ${user.isDelete ? 'Unban' : 'Ban'}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Never';
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+
+        function setupPagination(totalPages, currentPageNum) {
+            currentPage = currentPageNum;
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            // Previous button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'pagination-btn';
+            prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevBtn.disabled = currentPage === 0;
+            prevBtn.onclick = () => loadUsers(currentPage - 1);
+            pagination.appendChild(prevBtn);
+
+            // Page numbers
+            for (let i = 0; i < totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i + 1;
+                pageBtn.onclick = () => loadUsers(i);
+                pagination.appendChild(pageBtn);
+            }
+
+            // Next button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'pagination-btn';
+            nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextBtn.disabled = currentPage === totalPages - 1;
+            nextBtn.onclick = () => loadUsers(currentPage + 1);
+            pagination.appendChild(nextBtn);
+        }
+
+        async function searchUsers() {
+            const keyword = document.querySelector('.search-input').value;
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:8080/api/admin/users/search?keyword=${encodeURIComponent(keyword)}&page=0&size=${pageSize}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Search failed');
+                }
+
+                const data = await response.json();
+                displayUsers(data.content);
+                setupPagination(data.totalPages, 0);
+            } catch (error) {
+                console.error('Error searching users:', error);
+                alert('Search failed. Please try again.');
+            }
+        }
+
+        async function openEditModal(userId) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load user data');
+                }
+
+                const user = await response.json();
+                document.getElementById('editUserId').value = user.id;
+                document.getElementById('editName').value = user.name;
+                document.getElementById('editEmail').value = user.email;
+                document.getElementById('editRole').value = user.role;
+                document.getElementById('editIsPremium').value = user.isPremium;
+                document.getElementById('editVerified').value = user.verified;
+
+                document.getElementById('editUserModal').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                alert('Failed to load user data. Please try again.');
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        document.getElementById('editUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userId = document.getElementById('editUserId').value;
+            const userData = {
+                name: document.getElementById('editName').value,
+                email: document.getElementById('editEmail').value,
+                role: document.getElementById('editRole').value,
+                isPremium: document.getElementById('editIsPremium').value === 'true',
+                verified: document.getElementById('editVerified').value === 'true'
+            };
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update user');
+                }
+
+                closeModal('editUserModal');
+                loadUsers(currentPage);
+                alert('User updated successfully');
+            } catch (error) {
+                console.error('Error updating user:', error);
+                alert('Failed to update user. Please try again.');
+            }
+        });
+
+        async function banUser(userId) {
+            if (!confirm('Are you sure you want to ban this user?')) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to ban user');
+                }
+
+                loadUsers(currentPage);
+                alert('User has been banned successfully');
+            } catch (error) {
+                console.error('Error banning user:', error);
+                alert('Failed to ban user. Please try again.');
+            }
+        }
+
+        async function restoreUser(userId) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:8080/api/admin/users/${userId}/restore`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to unban user');
+                }
+
+                loadUsers(currentPage);
+                alert('User has been unbanned successfully');
+            } catch (error) {
+                console.error('Error unbanning user:', error);
+                alert('Failed to unban user. Please try again.');
+            }
+        }
+
+        async function openDetailModal(userId) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load user data');
+                }
+
+                const user = await response.json();
+                
+                // Set user details
+                document.getElementById('detailId').textContent = user.id;
+                document.getElementById('detailName').textContent = user.name;
+                document.getElementById('detailEmail').textContent = user.email;
+                document.getElementById('detailRole').textContent = user.role;
+                document.getElementById('detailPremium').textContent = user.isPremium ? 'Premium' : 'Free';
+                document.getElementById('detailVerified').textContent = user.verified ? 'Yes' : 'No';
+                document.getElementById('detailLastLogin').textContent = formatDate(user.lastLoginAt);
+                document.getElementById('detailCreatedAt').textContent = formatDate(user.createdAt);
+
+                // Load premium packages
+                const premiumPackagesDiv = document.getElementById('detailPremiumPackages');
+                if (user.isPremium) {
+                    // Here you would typically fetch premium package details
+                    // For now, we'll show a placeholder
+                    premiumPackagesDiv.innerHTML = `
+                        <div class="premium-package-item">
+                            <h4>Premium Package</h4>
+                            <p>Status: Active</p>
+                            <p>Expiry: ${formatDate(user.premiumExpiry)}</p>
+                        </div>
+                    `;
+                } else {
+                    premiumPackagesDiv.innerHTML = '<p class="no-premium">No premium packages purchased</p>';
+                }
+
+                document.getElementById('userDetailModal').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                alert('Failed to load user data. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html> 

@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FINEbank.IO - Transaction Management</title>
     <link rel="stylesheet" href="../assets/css/transaction.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 </head>
 
 <body>
@@ -30,10 +32,8 @@
                 </div>
             </div>
 
-
             <!-- Transactions Content -->
             <div id="transactions-content" class="content-area">
-
                 <div class="wallet-card">
                     <div class="wallet-header">
                         <div class="wallet-title">💳 My Wallet</div>
@@ -153,6 +153,7 @@
         </div>
     </div>
 
+    <!-- Wallet Modal -->
     <div id="walletModal" class="modal-overlay hidden">
         <div class="modal">
             <div class="modal-header">
@@ -171,13 +172,13 @@
 
                     <div class="form-group">
                         <label class="form-label">💰 New Balance *</label>
-                        <input type="number" step="0.01" class="form-input" id="newBalanceInput" required
+                        <input type="number" step="0.01" class="form-input" id="newBalance" required
                             placeholder="Enter new balance">
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">💱 Currency</label>
-                        <select class="form-input" id="currencySelect">
+                        <select class="form-input" id="currency">
                             <option value="VND">VND - Vietnamese Dong</option>
                             <option value="USD">USD - US Dollar</option>
                             <option value="EUR">EUR - Euro</option>
@@ -194,7 +195,6 @@
             </form>
         </div>
     </div>
-
 
     <!-- Create/Edit Transaction Modal -->
     <div id="transactionModal" class="modal-overlay hidden">
@@ -342,6 +342,52 @@
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary" id="submitSearchBtn">Search</button>
                     <button type="button" class="btn btn-outline" id="cancelSearchBtn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Category Modal -->
+    <div id="createCategoryModal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Tạo Danh Mục Mới</h2>
+                <button class="close-btn" id="closeCreateCategoryModalBtn">×</button>
+            </div>
+            <form id="createCategoryForm">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label class="form-label">📋 Tên Danh Mục *</label>
+                        <input type="text" class="form-input" id="categoryName" required maxlength="50"
+                            placeholder="Nhập tên danh mục">
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">🎨 Loại Danh Mục *</label>
+                        <select class="form-input" id="categoryType" required>
+                            <option value="">Chọn loại</option>
+                            <option value="INCOME">Thu nhập</option>
+                            <option value="EXPENSE">Chi tiêu</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">🎨 Màu Sắc</label>
+                        <input type="color" class="form-input" id="categoryColor" value="#4CAF50">
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label class="form-label">🖼️ Chọn Biểu Tượng *</label>
+                        <div class="icon-grid" id="iconGrid">
+                            <!-- Icons sẽ được tạo bằng JavaScript -->
+                        </div>
+                        <input type="hidden" id="categoryIcon" required>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submitCategoryBtn">Lưu Danh Mục</button>
+                    <button type="button" class="btn btn-outline" id="cancelCategoryBtn">Hủy</button>
                 </div>
             </form>
         </div>

@@ -12,13 +12,116 @@ const walletBalance = document.getElementById('walletBalance');
 const walletError = document.getElementById('walletError');
 const walletModal = document.getElementById('walletModal');
 const walletForm = document.getElementById('walletForm');
-const newBalanceInput = document.getElementById('newBalanceInput');
+const newBalanceInput = document.getElementById('newBalance');
+const currencySelect = document.getElementById('currency');
 const currentBalanceDisplay = document.getElementById('currentBalanceDisplay');
-const currencySelect = document.getElementById('currencySelect');
 const editWalletBtn = document.getElementById('editWalletBtn');
 const closeWalletModalBtn = document.getElementById('closeWalletModalBtn');
 const cancelWalletBtn = document.getElementById('cancelWalletBtn');
 const updateWalletBtn = document.getElementById('updateWalletBtn');
+const createCategoryModal = document.getElementById('createCategoryModal');
+const createCategoryForm = document.getElementById('createCategoryForm');
+const closeCreateCategoryModalBtn = document.getElementById('closeCreateCategoryModalBtn');
+const cancelCategoryBtn = document.getElementById('cancelCategoryBtn');
+const submitCategoryBtn = document.getElementById('submitCategoryBtn');
+
+const iconOptions = [
+    { src: '../assets/images/bank-coin.svg', name: 'Bank Coin' },
+    { src: '../assets/images/bank-fee.svg', name: 'Bank Fee' },
+    { src: '../assets/images/car.svg', name: 'Car' },
+    { src: '../assets/images/card.svg', name: 'Card' },
+    { src: '../assets/images/coffee.svg', name: 'Coffee' },
+    { src: '../assets/images/cost.svg', name: 'Cost' },
+    { src: '../assets/images/electric-bill.svg', name: 'Electric Bill' },
+    { src: '../assets/images/entertainment.svg', name: 'Entertainment' },
+    { src: '../assets/images/financial-management.svg', name: 'Financial' },
+    { src: '../assets/images/food.svg', name: 'Food' },
+    { src: '../assets/images/game.svg', name: 'Game' },
+    { src: '../assets/images/relax.svg', name: 'Relax' },
+    { src: '../assets/images/shopping.svg', name: 'Shopping' },
+    { src: '../assets/images/television.svg', name: 'TV' },
+    { src: '../assets/images/travel.svg', name: 'Travel' },
+    { src: '../assets/images/water-fee.svg', name: 'Water Bill' },
+    { src: '../assets/images/world.svg', name: 'World' },
+    { src: '../assets/images/more.svg', name: 'More' }
+];
+
+const iconMapping = {
+    'bank-coin': '../assets/images/bank-coin.svg',
+    'bank-fee': '../assets/images/bank-fee.svg',
+    'car': '../assets/images/car.svg',
+    'card': '../assets/images/card.svg',
+    'coffee': '../assets/images/coffee.svg',
+    'cost': '../assets/images/cost.svg',
+    'electric-bill': '../assets/images/electric-bill.svg',
+    'entertainment': '../assets/images/entertainment.svg',
+    'financial-management': '../assets/images/financial-management.svg',
+    'food': '../assets/images/food.svg',
+    'game': '../assets/images/game.svg',
+    'more': '../assets/images/more.svg',
+    'relax': '../assets/images/relax.svg',
+    'shopping': '../assets/images/shopping.svg',
+    'television': '../assets/images/television.svg',
+    'travel': '../assets/images/travel.svg',
+    'water-fee': '../assets/images/water-fee.svg',
+    'world': '../assets/images/world.svg'
+};
+
+const choicesInstances = new Map(); // Quản lý Choices instance theo ID hoặc name
+
+// Function để tạo icon grid
+const createIconGrid = () => {
+    const iconGrid = document.getElementById('iconGrid');
+    if (!iconGrid) return;
+
+    iconGrid.innerHTML = '';
+
+    iconOptions.forEach(icon => {
+        const iconButton = document.createElement('button');
+        iconButton.type = 'button';
+        iconButton.className = 'icon-option';
+        iconButton.dataset.icon = icon.src.split('/').pop().replace('.svg', '');
+        iconButton.title = icon.name;
+
+        iconButton.innerHTML = `
+            <img src="${icon.src}" alt="${icon.name}" class="icon-image">
+            <span class="icon-name">${icon.name}</span>
+        `;
+
+        iconButton.addEventListener('click', () => {
+            // Remove active class from all icons
+            document.querySelectorAll('.icon-option').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Add active class to selected icon
+            iconButton.classList.add('active');
+
+            // Set hidden input value
+            document.getElementById('categoryIcon').value = iconButton.dataset.icon;
+        });
+
+        iconGrid.appendChild(iconButton);
+    });
+};
+
+const getIconSymbol = (iconName) => {
+    if (!iconName) return '📁';
+
+    const iconPath = iconMapping[iconName];
+    if (iconPath) {
+        return `<img src="${iconPath}" alt="${iconName}" class="category-icon-small" onerror="this.style.display=''; this.nextSibling.style.display='inline';">`;
+    }
+    return '📁';
+};
+
+const formatLabel = (iconName, categoryName) => {
+    const iconPath = iconMapping[iconName];
+    if (iconPath) {
+        return `<img src="${iconPath}" class="category-icon-small" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px;">${categoryName}`;
+    }
+    return `📁 ${categoryName}`;
+};
 
 // JWT and User Management
 const getToken = () => {
@@ -28,7 +131,7 @@ const getToken = () => {
 const getCurrentUser = () => {
     const token = getToken();
     if (!token) return null;
-    
+
     try {
         const payload = JSON.parse(atob(token.split('.')[1]));
         return {
@@ -87,11 +190,11 @@ const hideElement = (element) => {
 };
 
 const showSuccess = (message) => {
-    alert(message); // Thay bằng thông báo đẹp hơn nếu cần
+    alert(message); // Thay bằng Toastify nếu cần
 };
 
 const showError = (message) => {
-    alert(message); // Thay bằng thông báo đẹp hơn nếu cần
+    alert(message); // Thay bằng Toastify nếu cần
 };
 
 const showLoading = () => {
@@ -131,6 +234,7 @@ const resetWalletForm = () => {
     if (currentWallet) {
         newBalanceInput.value = currentWallet.balance;
         currencySelect.value = currentWallet.currency;
+        currentBalanceDisplay.textContent = formatAmount(currentWallet.balance) + ' ' + currentWallet.currency;
     }
 };
 
@@ -176,7 +280,7 @@ const validateTransactionForm = () => {
 };
 
 const validateWalletForm = () => {
-    if (!newBalanceInput.value || isNaN(newBalanceInput.value) || parseFloat(newBalanceInput.value) < 0) {
+    if (!newBalanceInput.value || isNaN(parseFloat(newBalanceInput.value)) || parseFloat(newBalanceInput.value) < 0) {
         showError('Vui lòng nhập số dư hợp lệ');
         return false;
     }
@@ -190,7 +294,7 @@ const validateWalletForm = () => {
 // API Functions
 const apiRequest = async (url, options = {}) => {
     if (!checkAuth()) return null;
-    
+
     const headers = {
         'Content-Type': 'application/json',
         ...getAuthHeaders(),
@@ -217,9 +321,9 @@ const apiRequest = async (url, options = {}) => {
 
 const loadWalletBalance = async () => {
     if (!checkAuth()) return;
-    
+
     const user = getCurrentUser();
-    
+
     try {
         showElement(walletLoading);
         hideElement(walletBalance);
@@ -234,6 +338,7 @@ const loadWalletBalance = async () => {
             currentWallet = data.result;
             balanceAmount.textContent = formatAmount(currentWallet.balance);
             balanceCurrency.textContent = currentWallet.currency;
+            currentBalanceDisplay.textContent = formatAmount(currentWallet.balance) + ' ' + currentWallet.currency;
 
             hideElement(walletLoading);
             showElement(walletBalance);
@@ -249,9 +354,9 @@ const loadWalletBalance = async () => {
 
 const updateWalletBalance = async (newBalance, currency) => {
     if (!checkAuth()) return false;
-    
+
     const user = getCurrentUser();
-    
+
     try {
         const response = await apiRequest('http://localhost:8080/api/wallet', {
             method: 'PUT',
@@ -270,6 +375,7 @@ const updateWalletBalance = async (newBalance, currency) => {
             currentWallet = data.result;
             balanceAmount.textContent = formatAmount(data.result.balance);
             balanceCurrency.textContent = data.result.currency;
+            currentBalanceDisplay.textContent = formatAmount(data.result.balance) + ' ' + data.result.currency;
             showSuccess('Cập nhật số dư ví thành công!');
             loadTransactions();
             return true;
@@ -278,17 +384,17 @@ const updateWalletBalance = async (newBalance, currency) => {
         }
     } catch (error) {
         console.error('Error updating wallet:', error);
-        showError(error.message || 'Lỗi khi cập nhật số dư ví');
+        showError(error.message || 'Lỗi khi cập nhật wallet');
         return false;
     }
 };
 
 const loadTransactions = async (searchParams = {}) => {
     if (!checkAuth()) return;
-    
+
     const user = getCurrentUser();
     showLoading();
-    
+
     try {
         const params = new URLSearchParams({
             userId: user.userId,
@@ -298,10 +404,10 @@ const loadTransactions = async (searchParams = {}) => {
             sortDirection: 'DESC',
             ...searchParams
         });
-        
+
         const response = await apiRequest(`${API_BASE_URL}?${params}`);
         if (!response) return;
-        
+
         const data = await response.json();
 
         if (data.code === 1000) {
@@ -310,12 +416,12 @@ const loadTransactions = async (searchParams = {}) => {
             await loadWalletBalance();
         } else {
             showError(`Lỗi: ${data.message || 'Không thể tải giao dịch'}`);
-            document.getElementById('transactionTableBody').innerHTML = '<tr><td colspan="7" class="empty-state">Không có giao dịch nào</td></tr>';
+            document.getElementById('transactionTableBody').innerHTML = '<tr><td colspan="9" class="empty-state">Không có giao dịch nào</td></tr>';
         }
     } catch (error) {
         console.error('Error loading transactions:', error);
         showError('Lỗi khi tải danh sách giao dịch');
-        document.getElementById('transactionTableBody').innerHTML = '<tr><td colspan="7" class="empty-state">Không có giao dịch nào</td></tr>';
+        document.getElementById('transactionTableBody').innerHTML = '<tr><td colspan="9" class="empty-state">Không có giao dịch nào</td></tr>';
     } finally {
         hideLoading();
     }
@@ -323,9 +429,9 @@ const loadTransactions = async (searchParams = {}) => {
 
 const createTransaction = async (formData) => {
     if (!checkAuth()) return;
-    
+
     const user = getCurrentUser();
-    
+
     try {
         let url = API_BASE_URL;
         let body;
@@ -343,7 +449,7 @@ const createTransaction = async (formData) => {
                 endDate: formData.endDate,
                 isActive: true
             };
-        } else {    
+        } else {
             body = {
                 userId: user.userId,
                 categoryId: formData.categoryId || null,
@@ -363,8 +469,9 @@ const createTransaction = async (formData) => {
             method: 'POST',
             body: JSON.stringify(body)
         });
-        
+
         if (!response) return;
+
         const data = await response.json();
 
         if (data.code === 1000) {
@@ -383,9 +490,9 @@ const createTransaction = async (formData) => {
 
 const updateTransaction = async (transactionId, formData) => {
     if (!checkAuth()) return;
-    
+
     const user = getCurrentUser();
-    
+
     try {
         const response = await apiRequest(`${API_BASE_URL}/${transactionId}?userId=${user.userId}`, {
             method: 'PUT',
@@ -402,8 +509,9 @@ const updateTransaction = async (transactionId, formData) => {
                 recurringPattern: formData.recurringPattern || null
             })
         });
-        
+
         if (!response) return;
+
         const data = await response.json();
 
         if (data.code === 1000) {
@@ -424,16 +532,16 @@ const updateTransaction = async (transactionId, formData) => {
 const deleteTransaction = async (transactionId) => {
     if (!confirm('Bạn có chắc chắn muốn xóa giao dịch này?')) return;
     if (!checkAuth()) return;
-    
+
     const user = getCurrentUser();
-    
+
     try {
         const response = await apiRequest(`${API_BASE_URL}/${transactionId}?userId=${user.userId}`, {
             method: 'DELETE'
         });
-        
+
         if (!response) return;
-        
+
         if (response.ok) {
             showSuccess('Xóa giao dịch thành công!');
             loadTransactions();
@@ -450,17 +558,17 @@ const deleteTransaction = async (transactionId) => {
 
 const searchTransactions = async () => {
     if (!checkAuth()) return;
-    
+
     const user = getCurrentUser();
     const [type, id] = document.getElementById('category-search').value.split('-');
-    
+
     const searchParams = {
         categoryId: (type === 'system') ? id : null,
         userCategoryId: (type === 'user') ? id : null,
         minAmount: document.getElementById('minAmount').value ? parseFloat(document.getElementById('minAmount').value) : null,
         maxAmount: document.getElementById('maxAmount').value ? parseFloat(document.getElementById('maxAmount').value) : null,
-        startDate: document.getElementById('startDate').value || null,
-        endDate: document.getElementById('endDate').value || null,
+        startDate: document.getElementById('searchStartDate').value || null,
+        endDate: document.getElementById('searchEndDate').value || null,
         paymentMethod: document.getElementById('paymentMethodSearch').value || null,
         location: document.getElementById('locationSearch').value || null,
         note: document.getElementById('noteSearch').value || null,
@@ -480,8 +588,9 @@ const searchTransactions = async () => {
                 sortDirection: 'DESC'
             })
         });
-        
+
         if (!response) return;
+
         const data = await response.json();
 
         if (data.code === 1000) {
@@ -492,12 +601,12 @@ const searchTransactions = async () => {
             await loadWalletBalance();
         } else {
             showError(`Lỗi: ${data.message || 'Không thể tìm kiếm giao dịch'}`);
-            document.getElementById('transactionTableBody').innerHTML = '<tr><td colspan="7" class="empty-state">Không có giao dịch nào</td></tr>';
+            document.getElementById('transactionTableBody').innerHTML = '<tr><td colspan="9" class="empty-state">Không có giao dịch nào</td></tr>';
         }
     } catch (error) {
         console.error('Error searching transactions:', error);
         showError('Lỗi khi tìm kiếm giao dịch');
-        document.getElementById('transactionTableBody').innerHTML = '<tr><td colspan="7" class="empty-state">Không có giao dịch nào</td></tr>';
+        document.getElementById('transactionTableBody').innerHTML = '<tr><td colspan="9" class="empty-state">Không có giao dịch nào</td></tr>';
     } finally {
         hideLoading();
     }
@@ -506,22 +615,33 @@ const searchTransactions = async () => {
 const renderTransactions = (transactions) => {
     const transactionTableBody = document.getElementById('transactionTableBody');
     transactionTableBody.innerHTML = '';
-    
+
     if (transactions.length === 0) {
-        transactionTableBody.innerHTML = '<tr><td colspan="7" class="empty-state">Không có giao dịch nào</td></tr>';
+        transactionTableBody.innerHTML = '<tr><td colspan="9" class="empty-state">Không có giao dịch nào</td></tr>';
         return;
     }
-    
+
     transactions.forEach(transaction => {
         if (!transaction.transactionId) {
             console.error('Missing transactionId for transaction:', transaction);
             return;
         }
-        
+
+        const transactionType = transaction.categoryId ?
+            (transaction.categoryType || 'EXPENSE') :
+            (transaction.userCategoryType || 'EXPENSE');
+
+        const categoryIcon = transaction.categoryIcon || transaction.userCategoryIcon || '';
+        const categoryName = transaction.categoryName == null ? transaction.userCategoryName : transaction.categoryName;
+
+        // Get icon HTML
+        const iconHtml = categoryIcon ? getIconSymbol(categoryIcon) : '<i class="fas fa-question"></i>';
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${formatDate(transaction.transactionDate)}</td>
-            <td>${transaction.categoryName == null ? transaction.userCategoryName : transaction.categoryName}</td>
+            <td>${iconHtml} ${categoryName}</td>
+            <td>${transactionType}</td>
             <td><span class="${transaction.amount < 0 ? 'amount-negative' : 'amount-positive'}">${formatAmount(transaction.amount)}</span></td>
             <td><div class="max-w-32 truncate" title="${transaction.note || ''}">${transaction.note || '-'}</div></td>
             <td>${transaction.paymentMethod || '-'}</td>
@@ -553,12 +673,12 @@ const renderPagination = (total) => {
     totalPages = total;
     const pageNumbers = document.getElementById('pageNumbers');
     pageNumbers.innerHTML = '';
-    
+
     if (total <= 1) {
         document.getElementById('paginationDiv').classList.add('hidden');
         return;
     }
-    
+
     document.getElementById('paginationDiv').classList.remove('hidden');
     document.getElementById('prevBtn').disabled = currentPage === 0;
     document.getElementById('nextBtn').disabled = currentPage === totalPages - 1;
@@ -585,9 +705,9 @@ const renderPagination = (total) => {
 
 const loadCategories = async () => {
     if (!checkAuth()) return;
-    
+
     const user = getCurrentUser();
-    
+
     try {
         const systemRes = await apiRequest('http://localhost:8080/api/categories');
         const userRes = await apiRequest(`http://localhost:8080/api/userCategories/${user.userId}`);
@@ -600,24 +720,57 @@ const loadCategories = async () => {
         const systemCategories = systemData.result || [];
         const userCategories = userData.result || [];
 
-        const selectElements = document.querySelectorAll('.categorySelect');
+        const allChoices = [];
 
-        selectElements.forEach(select => {
-            select.innerHTML = '<option value="">Chọn loại giao dịch</option>';
-
-            systemCategories.forEach(category => {
-                const option = document.createElement('option');
-                option.value = `system-${category.categoryId}`;
-                option.textContent = category.categoryName;
-                select.appendChild(option);
+        // INCOME
+        allChoices.push({ label: 'Danh mục - Thu nhập', id: 'income', disabled: true });
+        [...systemCategories, ...userCategories]
+            .filter(cat => cat.type === 'INCOME')
+            .forEach(cat => {
+                allChoices.push({
+                    value: cat.categoryId ? `system-${cat.categoryId}` : `user-${cat.userCategoryId}`,
+                    label: formatLabel(cat.icon, cat.categoryName),
+                    customProperties: { type: 'income' }
+                });
             });
 
-            userCategories.forEach(category => {
-                const option = document.createElement('option');
-                option.value = `user-${category.userCategoryId}`;
-                option.textContent = category.userCategoryName;
-                select.appendChild(option);
+        // EXPENSE
+        allChoices.push({ label: 'Danh mục - Chi tiêu', id: 'expense', disabled: true });
+        [...systemCategories, ...userCategories]
+            .filter(cat => cat.type === 'EXPENSE')
+            .forEach(cat => {
+                allChoices.push({
+                    value: cat.categoryId ? `system-${cat.categoryId}` : `user-${cat.userCategoryId}`,
+                    label: formatLabel(cat.icon, cat.categoryName),
+                    customProperties: { type: 'expense' }
+                });
             });
+
+        // Tùy chọn tạo mới
+        allChoices.push({ value: 'create-new', label: '➕ Tạo danh mục mới' });
+
+        // Gán cho tất cả select
+        const selects = document.querySelectorAll('.categorySelect');
+
+        selects.forEach(select => {
+            const selectKey = select.id || select.name || Math.random().toString(); // Key duy nhất
+
+            // Nếu đã có Choices → destroy
+            if (choicesInstances.has(selectKey)) {
+                choicesInstances.get(selectKey).destroy();
+                choicesInstances.delete(selectKey);
+            }
+
+            // Tạo Choices mới
+            const choices = new Choices(select, {
+                allowHTML: true,
+                searchEnabled: false,
+                itemSelectText: '',
+                shouldSort: false,
+            });
+
+            choices.setChoices(allChoices, 'value', 'label', false);
+            choicesInstances.set(selectKey, choices); // Lưu lại
         });
 
     } catch (error) {
@@ -628,12 +781,63 @@ const loadCategories = async () => {
     }
 };
 
+const openCreateCategoryModal = () => {
+    createCategoryForm.reset();
+    document.getElementById('categoryIcon').value = '';
+    document.querySelectorAll('.icon-option').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    createIconGrid();
+    showModal(createCategoryModal);
+};
+
+const closeCreateCategoryModal = () => {
+    hideModal(createCategoryModal);
+    createCategoryForm.reset();
+};
+
+const createUserCategory = async (formData) => {
+    if (!checkAuth()) return;
+
+    const user = getCurrentUser();
+
+    try {
+        const response = await apiRequest('http://localhost:8080/api/userCategories', {
+            method: 'POST',
+            body: JSON.stringify({
+                userId: user.userId,
+                userCategoryName: formData.userCategoryName,
+                type: formData.type,
+                icon: formData.icon,
+                color: formData.color
+            })
+        });
+
+        if (!response) return;
+
+        const data = await response.json();
+
+        if (data.code === 1000) {
+            showSuccess('Tạo danh mục thành công!');
+            closeCreateCategoryModal();
+            await loadCategories();
+        } else {
+            showError(`Lỗi: ${data.message || 'Không thể tạo danh mục'}`);
+        }
+    } catch (error) {
+        console.error('Error creating user category:', error);
+        showError('Lỗi khi tạo danh mục');
+    }
+};
+
 // Modal Functions
 const openWalletModal = () => {
     if (currentWallet) {
-        currentBalanceDisplay.innerHTML = currentWallet.balance;
-        newBalanceInput.value = 0;
+        newBalanceInput.value = currentWallet.balance;
         currencySelect.value = currentWallet.currency;
+        currentBalanceDisplay.textContent = formatAmount(currentWallet.balance) + ' ' + currentWallet.currency;
+    } else {
+        currentBalanceDisplay.textContent = 'N/A';
     }
     showModal(walletModal);
 };
@@ -676,7 +880,61 @@ walletForm.addEventListener('submit', async (e) => {
     }
 });
 
-// Other Event Listeners
+if (createCategoryModal) {
+    closeCreateCategoryModalBtn.addEventListener('click', closeCreateCategoryModal);
+    cancelCategoryBtn.addEventListener('click', closeCreateCategoryModal);
+
+    createCategoryModal.addEventListener('click', (e) => {
+        if (e.target === createCategoryModal) {
+            closeCreateCategoryModal();
+        }
+    });
+
+    createCategoryForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const userCategoryName = document.getElementById('categoryName').value.trim();
+        const type = document.getElementById('categoryType').value;
+        const icon = document.getElementById('categoryIcon').value;
+        const color = document.getElementById('categoryColor').value;
+
+        if (!userCategoryName) {
+            showError('Tên danh mục là bắt buộc');
+            return;
+        }
+        if (!type) {
+            showError('Loại danh mục là bắt buộc');
+            return;
+        }
+        if (!icon) {
+            showError('Biểu tượng là bắt buộc');
+            return;
+        }
+
+        submitCategoryBtn.innerHTML = '⏳ Đang lưu...';
+        submitCategoryBtn.disabled = true;
+
+        try {
+            await createUserCategory({
+                userCategoryName,
+                type,
+                icon,
+                color
+            });
+        } finally {
+            submitCategoryBtn.innerHTML = 'Lưu Danh Mục';
+            submitCategoryBtn.disabled = false;
+        }
+    });
+}
+
+document.addEventListener('change', (e) => {
+    if (e.target.classList.contains('categorySelect') && e.target.value === 'create-new') {
+        openCreateCategoryModal();
+        e.target.value = '';
+    }
+});
+
 document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', () => {
         document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
@@ -691,6 +949,27 @@ document.querySelectorAll('.nav-item').forEach(item => {
         }
     });
 });
+
+const resetCategorySelects = () => {
+    const selects = document.querySelectorAll('.categorySelect');
+
+    selects.forEach(select => {
+        // Nếu có Choices instance → destroy
+        if (select.choicesInstance) {
+            select.choicesInstance.destroy();
+            select.choicesInstance = null;
+        }
+
+        // Reset nội dung mặc định
+        select.innerHTML = '<option value="">Chọn loại giao dịch</option>';
+    });
+
+    // Clear global instance list (nếu có dùng)
+    if (typeof choicesInstances !== 'undefined') {
+        choicesInstances.forEach(instance => instance.destroy());
+        choicesInstances.clear();
+    }
+};
 
 document.getElementById('createBtn').addEventListener('click', () => {
     resetTransactionForm();
@@ -717,11 +996,13 @@ document.getElementById('cancelBtn').addEventListener('click', () => {
 document.getElementById('closeSearchModalBtn').addEventListener('click', () => {
     hideModal(document.getElementById('searchModal'));
     resetSearchForm();
+    resetCategorySelects();
 });
 
 document.getElementById('cancelSearchBtn').addEventListener('click', () => {
     hideModal(document.getElementById('searchModal'));
     resetSearchForm();
+    resetCategorySelects();
 });
 
 document.getElementById('transactionForm').addEventListener('submit', (e) => {
@@ -785,20 +1066,20 @@ document.getElementById('transactionTableBody').addEventListener('click', async 
 
     const id = button.dataset.id;
     const user = getCurrentUser();
-    
+
     if (button.classList.contains('edit-btn')) {
         try {
             const response = await apiRequest(`${API_BASE_URL}/${id}?userId=${user.userId}`);
             if (!response) return;
-            
+
             const data = await response.json();
             if (data.code === 1000) {
                 const transaction = data.result;
                 await loadCategories();
-                
+
                 document.getElementById('amount').value = transaction.amount;
                 document.getElementById('transactionDate').value = transaction.transactionDate.split('T')[0];
-                
+
                 if (transaction.categoryId) {
                     document.getElementById('category-edit').value = `system-${transaction.categoryId}`;
                 } else if (transaction.userCategoryId) {
@@ -806,13 +1087,13 @@ document.getElementById('transactionTableBody').addEventListener('click', async 
                 } else {
                     document.getElementById('category-edit').value = '';
                 }
-                
+
                 document.getElementById('paymentMethod').value = transaction.paymentMethod || '';
                 document.getElementById('location').value = transaction.location || '';
                 document.getElementById('note').value = transaction.note || '';
                 document.getElementById('imageUrl').value = transaction.imageUrl || '';
                 document.getElementById('recurringPattern').value = transaction.recurringPattern || '';
-                
+
                 document.getElementById('modalTitle').textContent = 'Cập nhật giao dịch';
                 document.getElementById('submitBtn').textContent = 'Cập nhật';
                 editingTransactionId = id;
