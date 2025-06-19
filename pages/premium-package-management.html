@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Packages - Finmate</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --main-green: #388e3c;
+            --main-green-dark: #2e7d32;
+            --main-green-light: #a3c9a8;
+            --main-bg: linear-gradient(135deg, #f0f4f3 0%, #e6f0ed 100%);
+            --card-bg: #fff;
+            --card-radius: 18px;
+            --card-shadow: 0 8px 32px rgba(56, 142, 60, 0.10);
+            --sidebar-bg: linear-gradient(135deg, #2d5a3d 0%, #1a3d2e 50%, #0f2922 100%);
+            --sidebar-color: #fff;
+            --sidebar-active: #a3c9a8;
+            --sidebar-hover: #388e3c;
+            --header-bg: #fff;
+            --header-radius: 16px;
+            --header-shadow: 0 4px 16px rgba(56, 142, 60, 0.08);
+            --primary: #388e3c;
+            --danger: #d32f2f;
+            --success: #388e3c;
+            --text-dark: #2d5a3d;
+            --text-light: #546e7a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--main-bg);
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            color: var(--sidebar-color);
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 2rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            width: 32px;
+            height: 32px;
+            background: var(--main-green);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-nav {
+            padding: 2rem 0;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.75rem 2rem;
+            color: var(--sidebar-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--sidebar-hover);
+        }
+
+        .nav-item.active {
+            background: rgba(163, 201, 168, 0.2);
+            border-left-color: var(--sidebar-active);
+            color: var(--sidebar-active);
+        }
+
+        .nav-item i {
+            width: 20px;
+            margin-right: 0.75rem;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            display: flex;
+            gap: 2rem;
+        }
+
+        .content-column {
+            flex: 1;
+        }
+
+        .header {
+            background: var(--header-bg);
+            border-radius: var(--header-radius);
+            box-shadow: var(--header-shadow);
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .page-subtitle {
+            color: var(--text-light);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            width: 300px;
+            font-size: 0.875rem;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--main-green-dark);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .stat-title {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .stat-icon.revenue {
+            background: rgba(56, 142, 60, 0.1);
+            color: var(--main-green);
+        }
+
+        .stat-icon.users {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196F3;
+        }
+
+        .stat-icon.conversion {
+            background: rgba(255, 152, 0, 0.1);
+            color: #FF9800;
+        }
+
+        .stat-icon.avg {
+            background: rgba(156, 39, 176, 0.1);
+            color: #9C27B0;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        .content-card {
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tab-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            color: var(--text-light);
+            font-size: 0.875rem;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+        }
+
+        .package-card {
+            border: 1px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .package-card:hover {
+            box-shadow: 0 4px 20px rgba(56, 142, 60, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .package-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .package-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+        }
+
+        .package-icon.basic {
+            background: linear-gradient(135deg, #64B5F6, #2196F3);
+        }
+
+        .package-icon.pro {
+            background: linear-gradient(135deg, #BA68C8, #9C27B0);
+        }
+
+        .package-icon.enterprise {
+            background: linear-gradient(135deg, #81C784, #4CAF50);
+        }
+
+        .package-icon.yearly {
+            background: linear-gradient(135deg, #FFB74D, #FF9800);
+        }
+
+        .package-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            background: #f5f5f5;
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .package-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .package-type {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .package-price {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 1rem 0;
+        }
+
+        .package-period {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .package-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .package-stat {
+            text-align: center;
+        }
+
+        .package-stat-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .package-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+
+        .package-features {
+            margin: 1rem 0;
+        }
+
+        .features-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-item {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-item i {
+            color: var(--success);
+            font-size: 0.75rem;
+        }
+
+        .package-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+
+        .package-status.active {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+
+        .package-status.inactive {
+            background: rgba(158, 158, 158, 0.1);
+            color: #9E9E9E;
+        }
+
+        .subscription-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .subscription-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--main-green-light);
+            color: var(--main-green-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 1rem;
+        }
+
+        .subscription-info {
+            flex: 1;
+        }
+
+        .subscription-name {
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .subscription-package {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .subscription-price {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-right: 1rem;
+        }
+
+        .subscription-time {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-right: 1rem;
+        }
+
+        .subscription-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .subscription-status.completed {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+
+        .subscription-status.pending {
+            background: rgba(255, 152, 0, 0.1);
+            color: #FF9800;
+        }
+
+        .subscription-status.failed {
+            background: rgba(244, 67, 54, 0.1);
+            color: #F44336;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: var(--card-radius);
+            box-shadow: var(--card-shadow);
+            max-width: 500px;
+            width: 90%;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--text-light);
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 1rem;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .pagination-btn {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #e0e0e0;
+            background: white;
+            color: var(--text-light);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--primary);
+            color: white;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .packages-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-coins"></i>
+                    Finmate
+                </div>
+            </div>
+            <div class="sidebar-nav">
+                <a href="#" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    Overview
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    User Management
+                </a>
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-crown"></i>
+                    Premium Packages
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-credit-card"></i>
+                    Payments
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    Statistics
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-list-alt"></i>
+                    System Logs
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-money-bill-wave"></i>
+                    Withdrawals
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="content-column">
+                <header class="header">
+                    <div>
+                        <h1 class="page-title">Premium Packages</h1>
+                        <p class="page-subtitle">Manage subscription plans and pricing</p>
+                    </div>
+                    <div class="header-actions">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search packages..." id="searchInput">
+                        </div>
+                        <button class="btn btn-primary" onclick="openNewPackageModal()">
+                            <i class="fas fa-plus"></i>
+                            New Package
+                        </button>
+                        <button class="btn" onclick="location.reload()">
+                            <i class="fas fa-bell"></i>
+                        </button>
+                    </div>
+                </header>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">Revenue</div>
+                            <div class="stat-icon revenue">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="totalRevenue">$0</div>
+                        <div class="stat-change positive" id="revenueChange">+0%</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">Active Subscribers</div>
+                            <div class="stat-icon users">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="totalSubscribers">0</div>
+                        <div class="stat-change positive" id="subscribersChange">+0%</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">Conversion Rate</div>
+                            <div class="stat-icon conversion">
+                                <i class="fas fa-percentage"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="conversionRate">0%</div>
+                        <div class="stat-change positive" id="conversionChange">+0.0%</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">Avg Revenue/User</div>
+                            <div class="stat-icon avg">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="avgRevenue">$0</div>
+                        <div class="stat-change negative" id="avgRevenueChange">-0%</div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2 class="card-title">All Packages</h2>
+                        <div class="filter-tabs">
+                            <button class="tab-btn active" data-filter="all">All</button>
+                            <button class="tab-btn" data-filter="monthly">Monthly</button>
+                            <button class="tab-btn" data-filter="yearly">Yearly</button>
+                            <button class="tab-btn" data-filter="active">Active</button>
+                        </div>
+                    </div>
+
+                    <div id="packagesContainer">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading packages...
+                        </div>
+                    </div>
+
+                    <div class="pagination" id="pagination" style="display: none;">
+                        <button class="pagination-btn" id="prevBtn" onclick="changePage(currentPage - 1)">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div id="pageNumbers"></div>
+                        <button class="pagination-btn" id="nextBtn" onclick="changePage(currentPage + 1)">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Subscriptions</h2>
+                        <a href="#" class="btn">View All</a>
+                    </div>
+                    <div id="recentSubscriptions">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading recent subscriptions...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="updatePackageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Update Package</h2>
+                <button class="close-btn" onclick="closeUpdateModal()">&times;</button>
+            </div>
+            <form id="updatePackageForm">
+                <input type="hidden" id="updatePackageId">
+                <div class="form-group">
+                    <label for="updateName">Package Name</label>
+                    <input type="text" id="updateName" required>
+                </div>
+                <div class="form-group">
+                    <label for="updatePrice">Price ($)</label>
+                    <input type="number" id="updatePrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="updateDurationValue">Duration Value</label>
+                    <input type="number" id="updateDurationValue" required>
+                </div>
+                <div class="form-group">
+                    <label for="updateDurationType">Duration Type</label>
+                    <select id="updateDurationType" required>
+                        <option value="DAY">Day</option>
+                        <option value="WEEK">Week</option>
+                        <option value="MONTH">Month</option>
+                        <option value="YEAR">Year</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="updateFeatures">Features (one per line)</label>
+                    <textarea id="updateFeatures" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="updateIsActive">Status</label>
+                    <select id="updateIsActive" required>
+                        <option value="true">Active</option>
+                        <option value="false">Inactive</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" onclick="closeUpdateModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Package</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'http://localhost:8080/api/premium-package';
+        const SUBSCRIPTION_API_URL = 'http://localhost:8080/api/subscription';
+        let currentPage = 0;
+        let totalPages = 0;
+        let currentFilter = 'all';
+        let packages = [];
+
+        // JWT and User Management
+        const getToken = () => {
+            return localStorage.getItem('token');
+        };
+
+        const getCurrentUser = () => {
+            const token = getToken();
+            if (!token) return null;
+
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                return {
+                    userId: payload.userId || payload.sub,
+                    username: payload.username || payload.name,
+                    exp: payload.exp
+                };
+            } catch (error) {
+                console.error('Error parsing token:', error);
+                return null;
+            }
+        };
+
+        const isTokenExpired = () => {
+            const user = getCurrentUser();
+            if (!user) return true;
+            return Date.now() >= user.exp * 1000;
+        };
+
+        const redirectToLogin = () => {
+            localStorage.removeItem('token');
+            window.location.href = '../pages/login.html';
+        };
+
+        const getAuthHeaders = () => {
+            const token = getToken();
+            return token ? { 'Authorization': `Bearer ${token}` } : {};
+        };
+
+        const checkAuth = () => {
+            if (!getToken() || isTokenExpired()) {
+                redirectToLogin();
+                return false;
+            }
+            return true;
+        };
+
+        const apiRequest = async (url, options = {}) => {
+            if (!checkAuth()) return null;
+
+            const headers = {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders(),
+                ...options.headers
+            };
+
+            try {
+                const response = await fetch(url, { ...options, headers });
+
+                if (response.status === 401) {
+                    redirectToLogin();
+                    return null;
+                }
+
+                return response;
+            } catch (error) {
+                console.error('API Request Error:', error);
+                throw error;
+            }
+        };
+
+        // Utility Functions
+        const formatCurrency = (amount) => {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(amount);
+        };
+
+        const formatNumber = (num) => {
+            return new Intl.NumberFormat('en-US').format(num);
+        };
+
+        const getPackageIcon = (name) => {
+            const lowerName = name.toLowerCase();
+            if (lowerName.includes('basic')) return 'basic';
+            if (lowerName.includes('pro') || lowerName.includes('premium')) return 'pro';
+            if (lowerName.includes('enterprise')) return 'enterprise';
+            if (lowerName.includes('yearly') || lowerName.includes('annual')) return 'yearly';
+            return 'basic';
+        };
+
+        const getDurationText = (value, type) => {
+            const typeMap = {
+                'DAY': value === 1 ? 'day' : 'days',
+                'WEEK': value === 1 ? 'week' : 'weeks',
+                'MONTH': value === 1 ? 'month' : 'months',
+                'YEAR': value === 1 ? 'year' : 'years'
+            };
+            return `per ${value} ${typeMap[type] || 'month'}`;
+        };
+
+        // API Functions
+        const fetchPackages = async (page = 0, size = 4, sortBy = 'price', sortDirection = 'DESC') => {
+            try {
+                const response = await apiRequest(
+                    `${API_BASE_URL}?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${sortDirection}`
+                );
+
+                if (!response) return null;
+
+                const data = await response.json();
+                return data.result;
+            } catch (error) {
+                console.error('Error fetching packages:', error);
+                return null;
+            }
+        };
+
+        const fetchPackageById = async (packageId) => {
+            try {
+                const response = await apiRequest(`${API_BASE_URL}/${packageId}`);
+                if (!response) return null;
+                const data = await response.json();
+                return data.result;
+            } catch (error) {
+                console.error('Error fetching package:', error);
+                return null;
+            }
+        };
+
+        const updatePackage = async (packageId, packageData) => {
+            try {
+                const response = await apiRequest(`${API_BASE_URL}/${packageId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(packageData)
+                });
+                return response;
+            } catch (error) {
+                console.error('Error updating package:', error);
+                throw error;
+            }
+        };
+
+        const fetchRecentSubscriptions = async () => {
+            try {
+                const response = await apiRequest(`${SUBSCRIPTION_API_URL}/recent?limit=5`);
+
+                if (!response) return [];
+
+                const data = await response.json();
+                return data.result || [];
+            } catch (error) {
+                console.error('Error fetching recent subscriptions:', error);
+                return [];
+            }
+        };
+
+        // Render Functions
+        const renderPackages = (packagesData) => {
+            const container = document.getElementById('packagesContainer');
+
+            if (!packagesData || !packagesData.content || packagesData.content.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <h3>No packages found</h3>
+                        <p>Create your first premium package to get started</p>
+                    </div>
+                `;
+                return;
+            }
+
+            packages = packagesData.content;
+            totalPages = packagesData.totalPages;
+
+            const packagesHTML = packages.map(pkg => `
+                <div class="package-card" data-type="${pkg.durationType?.toLowerCase() || 'monthly'}" data-active="${pkg.isActive}">
+                    <div class="package-header">
+                        <div>
+                            <div class="package-icon ${getPackageIcon(pkg.name)}">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                        </div>
+                        <div class="package-actions">
+                            <button class="action-btn" onclick="openUpdateModal(${pkg.id})" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn" onclick="deletePackage(${pkg.id})" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="package-name">${pkg.name}</div>
+                    <div class="package-type">${pkg.durationType?.toLowerCase() || 'monthly'}</div>
+                    
+                    <div class="package-price">
+                        ${formatCurrency(pkg.price)}
+                        <span class="package-period">${getDurationText(pkg.durationValue, pkg.durationType)}</span>
+                    </div>
+                    
+                    <div class="package-stats">
+                        <div class="package-stat">
+                            <div class="package-stat-value">${formatNumber(pkg.subscribers || 0)}</div>
+                            <div class="package-stat-label">Subscribers</div>
+                        </div>
+                        <div class="package-stat">
+                            <div class="package-stat-value">${formatCurrency(pkg.revenue || 0)}</div>
+                            <div class="package-stat-label">Revenue</div>
+                        </div>
+                    </div>
+                    
+                    <div class="package-features">
+                        <div class="features-title">Features</div>
+                        <ul class="feature-list">
+                            ${(pkg.features || ['Basic Features', 'Support']).slice(0, 3).map(feature => `
+                                <li class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    ${feature}
+                                </li>
+                            `).join('')}
+                            ${pkg.features && pkg.features.length > 3 ? `<li class="feature-item"><i class="fas fa-plus"></i>+${pkg.features.length - 3} more</li>` : ''}
+                        </ul>
+                    </div>
+                    
+                    <div class="package-status ${pkg.isActive ? 'active' : 'inactive'}">
+                        <i class="fas fa-circle"></i>
+                        ${pkg.isActive ? 'Active' : 'Inactive'}
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = `<div class="packages-grid">${packagesHTML}</div>`;
+            updatePagination();
+        };
+
+        const renderRecentSubscriptions = (subscriptions) => {
+            const container = document.getElementById('recentSubscriptions');
+
+            if (!subscriptions || subscriptions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <h3>No recent subscriptions</h3>
+                        <p>Recent subscription activity will appear here</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const subscriptionsHTML = subscriptions.map(sub => `
+                <div class="subscription-item">
+                    <div class="user-avatar">${sub.username?.charAt(0).toUpperCase() || 'U'}</div>
+                    <div class="subscription-info">
+                        <div class="subscription-name">${sub.username || 'Unknown User'}</div>
+                        <div class="subscription-package">${sub.packageName || 'Premium Package'}</div>
+                    </div>
+                    <div class="subscription-price">${formatCurrency(sub.amount || 0)}</div>
+                    <div class="subscription-time">${sub.timeAgo || 'Just now'}</div>
+                    <div class="subscription-status ${sub.status?.toLowerCase() || 'completed'}">
+                        ${sub.status || 'Completed'}
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = subscriptionsHTML;
+        };
+
+        const updateStats = () => {
+            if (!packages || packages.length === 0) return;
+
+            let totalRevenue = 0;
+            let totalSubscribers = 0;
+
+            packages.forEach(pkg => {
+                totalRevenue += (pkg.revenue || 0);
+                totalSubscribers += (pkg.subscribers || 0);
+            });
+
+            document.getElementById('totalRevenue').textContent = formatCurrency(totalRevenue);
+            document.getElementById('totalSubscribers').textContent = formatNumber(totalSubscribers);
+
+            const avgRevenue = totalSubscribers > 0 ? totalRevenue / totalSubscribers : 0;
+            document.getElementById('avgRevenue').textContent = formatCurrency(avgRevenue);
+
+            document.getElementById('conversionRate').textContent = '3.4%';
+        };
+
+        const updatePagination = () => {
+            const pagination = document.getElementById('pagination');
+            const pageNumbers = document.getElementById('pageNumbers');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            if (totalPages <= 1) {
+                pagination.style.display = 'none';
+                return;
+            }
+
+            pagination.style.display = 'flex';
+
+            prevBtn.disabled = currentPage === 0;
+            nextBtn.disabled = currentPage >= totalPages - 1;
+
+            let pageNumbersHTML = '';
+            const maxVisiblePages = 5;
+            let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1);
+
+            if (endPage - startPage < maxVisiblePages - 1) {
+                startPage = Math.max(0, endPage - maxVisiblePages + 1);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                pageNumbersHTML += `
+                    <button class="pagination-btn ${i === currentPage ? 'active' : ''}" 
+                            onclick="changePage(${i})">
+                        ${i + 1}
+                    </button>
+                `;
+            }
+
+            pageNumbers.innerHTML = pageNumbersHTML;
+        };
+
+        // Modal Functions
+        const openUpdateModal = async (packageId) => {
+            const modal = document.getElementById('updatePackageModal');
+            const packageData = await fetchPackageById(packageId);
+
+            if (packageData) {
+                document.getElementById('updatePackageId').value = packageData.id;
+                document.getElementById('updateName').value = packageData.name;
+                document.getElementById('updatePrice').value = packageData.price;
+                document.getElementById('updateDurationValue').value = packageData.durationValue;
+                document.getElementById('updateDurationType').value = packageData.durationType;
+                document.getElementById('updateFeatures').value = packageData.features?.join('\n') || '';
+                document.getElementById('updateIsActive').value = packageData.isActive.toString();
+
+                modal.style.display = 'flex';
+            } else {
+                alert('Failed to load package data');
+            }
+        };
+
+        const closeUpdateModal = () => {
+            const modal = document.getElementById('updatePackageModal');
+            modal.style.display = 'none';
+            document.getElementById('updatePackageForm').reset();
+        };
+
+        // Event Handlers
+        const changePage = async (page) => {
+            if (page < 0 || page >= totalPages || page === currentPage) return;
+
+            currentPage = page;
+            await loadPackages();
+        };
+
+        const filterPackages = (filter) => {
+            currentFilter = filter;
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.filter === filter) {
+                    btn.classList.add('active');
+                }
+            });
+
+            const packageCards = document.querySelectorAll('.package-card');
+            packageCards.forEach(card => {
+                const type = card.dataset.type;
+                const isActive = card.dataset.active === 'true';
+
+                let show = false;
+
+                switch (filter) {
+                    case 'all':
+                        show = true;
+                        break;
+                    case 'monthly':
+                        show = type === 'month';
+                        break;
+                    case 'yearly':
+                        show = type === 'year';
+                        break;
+                    case 'active':
+                        show = isActive;
+                        break;
+                }
+
+                card.style.display = show ? 'block' : 'none';
+            });
+        };
+
+        const handleUpdatePackage = async (e) => {
+            e.preventDefault();
+
+            const packageId = document.getElementById('updatePackageId').value;
+            const packageData = {
+                name: document.getElementById('updateName').value,
+                price: parseFloat(document.getElementById('updatePrice').value),
+                durationValue: parseInt(document.getElementById('updateDurationValue').value),
+                durationType: document.getElementById('updateDurationType').value,
+                features: document.getElementById('updateFeatures').value.split('\n').filter(f => f.trim()),
+                isActive: document.getElementById('updateIsActive').value === 'true'
+            };
+
+            try {
+                const response = await updatePackage(packageId, packageData);
+
+                if (response && response.ok) {
+                    closeUpdateModal();
+                    await loadPackages();
+                    alert('Package updated successfully!');
+                } else {
+                    alert('Failed to update package');
+                }
+            } catch (error) {
+                alert('Error updating package');
+            }
+        };
+
+        const deletePackage = async (packageId) => {
+            if (!confirm('Are you sure you want to delete this package?')) return;
+
+            try {
+                const response = await deletePackage(packageId);
+
+                if (response && response.ok) {
+                    await loadPackages();
+                    alert('Package deleted successfully!');
+                } else {
+                    alert('Failed to delete package');
+                }
+            } catch (error) {
+                alert('Error deleting package');
+            }
+        };
+
+        const openNewPackageModal = () => {
+            console.log('Open new package modal');
+            alert('New package modal will be implemented');
+        };
+
+        const searchPackages = (query) => {
+            const packageCards = document.querySelectorAll('.package-card');
+
+            packageCards.forEach(card => {
+                const packageName = card.querySelector('.package-name').textContent.toLowerCase();
+                const packageType = card.querySelector('.package-type').textContent.toLowerCase();
+
+                const matches = packageName.includes(query.toLowerCase()) ||
+                    packageType.includes(query.toLowerCase());
+
+                card.style.display = matches ? 'block' : 'none';
+            });
+        };
+
+        // Load Functions
+        const loadPackages = async () => {
+            const packagesData = await fetchPackages(currentPage, 3);
+            if (packagesData) {
+                renderPackages(packagesData);
+                updateStats();
+            }
+        };
+
+        const loadRecentSubscriptions = async () => {
+            const mockSubscriptions = [
+                {
+                    username: 'John Peterson',
+                    packageName: 'Pro Premium',
+                    amount: 19.99,
+                    timeAgo: '2 mins ago',
+                    status: 'Completed'
+                },
+                {
+                    username: 'Sarah Wilson',
+                    packageName: 'Basic Premium',
+                    amount: 9.99,
+                    timeAgo: '5 mins ago',
+                    status: 'Completed'
+                },
+                {
+                    username: 'Mike Johnson',
+                    packageName: 'Enterprise',
+                    amount: 49.99,
+                    timeAgo: '1 day ago',
+                    status: 'Pending'
+                },
+                {
+                    username: 'Emily Davis',
+                    packageName: 'Yearly Basic',
+                    amount: 99.99,
+                    timeAgo: '2 days ago',
+                    status: 'Completed'
+                },
+                {
+                    username: 'Robert Chen',
+                    packageName: 'Pro Premium',
+                    amount: 19.99,
+                    timeAgo: '3 days ago',
+                    status: 'Failed'
+                }
+            ];
+
+            try {
+                const subscriptions = await fetchRecentSubscriptions();
+                renderRecentSubscriptions(subscriptions.length > 0 ? subscriptions : mockSubscriptions);
+            } catch (error) {
+                console.error('Error loading subscriptions:', error);
+                renderRecentSubscriptions(mockSubscriptions);
+            }
+        };
+
+        // Initialize
+        const init = async () => {
+            if (!checkAuth()) return;
+
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                searchPackages(e.target.value);
+            });
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    filterPackages(e.target.dataset.filter);
+                });
+            });
+
+            document.getElementById('updatePackageForm').addEventListener('submit', handleUpdatePackage);
+
+            await Promise.all([
+                loadPackages(),
+                loadRecentSubscriptions()
+            ]);
+        };
+
+        document.addEventListener('DOMContentLoaded', init);
+
+        setInterval(() => {
+            loadPackages();
+            loadRecentSubscriptions();
+        }, 5 * 60 * 1000);
+    </script>
+</body>
+
+</html>
