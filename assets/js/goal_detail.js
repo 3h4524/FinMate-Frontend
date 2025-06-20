@@ -715,9 +715,14 @@ editGoalForm.addEventListener('submit', async (e) => {
     }
 });
 
+async function initiateUI() {
+    await fetchGoalDetails();
+    await loadSideBar(getCurrentUser());
+}
+
 window.addEventListener('load', () => {
     if (checkAuth()) {
-        fetchGoalDetails();
+        initiateUI();
     }
 });
 
