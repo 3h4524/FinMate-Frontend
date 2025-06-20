@@ -359,29 +359,31 @@ window.addEventListener('load', () => {
 });
 
 
-async function initiatePayment() {
-    const paymentData = {
-        address: "123 Main St, Hanoi",
-        bankCode: "NCB",
-        language: "vn",
-        amount: 100.00
-    };
+document.getElementById("haha").addEventListener("click", initiateCheckout);
+
+async function initiateCheckout() {
+    console.log("click cehckout");
+
+    const body = {
+        packageId : 2,
+        userId: 1
+    }
 
     try {
-        const response = await apiRequest(`${API_BASE_URL}/api/payment`, {
+        const response = await apiRequest(`${API_BASE_URL}/api/checkout/create`, {
             method: 'POST',
-            body: JSON.stringify(paymentData)
+            body: JSON.stringify(body)
         });
+
+        if (!response.ok) throw new Error("Hic");
 
         const data = await response.json();
         if (data.code === 1000) {
-            window.location.href = data.result.paymentUrl;
+            window.location.href = data.result; // Redirect to PayOS checkout URL
         } else {
-            console.error('Payment initiation failed:', data.message);
-            alert('Failed to initiate payment: ' + data.message);
+            console.error('Checkout failed:', data.message);
         }
     } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred while initiating payment');
+        console.error('Error initiating checkout:', error);
     }
 }

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Plans</title>
+    <!-- Tailwind CSS CDN (for testing only, not for production) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js"></script>
+    <script src="../assets/js/autho_helper.js" defer></script>
+    <script src="../assets/js/sidebar.js" defer></script>
+    <style>
+        .plan-card:hover {
+            transform: scale(1.05);
+        }
+
+        /* Add basic styles for app-container and main-content consistent with other pages */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            margin-left: 270px;
+            flex-grow: 1;
+            padding: 40px 32px 32px 32px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Plan card layout to pin button and text to bottom */
+        .plan-card {
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .plan-card-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .plan-card-footer {
+            margin-top: auto;
+        }
+
+        /* Gradient badge for popular plan */
+        .popular-badge {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
+        }
+
+        /* FAQ Section */
+        .faq-item {
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            background-color: #f9fafb;
+        }
+
+        /* Testimonial Card */
+        .testimonial-card {
+            background: linear-gradient(145deg, #ffffff, #f3f4f6);
+            transition: transform 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Enhanced Header Styles */
+        .header-section {
+            position: relative;
+            padding-top: 60px;
+            padding-bottom: 60px;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            overflow: hidden;
+        }
+
+        .header-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="80" height="80"%3E%3Cpath fill="%23d1d5db" fill-opacity="0.1" d="M0 0h40v40H0zM40 40h40v40H40z"/%3E%3C/svg%3E');
+            z-index: 0;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .rocket-icon-container {
+            animation: spin 10s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        /* Responsive grid width */
+        @media (min-width: 1280px) {
+            .plans-grid {
+                max-width: 90vw;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 1279px) {
+            .plans-grid {
+                max-width: 95vw;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .plans-grid {
+                max-width: 100vw;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+
+    <div class="app-container">
+        <div id="sidebar-container"></div>
+        <div class="main-content" id="mainContent">
+            <div class="max-w-7xl mx-auto">
+                <!-- Header -->
+                <div class="header-section text-center mb-12">
+                    <div class="header-content">
+                        <div class="flex justify-center mb-6">
+                            <div class="bg-gradient-to-r from-purple-500 to-pink-500 p-4 rounded-full rocket-icon-container">
+                                <i data-lucide="rocket" class="w-12 h-12 text-white"></i>
+                            </div>
+                        </div>
+                        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
+                            Choose Your <span class="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Premium</span> Plan
+                        </h1>
+                        <p class="text-2xl font-semibold text-purple-600 mb-4">Unlock Your Potential Today</p>
+                        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                            Elevate your experience with premium features, professional support, and exclusive perks.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Billing Toggle -->
+                <div class="flex justify-center mb-12">
+                    <div class="bg-white p-2 rounded-full shadow-lg border">
+                        <div class="flex items-center space-x-1">
+                            <button id="monthly-btn" class="px-6 py-2 rounded-full font-medium transition-all duration-300 bg-purple-500 text-white shadow-md" onclick="toggleBilling('monthly')">
+                                Monthly
+                            </button>
+                            <button id="yearly-btn" class="px-6 py-2 rounded-full font-medium transition-all duration-300 text-gray-600 hover:text-purple-500 relative" onclick="toggleBilling('yearly')">
+                                Yearly
+                                <div class="absolute -top-2 -right-2 bg-gradient-to-r from-green-400 to-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                                    <i data-lucide="gift" class="w-3 h-3 inline mr-1"></i>
+                                    -17%
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plans Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 plans-grid mx-auto">
+                    <!-- Basic Plan -->
+                    <div class="relative bg-white rounded-3xl shadow-xl overflow-hidden transition-all duration-300 plan-card" id="basic-plan">
+                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-8 text-white">
+                            <div class="flex items-center justify-center mb-4">
+                                <i data-lucide="shield" class="w-8 h-8"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-center mb-2">Basic</h3>
+                            <div class="text-center">
+                                <div class="flex items-center justify-center space-x-1">
+                                    <span class="text-4xl font-bold price" data-monthly="99000" data-yearly="990000">99,000</span>
+                                    <span class="text-xl">₫</span>
+                                </div>
+                                <div class="mt-1">
+                                    <span class="price-suffix text-blue-200">/ month</span>
+                                    <div class="yearly-info hidden">
+                                        <span class="text-blue-200 line-through text-sm">1,188,000₫</span>
+                                        <span class="text-green-300 font-semibold ml-2 text-sm">Save 17%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-8 plan-card-content">
+                            <ul class="space-y-4 mb-8" id="basic-features">
+                                <!-- Features will be added dynamically via JavaScript -->
+                            </ul>
+                            <div class="plan-card-footer">
+                                <button class="w-full py-4 px-6 rounded-xl font-semibold text-lg bg-gray-900 text-white hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-500 transition-all duration-300 transform hover:scale-105" onclick="handlePurchase('Basic')">
+                                    <i data-lucide="credit-card" class="w-5 h-5 inline mr-2"></i>
+                                    Buy Now
+                                </button>
+                                <p class="text-gray-500 text-sm text-center mt-4">Cancel anytime • No long-term commitment</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Professional Plan -->
+                    <div class="relative bg-white rounded-3xl shadow-xl overflow-hidden transition-all duration-300 plan-card ring-4 ring-purple-500 ring-opacity-50" id="pro-plan">
+                        <div class="popular-badge absolute top-0 left-0 text-white text-xs font-semibold px-4 py-1">Most Popular</div>
+                        <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-8 text-white">
+                            <div class="flex items-center justify-center mb-4">
+                                <i data-lucide="zap" class="w-8 h-8"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-center mb-2">Professional</h3>
+                            <div class="text-center">
+                                <div class="flex items-center justify-center space-x-1">
+                                    <span class="text-4xl font-bold price" data-monthly="199000" data-yearly="1990000">199,000</span>
+                                    <span class="text-xl">₫</span>
+                                </div>
+                                <div class="mt-1">
+                                    <span class="price-suffix text-purple-200">/ month</span>
+                                    <div class="yearly-info hidden">
+                                        <span class="text-purple-200 line-through text-sm">2,388,000₫</span>
+                                        <span class="text-green-300 font-semibold ml-2 text-sm">Save 17%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-8 plan-card-content">
+                            <ul class="space-y-4 mb-8" id="pro-features">
+                                <!-- Features will be added dynamically via JavaScript -->
+                            </ul>
+                            <div class="plan-card-footer">
+                                <button class="w-full py-4 px-6 rounded-xl font-semibold text-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 focus:ring-purple-500 shadow-lg focus:outline-none focus:ring-4 transition-all duration-300 transform hover:scale-105" onclick="handlePurchase('Professional')">
+                                    <i data-lucide="credit-card" class="w-5 h-5 inline mr-2"></i>
+                                    Buy Now
+                                </button>
+                                <p class="text-gray-500 text-sm text-center mt-4">Cancel anytime • No long-term commitment</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enterprise Plan -->
+                    <div class="relative bg-white rounded-3xl shadow-xl overflow-hidden transition-all duration-300 plan-card" id="enterprise-plan">
+                        <div class="bg-gradient-to-r from-amber-500 to-amber-600 p-8 text-white">
+                            <div class="flex items-center justify-center mb-4">
+                                <i data-lucide="crown" class="w-8 h-8"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-center mb-2">Enterprise</h3>
+                            <div class="text-center">
+                                <div class="flex items-center justify-center space-x-1">
+                                    <span class="text-4xl font-bold price" data-monthly="499000" data-yearly="4990000">499,000</span>
+                                    <span class="text-xl">₫</span>
+                                </div>
+                                <div class="mt-1">
+                                    <span class="price-suffix text-amber-200">/ month</span>
+                                    <div class="yearly-info hidden">
+                                        <span class="text-amber-200 line-through text-sm">5,988,000₫</span>
+                                        <span class="text-green-300 font-semibold ml-2 text-sm">Save 17%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-8 plan-card-content">
+                            <ul class="space-y-4 mb-8" id="enterprise-features">
+                                <!-- Features will be added dynamically via JavaScript -->
+                            </ul>
+                            <div class="plan-card-footer">
+                                <button class="w-full py-4 px-6 rounded-xl font-semibold text-lg bg-gray-900 text-white hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-500 transition-all duration-300 transform hover:scale-105" onclick="handlePurchase('Enterprise')">
+                                    <i data-lucide="credit-card" class="w-5 h-5 inline mr-2"></i>
+                                    Buy Now
+                                </button>
+                                <p class="text-gray-500 text-sm text-center mt-4">Cancel anytime • No long-term commitment</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial Section -->
+                <div class="mt-20">
+                    <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">What Our Users Say</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div class="testimonial-card rounded-2xl shadow-lg p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-gray-200 rounded-full mr-4"></div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Nguyen Van A</h4>
+                                    <p class="text-sm text-gray-500">Freelancer</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 italic">"The Professional plan transformed my workflow with unlimited projects and amazing support!"</p>
+                        </div>
+                        <div class="testimonial-card rounded-2xl shadow-lg p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-gray-200 rounded-full mr-4"></div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Tran Thi B</h4>
+                                    <p class="text-sm text-gray-500">Startup Founder</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 italic">"Enterprise plan's custom branding and priority support are game-changers for our team."</p>
+                        </div>
+                        <div class="testimonial-card rounded-2xl shadow-lg p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-gray-200 rounded-full mr-4"></div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Le Minh C</h4>
+                                    <p class="text-sm text-gray-500">Developer</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 italic">"Basic plan is perfect for starting out, and the price is unbeatable!"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ Section -->
+                <div class="mt-20 mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">Frequently Asked Questions</h2>
+                    <div class="max-w-3xl mx-auto space-y-4">
+                        <div class="faq-item bg-white rounded-2xl shadow-md p-6 cursor-pointer">
+                            <h3 class="text-lg font-semibold text-gray-900">Can I cancel my subscription anytime?</h3>
+                            <p class="text-gray-600 mt-2 hidden">Yes, you can cancel your subscription at any time with no long-term commitment. Your access will continue until the end of the billing period.</p>
+                        </div>
+                        <div class="faq-item bg-white rounded-2xl shadow-md p-6 cursor-pointer">
+                            <h3 class="text-lg font-semibold text-gray-900">What happens if I switch plans?</h3>
+                            <p class="text-gray-600 mt-2 hidden">You can upgrade or downgrade your plan at any time. Changes will take effect immediately, and you'll be prorated for the difference in cost.</p>
+                        </div>
+                        <div class="faq-item bg-white rounded-2xl shadow-md p-6 cursor-pointer">
+                            <h3 class="text-lg font-semibold text-gray-900">Is there a free trial available?</h3>
+                            <p class="text-gray-600 mt-2 hidden">We currently don't offer a free trial, but our plans come with a 30-day money-back guarantee for peace of mind.</p>
+                        </div>
+                        <div class="faq-item bg-white rounded-2xl shadow-md p-6 cursor-pointer">
+                            <h3 class="text-lg font-semibold text-gray-900">How secure is my payment information?</h3>
+                            <p class="text-gray-600 mt-2 hidden">We use industry-standard encryption and comply with PCI DSS to ensure your payment information is secure.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let user;
+        // Khởi tạo Lucide Icons
+        lucide.createIcons();
+
+        // Trạng thái chu kỳ thanh toán
+        let billingCycle = 'monthly';
+
+        // Dữ liệu giả lập từ backend (có thể thay bằng fetch API)
+        const plans = {
+            basic: {
+                features: [
+                    'Basic access',
+                    'Email support',
+                    '10 projects',
+                    '1GB storage',
+                    'Basic reports',
+                    '24/7 support'
+                ],
+                isPopular: false
+            },
+            pro: {
+                features: [
+                    'All Basic features',
+                    'Unlimited access',
+                    'Live chat support',
+                    '100 projects',
+                    '10GB storage',
+                    'Detailed reports',
+                    'API integration',
+                    'Data export'
+                ],
+                isPopular: true
+            },
+            enterprise: {
+                features: [
+                    'All Pro features',
+                    'Unlimited projects',
+                    'Unlimited storage',
+                    'Priority support',
+                    'Team management',
+                    'Custom branding',
+                    'SSO & advanced security',
+                    'In-depth training',
+                    'Dedicated account manager'
+                ],
+                isPopular: false
+            }
+        };
+
+        // Hàm để thêm features và kiểm tra plan phổ biến
+        function loadFeaturesAndPopular() {
+            const featureLists = {
+                basic: document.getElementById('basic-features'),
+                pro: document.getElementById('pro-features'),
+                enterprise: document.getElementById('enterprise-features')
+            };
+
+            // Giả lập fetch từ backend
+            Object.keys(plans).forEach(planId => {
+                const { features, isPopular } = plans[planId];
+                const ul = featureLists[planId];
+
+                // Tạo HTML cho features bằng .map() và .join()
+                ul.innerHTML = features.map(feature => `
+                    <li class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
+                            <i data-lucide="check" class="w-3 h-3 text-green-600"></i>
+                        </div>
+                        <span class="text-gray-700 leading-relaxed">${feature}</span>
+                    </li>
+                `).join('');
+
+                // Thêm biểu tượng ngôi sao nếu là plan phổ biến
+                if (isPopular) {
+                    const planCard = document.getElementById(`${planId}-plan`);
+                    planCard.innerHTML += `
+                        <div class="absolute top-4 right-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full p-2 animate-bounce">
+                            <i data-lucide="star" class="w-5 h-5"></i>
+                        </div>
+                    `;
+                }
+            });
+
+            // Khởi tạo lại Lucide Icons sau khi thêm động
+            lucide.createIcons();
+        }
+
+        // Format giá tiền
+        function formatPrice(price) {
+            return new Intl.NumberFormat('en-US').format(price);
+        }
+
+        // Tính phần trăm tiết kiệm
+        function getSavingsPercentage(monthly, yearly) {
+            const monthlyCost = monthly * 12;
+            const savings = ((monthlyCost - yearly) / monthlyCost * 100);
+            return Math.round(savings);
+        }
+
+        // Xử lý nút mua
+        function handlePurchase(planName) {
+            alert(`Redirecting to payment for ${planName} (${billingCycle === 'monthly' ? 'monthly' : 'yearly'})`);
+        }
+
+        // Chuyển đổi chu kỳ thanh toán
+        function toggleBilling(cycle) {
+            billingCycle = cycle;
+            const monthlyBtn = document.getElementById('monthly-btn');
+            const yearlyBtn = document.getElementById('yearly-btn');
+            const prices = document.querySelectorAll('.price');
+            const priceSuffixes = document.querySelectorAll('.price-suffix');
+            const yearlyInfos = document.querySelectorAll('.yearly-info');
+
+            if (cycle === 'monthly') {
+                monthlyBtn.classList.add('bg-purple-500', 'text-white', 'shadow-md');
+                monthlyBtn.classList.remove('text-gray-600', 'hover:text-purple-500');
+                yearlyBtn.classList.remove('bg-purple-500', 'text-white', 'shadow-md');
+                yearlyBtn.classList.add('text-gray-600', 'hover:text-purple-500');
+
+                prices.forEach(price => {
+                    price.textContent = formatPrice(price.dataset.monthly);
+                });
+                priceSuffixes.forEach(suffix => {
+                    suffix.classList.remove('hidden');
+                });
+                yearlyInfos.forEach(info => {
+                    info.classList.add('hidden');
+                });
+            } else {
+                yearlyBtn.classList.add('bg-purple-500', 'text-white', 'shadow-md');
+                yearlyBtn.classList.remove('text-gray-600', 'hover:text-purple-500');
+                monthlyBtn.classList.remove('bg-purple-500', 'text-white', 'shadow-md');
+                monthlyBtn.classList.add('text-gray-600', 'hover:text-purple-500');
+
+                prices.forEach(price => {
+                    price.textContent = formatPrice(price.dataset.yearly);
+                });
+                priceSuffixes.forEach(suffix => {
+                    suffix.classList.add('hidden');
+                });
+                yearlyInfos.forEach(info => {
+                    info.classList.remove('hidden');
+                });
+            }
+        }
+
+        // Xử lý mở/đóng FAQ
+        function initializeFAQ() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const answer = item.querySelector('p');
+                    answer.classList.toggle('hidden');
+                    item.querySelector('h3').classList.toggle('text-purple-600');
+                });
+            });
+        }
+
+        // Khởi tạo trạng thái ban đầu và load features
+        window.addEventListener('load', () => {
+            if (checkAuth()) {
+                console.log("hjaha");
+                user = getCurrentUser();
+                loadSideBar();
+                loadFeaturesAndPopular();
+                toggleBilling('monthly');
+                initializeFAQ();
+            }
+        });
+    </script>
+</body>
+
+</html>
