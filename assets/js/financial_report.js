@@ -286,9 +286,8 @@ function initPercenGoalProgress() {
 
 async function initializeUI() {
     try {
-        await Promise.all([fetchTransactions(), fetchGoalProgress()]); // nếu muốn fetch 3 cái gần như cùng lúc
-
-        loadSideBarSimple(user.username);
+        loadSideBar(user);
+        await Promise.all([fetchTransactions(), fetchGoalProgress()]); 
         initPercenGoalProgress();
         updateChartTypeButtons('bar');
         updateReport();
