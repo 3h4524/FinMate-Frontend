@@ -1,208 +1,181 @@
 <!-- Sidebar Component -->
 <div class="sidebar">
-    <div class="logo" style="display: flex; align-items: center; gap: 12px; margin-bottom: 40px; padding: 24px 16px;">
-        <i class="fas fa-chart-line" style="font-size: 28px; color: #a3c9a8; background: rgba(163, 201, 168, 0.15); padding: 12px; border-radius: 12px; border: 1px solid rgba(163, 201, 168, 0.25);"></i>
-        <span style="font-size: 26px; font-weight: 700; color: #fff; letter-spacing: 1px;">FINMATE</span>
+    <div class="logo">
+        <i class="fas fa-chart-line"></i>
+        <span>FINMATE</span>
     </div>
     <nav>
-        <ul style="list-style: none; padding: 0 16px;">
-            <li><a href="#overview" class="nav-item active"><i class="fas fa-border-all"></i> <span>Overview</span></a></li>
-            <li><a href="#accounts" class="nav-item"><i class="fas fa-wallet"></i> <span>Accounts</span></a></li>
-            <li><a href="../pages/transaction.html" class="nav-item"><i class="fas fa-exchange-alt"></i> <span>Transactions</span></a></li>
-            <li><a href="#goals" class="nav-item"><i class="fas fa-bullseye"></i> <span>Goals</span></a></li>
-            <li><a href="#settings" class="nav-item"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+        <ul>
+            <li><a href="home.html"><i class="fas fa-home"></i> <span>Home</span></a></li>
+            <li><a href="transaction.html"><i class="fas fa-exchange-alt"></i> <span>Transactions</span></a></li>
+            <li><a href="goal.html"><i class="fas fa-bullseye"></i> <span>Goals</span></a></li>
+            <li><a href="budget.html"><i class="fas fa-calculator"></i> <span>Budget</span></a></li>
+            <li><a href="financial_report.html"><i class="fas fa-chart-pie"></i> <span>Reports</span></a></li>
         </ul>
     </nav>
-    <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></button>
-    <div class="user-info">
-        <img id="sidebarAvatar" src="https://via.placeholder.com/40" alt="User Avatar" style="border-radius: 50%; width: 40px; height: 40px;">
+    <button class="logout-btn" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></button>
+    <div class="user-info" id="viewProfileBtn">
+        <img id="sidebarAvatar" src="https://via.placeholder.com/40" alt="User Avatar">
         <div class="details">
             <span class="user-name">Loading...</span>
             <span class="view-profile">View profile</span>
         </div>
-        <i class="fas fa-ellipsis-v" style="margin-left: auto; color: rgba(255,255,255,0.7);"></i>
+        <i class="fas fa-ellipsis-v"></i>
     </div>
 </div>
 
+
 <style>
-.sidebar {
-    width: 280px;
-    background: linear-gradient(135deg, #1a2e22 0%, #183226 100%);
-    color: white;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    padding-bottom: 20px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    top: 0;
-    left: 0;
-    overflow-y: auto;
-}
-
-.sidebar nav ul li {
-    margin-bottom: 8px;
-}
-
-.sidebar nav ul li a {
-    font-size: 17px;
-    color: #e0e8e0;
-    padding: 14px 18px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.sidebar nav ul li a.active,
-.sidebar nav ul li a:hover {
-    background: #2d5a3d;
-    color: #fff;
-}
-
-.sidebar .logout-btn {
-    background: #203c2c;
-    color: #e0e8e0;
-    font-size: 16px;
-    padding: 14px 18px;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: auto;
-    margin-left: 16px;
-    margin-right: 16px;
-    transition: all 0.3s ease;
-}
-
-.sidebar .logout-btn:hover {
-    background: #2d5a3d;
-    color: #fff;
-}
-
-.sidebar .user-info {
-    display: flex;
-    align-items: center;
-    padding: 16px;
-    margin-top: auto;
-    margin-left: 16px;
-    margin-right: 16px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.sidebar .user-info:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.sidebar .user-info .details {
-    flex-grow: 1;
-    margin-left: 12px;
-}
-
-.sidebar .user-info .user-name {
-    font-size: 15px;
-    color: #fff;
-    display: block;
-}
-
-.sidebar .user-info .view-profile {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.7);
-}
-
-.app-container {
-    display: flex;
-    min-height: 100vh;
-}
-
-#sidebarContainer {
-    flex-shrink: 0;
-}
-
-.main-content {
-    flex-grow: 1;
-    padding: 20px;
-    margin-left: 280px; /* Điều chỉnh để tránh chồng lấp với sidebar */
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
     .sidebar {
-        width: 240px;
+        width: 250px;
+        background-color: #1a3d2e;
+        /* Màu xanh đậm mới */
+        color: #fff;
+        padding: 32px 20px 0px;
+        /* Loại bỏ padding dưới cùng */
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        height: 100%;
+        border-radius: 0;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        z-index: 10;
     }
-    .main-content {
-        margin-left: 240px;
-    }
-}
 
-@media (max-width: 768px) {
-    .sidebar {
-        width: 200px;
+    .sidebar .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 32px;
+        color: #fff;
     }
-    .main-content {
-        margin-left: 200px;
-    }
-}
 
-@media (max-width: 640px) {
-    .sidebar {
-        width: 0;
-        overflow: hidden;
-        transition: width 0.3s ease;
+    .sidebar .logo i {
+        font-size: 28px;
+        color: #fff;
+        /* Icon màu trắng */
+        background: transparent;
+        /* Không nền */
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        /* Viền trắng mờ */
     }
-    .sidebar.active {
-        width: 280px;
-    }
-    .main-content {
-        margin-left: 0;
-    }
-}
-</style>
 
-<script>
-function showProfile() {
-    const profileSidebar = document.querySelector('.sidebar #profileSidebar');
-    if (!profileSidebar) {
-        console.warn("Profile sidebar element not found.");
-        return;
+    .sidebar nav ul {
+        list-style: none;
+        padding: 0;
+        flex-grow: 1;
     }
-    if (profileSidebar.classList.contains('active')) {
-        profileSidebar.classList.remove('active');
-    } else {
-        profileSidebar.classList.add('active');
-        // Giả định loadAndDisplayUserProfile là hàm toàn cục
-        if (typeof window.loadAndDisplayUserProfile === 'function') {
-            window.loadAndDisplayUserProfile();
-        } else {
-            console.warn("loadAndDisplayUserProfile function not available.");
-            // Tạm thời hiển thị thông tin placeholder
-            document.querySelector('.user-name').textContent = "User Name";
+
+    .sidebar nav ul li {
+        margin-bottom: 10px;
+    }
+
+    .sidebar nav ul li a {
+        display: flex;
+        align-items: center;
+        color: #fff;
+        text-decoration: none;
+        padding: 12px 14px;
+        border-radius: 7px;
+        font-size: 17px;
+        font-weight: 500;
+    }
+
+    .sidebar nav ul li a i {
+        margin-right: 14px;
+        font-size: 19px;
+        color: #fff;
+        /* Icon màu trắng */
+    }
+
+    .sidebar nav ul li a.active,
+    .sidebar nav ul li a:hover {
+        background-color: #0f2922;
+        /* Màu xanh đậm hơn nữa cho hover/active */
+        color: #fff;
+    }
+
+
+    .sidebar .logout-btn {
+        margin-top: 24px;
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 17px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        padding: 12px 14px;
+        border-radius: 7px;
+    }
+
+    .sidebar .logout-btn:hover {
+        background-color: #0f2922;
+        /* Màu xanh đậm hơn nữa khi hover */
+        color: #fff;
+    }
+
+    .sidebar .logout-btn i {
+        margin-right: 14px;
+        color: #fff;
+        /* Icon màu trắng */
+    }
+
+    .sidebar .user-info {
+        display: flex;
+        align-items: center;
+        margin-top: auto;
+        gap: 12px;
+        padding: 15px 0;
+        /* Giảm padding dọc */
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        cursor: pointer;
+    }
+
+    .sidebar .user-info img {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .sidebar .user-info .details {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        line-height: 1.4;
+        /* Tăng khoảng cách dòng */
+    }
+
+    .sidebar .user-info .user-name {
+        font-weight: 700;
+        color: #fff;
+        font-size: 16px;
+        margin-bottom: 4px;
+        /* Tăng khoảng cách giữa tên và view profile */
+    }
+
+
+    .sidebar .user-info .view-profile {
+        font-size: 14px;
+        color: #fff;
+    }
+
+    .sidebar .user-info i {
+        margin-left: 15px;
+        color: #fff;
+        font-size: 20px;
+    }
+
+    @media (max-width: 900px) {
+        .sidebar {
+            display: none;
         }
     }
-}
-
-function handleLogout() {
-    // Giả định redirectToLogin là hàm toàn cục
-    if (typeof window.redirectToLogin === 'function') {
-        window.redirectToLogin();
-    } else {
-        console.warn("redirectToLogin function not available.");
-        alert("Logging out... (Function not implemented)");
-    }
-}
-
-// Hàm để kích hoạt sidebar trên mobile (nếu cần)
-function toggleSidebar() {
-    const sidebar = document.querySelector('.sidebar');
-    sidebar.classList.toggle('active');
-}
-</script>
+</style>

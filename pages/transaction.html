@@ -13,58 +13,14 @@
 
 <body>
     <div class="app-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h1>FINMATE</h1>
-            </div>
-
-            <nav class="sidebar-nav">
-                <button class="nav-item active" data-tab="overview">
-                    <span>📊</span>
-                    <span>Overview</span>
-                </button>
-                <button class="nav-item" data-tab="balances">
-                    <span>💰</span>
-                    <span>Balances</span>
-                </button>
-                <button class="nav-item" data-tab="transactions">
-                    <span>💳</span>
-                    <span>Transactions</span>
-                </button>
-                <button class="nav-item" data-tab="bills">
-                    <span>📄</span>
-                    <span>Bills</span>
-                </button>
-                <button class="nav-item" data-tab="expenses">
-                    <span>📈</span>
-                    <span>Expenses</span>
-                </button>
-                <button class="nav-item" data-tab="goals">
-                    <span>🎯</span>
-                    <span>Goals</span>
-                </button>
-                <button class="nav-item" data-tab="settings">
-                    <span>⚙️</span>
-                    <span>Settings</span>
-                </button>
-            </nav>
-
-            <div class="sidebar-footer">
-                <button class="logout-btn">
-                    <span>🚪</span>
-                    <span>Logout</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="main-content">
+        <!-- Include sidebar component -->
+        <div id="sidebar-container"></div>
+        <div class="main-content" id="mainContent">
             <!-- Header -->
             <div class="main-header">
                 <div class="header-content">
                     <div>
-                        <h1 class="header-title" id="headerTitle">Overview</h1>
+                        <h1 class="header-title" id="headerTitle">Transaction Management</h1>
                     </div>
                     <div class="header-actions">
                         <div class="search-box">
@@ -76,21 +32,9 @@
                 </div>
             </div>
 
-            <!-- Overview Content -->
-            <div id="overview-content" class="content-area">
-                <div style="text-align: center; padding: 48px;">
-                    <h2 style="font-size: 24px; font-weight: bold; color: #1f2937; margin-bottom: 16px;">
-                        Welcome to FINMATE
-                    </h2>
-                    <p style="color: #6b7280;">
-                        Your personal finance management dashboard
-                    </p>
-                </div>
-            </div>
-
 
             <!-- Transactions Content -->
-            <div id="transactions-content" class="content-area hidden">
+            <div id="transactions-content" class="content-area">
 
                 <div class="wallet-card">
                     <div class="wallet-header">
@@ -452,6 +396,121 @@
 
 
     <script src="../assets/js/transaction.js"></script>
+    <script>
+        // Check authentication status when page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            const token = localStorage.getItem('token');
+            const userData = localStorage.getItem('userData');
+            
+            if (!token || !userData) {
+                console.log('[AUTH] No token or user data found, redirecting to login');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            console.log('[AUTH] Checking authentication status with token');
+            try {
+                const response = await fetch('http://localhost:8080/api/v1/auth/verify-token', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    console.error('[AUTH] Error parsing response:', e);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userData');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                if (data.code !== 1000) {
+                    console.log('[AUTH] Token verification failed:', data.message);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userData');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Token is valid, show the main content
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) mainContent.style.display = 'flex';
+
+                // Update user info
+                const user = JSON.parse(userData);
+                const userName = user.name || user.email.split('@')[0];
+                
+                // Load sidebar
+                fetch('sidebar.html')
+                    .then(response => response.text())
+                    .then(data => {
+                        document.getElementById('sidebar-container').innerHTML = data;
+                        const sidebarUserNameSpan = document.querySelector('.sidebar .user-info .user-name');
+                        if (sidebarUserNameSpan) {
+                            sidebarUserNameSpan.textContent = userName;
+                        }
+                        const sidebarAvatar = document.querySelector('.sidebar .user-info img');
+                        if (sidebarAvatar) {
+                            sidebarAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=388e3c&color=fff`;
+                        }
+
+                        // Set active class for current page in sidebar
+                        setActiveSidebarLink();
+                    });
+
+            } catch (error) {
+                console.error('[AUTH] Error verifying token:', error);
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Helper function to set active class on sidebar links
+        function setActiveSidebarLink() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const links = document.querySelectorAll('.sidebar nav ul li a');
+            
+            links.forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        // Handle logout
+        async function handleLogout() {
+            console.log('[LOGOUT] Logout triggered');
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    const response = await fetch('http://localhost:8080/api/v1/auth/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        console.error('[LOGOUT] Logout failed on server');
+                    }
+                }
+            } catch (error) {
+                console.error('[LOGOUT] Error during logout:', error);
+            } finally {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
 </body>
 
 </html>

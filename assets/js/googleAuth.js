@@ -34,12 +34,19 @@ async function handleGoogleSignIn(response) {
 
         // Store authentication state and user data in localStorage
         localStorage.setItem('token', result.token);
-
+        localStorage.setItem('userData', JSON.stringify({
+            email: result.email,
+            name: result.name,
+            role: result.role,
+            userId: result.userId,
+            premium: result.premium
+        }));
 
         // Verify token is stored correctly
         const storedToken = localStorage.getItem('token');
-        if (!storedToken) {
-            throw new Error('Failed to store authentication token');
+        const storedUserData = localStorage.getItem('userData');
+        if (!storedToken || !storedUserData) {
+            throw new Error('Failed to store authentication data');
         }
 
         // Verify token is valid before redirecting
@@ -51,13 +58,15 @@ async function handleGoogleSignIn(response) {
         } catch (error) {
             console.error('Token validation error:', error);
             localStorage.removeItem('token');
+            localStorage.removeItem('userData');
             throw new Error('Invalid token format');
         }
         
         setTimeout(() => {
             // Verify token one last time before redirect
             const finalToken = localStorage.getItem('token');
-            if (!finalToken) {
+            const finalUserData = localStorage.getItem('userData');
+            if (!finalToken || !finalUserData) {
                 showNotification('Authentication failed. Please try again.', 'error');
                 return;
             }   
