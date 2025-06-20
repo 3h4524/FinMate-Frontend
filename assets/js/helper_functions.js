@@ -1,5 +1,5 @@
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(amount);
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
 }
 
 function formatDate_ddMMyyyy(date) {
@@ -9,6 +9,10 @@ function formatDate_ddMMyyyy(date) {
     const year = d.getFullYear();
     return day + '/' + month + '/' + year;
 }
+
+const formatNumber = (num) => {
+    return new Intl.NumberFormat('en-US').format(num);
+};
 
 function getStatusColor(status) {
     switch (status) {

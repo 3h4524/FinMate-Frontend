@@ -359,31 +359,3 @@ window.addEventListener('load', () => {
 });
 
 
-document.getElementById("haha").addEventListener("click", initiateCheckout);
-
-async function initiateCheckout() {
-    console.log("click cehckout");
-
-    const body = {
-        packageId : 2,
-        userId: 1
-    }
-
-    try {
-        const response = await apiRequest(`${API_BASE_URL}/api/checkout/create`, {
-            method: 'POST',
-            body: JSON.stringify(body)
-        });
-
-        if (!response.ok) throw new Error("Hic");
-
-        const data = await response.json();
-        if (data.code === 1000) {
-            window.location.href = data.result; // Redirect to PayOS checkout URL
-        } else {
-            console.error('Checkout failed:', data.message);
-        }
-    } catch (error) {
-        console.error('Error initiating checkout:', error);
-    }
-}
