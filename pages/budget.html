@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FinMate - Quản lý Ngân sách</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="../assets/js/budget.js" defer></script>
     <script src="../assets/js/autho_helper.js" defer></script>
     <script src="../assets/js/sidebar.js" defer></script>
+    <script src="../assets/js/user_auth.js" defer></script>
     <style>
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
@@ -48,7 +50,7 @@
     <div id="sidebar-container"></div>
 
     <!-- Main Content -->
-    <div class="main-content" id="mainContent">
+    <div class="main-content" id="mainContent" style="display: none;">
         <div class="bg-white shadow-sm border-b px-8 py-4">
             <div class="flex items-center justify-between">
                 <h1 class="text-xl font-semibold">Quản lý Ngân sách</h1>
@@ -284,18 +286,10 @@
 </div>
 
 <script>
-    // JavaScript để tải sidebar và xử lý xác thực
+    // Additional budget page functionality after auth
     document.addEventListener('DOMContentLoaded', () => {
-        if (checkAuth()) {
-            const user = getCurrentUser();
-            if (user) {
-                loadSideBar(user);
-                // Sau khi sidebar được tải, bạn có thể gọi các hàm khác cần auth ở đây
-                // Ví dụ: loadBudgets();
-            }
-        } else {
-            window.location.href = 'login.html';
-        }
+        // Sau khi sidebar được tải, bạn có thể gọi các hàm khác cần auth ở đây
+        // Ví dụ: loadBudgets();
     });
 </script>
 </body>

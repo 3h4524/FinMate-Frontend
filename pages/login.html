@@ -612,7 +612,13 @@
 
                     showNotification('Login successful! Redirecting...', 'success');
                     setTimeout(() => {
-                        window.location.href = '/pages/home.html';
+                        // Check user role and redirect accordingly
+                        const userRole = data.result.role;
+                        if (userRole === 'ADMIN') {
+                            window.location.href = '/pages/admin-dashboard.html';
+                        } else {
+                            window.location.href = '/pages/home.html';
+                        }
                     }, 1000);
                 } else {
                     showNotification(data.message || 'Login failed!', 'error');

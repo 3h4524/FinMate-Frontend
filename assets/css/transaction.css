@@ -1103,8 +1103,27 @@ body {
     }
 }
 
-/* Ensure Vietnamese characters are displayed correctly in user name */
+/* Override font for sidebar to match other pages */
+.sidebar {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
 .sidebar .user-info .user-name {
-    font-family: 'Inter', 'Segoe UI', Arial, sans-serif !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    line-height: 1.4 !important;
+}
+
+.sidebar nav ul li a {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-size: 17px !important;
+    font-weight: 500 !important;
+}
+
+.sidebar .logo span {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-size: 24px !important;
+    font-weight: 700 !important;
 }
 
