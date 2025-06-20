@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Packages - Finmate</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
             --main-green: #388e3c;
@@ -118,8 +119,15 @@
         }
 
         .content-column {
-            flex: 1;
+            flex: 2;
         }
+
+        .sidebar-column {
+            flex: 1;
+            /* Recent subscriptions column */
+            min-width: 350px;
+        }
+
 
         .header {
             background: var(--header-bg);
@@ -280,11 +288,35 @@
         }
 
         .content-card {
-            background: var(--card-bg);
             border-radius: var(--card-radius);
-            box-shadow: var(--card-shadow);
             overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            /* Pushes items to both ends */
+            align-items: stretch;
+            /* Ensures both containers stretch to the same height */
+            gap: 1rem;
+            /* Optional: Adds spacing between the containers */
         }
+
+        .premium-package-container {
+            background-color: var(--card-bg);
+            border-radius: var(--card-radius);
+            flex: 0 0 68%;
+            /* Approximately 7/10 of the width, adjustable */
+            /* Remove width if using Bootstrap columns, but here we use flex */
+        }
+
+        .recent-subscription {
+            background-color: var(--card-bg);
+            border-radius: var(--card-radius);
+            flex: 0 0 30%;
+            height: 60%;
+            /* Approximately 3/10 of the width, adjustable */
+            /* Remove width if using Bootstrap columns, but here we use flex */
+        }
+
+
 
         .card-header {
             padding: 1.5rem 2rem;
@@ -498,6 +530,7 @@
             color: #9E9E9E;
         }
 
+        /* Subscription Items */
         .subscription-item {
             display: flex;
             align-items: center;
@@ -520,6 +553,32 @@
             justify-content: center;
             font-weight: 600;
             margin-right: 1rem;
+            font-size: 1rem;
+        }
+
+        .user-avatar.j {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196F3;
+        }
+
+        .user-avatar.s {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+
+        .user-avatar.m {
+            background: rgba(0, 188, 212, 0.1);
+            color: #00BCD4;
+        }
+
+        .user-avatar.e {
+            background: rgba(156, 39, 176, 0.1);
+            color: #9C27B0;
+        }
+
+        .user-avatar.r {
+            background: rgba(255, 152, 0, 0.1);
+            color: #FF9800;
         }
 
         .subscription-info {
@@ -527,25 +586,32 @@
         }
 
         .subscription-name {
-            font-weight: 500;
-            color: var(--text-dark);
+            font-weight: 600;
+            color: #2d5a3d;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
         }
 
         .subscription-package {
-            font-size: 0.875rem;
-            color: var(--text-light);
+            font-size: 0.75rem;
+            color: #546e7a;
+        }
+
+        .subscription-details {
+            text-align: right;
         }
 
         .subscription-price {
             font-weight: 600;
-            color: var(--text-dark);
-            margin-right: 1rem;
+            color: #2d5a3d;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
         }
 
         .subscription-time {
             font-size: 0.75rem;
-            color: var(--text-light);
-            margin-right: 1rem;
+            color: #546e7a;
+            margin-bottom: 0.5rem;
         }
 
         .subscription-status {
@@ -553,9 +619,11 @@
             border-radius: 12px;
             font-size: 0.75rem;
             font-weight: 500;
+            text-align: center;
+            display: inline-block;
         }
 
-        .subscription-status.completed {
+        .subscription-status.active {
             background: rgba(76, 175, 80, 0.1);
             color: #4CAF50;
         }
@@ -565,10 +633,11 @@
             color: #FF9800;
         }
 
-        .subscription-status.failed {
+        .subscription-status.expired {
             background: rgba(244, 67, 54, 0.1);
             color: #F44336;
         }
+
 
         .modal {
             display: none;
@@ -592,6 +661,7 @@
             padding: 2rem;
             position: relative;
         }
+
 
         .modal-header {
             display: flex;
@@ -839,7 +909,7 @@
                                 <i class="fas fa-dollar-sign"></i>
                             </div>
                         </div>
-                        <div class="stat-value" id="totalRevenue">$0</div>
+                        <div class="stat-value" id="totalRevenue">0đ</div>
                         <div class="stat-change positive" id="revenueChange">+0%</div>
                     </div>
 
@@ -872,48 +942,49 @@
                                 <i class="fas fa-chart-line"></i>
                             </div>
                         </div>
-                        <div class="stat-value" id="avgRevenue">$0</div>
+                        <div class="stat-value" id="avgRevenue">0đ</div>
                         <div class="stat-change negative" id="avgRevenueChange">-0%</div>
                     </div>
                 </div>
 
+
                 <div class="content-card">
-                    <div class="card-header">
-                        <h2 class="card-title">All Packages</h2>
-                        <div class="filter-tabs">
-                            <button class="tab-btn active" data-filter="all">All</button>
-                            <button class="tab-btn" data-filter="monthly">Monthly</button>
-                            <button class="tab-btn" data-filter="yearly">Yearly</button>
-                            <button class="tab-btn" data-filter="active">Active</button>
+                    <div class="premium-package-container">
+                        <div class="card-header">
+                            <h2 class="card-title">All Packages</h2>
+                            <div class="filter-tabs">
+                                <button class="tab-btn active" data-filter="all">All</button>
+                                <button class="tab-btn" data-filter="monthly">Monthly</button>
+                                <button class="tab-btn" data-filter="yearly">Yearly</button>
+                                <button class="tab-btn" data-filter="active">Active</button>
+                            </div>
+                        </div>
+                        <div id="packagesContainer">
+                            <div class="loading">
+                                <div class="spinner"></div>
+                                Loading packages...
+                            </div>
+                        </div>
+                        <div class="pagination" id="pagination" style="display: none;">
+                            <button class="pagination-btn" id="prevBtn" onclick="changePage(currentPage - 1)">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div id="pageNumbers"></div>
+                            <button class="pagination-btn" id="nextBtn" onclick="changePage(currentPage + 1)">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
                         </div>
                     </div>
-
-                    <div id="packagesContainer">
-                        <div class="loading">
-                            <div class="spinner"></div>
-                            Loading packages...
+                    <div class="recent-subscription">
+                        <div class="card-header">
+                            <h2 class="card-title">Recent Subscriptions</h2>
+                            <a href="#" class="btn">View All</a>
                         </div>
-                    </div>
-
-                    <div class="pagination" id="pagination" style="display: none;">
-                        <button class="pagination-btn" id="prevBtn" onclick="changePage(currentPage - 1)">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <div id="pageNumbers"></div>
-                        <button class="pagination-btn" id="nextBtn" onclick="changePage(currentPage + 1)">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="content-card">
-                    <div class="card-header">
-                        <h2 class="card-title">Recent Subscriptions</h2>
-                        <a href="#" class="btn">View All</a>
-                    </div>
-                    <div id="recentSubscriptions">
-                        <div class="loading">
-                            <div class="spinner"></div>
-                            Loading recent subscriptions...
+                        <div id="recentSubscriptions">
+                            <div class="loading">
+                                <div class="spinner"></div>
+                                Loading recent subscriptions...
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -925,7 +996,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title">Update Package</h2>
-                <button class="close-btn" onclick="closeUpdateModal()">&times;</button>
+                <button class="close-btn" onclick="closeUpdateModal()">×</button>
             </div>
             <form id="updatePackageForm">
                 <input type="hidden" id="updatePackageId">
@@ -934,8 +1005,8 @@
                     <input type="text" id="updateName" required>
                 </div>
                 <div class="form-group">
-                    <label for="updatePrice">Price ($)</label>
-                    <input type="number" id="updatePrice" step="0.01" required>
+                    <label for="updatePrice">Price (VND)</label>
+                    <input type="number" id="updatePrice" step="1000" required>
                 </div>
                 <div class="form-group">
                     <label for="updateDurationValue">Duration Value</label>
@@ -972,7 +1043,7 @@
     <script>
         // API Configuration
         const API_BASE_URL = 'http://localhost:8080/api/premium-package';
-        const SUBSCRIPTION_API_URL = 'http://localhost:8080/api/subscription';
+        const SUBSCRIPTION_API_URL = 'http://localhost:8080/api/subscriptions';
         let currentPage = 0;
         let totalPages = 0;
         let currentFilter = 'all';
@@ -1050,9 +1121,11 @@
 
         // Utility Functions
         const formatCurrency = (amount) => {
-            return new Intl.NumberFormat('en-US', {
+            return new Intl.NumberFormat('vi-VN', {
                 style: 'currency',
-                currency: 'USD'
+                currency: 'VND',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
             }).format(amount);
         };
 
@@ -1077,6 +1150,19 @@
                 'YEAR': value === 1 ? 'year' : 'years'
             };
             return `per ${value} ${typeMap[type] || 'month'}`;
+        };
+
+        const formatTimeAgo = (localDateTimeStr) => {
+            const now = new Date('2025-06-20T19:02:00+07:00'); // Current time: 07:02 PM +07
+            const createdAt = new Date(localDateTimeStr);
+            const diffMs = now - createdAt;
+            const diffMinutes = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMinutes < 60) return `${diffMinutes} mins ago`;
+            if (diffHours < 24) return `${diffHours} hours ago`;
+            return `${diffDays} days ago`;
         };
 
         // API Functions
@@ -1121,14 +1207,24 @@
             }
         };
 
+        const fetchRevenueAndSubscribers = async () => {
+            try {
+                const response = await apiRequest(`${SUBSCRIPTION_API_URL}/revenue-subscribers`);
+                if (!response) return null;
+                const data = await response.json();
+                return data.result || { revenue: 0, subscribers: 0 };
+            } catch (error) {
+                console.error('Error fetching revenue and subscribers:', error);
+                return { revenue: 0, subscribers: 0 };
+            }
+        };
+
         const fetchRecentSubscriptions = async () => {
             try {
-                const response = await apiRequest(`${SUBSCRIPTION_API_URL}/recent?limit=5`);
-
+                const response = await apiRequest(`${SUBSCRIPTION_API_URL}/recent?page=0&size=5&sortBy=createdAt&sortDirection=DESC`);
                 if (!response) return [];
-
                 const data = await response.json();
-                return data.result || [];
+                return data.result.content || [];
             } catch (error) {
                 console.error('Error fetching recent subscriptions:', error);
                 return [];
@@ -1141,12 +1237,12 @@
 
             if (!packagesData || !packagesData.content || packagesData.content.length === 0) {
                 container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-box-open"></i>
-                        <h3>No packages found</h3>
-                        <p>Create your first premium package to get started</p>
-                    </div>
-                `;
+            <div class="empty-state">
+                <i class="fas fa-box-open"></i>
+                <h3>No packages found</h3>
+                <p>Create your first premium package to get started</p>
+            </div>
+        `;
                 return;
             }
 
@@ -1154,61 +1250,61 @@
             totalPages = packagesData.totalPages;
 
             const packagesHTML = packages.map(pkg => `
-                <div class="package-card" data-type="${pkg.durationType?.toLowerCase() || 'monthly'}" data-active="${pkg.isActive}">
-                    <div class="package-header">
-                        <div>
-                            <div class="package-icon ${getPackageIcon(pkg.name)}">
-                                <i class="fas fa-crown"></i>
-                            </div>
-                        </div>
-                        <div class="package-actions">
-                            <button class="action-btn" onclick="openUpdateModal(${pkg.id})" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn" onclick="deletePackage(${pkg.id})" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="package-name">${pkg.name}</div>
-                    <div class="package-type">${pkg.durationType?.toLowerCase() || 'monthly'}</div>
-                    
-                    <div class="package-price">
-                        ${formatCurrency(pkg.price)}
-                        <span class="package-period">${getDurationText(pkg.durationValue, pkg.durationType)}</span>
-                    </div>
-                    
-                    <div class="package-stats">
-                        <div class="package-stat">
-                            <div class="package-stat-value">${formatNumber(pkg.subscribers || 0)}</div>
-                            <div class="package-stat-label">Subscribers</div>
-                        </div>
-                        <div class="package-stat">
-                            <div class="package-stat-value">${formatCurrency(pkg.revenue || 0)}</div>
-                            <div class="package-stat-label">Revenue</div>
-                        </div>
-                    </div>
-                    
-                    <div class="package-features">
-                        <div class="features-title">Features</div>
-                        <ul class="feature-list">
-                            ${(pkg.features || ['Basic Features', 'Support']).slice(0, 3).map(feature => `
-                                <li class="feature-item">
-                                    <i class="fas fa-check"></i>
-                                    ${feature}
-                                </li>
-                            `).join('')}
-                            ${pkg.features && pkg.features.length > 3 ? `<li class="feature-item"><i class="fas fa-plus"></i>+${pkg.features.length - 3} more</li>` : ''}
-                        </ul>
-                    </div>
-                    
-                    <div class="package-status ${pkg.isActive ? 'active' : 'inactive'}">
-                        <i class="fas fa-circle"></i>
-                        ${pkg.isActive ? 'Active' : 'Inactive'}
+        <div class="package-card" data-type="${pkg.durationType?.toLowerCase() || 'monthly'}" data-active="${pkg.isActive}">
+            <div class="package-header">
+                <div>
+                    <div class="package-icon ${getPackageIcon(pkg.name)}">
+                        <i class="fas fa-crown"></i>
                     </div>
                 </div>
-            `).join('');
+                <div class="package-actions">
+                    <button class="action-btn" onclick="openUpdateModal(${pkg.id})" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn" onclick="deletePackage(${pkg.id})" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="package-name">${pkg.name}</div>
+            <div class="package-type">${pkg.durationType?.toLowerCase() || 'monthly'}</div>
+            
+            <div class="package-price">
+                ${formatCurrency(pkg.price)}
+                <span class="package-period">${getDurationText(pkg.durationValue, pkg.durationType)}</span>
+            </div>
+            
+            <div class="package-stats">
+                <div class="package-stat">
+                    <div class="package-stat-value">${formatNumber(pkg.subscribers || 0)}</div>
+                    <div class="package-stat-label">Subscribers</div>
+                </div>
+                <div class="package-stat">
+                    <div class="package-stat-value">${formatCurrency(pkg.revenue || 0)}</div>
+                    <div class="package-stat-label">Revenue</div>
+                </div>
+            </div>
+            
+            <div class="package-features">
+                <div class="features-title">Features</div>
+                <ul class="feature-list">
+                    ${(pkg.features || ['Basic Features', 'Support']).slice(0, 3).map(feature => `
+                        <li class="feature-item">
+                            <i class="fas fa-check"></i>
+                            ${feature}
+                        </li>
+                    `).join('')}
+                    ${pkg.features && pkg.features.length > 3 ? `<li class="feature-item"><i class="fas fa-plus"></i>+${pkg.features.length - 3} more</li>` : ''}
+                </ul>
+            </div>
+            
+            <div class="package-status ${pkg.isActive ? 'active' : 'inactive'}">
+                <i class="fas fa-circle"></i>
+                ${pkg.isActive ? 'Active' : 'Inactive'}
+            </div>
+        </div>
+    `).join('');
 
             container.innerHTML = `<div class="packages-grid">${packagesHTML}</div>`;
             updatePagination();
@@ -1219,50 +1315,43 @@
 
             if (!subscriptions || subscriptions.length === 0) {
                 container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-users"></i>
-                        <h3>No recent subscriptions</h3>
-                        <p>Recent subscription activity will appear here</p>
-                    </div>
-                `;
+            <div class="empty-state">
+                <i class="fas fa-users"></i>
+                <h3>No recent subscriptions</h3>
+                <p>Recent subscription activity will appear here</p>
+            </div>
+        `;
                 return;
             }
 
             const subscriptionsHTML = subscriptions.map(sub => `
-                <div class="subscription-item">
-                    <div class="user-avatar">${sub.username?.charAt(0).toUpperCase() || 'U'}</div>
-                    <div class="subscription-info">
-                        <div class="subscription-name">${sub.username || 'Unknown User'}</div>
-                        <div class="subscription-package">${sub.packageName || 'Premium Package'}</div>
-                    </div>
-                    <div class="subscription-price">${formatCurrency(sub.amount || 0)}</div>
-                    <div class="subscription-time">${sub.timeAgo || 'Just now'}</div>
-                    <div class="subscription-status ${sub.status?.toLowerCase() || 'completed'}">
-                        ${sub.status || 'Completed'}
-                    </div>
+        <div class="subscription-item">
+            <div class="user-avatar">${sub.userName?.charAt(0).toUpperCase() || 'U'}</div>
+            <div class="subscription-info">
+                <div class="subscription-name">${sub.userName || 'Unknown User'}</div>
+                <div class="subscription-package">${sub.packageName || 'Premium Package'}</div>
+            </div>
+            <div class="subscription-details">
+                <div class="subscription-price">${formatCurrency(sub.amount || 0)}</div>
+                <div class="subscription-time">${formatTimeAgo(sub.createdAt)}</div>
+                <div class="subscription-status ${sub.status?.toLowerCase() || 'completed'}">
+                    ${sub.status || 'Completed'}
                 </div>
-            `).join('');
+            </div>
+        </div>
+    `).join('');
 
             container.innerHTML = subscriptionsHTML;
         };
 
-        const updateStats = () => {
-            if (!packages || packages.length === 0) return;
+        const updateStats = async () => {
+            const stats = await fetchRevenueAndSubscribers();
 
-            let totalRevenue = 0;
-            let totalSubscribers = 0;
+            document.getElementById('totalRevenue').textContent = formatCurrency(stats.revenue || 0);
+            document.getElementById('totalSubscribers').textContent = formatNumber(stats.subscribers || 0);
 
-            packages.forEach(pkg => {
-                totalRevenue += (pkg.revenue || 0);
-                totalSubscribers += (pkg.subscribers || 0);
-            });
-
-            document.getElementById('totalRevenue').textContent = formatCurrency(totalRevenue);
-            document.getElementById('totalSubscribers').textContent = formatNumber(totalSubscribers);
-
-            const avgRevenue = totalSubscribers > 0 ? totalRevenue / totalSubscribers : 0;
+            const avgRevenue = stats.subscribers > 0 ? stats.revenue / stats.subscribers : 0;
             document.getElementById('avgRevenue').textContent = formatCurrency(avgRevenue);
-
             document.getElementById('conversionRate').textContent = '3.4%';
         };
 
@@ -1293,11 +1382,11 @@
 
             for (let i = startPage; i <= endPage; i++) {
                 pageNumbersHTML += `
-                    <button class="pagination-btn ${i === currentPage ? 'active' : ''}" 
-                            onclick="changePage(${i})">
-                        ${i + 1}
-                    </button>
-                `;
+            <button class="pagination-btn ${i === currentPage ? 'active' : ''}" 
+                    onclick="changePage(${i})">
+                ${i + 1}
+            </button>
+        `;
             }
 
             pageNumbers.innerHTML = pageNumbersHTML;
@@ -1379,7 +1468,7 @@
             const packageId = document.getElementById('updatePackageId').value;
             const packageData = {
                 name: document.getElementById('updateName').value,
-                price: parseFloat(document.getElementById('updatePrice').value),
+                price: parseInt(document.getElementById('updatePrice').value), // Changed to parseInt for VND
                 durationValue: parseInt(document.getElementById('updateDurationValue').value),
                 durationType: document.getElementById('updateDurationType').value,
                 features: document.getElementById('updateFeatures').value.split('\n').filter(f => f.trim()),
@@ -1405,7 +1494,9 @@
             if (!confirm('Are you sure you want to delete this package?')) return;
 
             try {
-                const response = await deletePackage(packageId);
+                const response = await apiRequest(`${API_BASE_URL}/${packageId}`, {
+                    method: 'DELETE',
+                });
 
                 if (response && response.ok) {
                     await loadPackages();
@@ -1439,58 +1530,20 @@
 
         // Load Functions
         const loadPackages = async () => {
-            const packagesData = await fetchPackages(currentPage, 3);
+            const packagesData = await fetchPackages(currentPage, 2);
             if (packagesData) {
                 renderPackages(packagesData);
-                updateStats();
+                await updateStats();
             }
         };
 
         const loadRecentSubscriptions = async () => {
-            const mockSubscriptions = [
-                {
-                    username: 'John Peterson',
-                    packageName: 'Pro Premium',
-                    amount: 19.99,
-                    timeAgo: '2 mins ago',
-                    status: 'Completed'
-                },
-                {
-                    username: 'Sarah Wilson',
-                    packageName: 'Basic Premium',
-                    amount: 9.99,
-                    timeAgo: '5 mins ago',
-                    status: 'Completed'
-                },
-                {
-                    username: 'Mike Johnson',
-                    packageName: 'Enterprise',
-                    amount: 49.99,
-                    timeAgo: '1 day ago',
-                    status: 'Pending'
-                },
-                {
-                    username: 'Emily Davis',
-                    packageName: 'Yearly Basic',
-                    amount: 99.99,
-                    timeAgo: '2 days ago',
-                    status: 'Completed'
-                },
-                {
-                    username: 'Robert Chen',
-                    packageName: 'Pro Premium',
-                    amount: 19.99,
-                    timeAgo: '3 days ago',
-                    status: 'Failed'
-                }
-            ];
-
             try {
                 const subscriptions = await fetchRecentSubscriptions();
-                renderRecentSubscriptions(subscriptions.length > 0 ? subscriptions : mockSubscriptions);
+                renderRecentSubscriptions(subscriptions);
             } catch (error) {
                 console.error('Error loading subscriptions:', error);
-                renderRecentSubscriptions(mockSubscriptions);
+                renderRecentSubscriptions([]);
             }
         };
 
