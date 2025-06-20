@@ -129,7 +129,7 @@ const loadPackages = async () => {
 
 const init = async () => {
     if (!checkAuth()) return;
-    loadSideBar();
+    loadSideBar(getCurrentUser());
     await loadPackages();
     toggleBilling('monthly');
 };

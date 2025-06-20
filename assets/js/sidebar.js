@@ -11,8 +11,6 @@ function setActiveSidebarLink() {
     });
 }
 
-<<<<<<< HEAD
-=======
 // Check user role and show/hide admin features
 function checkUserRoleAndShowAdminFeatures() {
     try {
@@ -22,28 +20,28 @@ function checkUserRoleAndShowAdminFeatures() {
             // Role được lưu trong trường 'scope' của JWT token
             const userRole = payload.scope;
             console.log('User role from token:', userRole);
-            
+
             if (userRole === 'ADMIN') {
                 // Show admin menu items and divider
                 const adminDivider = document.getElementById('adminDivider');
                 const adminDashboardLink = document.getElementById('adminDashboardLink');
                 const userManagementLink = document.getElementById('userManagementLink');
-                
+
                 if (adminDivider) {
                     adminDivider.style.display = 'block';
                     console.log('Admin role detected - showing Admin divider');
                 }
-                
+
                 if (adminDashboardLink) {
                     adminDashboardLink.style.display = 'block';
                     console.log('Admin role detected - showing Admin Dashboard link');
                 }
-                
+
                 if (userManagementLink) {
                     userManagementLink.style.display = 'block';
                     console.log('Admin role detected - showing User Management link');
                 }
-                
+
                 // Hide regular user menu if on admin pages
                 const currentPage = window.location.pathname.split('/').pop();
                 if (currentPage === 'admin-dashboard.html' || currentPage === 'user-management.html') {
@@ -65,7 +63,6 @@ function checkUserRoleAndShowAdminFeatures() {
     }
 }
 
->>>>>>> origin/authentication1
 // Handle logout
 async function handleLogout() {
     console.log('[LOGOUT] Logout triggered');
@@ -92,20 +89,6 @@ async function handleLogout() {
     }
 }
 
-<<<<<<< HEAD
-async function loadSideBar(user) {
-    fetch('sidebar.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('sidebar-container').innerHTML = data;
-            const sidebarUserNameSpan = document.querySelector('.sidebar .user-info .user-name');
-            if (sidebarUserNameSpan) {
-                sidebarUserNameSpan.textContent = user.username;
-            }
-            const sidebarAvatar = document.querySelector('.sidebar .user-info img');
-            if (sidebarAvatar) {
-                sidebarAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=388e3c&color=fff`;
-=======
 // Load sidebar với username (for backward compatibility)
 async function loadSideBar(user) {
     const userName = user.username || user.name;
@@ -558,28 +541,23 @@ const sidebarTemplate = `
 // Load sidebar đơn giản chỉ cần username - Không cần fetch nữa
 function loadSideBarSimple(userName) {
     const sidebarContainer = document.getElementById('sidebar-container');
-    
+
     // Load sidebar template instantly
     sidebarContainer.innerHTML = sidebarTemplate;
-    
+
     // Update user info immediately
     const sidebarUserNameSpan = document.querySelector('.sidebar .user-details .user-name');
-            if (sidebarUserNameSpan) {
-                sidebarUserNameSpan.textContent = userName;
-            }
+    if (sidebarUserNameSpan) {
+        sidebarUserNameSpan.textContent = userName;
+    }
     const sidebarAvatar = document.querySelector('.sidebar .user-avatar img');
-            if (sidebarAvatar) {
-                sidebarAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=388e3c&color=fff`;
->>>>>>> origin/authentication1
-            }
+    if (sidebarAvatar) {
+        sidebarAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=388e3c&color=fff`;
+    }
 
-            // Set active class for current page in sidebar
-            setActiveSidebarLink();
-<<<<<<< HEAD
-        });
-=======
-            
-            // Show admin features for admin users
-                checkUserRoleAndShowAdminFeatures();
->>>>>>> origin/authentication1
+    // Set active class for current page in sidebar
+    setActiveSidebarLink();
+
+    // Show admin features for admin users
+    checkUserRoleAndShowAdminFeatures();
 }

@@ -24,7 +24,6 @@ const statusFilter = document.getElementById('statusFilter');
 const API_BASE_URL = 'http://localhost:8080';
 
 let user;
-let user;
 
 function renderError() {
     errorMessage.classList.remove('hidden');
@@ -35,8 +34,7 @@ function renderError() {
 async function fetchGoalProgress() {
     console.log('fetching Goals Progress...');
     try {
-        const response = await apiRequest(`${API_BASE_URL}/goal_tracking/list`, {
-            headers: { 'userId': user.userId.toString() }
+
         const response = await apiRequest(`${API_BASE_URL}/goal_tracking/list`, {
             headers: { 'userId': user.userId.toString() }
         });
@@ -167,8 +165,7 @@ async function confirmCancelGoal(goalId) {
 async function cancelGoal(goalId) {
     console.log("trying to cancel Goal: ", goalId);
     try {
-        const response = await apiRequest(`${API_BASE_URL}/goal/cancel/${goalId}`, {
-            method: 'PATCH'
+
         const response = await apiRequest(`${API_BASE_URL}/goal/cancel/${goalId}`, {
             method: 'PATCH'
         });
@@ -191,7 +188,6 @@ async function markAsComplete(goalId) {
     console.log("Trying to mark as completed goal: ", goalId);
 
     try {
-        const response = await apiRequest(`${API_BASE_URL}/goal/${goalId}`);
         const response = await apiRequest(`${API_BASE_URL}/goal/${goalId}`);
         const data = await response.json();
 
@@ -305,12 +301,10 @@ newGoalForm.addEventListener('submit', async (e) => {
 
     try {
         const response = await apiRequest(`${API_BASE_URL}/goal`, {
-        const response = await apiRequest(`${API_BASE_URL}/goal`, {
             method: 'POST',
             body: JSON.stringify(goalData)
         });
 
-        console.log("Xong fetch, ", response);
         console.log("Xong fetch, ", response);
         const data = await response.json();
         console.log("Xong chuyen data thanh json: ", data);
@@ -347,10 +341,8 @@ targetAmountInput.addEventListener('input', validateAmounts);
 currentAmountInput.addEventListener('input', validateAmounts);
 
 async function initializeUI() {
-async function initializeUI() {
     try {
         await fetchGoalProgress(); // Then fetch goals
-        await loadSideBar(user);
         await loadSideBar(user);
         // await Promise.all([fetchGoalProgress(), fetchTransaction()]); // nếu muốn fetch 2 cái khác song song
     } catch (err) {

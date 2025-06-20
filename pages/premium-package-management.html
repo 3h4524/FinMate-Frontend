@@ -1224,6 +1224,7 @@
                 const response = await apiRequest(`${SUBSCRIPTION_API_URL}/recent?page=0&size=5&sortBy=createdAt&sortDirection=DESC`);
                 if (!response) return [];
                 const data = await response.json();
+                console.log("hahae: ", data);
                 return data.result.content || [];
             } catch (error) {
                 console.error('Error fetching recent subscriptions:', error);

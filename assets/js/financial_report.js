@@ -288,7 +288,7 @@ async function initializeUI() {
     try {
         await Promise.all([fetchTransactions(), fetchGoalProgress()]); // nếu muốn fetch 3 cái gần như cùng lúc
 
-        loadSideBar(user)
+        loadSideBarSimple(user.username);
         initPercenGoalProgress();
         updateChartTypeButtons('bar');
         updateReport();
@@ -304,4 +304,3 @@ window.addEventListener('load', () => {
         initializeUI();
     }
 });
-
