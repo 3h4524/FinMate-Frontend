@@ -65,6 +65,15 @@ const NOTIFICATION_TYPES = {
         badgeClass: 'text-yellow-600 bg-yellow-100',
         icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>`,
         showActions: false
+    },
+    NOT_STARTED: {
+        bgClass: 'bg-gradient-to-r from-yellow-50 to-amber-50 border-l-4 border-yellow-400',
+        iconClass: 'text-yellow-500',
+        titleClass: 'text-yellow-800',
+        messageClass: 'text-yellow-700',
+        badgeClass: 'text-yellow-600 bg-yellow-100',
+        icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>`,
+        showActions: false
     }
 };
 
@@ -115,6 +124,7 @@ async function fetchGoalDetails() {
     console.log("fetchGoalDetails: " + goalId);
     try {
         const response = await apiRequest(`${API_BASE_URL}/goal_tracking/${goalId}`);
+        const response = await apiRequest(`${API_BASE_URL}/goal_tracking/${goalId}`);
         if (!response.ok) throw new Error('Failed to fetch goal details');
         const data = await response.json();
         goalProgressResponse = data.result;
@@ -129,6 +139,7 @@ async function fetchGoalDetails() {
 async function fetchGoalProgressData() {
     try {
         const response = await apiRequest(`${API_BASE_URL}/goal_tracking/list_progress/${goalId}`);
+        const response = await apiRequest(`${API_BASE_URL}/goal_tracking/list_progress/${goalId}`);
         if (!response.ok) throw new Error('Failed to fetch goal progress data');
         const data = await response.json();
         return data.result.content;
@@ -140,6 +151,7 @@ async function fetchGoalProgressData() {
 
 async function fetchGoalContributionData(goalId) {
     try {
+        const contributionsResponse = await apiRequest(`${API_BASE_URL}/contributions/${goalId}`);
         const contributionsResponse = await apiRequest(`${API_BASE_URL}/contributions/${goalId}`);
         if (!contributionsResponse.ok) throw new Error('Failed to fetch goal contributions');
         const contributionsData = await contributionsResponse.json();
@@ -154,6 +166,7 @@ async function fetchGoalContributionData(goalId) {
 function renderGoalDetails() {
     pageTitle.textContent = `${goalProgressResponse.name} Progress`;
     document.getElementById('goalName').textContent = goalProgressResponse.name;
+
 
 
     if (goalProgressResponse.status === "IN_PROGRESS") {
@@ -291,6 +304,7 @@ async function renderGoalMessage() {
 
     try {
         const response = await apiRequest(`${API_BASE_URL}/goal/${goalId}`);
+        const response = await apiRequest(`${API_BASE_URL}/goal/${goalId}`);
 
         if (!response.ok) throw new Error("Cannot track goal to alert.");
 
@@ -328,6 +342,9 @@ async function renderGoalMessage() {
 
             if (daysPassed < 0) {
                 console.warn(`Goal ${goal.id} has startDate after today: ${startDate}`);
+
+                showNotStartedNotification();
+
 
                 showNotStartedNotification();
 
@@ -391,6 +408,8 @@ async function cancelGoal(goalId) {
     try {
         const response = await apiRequest(`${API_BASE_URL}/goal/cancel/${goalId}`, {
             method: 'PATCH'
+        const response = await apiRequest(`${API_BASE_URL}/goal/cancel/${goalId}`, {
+            method: 'PATCH'
         });
 
         if (!response.ok) {
@@ -441,7 +460,16 @@ function showFailedNotification() {
     updateProgressNotification(
         'FAILED',
         'Goal Not Achieved ❌',
+        'Goal Not Achieved ❌',
         'You didn’t meet your goal this time. Keep pushing!'
+    );
+}
+
+function showNotStartedNotification() {
+    updateProgressNotification(
+        'NOT_STARTED',
+        'Goal Not Started ⏳',
+        'Your goal hasn’t started yet. Get ready for the kickoff!'
     );
 }
 
@@ -506,7 +534,20 @@ function closeModalAddContribution() {
 
 // Open edit modal and populate fields
 async function openEditModal() {
+async function openEditModal() {
     editGoalModal.classList.remove('hidden');
+    try {
+        const response = await apiRequest(`${API_BASE_URL}/goal/${goalId}`);
+        const data = await response.json();
+
+        if (data.code === 1000) {
+            const goalResponse = data.result;
+
+            document.getElementById('editGoalName').value = goalResponse.name;
+            document.getElementById('editTargetAmount').value = goalResponse.targetAmount.toFixed(2);
+            document.getElementById('editDeadline').value = goalResponse.deadline;
+            document.getElementById('editNotificationEnabled').checked = goalResponse.notificationEnabled || false;
+            editFormError.classList.add('hidden');
     try {
         const response = await apiRequest(`${API_BASE_URL}/goal/${goalId}`);
         const data = await response.json();
@@ -527,7 +568,22 @@ async function openEditModal() {
                 deadline: goalResponse.deadline,
                 notificationEnabled: goalResponse.notificationEnabled || false
             };
+            // Store initial form values
+            initialFormValues = {
+                name: goalResponse.name,
+                targetAmount: goalResponse.targetAmount.toFixed(2),
+                deadline: goalResponse.deadline,
+                notificationEnabled: goalResponse.notificationEnabled || false
+            };
 
+            updateSaveButtonState();
+
+        } else {
+            throw new Error("Fail to mark as completed");
+        }
+    } catch (err) {
+        showResult(err, 'error');
+    }
             updateSaveButtonState();
 
         } else {
@@ -651,6 +707,8 @@ contributionForm.addEventListener('submit', async (e) => {
 
 
     if (await addGoalContribution(contribution)) {
+
+    if (await addGoalContribution(contribution)) {
         closeModalAddContribution();
         await fetchGoalDetails();
     }
@@ -700,6 +758,7 @@ editGoalForm.addEventListener('submit', async (e) => {
     };
 
     try {
+        const response = await apiRequest(`${API_BASE_URL}/goal/${goalId}`, {
         const response = await apiRequest(`${API_BASE_URL}/goal/${goalId}`, {
             method: 'PUT',
             body: JSON.stringify(updatedGoal)

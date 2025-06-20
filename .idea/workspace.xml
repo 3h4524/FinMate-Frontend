@@ -4,8 +4,37 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="35fd4f24-951e-47ee-a9ee-67ec757b3e1c" name="Changes" comment="update sidebar">
+    <list default="true" id="72949f31-0bd4-426c-a8e0-0239e303fb3b" name="Changes" comment="updatev2">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/forgot-password.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/forgot-password.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/login.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/login.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/register.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/register.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/reset-password.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/reset-password.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/transaction.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/transaction.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/verify-email.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/verify-email.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/forgot-password.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/forgot-password.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/helper_functions.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/helper_functions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/home.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/home.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/register.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/register.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/reset-password.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/reset-password.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/sidebar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/verify-email.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/verify-email.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/budget.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/budget.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/financial_report.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/financial_report.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/forgot-password.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/forgot-password.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/goal.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/goal.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/reset-password.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/reset-password.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/set-password.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/set-password.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/sidebar.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/sidebar.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/transaction.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/transaction.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/user-management.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/user-management.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/verify-email.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/verify-email.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -13,51 +42,48 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$" value="main" />
-      </map>
-    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "Phuchao1624"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Phuchao1624&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/3h4524/FinMate-Frontend.git",
-    "accountId": "16b43888-0571-4fed-b0d5-96a7066811de"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/3h4524/FinMate-Frontend.git&quot;,
+    &quot;accountId&quot;: &quot;16b43888-0571-4fed-b0d5-96a7066811de&quot;
   }
-}]]></component>
-  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
-  <component name="KubernetesApiProvider"><![CDATA[{
-  "isMigrated": true
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 6
-}]]></component>
-  <component name="ProjectId" id="2yVQ4NNkcLJsaKSeWEDVSyVoqe9" />
+}</component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2yfc8alZXO1PKAUiDFFWAhIeccl" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "authentication1",
-    "last_opened_file_path": "E:/Projectv1/Frontend",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;authentication1&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/new/Frontend1&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -68,49 +94,48 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="35fd4f24-951e-47ee-a9ee-67ec757b3e1c" name="Changes" comment="" />
-      <created>1749917068563</created>
+      <changelist id="72949f31-0bd4-426c-a8e0-0239e303fb3b" name="Changes" comment="" />
+      <created>1750228909254</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1749917068563</updated>
-      <workItem from="1749917069656" duration="476000" />
+      <updated>1750228909254</updated>
+      <workItem from="1750228910313" duration="458000" />
+      <workItem from="1750262545743" duration="11000" />
+      <workItem from="1750427066580" duration="690000" />
     </task>
     <task id="LOCAL-00001" summary="update sidebar">
       <option name="closed" value="true" />
-      <created>1749917239298</created>
+      <created>1750229181662</created>
       <option name="number" value="00001" />
       <option name="presentableId" value="LOCAL-00001" />
       <option name="project" value="LOCAL" />
-      <updated>1749917239298</updated>
+      <updated>1750229181662</updated>
     </task>
-    <task id="LOCAL-00002" summary="update sidebar">
+    <task id="LOCAL-00002" summary="updatev2">
       <option name="closed" value="true" />
-      <created>1749917396327</created>
+      <created>1750229209812</created>
       <option name="number" value="00002" />
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
-      <updated>1749917396327</updated>
+      <updated>1750229209812</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="updatev2">
+      <option name="closed" value="true" />
+      <created>1750229219689</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1750229219689</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="updatev2" />
     <MESSAGE value="update sidebar" />
-    <option name="LAST_COMMIT_MESSAGE" value="update sidebar" />
+    <MESSAGE value="updatev2" />
+    <option name="LAST_COMMIT_MESSAGE" value="updatev2" />
   </component>
 </project>

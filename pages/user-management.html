@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - FinMate</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="../assets/css/user-management.css" rel="stylesheet">
+    <script src="../assets/js/helper_functions.js"></script>
+    <script src="../assets/js/autho_helper.js" defer></script>
+    <script src="../assets/js/sidebar.js" defer></script>
+
+</head>
+<body>
+    <div class="app-container">
+        <!-- Include sidebar component -->
+        <div id="sidebar-container"></div>
+        <div class="main-content" id="mainContent" style="display: none;">
+            <!-- Header Section -->
+            <header class="admin-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <h1 class="header-title">User Management</h1>
+                        <div class="header-subtitle">Manage all user accounts and activities</div>
+                </div>
+                    <div class="header-right">
+                        <div class="admin-profile">
+                            <div class="admin-avatar">
+                                <i class="fas fa-user-shield"></i>
+            </div>
+                            <div class="admin-info">
+                                <span class="admin-name" id="adminName">Admin</span>
+                                <span class="admin-role">Administrator</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <div class="dashboard-content">
+                <!-- Statistics Overview -->
+                <section class="stats-section">
+                    <h2 class="section-title">User Statistics</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card primary">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <h3 class="stat-number" id="totalUsers">0</h3>
+                                    <p class="stat-label">Total Users</p>
+                                </div>
+                                <div class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span id="totalUsersChange">+0%</span>
+                                </div>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+
+                        <div class="stat-card success">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <h3 class="stat-number" id="activeUsers">0</h3>
+                                    <p class="stat-label">Active Users</p>
+                                </div>
+                                <div class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span id="activeUsersChange">+0%</span>
+                                </div>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                        </div>
+
+                        <div class="stat-card warning">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <h3 class="stat-number" id="premiumUsers">0</h3>
+                                    <p class="stat-label">Premium Users</p>
+                                </div>
+                                <div class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span id="premiumUsersChange">+0%</span>
+                                </div>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                        </div>
+
+                        <div class="stat-card info">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <h3 class="stat-number" id="newUsers">0</h3>
+                                    <p class="stat-label">New Users (30d)</p>
+                                </div>
+                                <div class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span id="newUsersChange">+0%</span>
+                                </div>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            <!-- User Management Section -->
+            <div class="management-section">
+                <div class="management-header">
+                    <div class="section-title">
+                        <h2>All Users</h2>
+                        <p>Manage user accounts and activities</p>
+                    </div>
+                    <div class="management-actions">
+                        <div class="search-container">
+                            <div class="search-box">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" class="search-input" placeholder="Search users...">
+                            </div>
+                        </div>
+                        <div class="filter-container">
+                            <select class="status-filter" id="statusFilter">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="suspended">Suspended</option>
+                                <option value="premium">Premium</option>
+                                <option value="basic">Basic</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="openAddUserModal()">
+                            <i class="fas fa-plus"></i>
+                            Add User
+                    </button>
+                    </div>
+                </div>
+
+                <!-- Users Table -->
+                <div class="table-container">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>USER</th>
+                                <th>BALANCE</th>
+                                <th>ACCOUNT TYPE</th>
+                                <th>STATUS</th>
+                                <th>LAST LOGIN</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Users will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination-container">
+                <div class="pagination" id="pagination">
+                    <!-- Pagination will be added here -->
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit User</h2>
+                <button class="close-btn" onclick="closeModal('editUserModal')">&times;</button>
+            </div>
+            <form id="editUserForm">
+                <input type="hidden" id="editUserId">
+                <div class="form-group">
+                    <label for="editName">Name</label>
+                    <input type="text" id="editName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEmail">Email</label>
+                    <input type="email" id="editEmail" required>
+                </div>
+                <div class="form-group" id="passwordGroup" style="display: none;">
+                    <label for="editPassword">Password</label>
+                    <input type="password" id="editPassword" placeholder="Enter password for new user">
+                </div>
+                <div class="form-group">
+                    <label for="editRole">Role</label>
+                    <select id="editRole" required>
+                        <option value="USER">User</option>
+                        <option value="ADMIN">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editIsPremium">Premium Status</label>
+                    <select id="editIsPremium" required>
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editVerified">Verified Status</label>
+                    <select id="editVerified" required>
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="cancel-btn" onclick="closeModal('editUserModal')">Cancel</button>
+                    <button type="submit" class="save-btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- User Detail Modal -->
+    <div id="userDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">User Details</h2>
+                <button class="close-btn" onclick="closeModal('userDetailModal')">&times;</button>
+            </div>
+            <div class="user-details">
+                <div class="detail-group">
+                    <label>ID:</label>
+                    <span id="detailId"></span>
+                </div>
+                <div class="detail-group">
+                    <label>Name:</label>
+                    <span id="detailName"></span>
+                </div>
+                <div class="detail-group">
+                    <label>Email:</label>
+                    <span id="detailEmail"></span>
+                </div>
+                <div class="detail-group">
+                    <label>Role:</label>
+                    <span id="detailRole"></span>
+                </div>
+                <div class="detail-group">
+                    <label>Premium Status:</label>
+                    <span id="detailPremium"></span>
+                </div>
+                <div class="detail-group">
+                    <label>Verified:</label>
+                    <span id="detailVerified"></span>
+                </div>
+                <div class="detail-group">
+                    <label>Last Login:</label>
+                    <span id="detailLastLogin"></span>
+                </div>
+                <div class="detail-group">
+                    <label>Created At:</label>
+                    <span id="detailCreatedAt"></span>
+                </div>
+                <div class="detail-group">
+                    <label>Premium Packages:</label>
+                    <div id="detailPremiumPackages" class="premium-packages">
+                        <!-- Premium packages will be loaded here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="cancel-btn" onclick="closeModal('userDetailModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 0;
+        const pageSize = 10;
+        let user;
+
+        // Check authentication status when page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            const token = localStorage.getItem('token');
+            const userData = localStorage.getItem('userData');
+            
+            if (!token || !userData) {
+                console.log('[AUTH] No token or user data found, redirecting to login');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            console.log('[AUTH] Checking authentication status with token');
+            try {
+                const response = await fetch('http://localhost:8080/api/v1/auth/verify-token', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    console.error('[AUTH] Error parsing response:', e);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userData');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                if (data.code !== 1000) {
+                    console.log('[AUTH] Token verification failed:', data.message);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userData');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Check if user has ADMIN role
+                const currentUser = getCurrentUser();
+                if (!currentUser) {
+                    console.log('[AUTH] Cannot get current user info');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userData');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Parse token to get role
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    // Role được lưu trong trường 'scope' của JWT token
+                    const userRole = payload.scope;
+                    console.log('[AUTH] User role from token:', userRole);
+                    if (userRole !== 'ADMIN') {
+                        console.log('[AUTH] Access denied: User does not have ADMIN role');
+                        alert('Access denied. This page is only available for administrators.');
+                        window.location.href = 'home.html';
+                        return;
+                    }
+                } catch (e) {
+                    console.error('[AUTH] Error parsing token payload:', e);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userData');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Token is valid and user is admin, show the main content
+                const mainContent = document.querySelector('.main-content');
+                if (mainContent) mainContent.style.display = 'flex';
+
+                // Update admin info
+                const userInfo = JSON.parse(userData);
+                const adminName = userInfo.name || userInfo.email.split('@')[0];
+                document.getElementById('adminName').textContent = adminName;
+                
+                user = currentUser;
+                
+                // Load sidebar
+                loadSideBarSimple(adminName);
+
+                // Load users data and stats
+                await loadUserStats();
+                await loadUsers();
+
+            } catch (error) {
+                console.error('[AUTH] Error verifying token:', error);
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Initialize UI and load sidebar
+        async function initializeUI() {
+            try {
+                user = getCurrentUser();
+                await loadSideBar(user);
+                await loadUsers();
+            } catch (err) {
+                console.error('Failed to initialize app:', err);
+                window.location.href = 'login.html';
+            }
+        }
+
+        async function loadUsers(page = 0) {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Show loading state
+                const tbody = document.getElementById('usersTableBody');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px;">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+                                <div style="width: 40px; height: 40px; border: 4px solid var(--gray-200); border-top: 4px solid var(--main-green); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                                <div style="color: var(--text-light);">Loading users...</div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+
+                const response = await fetch(`http://localhost:8080/api/admin/users?page=${page}&size=${pageSize}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load users');
+                }
+
+                const data = await response.json();
+                displayUsers(data.content);
+                setupPagination(data.totalPages, page);
+            } catch (error) {
+                console.error('Error loading users:', error);
+                const tbody = document.getElementById('usersTableBody');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-light);">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                            <div>Failed to load users. Please try again.</div>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function displayUsers(users) {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+
+            if (!users || users.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-light);">
+                            <i class="fas fa-users" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                            <div>No users found</div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            users.forEach(user => {
+                const tr = document.createElement('tr');
+                const userInitials = user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase();
+                
+                // Get balance from wallet or default to 0
+                let balanceAmount = '$0.00';
+                if (user.wallet && user.wallet.balance !== undefined) {
+                    balanceAmount = `$${parseFloat(user.wallet.balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                } else if (user.balance !== undefined) {
+                    balanceAmount = `$${parseFloat(user.balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                }
+                
+                const lastLogin = formatRelativeTime(user.lastLoginAt);
+                
+                tr.innerHTML = `
+                    <td>
+                        <div class="user-info">
+                            <div class="user-avatar">${userInitials}</div>
+                            <div class="user-details">
+                                <h4>${user.name || 'N/A'}</h4>
+                                <p>${user.email}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="balance-amount">${balanceAmount}</div>
+                        <div class="balance-label">Total Balance</div>
+                    </td>
+                    <td>
+                        <span class="badge ${user.isPremium ? 'badge-premium' : 'badge-basic'}">
+                            ${user.isPremium ? 'Premium' : 'Basic'}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge ${user.isDelete ? 'status-suspended' : 'status-active'}">
+                            ${user.isDelete ? 'Suspended' : 'Active'}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="color: var(--text-light); font-size: 14px;">${lastLogin}</div>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn view-btn" onclick="openDetailModal(${user.id})" title="View Details">
+                                <i class="fas fa-eye"></i>
+                        </button>
+                            <button class="action-btn edit-btn" onclick="openEditModal(${user.id})" title="Edit User">
+                                <i class="fas fa-edit"></i>
+                        </button>
+                            <button class="action-btn delete-btn" onclick="${user.isDelete ? 'restoreUser' : 'banUser'}(${user.id})" title="${user.isDelete ? 'Restore User' : 'Ban User'}">
+                                <i class="fas fa-${user.isDelete ? 'undo' : 'ban'}"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function formatRelativeTime(dateString) {
+            if (!dateString) return 'Never';
+            
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffInMinutes = Math.floor((now - date) / (1000 * 60));
+            
+            if (diffInMinutes < 60) {
+                return diffInMinutes <= 1 ? '1 minute ago' : `${diffInMinutes} minutes ago`;
+            } else if (diffInMinutes < 1440) { // 24 hours
+                const hours = Math.floor(diffInMinutes / 60);
+                return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+            } else if (diffInMinutes < 10080) { // 7 days
+                const days = Math.floor(diffInMinutes / 1440);
+                return days === 1 ? '1 day ago' : `${days} days ago`;
+            } else if (diffInMinutes < 43200) { // 30 days
+                const weeks = Math.floor(diffInMinutes / 10080);
+                return weeks === 1 ? '1 week ago' : `${weeks} weeks ago`;
+            } else {
+                return date.toLocaleDateString();
+            }
+        }
+
+        async function loadUserStats() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                // Load all users to calculate stats
+                const response = await fetch('http://localhost:8080/api/admin/users?page=0&size=1000', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    calculateAndUpdateStats(data.content);
+                } else {
+                    console.log('Using default stats values');
+                    updateStatsCards({
+                        totalUsers: 0,
+                        activeUsers: 0,
+                        premiumUsers: 0,
+                        newUsers: 0
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading user stats:', error);
+                updateStatsCards({
+                    totalUsers: 0,
+                    activeUsers: 0,
+                    premiumUsers: 0,
+                    newUsers: 0
+                });
+            }
+        }
+
+        function calculateAndUpdateStats(users) {
+            const now = new Date();
+            const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
+            const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+
+            const currentStats = {
+                totalUsers: users.length,
+                activeUsers: users.filter(user => !user.isDelete).length,
+                premiumUsers: users.filter(user => user.isPremium && !user.isDelete).length,
+                newUsers: users.filter(user => {
+                    const createdAt = new Date(user.createdAt);
+                    return createdAt >= thirtyDaysAgo;
+                }).length
+            };
+
+            // Calculate week-over-week growth for more meaningful percentages
+            const usersThisWeek = users.filter(user => {
+                const createdAt = new Date(user.createdAt);
+                return createdAt >= sevenDaysAgo;
+            }).length;
+
+            const activeUsersToday = users.filter(user => {
+                const lastLogin = new Date(user.lastLoginAt);
+                const today = new Date();
+                return !user.isDelete && lastLogin >= new Date(today.getTime() - (24 * 60 * 60 * 1000));
+            }).length;
+
+            // Get previous stats from localStorage
+            const previousStats = JSON.parse(localStorage.getItem('userStats') || '{}');
+            
+            // Calculate percentage changes
+            const percentages = {
+                totalUsers: calculatePercentageChange(previousStats.totalUsers, currentStats.totalUsers),
+                activeUsers: calculatePercentageChange(previousStats.activeUsers, currentStats.activeUsers),
+                premiumUsers: calculatePercentageChange(previousStats.premiumUsers, currentStats.premiumUsers),
+                newUsers: calculatePercentageChange(previousStats.newUsers, currentStats.newUsers)
+            };
+
+            // Save current stats for next comparison
+            localStorage.setItem('userStats', JSON.stringify(currentStats));
+
+            updateStatsCards(currentStats, percentages);
+        }
+
+        function calculatePercentageChange(oldValue, newValue) {
+            if (!oldValue || oldValue === 0) {
+                // If no previous data, show moderate positive percentage for existing users
+                return newValue > 0 ? Math.min(25, newValue * 2) : 0;
+            }
+            // Calculate actual percentage change from previous value
+            const change = ((newValue - oldValue) / oldValue) * 100;
+            // Cap between -99% and 999% for reasonable display
+            return Math.max(-99, Math.min(999, Math.round(change)));
+        }
+
+        function updateStatsCards(stats, percentages = {}) {
+            // Update numbers
+            document.getElementById('totalUsers').textContent = stats.totalUsers?.toLocaleString() || '0';
+            document.getElementById('activeUsers').textContent = stats.activeUsers?.toLocaleString() || '0';
+            document.getElementById('premiumUsers').textContent = stats.premiumUsers?.toLocaleString() || '0';
+            document.getElementById('newUsers').textContent = stats.newUsers?.toLocaleString() || '0';
+
+            // Update percentage changes
+            document.getElementById('totalUsersChange').textContent = formatPercentage(percentages.totalUsers || 0);
+            document.getElementById('activeUsersChange').textContent = formatPercentage(percentages.activeUsers || 0);
+            document.getElementById('premiumUsersChange').textContent = formatPercentage(percentages.premiumUsers || 0);
+            document.getElementById('newUsersChange').textContent = formatPercentage(percentages.newUsers || 0);
+        }
+
+        // Helper functions for percentage calculation
+        function formatPercentage(change) {
+            const sign = change >= 0 ? '+' : '';
+            return `${sign}${change.toFixed(1)}%`;
+        }
+
+        function openAddUserModal() {
+            // Clear the form
+            document.getElementById('editUserForm').reset();
+            document.getElementById('editUserId').value = '';
+            document.querySelector('#editUserModal .modal-title').textContent = 'Add New User';
+            
+            // Show password field for new user
+            document.getElementById('passwordGroup').style.display = 'block';
+            document.getElementById('editPassword').required = true;
+            
+            // Set default values for new user
+            document.getElementById('editRole').value = 'USER';
+            document.getElementById('editIsPremium').value = 'false';
+            document.getElementById('editVerified').value = 'false';
+            
+            document.getElementById('editUserModal').style.display = 'block';
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Never';
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+
+        function setupPagination(totalPages, currentPageNum) {
+            currentPage = currentPageNum;
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            // Previous button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'pagination-btn';
+            prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevBtn.disabled = currentPage === 0;
+            prevBtn.onclick = () => loadUsers(currentPage - 1);
+            pagination.appendChild(prevBtn);
+
+            // Page numbers
+            for (let i = 0; i < totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i + 1;
+                pageBtn.onclick = () => loadUsers(i);
+                pagination.appendChild(pageBtn);
+            }
+
+            // Next button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'pagination-btn';
+            nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextBtn.disabled = currentPage === totalPages - 1;
+            nextBtn.onclick = () => loadUsers(currentPage + 1);
+            pagination.appendChild(nextBtn);
+        }
+
+        async function searchUsers() {
+            const keyword = document.querySelector('.search-input').value.trim();
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            try {
+                const token = localStorage.getItem('token');
+                
+                // If no search keyword and no filter, load all users
+                if (!keyword && !statusFilter) {
+                    await loadUsers(0);
+                    return;
+                }
+                
+                // Try search endpoint first, fallback to manual filtering
+                let url = `http://localhost:8080/api/admin/users/search?keyword=${encodeURIComponent(keyword)}&page=0&size=${pageSize}`;
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    let filteredUsers = data.content;
+                    
+                    // Apply status filter if selected
+                    if (statusFilter) {
+                        filteredUsers = filteredUsers.filter(user => {
+                            switch(statusFilter) {
+                                case 'active':
+                                    return !user.isDelete;
+                                case 'suspended':
+                                    return user.isDelete;
+                                case 'premium':
+                                    return user.isPremium && !user.isDelete;
+                                case 'basic':
+                                    return !user.isPremium && !user.isDelete;
+                                default:
+                                    return true;
+                            }
+                        });
+                    }
+                    
+                    displayUsers(filteredUsers);
+                    setupPagination(Math.ceil(filteredUsers.length / pageSize), 0);
+                } else {
+                    // Fallback: load all users and filter manually
+                    await loadAllUsersAndFilter(keyword, statusFilter);
+                }
+            } catch (error) {
+                console.error('Error searching users:', error);
+                // Fallback: load all users and filter manually
+                await loadAllUsersAndFilter(keyword, statusFilter);
+            }
+        }
+
+        async function loadAllUsersAndFilter(keyword, statusFilter) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('http://localhost:8080/api/admin/users?page=0&size=1000', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    let filteredUsers = data.content;
+
+                    // Apply text search
+                    if (keyword) {
+                        filteredUsers = filteredUsers.filter(user => 
+                            (user.name && user.name.toLowerCase().includes(keyword.toLowerCase())) ||
+                            (user.email && user.email.toLowerCase().includes(keyword.toLowerCase()))
+                        );
+                    }
+
+                    // Apply status filter
+                    if (statusFilter) {
+                        filteredUsers = filteredUsers.filter(user => {
+                            switch(statusFilter) {
+                                case 'active':
+                                    return !user.isDelete;
+                                case 'suspended':
+                                    return user.isDelete;
+                                case 'premium':
+                                    return user.isPremium && !user.isDelete;
+                                case 'basic':
+                                    return !user.isPremium && !user.isDelete;
+                                default:
+                                    return true;
+                            }
+                        });
+                    }
+
+                    displayUsers(filteredUsers);
+                    setupPagination(Math.ceil(filteredUsers.length / pageSize), 0);
+                } else {
+                    throw new Error('Failed to load users');
+                }
+            } catch (error) {
+                console.error('Error in fallback search:', error);
+                alert('Search failed. Please try again.');
+            }
+        }
+
+        // Add event listeners for search and filter
+        document.addEventListener('DOMContentLoaded', function() {
+            // Search input listener
+            const searchInput = document.querySelector('.search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', debounce(searchUsers, 500));
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        searchUsers();
+                    }
+                });
+            }
+
+            // Status filter listener
+            const statusFilter = document.getElementById('statusFilter');
+            if (statusFilter) {
+                statusFilter.addEventListener('change', searchUsers);
+            }
+        });
+
+        // Debounce function to limit API calls
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        async function openEditModal(userId) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load user data');
+                }
+
+                const user = await response.json();
+                document.getElementById('editUserId').value = user.id;
+                document.getElementById('editName').value = user.name;
+                document.getElementById('editEmail').value = user.email;
+                document.getElementById('editRole').value = user.role;
+                document.getElementById('editIsPremium').value = user.isPremium;
+                document.getElementById('editVerified').value = user.verified;
+
+                // Hide password field for editing existing user
+                document.getElementById('passwordGroup').style.display = 'none';
+                document.getElementById('editPassword').required = false;
+
+                document.querySelector('#editUserModal .modal-title').textContent = 'Edit User';
+                document.getElementById('editUserModal').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                alert('Failed to load user data. Please try again.');
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        document.getElementById('editUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userId = document.getElementById('editUserId').value;
+            const isNewUser = !userId;
+            
+            let userData = {
+                name: document.getElementById('editName').value,
+                email: document.getElementById('editEmail').value,
+                role: document.getElementById('editRole').value,
+                isPremium: document.getElementById('editIsPremium').value === 'true',
+                verified: document.getElementById('editVerified').value === 'true'
+            };
+
+            // Add password for new user
+            if (isNewUser) {
+                const password = document.getElementById('editPassword').value;
+                if (!password || password.length < 6) {
+                    alert('Password must be at least 6 characters long');
+                    return;
+                }
+                userData.password = password;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                let url, method;
+                
+                if (isNewUser) {
+                    // For creating new user, use the auth register endpoint with admin privileges
+                    url = 'http://localhost:8080/api/v1/auth/register';
+                    method = 'POST';
+                    // Transform data for register endpoint
+                    userData = {
+                        name: userData.name,
+                        email: userData.email,
+                        password: userData.password,
+                        role: userData.role
+                    };
+                } else {
+                    // For updating existing user
+                    url = `http://localhost:8080/api/admin/users/${userId}`;
+                    method = 'PUT';
+                    delete userData.password; // Don't send password for updates
+                }
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => null);
+                    const errorMessage = errorData?.message || (isNewUser ? 'Failed to create user' : 'Failed to update user');
+                    throw new Error(errorMessage);
+                }
+
+                closeModal('editUserModal');
+                await loadUsers(currentPage);
+                await loadUserStats();
+                alert(isNewUser ? 'User created successfully' : 'User updated successfully');
+            } catch (error) {
+                console.error('Error saving user:', error);
+                alert(`Failed to ${isNewUser ? 'create' : 'update'} user: ${error.message}`);
+            }
+        });
+
+        async function banUser(userId) {
+            if (!confirm('Are you sure you want to ban this user?')) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to ban user');
+                }
+
+                await loadUsers(currentPage);
+                await loadUserStats();
+                alert('User has been banned successfully');
+            } catch (error) {
+                console.error('Error banning user:', error);
+                alert('Failed to ban user. Please try again.');
+            }
+        }
+
+        async function restoreUser(userId) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:8080/api/admin/users/${userId}/restore`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to unban user');
+                }
+
+                await loadUsers(currentPage);
+                await loadUserStats();
+                alert('User has been unbanned successfully');
+            } catch (error) {
+                console.error('Error unbanning user:', error);
+                alert('Failed to unban user. Please try again.');
+            }
+
+        }
+
+        async function openDetailModal(userId) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load user data');
+                }
+
+                const user = await response.json();
+                
+                // Set user details
+                document.getElementById('detailId').textContent = user.id;
+                document.getElementById('detailName').textContent = user.name || 'N/A';
+                document.getElementById('detailEmail').textContent = user.email;
+                document.getElementById('detailRole').textContent = user.role || 'USER';
+                document.getElementById('detailPremium').textContent = user.isPremium ? 'Premium' : 'Basic';
+                document.getElementById('detailVerified').textContent = user.verified ? 'Yes' : 'No';
+                document.getElementById('detailLastLogin').textContent = formatDate(user.lastLoginAt);
+                document.getElementById('detailCreatedAt').textContent = formatDate(user.createdAt);
+
+                // Load premium packages
+                const premiumPackagesDiv = document.getElementById('detailPremiumPackages');
+                if (user.isPremium && user.userPremiumPackages && user.userPremiumPackages.length > 0) {
+                    let packagesHtml = '';
+                    user.userPremiumPackages.forEach(pkg => {
+                        packagesHtml += `
+                            <div class="premium-package-item">
+                                <h4>${pkg.premiumPackage?.name || 'Premium Package'}</h4>
+                                <p>Status: ${pkg.isActive ? 'Active' : 'Inactive'}</p>
+                                <p>Started: ${formatDate(pkg.startDate)}</p>
+                                <p>Expires: ${formatDate(pkg.endDate)}</p>
+                            </div>
+                        `;
+                    });
+                    premiumPackagesDiv.innerHTML = packagesHtml;
+                } else if (user.isPremium) {
+                    premiumPackagesDiv.innerHTML = `
+                        <div class="premium-package-item">
+                            <h4>Premium Package</h4>
+                            <p>Status: Active</p>
+                            <p>No detailed information available</p>
+                        </div>
+                    `;
+                } else {
+                    premiumPackagesDiv.innerHTML = '<p style="color: var(--text-light); font-style: italic;">No premium packages purchased</p>';
+                }
+
+                document.getElementById('userDetailModal').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                alert('Failed to load user data. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html> </html> 

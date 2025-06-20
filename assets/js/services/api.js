@@ -158,15 +158,31 @@ const apiService = {
     },
 
     async processGoogleLogin(idToken) {
-        const response = await fetch(`${API_BASE_URL}/auth/google`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ token: idToken }),
-            credentials: 'include'
-        });
-        return handleResponse(response);
+        try {
+            const response = await fetch(`${API_BASE_URL}/auth/google`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ token: idToken }),
+                credentials: 'include'
+            });
+
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.message || 'Google login failed');
+            }
+
+            if (data.code !== 1000 || !data.result) {
+                throw new Error(data.message || 'Google login failed');
+            }
+
+            return data.result;
+        } catch (error) {
+            console.error('Google login error:', error);
+            throw error;
+        }
     },
 
     async verifyEmail(email, code) {

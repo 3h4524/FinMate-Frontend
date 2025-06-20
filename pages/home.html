@@ -4,27 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FinMate - Home</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script>
-        // Check authentication status when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            const token = localStorage.getItem('token');
-            const userData = localStorage.getItem('userData');
-            
-            if (!token || !userData) {
-                console.log('[AUTH] No token or user data found, redirecting to login');
-                window.location.href = 'login.html';
-                return;
-            }
+    <script src="../assets/js/sidebar.js" defer></script>
+    <script src="../assets/js/user_auth.js" defer></script>
 
-            // Parse user data
-            const user = JSON.parse(userData);
-            document.getElementById('userFullNameHeader').textContent = user.name;
-            
-            // Show main content after authentication check
-            document.getElementById('mainContent').style.display = 'flex';
-        });
-    </script>
     <style>
         :root {
             --main-green: #388e3c;
@@ -233,114 +217,6 @@
         }
     </style>
     <script>
-        // Check authentication status when page loads
-        document.addEventListener('DOMContentLoaded', async function() {
-            const token = localStorage.getItem('token');
-            const userData = localStorage.getItem('userData');
-            
-            if (!token || !userData) {
-                console.log('[AUTH] No token or user data found, redirecting to login');
-                window.location.href = 'login.html';
-                return;
-            }
-
-            console.log('[AUTH] Checking authentication status with token');
-            try {
-                const response = await fetch('http://localhost:8080/api/v1/auth/verify-token', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                let data;
-                try {
-                    data = await response.json();
-                } catch (e) {
-                    console.error('[AUTH] Error parsing response:', e);
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('userData');
-                    window.location.href = 'login.html';
-                    return;
-                }
-
-                if (data.code !== 1000) {
-                    console.log('[AUTH] Token verification failed:', data.message);
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('userData');
-                    window.location.href = 'login.html';
-                    return;
-                }
-
-                // Token is valid, show the main content
-                const mainContent = document.querySelector('.main-content');
-                const loadingSpinner = document.getElementById('loadingSpinner');
-                if (mainContent) mainContent.style.display = 'flex';
-                if (loadingSpinner) loadingSpinner.style.display = 'none';
-
-                // Update user info
-                const user = JSON.parse(userData);
-                const userName = user.name || user.email.split('@')[0];
-                
-                // Update header
-                const headerUserName = document.getElementById('userFullNameHeader');
-                if (headerUserName) {
-                    headerUserName.textContent = userName;
-                }
-
-                // Load sidebar
-                fetch('sidebar.html')
-                    .then(response => response.text())
-                    .then(data => {
-                        document.getElementById('sidebar-container').innerHTML = data;
-                        const sidebarUserNameSpan = document.querySelector('.sidebar .user-info .user-name');
-                        if (sidebarUserNameSpan) {
-                            sidebarUserNameSpan.textContent = userName;
-                        }
-                        // Update avatar
-                        const sidebarAvatar = document.querySelector('.sidebar .user-info img');
-                        if (sidebarAvatar) {
-                            sidebarAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=388e3c&color=fff`;
-                        }
-
-                        // Set active class for current page in sidebar
-                        setActiveSidebarLink();
-                    });
-
-                // Update current date
-                updateCurrentDate();
-
-                // Search functionality
-                const searchInput = document.querySelector('.search-bar input');
-                const searchIcon = document.querySelector('.search-bar i');
-                if (searchIcon && searchInput) {
-                    searchIcon.addEventListener('click', () => {
-                        const searchTerm = searchInput.value.trim();
-                        if (searchTerm) {
-                            console.log('[SEARCH] Searching for:', searchTerm);
-                        }
-                    });
-                    searchInput.addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter') {
-                            searchIcon.click();
-                        }
-                    });
-                }
-
-                // Logout button
-                const logoutButton = document.querySelector('.logout-btn');
-                if (logoutButton) {
-                    logoutButton.addEventListener('click', handleLogout);
-                }
-            } catch (error) {
-                console.error('[AUTH] Error verifying token:', error);
-                localStorage.removeItem('token');
-                localStorage.removeItem('userData');
-                window.location.href = 'login.html';
-            }
-        });
-
         // Update current date on header
         function updateCurrentDate() {
             const dateElement = document.querySelector('.header .date');
@@ -348,46 +224,6 @@
                 const now = new Date();
                 const options = { year: 'numeric', month: 'long', day: 'numeric' };
                 dateElement.textContent = now.toLocaleDateString('en-US', options);
-            }
-        }
-
-        // Helper function to set active class on sidebar links
-        function setActiveSidebarLink() {
-            const currentPage = window.location.pathname.split('/').pop();
-            const links = document.querySelectorAll('.sidebar nav ul li a');
-            
-            links.forEach(link => {
-                if (link.getAttribute('href') === currentPage) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
-            });
-        }
-
-        // Handle logout
-        async function handleLogout() {
-            console.log('[LOGOUT] Logout triggered');
-            try {
-                const token = localStorage.getItem('token');
-                if (token) {
-                    const response = await fetch('http://localhost:8080/api/v1/auth/logout', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-
-                    if (!response.ok) {
-                        console.error('[LOGOUT] Logout failed on server');
-                    }
-                }
-            } catch (error) {
-                console.error('[LOGOUT] Error during logout:', error);
-            } finally {
-                localStorage.removeItem('token');
-                localStorage.removeItem('userData');
-                window.location.href = 'login.html';
             }
         }
 
@@ -399,6 +235,51 @@
             document.body.appendChild(notification);
             setTimeout(() => notification.remove(), 5000);
         }
+
+        // Initialize additional home features after auth
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update current date
+            updateCurrentDate();
+
+            // Search functionality
+            const searchInput = document.querySelector('.search-bar input');
+            const searchIcon = document.querySelector('.search-bar i');
+            if (searchIcon && searchInput) {
+                searchIcon.addEventListener('click', () => {
+                    const searchTerm = searchInput.value.trim();
+                    if (searchTerm) {
+                        console.log('[SEARCH] Searching for:', searchTerm);
+                    }
+                });
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        searchIcon.click();
+                    }
+                });
+            }
+
+            // Logout button
+            const logoutButton = document.querySelector('.logout-btn');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', handleLogout);
+            }
+
+            // Hide loading spinner
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            if (loadingSpinner) loadingSpinner.style.display = 'none';
+
+            // Update header with user name
+            setTimeout(() => {
+                const userData = localStorage.getItem('userData');
+                if (userData) {
+                    const user = JSON.parse(userData);
+                    const headerUserName = document.getElementById('userFullNameHeader');
+                    if (headerUserName) {
+                        headerUserName.textContent = user.name || user.email.split('@')[0];
+                    }
+                }
+            }, 100);
+        });
     </script>
 </head>
 <body>

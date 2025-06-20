@@ -5,17 +5,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FINEbank.IO - Transaction Management</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
     <link rel="stylesheet" href="../assets/css/transaction.css">
+<<<<<<< HEAD
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
+=======
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script src="../assets/js/sidebar.js" defer></script>
+    <script src="../assets/js/user_auth.js" defer></script>
+>>>>>>> origin/authentication1
 </head>
 
 <body>
     <div class="app-container">
         <!-- Include sidebar component -->
         <div id="sidebar-container"></div>
-        <div class="main-content" id="mainContent">
+        <div class="main-content" id="mainContent" style="display: none;">
             <!-- Header -->
             <div class="main-header">
                 <div class="header-content">
@@ -32,10 +41,8 @@
                 </div>
             </div>
 
-
             <!-- Transactions Content -->
             <div id="transactions-content" class="content-area">
-
                 <div class="wallet-card">
                     <div class="wallet-header">
                         <div class="wallet-title">💳 My Wallet</div>
@@ -155,6 +162,7 @@
         </div>
     </div>
 
+    <!-- Wallet Modal -->
     <div id="walletModal" class="modal-overlay hidden">
         <div class="modal">
             <div class="modal-header">
@@ -196,7 +204,6 @@
             </form>
         </div>
     </div>
-
 
     <!-- Create/Edit Transaction Modal -->
     <div id="transactionModal" class="modal-overlay hidden">
@@ -349,6 +356,10 @@
         </div>
     </div>
 
+<<<<<<< HEAD
+=======
+    <!-- Create Category Modal -->
+>>>>>>> origin/authentication1
     <div id="createCategoryModal" class="modal-overlay hidden">
         <div class="modal">
             <div class="modal-header">
@@ -394,81 +405,19 @@
         </div>
     </div>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/authentication1
     <script src="../assets/js/transaction.js"></script>
     <script>
-        // Check authentication status when page loads
-        document.addEventListener('DOMContentLoaded', async function() {
-            const token = localStorage.getItem('token');
-            const userData = localStorage.getItem('userData');
-            
-            if (!token || !userData) {
-                console.log('[AUTH] No token or user data found, redirecting to login');
-                window.location.href = 'login.html';
-                return;
-            }
-
-            console.log('[AUTH] Checking authentication status with token');
-            try {
-                const response = await fetch('http://localhost:8080/api/v1/auth/verify-token', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                let data;
-                try {
-                    data = await response.json();
-                } catch (e) {
-                    console.error('[AUTH] Error parsing response:', e);
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('userData');
-                    window.location.href = 'login.html';
-                    return;
+        // Set active sidebar link after auth
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                if (typeof setActiveSidebarLink === 'function') {
+                    setActiveSidebarLink();
                 }
-
-                if (data.code !== 1000) {
-                    console.log('[AUTH] Token verification failed:', data.message);
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('userData');
-                    window.location.href = 'login.html';
-                    return;
-                }
-
-                // Token is valid, show the main content
-                const mainContent = document.querySelector('.main-content');
-                if (mainContent) mainContent.style.display = 'flex';
-
-                // Update user info
-                const user = JSON.parse(userData);
-                const userName = user.name || user.email.split('@')[0];
-                
-                // Load sidebar
-                fetch('sidebar.html')
-                    .then(response => response.text())
-                    .then(data => {
-                        document.getElementById('sidebar-container').innerHTML = data;
-                        const sidebarUserNameSpan = document.querySelector('.sidebar .user-info .user-name');
-                        if (sidebarUserNameSpan) {
-                            sidebarUserNameSpan.textContent = userName;
-                        }
-                        const sidebarAvatar = document.querySelector('.sidebar .user-info img');
-                        if (sidebarAvatar) {
-                            sidebarAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=388e3c&color=fff`;
-                        }
-
-                        // Set active class for current page in sidebar
-                        setActiveSidebarLink();
-                    });
-
-            } catch (error) {
-                console.error('[AUTH] Error verifying token:', error);
-                localStorage.removeItem('token');
-                localStorage.removeItem('userData');
-                window.location.href = 'login.html';
-            }
+            }, 200);
         });
 
         // Helper function to set active class on sidebar links

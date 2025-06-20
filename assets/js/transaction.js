@@ -124,9 +124,6 @@ const formatLabel = (iconName, categoryName) => {
     return `📁 ${categoryName}`;
 };
 
-
-
-
 // JWT and User Management
 const getToken = () => {
     return localStorage.getItem('token');
@@ -902,15 +899,15 @@ if (createCategoryModal) {
         const icon = document.getElementById('categoryIcon').value;
         const color = document.getElementById('categoryColor').value;
 
-        if (!categoryName) {
+        if (!userCategoryName) {
             showError('Tên danh mục là bắt buộc');
             return;
         }
-        if (!categoryType) {
+        if (!type) {
             showError('Loại danh mục là bắt buộc');
             return;
         }
-        if (!categoryIcon) {
+        if (!icon) {
             showError('Biểu tượng là bắt buộc');
             return;
         }
@@ -931,7 +928,6 @@ if (createCategoryModal) {
         }
     });
 }
-
 
 document.addEventListener('change', (e) => {
     if (e.target.classList.contains('categorySelect') && e.target.value === 'create-new') {
@@ -972,10 +968,9 @@ const resetCategorySelects = () => {
     // Clear global instance list (nếu có dùng)
     if (typeof choicesInstances !== 'undefined') {
         choicesInstances.forEach(instance => instance.destroy());
-        choicesInstances = [];
+        choicesInstances.clear();
     }
 };
-
 
 document.getElementById('createBtn').addEventListener('click', () => {
     resetTransactionForm();
