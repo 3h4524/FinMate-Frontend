@@ -1,13 +1,13 @@
 let budgetChart = null;
 let chartType = 'bar';
 let budgetHistory = [];
-let userId;
+let user;
 let monitorPage = 0;
 let analysisPage = 0;
 const pageSize = 10;
 
 async function initializeUI() {
-    await fetchUserId();
+    await fetchUser();
     await updateDateTime();
     await monitorBudgets(0);
     await loadAnalysis(0);
@@ -55,22 +55,38 @@ function addBudgetCategory(type = 'create') {
     const row = document.createElement('div');
     row.className = 'flex items-center gap-2 mb-2';
     row.innerHTML = `
-        <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
+        <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required onchange="toggleCustomCategory(this, '${type}')">
             <option value="">Chọn danh mục</option>
             <option value="6">Ăn uống</option>
             <option value="7">Mua sắm</option>
             <option value="8">Di chuyển</option>
-            <option value="9">Nhà cửa</option>
+            <option value="9">Nhà ở</option>
             <option value="10">Giải trí</option>
             <option value="11">Sức khỏe</option>
             <option value="12">Giáo dục</option>
             <option value="13">Hóa đơn</option>
             <option value="14">Khác</option>
         </select>
-        <input type="number" name="amounts[]" step="0.01" min="0" placeholder="Số tiền ($)" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-        <button type="button" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700" onclick="removeBudgetCategory(this, '${type}')">×</button>
+        <input type="text" name="customCategories[]" placeholder="Tên danh mục tùy chỉnh" class="flex-1 p-3 border border-gray-300 rounded-lg hidden" disabled>
+        <input type="number" name="amounts[]" step="0.0" min="Số tiền (VNĐ)" placeholder="Số tiền (VNĐ)" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
+        <button type="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700" onclick="removeBudgetCategory(this, '${type}')">×</button>
     `;
     categoryList.appendChild(row);
+}
+
+function toggleCustomCategory(select, type) {
+    const row = select.parentElement;
+    const customInput = row.querySelector('input[name="customCategories[]"]');
+    if (select.value === '14') {
+        customInput.classList.remove('hidden');
+        customInput.disabled = false;
+        customInput.required = true;
+    } else {
+        customInput.classList.add('hidden');
+        customInput.disabled = true;
+        customInput.required = false;
+        customInput.value = '';
+    }
 }
 
 function removeBudgetCategory(button, type = 'create') {
@@ -78,8 +94,50 @@ function removeBudgetCategory(button, type = 'create') {
     if (categoryList.children.length > 1) {
         button.parentElement.remove();
     } else {
-        alert('Phải có ít nhất một danh mục.');
+        showAlert('Phải có ít nhất một danh mục.', 'error');
     }
+}
+
+function showAlert(message, type = 'error') {
+    const alertContainer = document.getElementById('alertContainer') || createAlertContainer();
+    const alertBar = document.createElement('div');
+    alertBar.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 px-6 py-3 rounded-lg shadow-lg max-w-md w-full transition-all duration-300 alert-slide-in ${type === 'error' ? 'bg-red-600 text-white' :
+        type === 'warning' ? 'bg-yellow-600 text-white' :
+        'bg-green-600 text-white'
+    }`;
+
+    alertBar.innerHTML = `
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    ${type === 'error' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />' :
+        type === 'warning' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />' :
+        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />'}
+                </svg>
+                <span class="font-medium">${message}</span>
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" class="text-white hover:text-gray-200">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    `;
+
+    alertContainer.appendChild(alertBar);
+    setTimeout(() => {
+        alertBar.classList.remove('alert-slide-in');
+        alertBar.classList.add('alert-slide-out');
+        setTimeout(() => alertBar.remove(), 300);
+    }, 3000);
+}
+
+function createAlertContainer() {
+    const container = document.createElement('div');
+    container.id = 'alertContainer';
+    container.className = 'fixed top-0 left-0 w-full h-full z-50 pointer-events-none';
+    document.body.appendChild(container);
+    return container;
 }
 
 document.getElementById("create-budget-form").addEventListener("submit", async function (e) {
@@ -88,60 +146,62 @@ document.getElementById("create-budget-form").addEventListener("submit", async f
     const data = {
         periodType: formData.get('periodType'),
         startDate: formData.get('startDate'),
-        endDate: formData.get('endDate'),
         threshold: parseInt(formData.get('threshold')),
         categories: formData.getAll('categories[]').map((category, index) => ({
-            category, amount: parseFloat(formData.getAll('amounts[]')[index])
+            categoryId: category,
+            userCategoryName: category === '14' ? formData.getAll('customCategories[]')[index] : null,
+            amount: parseFloat(formData.getAll('amounts[]')[index])
         }))
     };
 
     const startDate = new Date(data.startDate);
-    const endDate = new Date(data.endDate);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    if (endDate <= startDate) { alert("Ngày kết thúc phải sau ngày bắt đầu."); return; }
-    if (startDate < today) { alert("Ngày bắt đầu phải là hôm nay hoặc trong tương lai."); return; }
-    if (!data.periodType) { alert("Vui lòng chọn kỳ ngân sách."); return; }
-    if (data.categories.some(cat => !cat.category || cat.amount <= 0)) { alert("Vui lòng điền đầy đủ danh mục và số tiền hợp lệ."); return; }
+    if (startDate < today) {
+        showAlert("Ngày bắt đầu phải là hôm nay hoặc trong tương lai.", 'error');
+        return;
+    }
+    if (!data.periodType) {
+        showAlert("Vui lòng chọn chu kỳ ngân sách.", 'error');
+        return;
+    }
+    if (data.categories.some(cat => !cat.categoryId || (cat.categoryId === '14' && !cat.userCategoryName) || cat.amount <= 0)) {
+        showAlert("Vui lòng điền đầy đủ danh mục và số tiền hợp lệ.", 'error');
+        return;
+    }
 
-    const categoryMap = {
-        "Ăn uống": 6,
-        "Mua sắm": 7,
-        "Di chuyển": 8,
-        "Nhà cửa": 9,
-        "Giải trí": 10,
-        "Sức khỏe": 11,
-        "Giáo dục": 12,
-        "Hóa đơn": 13,
-        "Khác": 14
-    };
     for (const cat of data.categories) {
-        const categoryId = parseInt(cat.category);
         const budgetData = {
-            userId, categoryId, userCategoryId: null, amount: cat.amount,
-            periodType: data.periodType, startDate: data.startDate, endDate: data.endDate,
+            userId: user.userId,
+            categoryId: cat.categoryId !== '14' ? parseInt(cat.categoryId) : null,
+            userCategoryId: cat.categoryId === '14' ? null : null,
+            userCategoryName: cat.userCategoryName,
+            amount: cat.amount,
+            periodType: data.periodType,
+            startDate: data.startDate,
             notificationThreshold: data.threshold
         };
+
         try {
             const response = await apiRequest('http://localhost:8080/budget', {
                 method: "POST",
-                headers: { "Content-Type": "application/json", "userId": userId.toString() },
+                headers: { "Content-Type": "application/json", "userId": user.userId.toString() },
                 body: JSON.stringify(budgetData)
             });
             const responseData = await response.json();
             if (!response.ok || responseData.code !== 1000) {
-                showNotification(`Lỗi khi tạo ngân sách cho ${Object.keys(categoryMap).find(key => categoryMap[key] === categoryId)}`, responseData.message || "Lỗi không xác định", 'error');
+                showAlert(`Lỗi tạo ngân sách cho ${cat.userCategoryName || getCategoryName(cat.categoryId)}`, 'error');
                 return;
             }
-            budgetHistory.push({ ...budgetData, categoryName: Object.keys(categoryMap).find(key => categoryMap[key] === categoryId) });
+            budgetHistory.push({ ...budgetData, categoryName: cat.userCategoryName || getCategoryName(cat.categoryId) });
         } catch (error) {
             console.error("Lỗi:", error);
-            showNotification('Lỗi mạng', 'Vui lòng kiểm tra kết nối.', 'error');
+            showAlert('Lỗi mạng, vui lòng kiểm tra kết nối.', 'error');
             return;
         }
     }
 
-    showNotification('Thành công', 'Kế hoạch ngân sách được tạo thành công!', 'success');
+    showAlert('Tạo kế hoạch ngân sách thành công!', 'success');
     this.reset();
     closeModal('createBudgetModal');
     document.getElementById('analysisPeriod').value = data.periodType.toLowerCase();
@@ -156,66 +216,61 @@ document.getElementById("update-budget-form").addEventListener("submit", async f
     const data = {
         periodType: formData.get('periodType'),
         startDate: formData.get('startDate'),
-        endDate: formData.get('endDate'),
         threshold: parseInt(formData.get('threshold')),
         categories: formData.getAll('categories[]').map((category, index) => ({
-            category, amount: parseFloat(formData.getAll('amounts[]')[index])
+            categoryId: category,
+            userCategoryName: category === '14' ? formData.getAll('customCategories[]')[index] : null,
+            amount: parseFloat(formData.getAll('amounts[]')[index])
         }))
     };
 
     const startDate = new Date(data.startDate);
-    const endDate = new Date(data.endDate);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    if (endDate <= startDate) { alert("Ngày kết thúc phải sau ngày bắt đầu."); return; }
-    if (startDate < today) { alert("Ngày bắt đầu phải là hôm nay hoặc trong tương lai."); return; }
-    if (!data.periodType) { alert("Vui lòng chọn kỳ ngân sách."); return; }
-    if (data.categories.some(cat => !cat.category || cat.amount <= 0)) { alert("Vui lòng điền đầy đủ danh mục và số tiền hợp lệ."); return; }
-
-    const categoryMap = {
-        "Ăn uống": 6,
-        "Mua sắm": 7,
-        "Di chuyển": 8,
-        "Nhà cửa": 9,
-        "Giải trí": 10,
-        "Sức khỏe": 11,
-        "Giáo dục": 12,
-        "Hóa đơn": 13,
-        "Khác": 14
-    };
+    if (startDate < today) {
+        showAlert("Ngày bắt đầu phải là hôm nay hoặc trong tương lai.", 'error');
+        return;
+    }
+    if (!data.periodType) {
+        showAlert("Vui lòng chọn chu kỳ ngân sách.", 'error');
+        return;
+    }
+    if (data.categories.some(cat => !cat.categoryId || (cat.categoryId === '14' && !cat.userCategoryName) || cat.amount <= 0)) {
+        showAlert("Vui lòng điền đầy đủ danh mục và số tiền hợp lệ.", 'error');
+        return;
+    }
 
     try {
         for (const cat of data.categories) {
-            const categoryId = parseInt(cat.category);
             const budgetData = {
-                userId,
-                categoryId,
-                userCategoryId: null,
+                userId: user.userId,
+                categoryId: cat.categoryId !== '14' ? parseInt(cat.categoryId) : null,
+                userCategoryId: cat.categoryId === '14' ? null : null,
+                userCategoryName: cat.userCategoryName,
                 amount: cat.amount,
                 periodType: data.periodType,
                 startDate: data.startDate,
-                endDate: data.endDate,
                 notificationThreshold: data.threshold
             };
 
             const response = await apiRequest(`http://localhost:8080/budget/${budgetId}`, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json", "userId": userId.toString() },
+                headers: { "Content-Type": "application/json", "userId": user.userId.toString() },
                 body: JSON.stringify(budgetData)
             });
             const responseData = await response.json();
             if (!response.ok || responseData.code !== 1000) {
-                showNotification('Lỗi', `Lỗi khi cập nhật ngân sách: ${responseData.message || "Lỗi không xác định"}`, 'error');
+                showAlert(`Lỗi cập nhật ngân sách: ${responseData.message || "Lỗi không xác định"}`, 'error');
                 return;
             }
         }
-        showNotification('Thành công', 'Kế hoạch ngân sách được cập nhật thành công!', 'success');
+        showAlert('Cập nhật kế hoạch ngân sách thành công!', 'success');
         closeModal('updateBudgetModal');
         monitorBudgets(0);
         loadAnalysis(0);
     } catch (error) {
         console.error("Lỗi:", error);
-        showNotification('Lỗi mạng', 'Vui lòng kiểm tra kết nối.', 'error');
+        showAlert('Lỗi mạng, vui lòng kiểm tra kết nối.', 'error');
     }
 });
 
@@ -223,36 +278,34 @@ async function monitorBudgets(page) {
     monitorPage = page;
     const monitorTableBody = document.getElementById("monitor-table-body");
     const paginationContainer = document.getElementById("monitor-pagination");
-    monitorTableBody.innerHTML = '<tr><td colspan="5" class="p-3"><i class="fas fa-spinner fa-spin"></i> Đang tải ngân sách...</td></tr>';
+    monitorTableBody.innerHTML = '<tr><td colspan="6" class="p-3"><i class="fas fa-spinner fa-spin"></i> Đang tải ngân sách...</td></tr>';
     paginationContainer.innerHTML = '';
 
     try {
         const response = await apiRequest(`http://localhost:8080/budget/list?page=${page}&size=${pageSize}`);
         const data = await response.json();
-        console.log("Xem: ", data);
-        console.log("Xem neL: ", data.result.content);
         if (response.ok && data.result.content.length > 0) {
             monitorTableBody.innerHTML = '';
             data.result.content.forEach(budget => {
-                console.log("bud: ", budget);
                 const usagePercent = budget.percentageUsed.toFixed(2);
                 const remaining = budget.amount - (budget.currentSpending || 0);
                 let progressClass = 'bg-green-500';
-                let statusText = 'Đúng tiến độ';
+                let statusText = 'Trong hạn';
 
                 if (usagePercent >= 100) {
                     progressClass = 'bg-red-500';
                     statusText = 'Vượt ngân sách';
-                    showNotification('Cảnh báo', `Vượt ngân sách: ${budget.categoryName || budget.userCategoryName}`, 'error');
+                    showAlert(`Vượt ngân sách: ${budget.categoryName || budget.userCategoryName}`, 'error');
                 } else if (usagePercent >= budget.notificationThreshold) {
                     progressClass = 'bg-yellow-500';
                     statusText = 'Gần giới hạn';
-                    showNotification('Cảnh báo', `Gần giới hạn: ${budget.categoryName || budget.userCategoryName}`, 'warning');
+                    showAlert(`Gần giới hạn: ${budget.categoryName || budget.userCategoryName}`, 'warning');
                 }
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td class="p-3">${budget.categoryName || budget.userCategoryName}</td>
+                    <td class="p-3">${budget.periodType === 'WEEKLY' ? 'Tuần' : 'Tháng'}</td>
                     <td class="p-3">${usagePercent}%</td>
                     <td class="p-3">
                         <div class="w-full max-w-[180px] h-2 bg-gray-200 rounded-full mx-auto">
@@ -262,7 +315,7 @@ async function monitorBudgets(page) {
                     <td class="p-3">${formatCurrency(remaining)}</td>
                     <td class="p-3">
                         <button onclick="viewBudgetDetails(${budget.id}, '${budget.categoryName || budget.userCategoryName}', ${budget.amount}, ${budget.currentSpending}, ${budget.notificationThreshold}, '${budget.startDate}', '${budget.endDate}', '${budget.periodType}')" class="text-teal-600 hover:text-teal-800 mr-2"><i class="fas fa-eye"></i></button>
-                        <button onclick="openUpdateModal(${budget.id}, '${budget.periodType}', '${budget.startDate}', '${budget.endDate}', ${budget.notificationThreshold}, '${budget.categoryName || budget.userCategoryName}', ${budget.amount})" class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
+                        <button onclick="openUpdateModal(${budget.id}, '${budget.periodType}', '${budget.startDate}', ${budget.notificationThreshold}, '${budget.categoryName || budget.userCategoryName}', ${budget.amount})" class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteBudget(${budget.id})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
                     </td>
                 `;
@@ -271,20 +324,18 @@ async function monitorBudgets(page) {
 
             renderPagination(paginationContainer, data.result, monitorBudgets);
         } else {
-            monitorTableBody.innerHTML = '<tr><td colspan="5" class="p-3">Không tìm thấy ngân sách nào.</td></tr>';
+            monitorTableBody.innerHTML = '<tr><td colspan="6" class="p-3">Không tìm thấy ngân sách.</td></tr>';
         }
     } catch (error) {
         console.error("Lỗi:", error);
-        monitorTableBody.innerHTML = '<tr><td colspan="5" class="p-3 text-red-600">Lỗi khi tải ngân sách. Vui lòng thử lại.</td></tr>';
-        showNotification('Lỗi', 'Lỗi khi tải ngân sách. Vui lòng thử lại.', 'error');
+        monitorTableBody.innerHTML = '<tr><td colspan="6" class="p-3 text-red-600">Lỗi tải ngân sách. Vui lòng thử lại.</td></tr>';
+        showAlert('Lỗi tải ngân sách. Vui lòng thử lại.', 'error');
     }
 }
 
-async function fetchUserId() {
-    console.log("Đang lấy user id");
+async function fetchUser() {
     try {
-        userId = 2;
-        console.log("user id: ", userId);
+        user = getCurrentUser();
     } catch (error) {
         console.log(error);
     }
@@ -294,13 +345,13 @@ function showNotification(title, message, type) {
     const toastContainer = document.getElementById("toastContainer");
     const notificationCard = document.createElement("div");
     notificationCard.id = "progressNotificationCard";
-    notificationCard.className = `mb-6 notification-slide-in ${type === 'error' ? 'bg-red-50 text-red-800' : type === 'warning' ? 'bg-yellow-50 text-yellow-800' : 'bg-green-50 text-green-800'}`;
+    notificationCard.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 mb-6 notification-slide-in ${type === 'error' ? 'bg-red-50 text-red-800' : type === 'warning' ? 'bg-yellow-50 text-yellow-800' : 'bg-green-50 text-green-800'}`;
 
     const iconPath = type === 'error' ?
         '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />' :
         type === 'warning' ?
-            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />' :
-            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
+        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />' :
+        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
 
     notificationCard.innerHTML = `
         <div id="notificationContent" class="rounded-xl p-5 shadow-sm transition-all duration-300">
@@ -315,14 +366,6 @@ function showNotification(title, message, type) {
                         <h3 id="notificationTitle" class="text-lg font-semibold">${title}</h3>
                     </div>
                     <p id="notificationMessage" class="mt-1">${message}</p>
-                    <div id="notificationActions" class="mt-3 flex items-center space-x-3 hidden">
-                        <button id="addContributionBtn" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:bg-gray-400 disabled:text-gray-700 disabled:cursor-not-allowed disabled:opacity-75">
-                            Add Contribution
-                        </button>
-                        <button id="modifyGoalBtn" class="text-orange-600 hover:text-orange-700 text-sm font-medium">
-                            Modify Goal
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -339,76 +382,114 @@ function showNotification(title, message, type) {
 function viewBudgetDetails(id, categoryName, amount, currentSpending, threshold, startDate, endDate, periodType) {
     const usagePercent = (currentSpending / amount * 100).toFixed(2) || 0;
     const remaining = amount - (currentSpending || 0);
+
     const detailsContent = `
-        <div class="p-4 bg-teal-50 rounded-lg border border-teal-100">
-            <p><strong class="text-teal-700">Danh mục:</strong> <span class="text-teal-800">${categoryName}</span></p>
+        <div class="col-span-2 flex items-center gap-3 p-3 border rounded-lg bg-gray-50">
+            <i class="fas fa-tag text-teal-600 text-lg"></i>
+            <div>
+                <p class="text-sm text-gray-500">Danh mục</p>
+                <p class="font-semibold text-teal-800">${categoryName}</p>
+            </div>
         </div>
-        <div class="p-4 bg-green-50 rounded-lg border border-green-100">
-            <p><strong class="text-green-700">Số tiền Ngân sách:</strong> <span class="text-green-800">${formatCurrency(amount)}</span></p>
+
+        <div class="flex items-center gap-3 p-3 border rounded-lg bg-green-50">
+            <i class="fas fa-wallet text-green-600 text-lg"></i>
+            <div>
+                <p class="text-sm text-gray-500">Ngân sách</p>
+                <p class="font-semibold text-green-800">${formatCurrency(amount)}</p>
+            </div>
         </div>
-        <div class="p-4 bg-red-50 rounded-lg border border-red-100">
-            <p><strong class="text-red-700">Chi tiêu Hiện tại:</strong> <span class="text-red-800">${formatCurrency(currentSpending || 0)}</span></p>
+
+        <div class="flex items-center gap-3 p-3 border rounded-lg bg-red-50">
+            <i class="fas fa-money-bill-wave text-red-600 text-lg"></i>
+            <div>
+                <p class="text-sm text-gray-500">Chi tiêu hiện tại</p>
+                <p class="font-semibold text-red-800">${formatCurrency(currentSpending || 0)}</p>
+            </div>
         </div>
-        <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-100">
-            <p><strong class="text-yellow-700">Phần trăm Sử dụng:</strong> <span class="text-yellow-800">${usagePercent}%</span></p>
+
+        <div class="flex items-center gap-3 p-3 border rounded-lg bg-yellow-50">
+            <i class="fas fa-percentage text-yellow-600 text-lg"></i>
+            <div>
+                <p class="text-sm text-gray-500">Phần trăm sử dụng</p>
+                <p class="font-semibold text-yellow-800">${usagePercent}%</p>
+            </div>
         </div>
-        <div class="p-4 bg-blue-50 rounded-lg border border-blue-100">
-            <p><strong class="text-blue-700">Ngưỡng Cảnh báo:</strong> <span class="text-blue-800">${threshold}%</span></p>
+
+        <div class="flex items-center gap-3 p-3 border rounded-lg bg-blue-50">
+            <i class="fas fa-bell text-blue-600 text-lg"></i>
+            <div>
+                <p class="text-sm text-gray-500">Ngưỡng cảnh báo</p>
+                <p class="font-semibold text-blue-800">${threshold}%</p>
+            </div>
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
-            <p><strong class="text-gray-700">Ngày Bắt đầu:</strong> <span class="text-gray-800">${startDate}</span></p>
+
+        <div class="flex items-center gap-3 p-3 border rounded-lg bg-gray-50">
+            <i class="fas fa-calendar-day text-gray-600 text-lg"></i>
+            <div>
+                <p class="text-sm text-gray-500">Ngày bắt đầu</p>
+                <p class="font-semibold text-gray-800">${startDate}</p>
+            </div>
         </div>
-        <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
-            <p><strong class="text-gray-700">Ngày Kết thúc:</strong> <span class="text-gray-800">${endDate}</span></p>
+
+        <div class="flex items-center gap-3 p-3 border rounded-lg bg-gray-50">
+            <i class="fas fa-calendar-check text-gray-600 text-lg"></i>
+            <div>
+                <p class="text-sm text-gray-500">Ngày kết thúc</p>
+                <p class="font-semibold text-gray-800">${endDate}</p>
+            </div>
         </div>
-        <div class="p-4 bg-purple-50 rounded-lg border border-purple-100">
-            <p><strong class="text-purple-700">Kỳ hạn:</strong> <span class="text-purple-800">${periodType === 'DAILY' ? 'Hàng ngày' : periodType === 'WEEKLY' ? 'Hàng tuần' : periodType === 'MONTHLY' ? 'Hàng tháng' : 'Hàng năm'}</span></p>
+
+        <div class="flex items-center gap-3 p-3 border rounded-lg bg-purple-50">
+            <i class="fas fa-sync-alt text-purple-600 text-lg"></i>
+            <div>
+                <p class="text-sm text-gray-500">Chu kỳ</p>
+                <p class="font-semibold text-purple-800">${periodType === 'WEEKLY' ? 'Tuần' : 'Tháng'}</p>
+            </div>
         </div>
-        <div class="p-4 bg-green-50 rounded-lg border border-green-100">
-            <p><strong class="text-green-700">Còn lại:</strong> <span class="text-green-800">${formatCurrency(remaining)}</span></p>
+
+        <div class="flex items-center gap-3 p-3 border rounded-lg bg-emerald-50">
+            <i class="fas fa-piggy-bank text-emerald-600 text-lg"></i>
+            <div>
+                <p class="text-sm text-gray-500">Số dư còn lại</p>
+                <p class="font-semibold text-emerald-800">${formatCurrency(remaining)}</p>
+            </div>
         </div>
     `;
     document.getElementById('budgetDetailsContent').innerHTML = detailsContent;
     openModal('budgetDetailsModal');
 }
 
-async function openUpdateModal(budgetId, periodType, startDate, endDate, threshold) {
+async function openUpdateModal(budgetId, periodType, startDate, threshold, categoryName, amount) {
     document.getElementById('update-budget-id').value = budgetId;
     document.getElementById('update-periodType').value = periodType;
     document.getElementById('update-startDate').value = startDate;
-    document.getElementById('update-endDate').value = endDate;
     document.getElementById('update-threshold').value = threshold;
 
     const categoryList = document.getElementById('update-category-list');
     categoryList.innerHTML = '';
 
     try {
-        const response = await apiRequest(`http://localhost:8080/budget/${budgetId}`, {
-            headers: { "userId": userId.toString() }
-        });
+        const response = await apiRequest(`http://localhost:8080/budget/${budgetId}`, {});
         const budgetData = await response.json();
-        console.log("budgetdata: ", budgetData);
         if (response.ok && budgetData.result) {
             const budget = budgetData.result;
-            console.log("res: ", budget);
-
-
-
             const row = document.createElement('div');
             row.className = 'flex items-center gap-2 mb-2';
             row.innerHTML = `
-                <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
+                <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required onchange="toggleCustomCategory(this, 'update')">
                     <option value="">Chọn danh mục</option>
                     <option value="6" ${budget.categoryId === 6 ? 'selected' : ''}>Ăn uống</option>
                     <option value="7" ${budget.categoryId === 7 ? 'selected' : ''}>Mua sắm</option>
                     <option value="8" ${budget.categoryId === 8 ? 'selected' : ''}>Di chuyển</option>
-                    <option value="9" ${budget.categoryId === 9 ? 'selected' : ''}>Nhà cửa</option>
+                    <option value="9" ${budget.categoryId === 9 ? 'selected' : ''}>Nhà ở</option>
                     <option value="10" ${budget.categoryId === 10 ? 'selected' : ''}>Giải trí</option>
                     <option value="11" ${budget.categoryId === 11 ? 'selected' : ''}>Sức khỏe</option>
                     <option value="12" ${budget.categoryId === 12 ? 'selected' : ''}>Giáo dục</option>
                     <option value="13" ${budget.categoryId === 13 ? 'selected' : ''}>Hóa đơn</option>
-                    <option value="14" ${budget.categoryId === 14 ? 'selected' : ''}>Khác</option>
+                    <option value="14" ${budget.userCategoryName ? 'selected' : ''}>Khác</option>
                 </select>
+                <input type="text" name="customCategories[]" value="${budget.userCategoryName || ''}" placeholder="Tên danh mục tùy chỉnh" class="flex-1 p-3 border border-gray-300 rounded-lg ${budget.userCategoryName ? '' : 'hidden'}" ${budget.userCategoryName ? '' : 'disabled'}>
                 <input type="number" name="amounts[]" step="0.01" min="0" value="${budget.amount}" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
                 <button type="button" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700" onclick="removeBudgetCategory(this, 'update')">×</button>
             `;
@@ -416,7 +497,7 @@ async function openUpdateModal(budgetId, periodType, startDate, endDate, thresho
         }
     } catch (error) {
         console.error("Lỗi:", error);
-        showNotification('Lỗi', 'Không thể tải thông tin ngân sách.', 'error');
+        showAlert('Không thể tải thông tin ngân sách.', 'error');
     }
 
     openModal('updateBudgetModal');
@@ -427,40 +508,43 @@ async function deleteBudget(budgetId) {
         try {
             const response = await apiRequest(`http://localhost:8080/budget/${budgetId}`, {
                 method: "DELETE",
-                headers: { "userId": userId.toString() }
+                headers: { "userId": user.userId.toString() }
             });
             if (response.ok) {
-                showNotification('Thành công', 'Ngân sách đã được xóa thành công!', 'success');
+                showAlert('Xóa ngân sách thành công!', 'success');
                 monitorBudgets(0);
                 loadAnalysis(0);
             } else {
                 const errorData = await response.json();
-                showNotification('Lỗi', `Lỗi khi xóa ngân sách: ${errorData.message || "Lỗi không xác định"}`, 'error');
+                showAlert(`Lỗi xóa ngân sách: ${errorData.message || "Lỗi không xác định"}`, 'error');
             }
         } catch (error) {
             console.error("Lỗi:", error);
-            showNotification('Lỗi mạng', 'Vui lòng kiểm tra kết nối.', 'error');
+            showAlert('Lỗi mạng, vui lòng kiểm tra kết nối.', 'error');
         }
     }
 }
 
 async function loadAnalysis(page) {
-    console.log("Vao load analy");
     analysisPage = page;
     const table = document.getElementById("analysis-table");
     const period = document.getElementById("analysisPeriod").value;
     const paginationContainer = document.getElementById("analysis-pagination");
     table.innerHTML = '<tr><td colspan="5" class="p-3"><i class="fas fa-spinner fa-spin"></i> Đang tải phân tích...</td></tr>';
     paginationContainer.innerHTML = '';
-    document.getElementById('totalBudgeted').textContent = '$0';
-    document.getElementById('totalSpent').textContent = '$0';
-    document.getElementById('varianceAmount').textContent = '$0';
+    document.getElementById('totalBudgeted').textContent = '0 VNĐ';
+    document.getElementById('totalSpent').textContent = '0 VNĐ';
+    document.getElementById('varianceAmount').textContent = '0 VNĐ';
     document.getElementById('spendingRate').textContent = '0%';
 
     try {
-        const response = await apiRequest(`http://localhost:8080/budget/analysis?period=${period}&page=${page}&size=${pageSize}`, { headers: { "userId": userId.toString() } });
+        const response = await apiRequest(`http://localhost:8080/budget/analysis?period=${period}&page=${page}&size=${pageSize}`, {
+            headers: { "userId": user.userId.toString() }
+        });
         const data = await response.json();
         if (response.ok && data.result.content.length > 0) {
+            document.querySelector('.h-64').classList.remove('hidden');
+            document.querySelector('.grid').classList.remove('hidden');
             table.innerHTML = '';
             const chartLabels = [];
             const plannedData = [];
@@ -473,7 +557,7 @@ async function loadAnalysis(page) {
                 const variance = budget.plannedAmount - (budget.actualSpending || 0);
                 totalBudgeted += budget.plannedAmount;
                 totalSpent += budget.actualSpending || 0;
-                const statusText = usagePercent >= 100 ? 'Vượt ngân sách' : usagePercent >= budget.notificationThreshold ? 'Gần giới hạn' : 'Đúng tiến độ';
+                const statusText = usagePercent >= 100 ? 'Vượt ngân sách' : usagePercent >= budget.notificationThreshold ? 'Gần giới hạn' : 'Trong hạn';
                 const statusClass = usagePercent >= 100 ? 'bg-red-100 text-red-600' : usagePercent >= budget.notificationThreshold ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600';
 
                 const row = document.createElement('tr');
@@ -514,12 +598,12 @@ async function loadAnalysis(page) {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: { beginAtZero: true, title: { display: true, text: 'Số tiền ($)' } },
-                        x: { title: { display: true, text: period.includes('day') ? 'Giờ' : period.includes('week') ? 'Ngày' : period.includes('month') ? 'Tuần' : 'Tháng' } }
+                        y: { beginAtZero: true, title: { display: true, text: 'Số tiền (VNĐ)' } },
+                        x: { title: { display: true, text: period.includes('week') ? 'Ngày' : 'Tuần' } }
                     },
                     plugins: {
                         legend: { position: 'top' },
-                        title: { display: true, text: `Ngân sách so với Thực tế - ${period === 'current_day' ? 'Ngày' : period === 'current_week' ? 'Tuần' : period === 'current_month' ? 'Tháng' : 'Năm'}` }
+                        title: { display: true, text: `Ngân sách vs Thực tế - ${period === 'WEEKLY' ? 'Tuần' : 'Tháng'}` }
                     }
                 }
             };
@@ -545,14 +629,17 @@ async function loadAnalysis(page) {
 
             renderPagination(paginationContainer, data.result, loadAnalysis);
         } else {
-            table.innerHTML = '<tr><td colspan="5" class="p-3">Không có dữ liệu ngân sách cho kỳ đã chọn.</td></tr>';
+            table.innerHTML = '<tr><td colspan="5" class="p-3 italic text-gray-500">Không có dữ liệu ngân sách cho chu kỳ đã chọn.</td></tr>';
             if (budgetChart) { budgetChart.destroy(); budgetChart = null; }
+
+            document.querySelector('.h-64').classList.add('hidden');
+            document.querySelector('.grid').classList.add('hidden');
         }
     } catch (error) {
         console.error("Lỗi:", error);
-        table.innerHTML = '<tr><td colspan="5" class="p-3 text-red-600">Lỗi khi tải phân tích. Vui lòng thử lại.</td></tr>';
+        table.innerHTML = '<tr><td colspan="5" class="p-3 text-red-600">Lỗi tải phân tích. Vui lòng thử lại.</td></tr>';
         if (budgetChart) { budgetChart.destroy(); budgetChart = null; }
-        showNotification('Lỗi', 'Lỗi khi tải phân tích. Vui lòng thử lại.', 'error');
+        showAlert('Lỗi tải phân tích. Vui lòng thử lại.', 'error');
     }
 }
 
@@ -590,48 +677,66 @@ function toggleChartType() {
     if (chartType === 'bar') {
         chartType = 'line';
         chartIcon.className = 'fas fa-chart-line';
-        chartTypeLabel.textContent = 'Biểu đồ Đường';
+        chartTypeLabel.textContent = 'Biểu đồ đường';
     } else if (chartType === 'line') {
         chartType = 'pie';
         chartIcon.className = 'fas fa-chart-pie';
-        chartTypeLabel.textContent = 'Biểu đồ Tròn';
+        chartTypeLabel.textContent = 'Biểu đồ tròn';
     } else {
         chartType = 'bar';
         chartIcon.className = 'fas fa-chart-bar';
-        chartTypeLabel.textContent = 'Biểu đồ Cột';
+        chartTypeLabel.textContent = 'Biểu đồ cột';
     }
     loadAnalysis(analysisPage);
 }
 
 function exportToCSV() {
     const period = document.getElementById("analysisPeriod").value;
-    fetch(`http://localhost:8080/budget/analysis?period=${period}&page=${analysisPage}&size=${pageSize}`, { headers: { "userId": userId.toString() } })
-        .then(response => response.json())
+    fetch(`http://localhost:8080/budget/analisis?period=${period}&page=0&size=1000`, {
+        headers: { "userId": user.userId.toString() }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Không thể tải dữ liệu.');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.result.content && data.result.content.length > 0) {
-                const headers = ['Danh mục', 'Số tiền Kế hoạch', 'Chi tiêu Thực tế', 'Chênh lệch', 'Trạng thái'];
+                const headers = ['Danh mục', 'Số tiền dự kiến', 'Chi tiêu thực tế', 'Chênh lệch', 'Trạng thái'];
                 const rows = data.result.content.map(budget => {
                     const usagePercent = (budget.actualSpending / budget.plannedAmount * 100).toFixed(2) || 0;
                     const variance = budget.plannedAmount - (budget.actualSpending || 0);
-                    const status = usagePercent >= 100 ? 'Vượt ngân sách' : usagePercent >= budget.notificationThreshold ? 'Gần giới hạn' : 'Đúng tiến độ';
-                    return [budget.categoryName || budget.userCategoryName, budget.plannedAmount.toFixed(2), (budget.actualSpending || 0).toFixed(2), variance.toFixed(2), status];
+                    const status = usagePercent >= 100 ? 'Vượt ngân sách' : usagePercent >= budget.notificationThreshold ? 'Gần giới hạn' : 'Trong hạn';
+                    return [
+                        budget.categoryName || budget.userCategoryName,
+                        budget.plannedAmount.toFixed(2),
+                        (budget.actualSpending || 0).toFixed(2),
+                        variance.toFixed(2),
+                        status
+                    ];
                 });
 
-                const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const csvContent = [
+                    headers.map(header => `"${header}"`).join(','),
+                    ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+                ].join('\n');
+
+                const blob = new Blob([new TextEncoder().encode(csvContent)], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = `phan_tich_ngan_sach_${period}_${new Date().toISOString().split('T')[0]}.csv`;
+                link.download = `phân-tích-ngân-sách-${period.toLowerCase()}-${new Date().toISOString().split('T')[0]}.csv`;
                 link.click();
                 URL.revokeObjectURL(link.href);
             } else {
-                showNotification('Lỗi', 'Không có dữ liệu để xuất.', 'error');
+                showAlert('Không có dữ liệu để xuất.', 'error');
             }
         })
         .catch(error => {
             console.error('Lỗi xuất CSV:', error);
-            showNotification('Lỗi', 'Lỗi khi xuất dữ liệu. Vui lòng thử lại.', 'error');
+            showAlert('Lỗi xuất dữ liệu. Vui lòng thử lại.', 'error');
         });
+    }
 }
 
 function viewBudgetHistory() {
@@ -643,15 +748,30 @@ function loadBudgetHistory() {
     const tableBody = document.getElementById('budget-history-table');
     tableBody.innerHTML = budgetHistory.length ? '' : '<tr><td colspan="4" class="p-3">Không có lịch sử ngân sách.</td></tr>';
     budgetHistory.forEach(budget => {
-        const row = document.createElement('tr');
+        const row = document.createElement('tr').createElement('tr');
         row.innerHTML = `
-            <td class="p-3">${budget.periodType === 'DAILY' ? 'Hàng ngày' : budget.periodType === 'WEEKLY' ? 'Hàng tuần' : budget.periodType === 'MONTHLY' ? 'Hàng tháng' : 'Hàng năm'}</td>
+            <td class="p-3">${budget.periodType === 'WEEKLY' ? 'Tuần' : 'Tháng'}</td>
             <td class="p-3">${budget.categoryName}</td>
-            <td class="p-3">${formatCurrency(budget.amount)}</td>
-            <td class="p-3">${budget.startDate} đến ${budget.endDate}</td>
+            <td class="p-3">${amountFormatCurrency(budget.amount)}</td>
+            <td class="p-3">${budget.startDate} đến ${budget.getEndDate}</td>
         `;
         tableBody.appendChild(row);
     });
+}
+
+function getCategoryName(categoryId) {
+    const categoryMap = {
+        "6": "Ăn uống",
+        "7": "Mua sắm",
+        "8": "Di chuyển",
+        "9": "Nhà ở",
+        "10": "Giải trí",
+        "11": "Sức khỏe",
+        "12: "Giáo dục",
+        "13": "Hóa đơn",
+        "14": "Khác"
+    };
+    return categoryMap[categoryId] || "Không xác định";
 }
 
 function searchBudgets() {
@@ -662,7 +782,7 @@ function searchBudgets() {
     });
     document.querySelectorAll('#analysis-table tr').forEach(row => {
         const category = row.cells[0]?.textContent.toLowerCase();
-        row.style.display = category && category.includes(searchTerm) ? '' : 'none';
+        row.style.display = category && category.includes(searchTerm) ? '' : 'none');
     });
 }
 
@@ -670,19 +790,16 @@ function searchBudgetHistory() {
     const searchTerm = document.getElementById('historySearch').value.toLowerCase();
     document.querySelectorAll('#budget-history-table tr').forEach(row => {
         const category = row.cells[1]?.textContent.toLowerCase();
-        row.style.display = category && category.includes(searchTerm) ? '' : 'none';
+        row.style.display = category && category.includes(searchTerm) ? '' : 'none');
     });
 }
 
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 }
 
 function setDefaultModalDates() {
     document.getElementById('startDate').value = new Date().toISOString().split('T')[0];
-    const endDate = new Date();
-    endDate.setMonth(endDate.getMonth() + 1);
-    document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
 }
 
 function setupEventListeners() {

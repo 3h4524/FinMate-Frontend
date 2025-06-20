@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinMate - Quản lý Ngân sách</title>
+    <title>FinMate - Budget Management</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,342 +12,384 @@
     <script src="../assets/js/autho_helper.js" defer></script>
     <style>
         @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
+
         @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
         }
+
         .notification-slide-in {
             animation: slideIn 0.3s ease-out;
         }
+
         .notification-slide-out {
+            animation: slideOut 0.3s ease-in;
+        }
+
+        .alert-slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .alert-slide-out {
             animation: slideOut 0.3s ease-in;
         }
     </style>
 </head>
+
 <body class="font-sans text-gray-900 bg-green-50">
-<div class="flex min-h-screen">
-    <!-- Sidebar -->
-    <aside id="sidebar"
-           class="w-64 bg-teal-900 text-white p-5 fixed h-full overflow-y-auto transition-transform transform md:translate-x-0 -translate-x-full z-50">
-        <div class="flex items-center gap-2 mb-8 text-2xl font-bold">
-            <i class="fas fa-chart-line text-lime-300"></i> FinMate
-        </div>
-        <nav>
-            <ul class="space-y-2 flex-1">
-                <li><a href="index.html"
-                       class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
-                        class="fas fa-tachometer-alt mr-3"></i> Bảng điều khiển</a></li>
-                <li><a href="#"
-                       class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
-                        class="fas fa-bullseye mr-3"></i> Mục tiêu</a></li>
-                <li><a href="#"
-                       class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
-                        class="fas fa-exchange-alt mr-3"></i> Giao dịch</a></li>
-                <li><a href="#"
-                       class="flex items-center p-3 rounded-lg bg-green-700 text-lime-300 border-l-4 border-lime-300"><i
-                        class="fas fa-calculator mr-3"></i> Ngân sách</a></li>
-                <li><a href="#"
-                       class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
-                        class="fas fa-chart-pie mr-3"></i> Báo cáo</a></li>
-                <li><a href="#"
-                       class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
-                        class="fas fa-user mr-3"></i> Hồ sơ</a></li>
-                <li><a href="#"
-                       class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
-                        class="fas fa-cog mr-3"></i> Cài đặt</a></li>
-            </ul>
-        </nav>
-        <div class="mt-auto pt-5 border-t border-white/10 flex items-center cursor-pointer" onclick="showProfile()">
-            <img id="userAvatar" src="https://via.placeholder.com/40" alt="User avatar"
-                 class="w-10 h-10 rounded-full">
-            <div class="ml-3">
-                <span id="userName" class="block font-medium">Khách</span>
-                <span class="text-sm text-gray-300">guest@finmate.com</span>
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside id="sidebar"
+            class="w-64 bg-teal-900 text-white p-5 fixed h-full overflow-y-auto transition-transform transform md:translate-x-0 -translate-x-full z-50">
+            <div class="flex items-center gap-2 mb-8 text-2xl font-bold">
+                <i class="fas fa-chart-line text-lime-300"></i> FinMate
             </div>
-        </div>
-        <button
+            <nav>
+                <ul class="space-y-2 flex-1">
+                    <li><a href="index.html"
+                            class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
+                                class="fas fa-tachometer-alt mr-3"></i> Dashboard</a></li>
+                    <li><a href="#"
+                            class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
+                                class="fas fa-bullseye mr-3"></i> Goals</a></li>
+                    <li><a href="#"
+                            class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
+                                class="fas fa-exchange-alt mr-3"></i> Transactions</a></li>
+                    <li><a href="#"
+                            class="flex items-center p-3 rounded-lg bg-green-700 text-lime-300 border-l-4 border-lime-300"><i
+                                class="fas fa-calculator mr-3"></i> Budget</a></li>
+                    <li><a href="#"
+                            class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
+                                class="fas fa-chart-pie mr-3"></i> Reports</a></li>
+                    <li><a href="#"
+                            class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
+                                class="fas fa-user mr-3"></i> Profile</a></li>
+                    <li><a href="#"
+                            class="flex items-center p-3 rounded-lg hover:bg-teal-700 hover:text-lime-300 transition"><i
+                                class="fas fa-cog mr-3"></i> Settings</a></li>
+                </ul>
+            </nav>
+            <button
                 class="flex items-center w-full p-3 mt-2 rounded-lg bg-transparent text-white hover:bg-teal-700 transition"
                 onclick="logout()">
-            <i class="fas fa-sign-out-alt mr-3"></i> Đăng xuất
-        </button>
-    </aside>
+                <i class="fas fa-sign-out-alt mr-3"></i> Log Out
+            </button>
+        </aside>
 
-    <!-- Main Content -->
-    <main class="flex-1 md:ml-64 p-5 transition-all">
-        <header class="bg-white rounded-lg p-4 shadow-md flex justify-between items-center mb-5">
-            <div>
-                <h1 class="text-xl font-semibold">Quản lý Ngân sách</h1>
-                <div class="text-sm text-gray-600" id="current-date-time">Thứ Bảy, 14 Tháng 6, 2025, 11:19 CH +07
+        <!-- Main Content -->
+        <main class="flex-1 md:ml-64 p-5 transition-all">
+            <header class="bg-white rounded-lg p-4 shadow-md flex justify-between items-center mb-5">
+                <div>
+                    <h1 class="text-xl font-semibold">Budget Management</h1>
+                    <div class="text-sm text-gray-600" id="current-date-time">Saturday, June 14, 2025, 11:19 PM +07
+                    </div>
                 </div>
-            </div>
-            <div class="relative flex-1 max-w-md mx-4">
-                <input type="text" id="searchInput" placeholder="Tìm kiếm ngân sách..."
-                       aria-label="Tìm kiếm ngân sách"
-                       class="w-full p-2 pl-4 pr-10 border border-gray-300 rounded-full bg-gray-100 focus:border-green-600 focus:ring-2 focus:ring-green-300">
-                <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
-            </div>
-            <div class="flex items-center gap-2">
-                <button
+                <div class="relative flex-1 max-w-md mx-4">
+                    <input type="text" id="searchInput" placeholder="Search budgets..."
+                        aria-label="Search budgets"
+                        class="w-full p-2 pl-4 pr-10 border border-gray-300 rounded-full bg-gray-100 focus:border-green-600 focus:ring-2 focus:ring-green-300">
+                    <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button
                         class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2"
                         onclick="openModal('createBudgetModal')">
-                    <i class="fas fa-plus"></i> Tạo Kế hoạch Ngân sách
-                </button>
-                <button id="menuToggle" class="p-2 rounded-full bg-gray-200 hover:bg-gray-300 md:hidden"><i
-                        class="fas fa-bars"></i></button>
-            </div>
-        </header>
+                        <i class="fas fa-plus"></i> Create Budget Plan
+                    </button>
+                    <button id="menuToggle" class="p-2 rounded-full bg-gray-200 hover:bg-gray-300 md:hidden"><i
+                            class="fas fa-bars"></i></button>
+                </div>
+            </header>
 
-        <div class="flex flex-col gap-5 items-center">
-            <!-- Budget Monitoring -->
-            <div class="bg-white rounded-lg p-5 shadow-md w-full">
-                <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold flex items-center gap-2"><i class="fas fa-chart-line"></i> Theo
-                        dõi Ngân sách</h2>
-                    <button
+            <div class="flex flex-col gap-5 items-center">
+                <!-- Budget Monitoring -->
+                <div class="bg-white rounded-lg p-5 shadow-md w-full">
+                    <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold flex items-center gap-2"><i class="fas fa-chart-line"></i>
+                            Budget Monitoring</h2>
+                        <button
                             class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2"
                             onclick="monitorBudgets(0)">
-                        <i class="fas fa-sync-alt"></i> Làm mới
-                    </button>
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div id="toastContainer" class="fixed top-5 right-5 z-50"></div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-center">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="p-3 font-semibold">Category</th>
+                                    <th class="p-3 font-semibold">Usage</th>
+                                    <th class="p-3 font-semibold">Progress</th>
+                                    <th class="p-3 font-semibold">Remaining</th>
+                                    <th class="p-3 font-semibold">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monitor-table-body"></tbody>
+                        </table>
+                    </div>
+                    <div id="monitor-pagination" class="flex justify-center mt-4 gap-2"></div>
                 </div>
-                <div id="toastContainer" class="fixed top-5 right-5 z-50"></div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-center">
-                        <thead>
-                        <tr class="bg-gray-100">
-                            <th class="p-3 font-semibold">Danh mục</th>
-                            <th class="p-3 font-semibold">Sử dụng</th>
-                            <th class="p-3 font-semibold">Tiến độ</th>
-                            <th class="p-3 font-semibold">Còn lại</th>
-                            <th class="p-3 font-semibold">Hành động</th>
-                        </tr>
-                        </thead>
-                        <tbody id="monitor-table-body"></tbody>
-                    </table>
-                </div>
-                <div id="monitor-pagination" class="flex justify-center mt-4 gap-2"></div>
-            </div>
 
-            <!-- Budget vs Actual Analysis -->
-            <div class="bg-white rounded-lg p-5 shadow-md w-full">
-                <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold flex items-center gap-2"><i class="fas fa-chart-bar"></i> Phân
-                        tích Ngân sách so với Thực tế</h2>
-                    <div class="flex gap-2">
-                        <select id="analysisPeriod" class="border border-gray-300 rounded-lg px-4 py-2">
-                            <option value="DAILY">Ngày</option>
-                            <option value="WEEKLY">Tuần</option>
-                            <option value="MONTHLY" selected>Tháng</option>
-                        </select>
-                        <button
+                <!-- Budget vs Actual Analysis -->
+                <div class="bg-white rounded-lg p-5 shadow-md w-full">
+                    <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold flex items-center gap-2"><i class="fas fa-chart-bar"></i>
+                            Budget vs Actual Analysis</h2>
+                        <div class="flex gap-2">
+                            <select id="analysisPeriod" class="border border-gray-300 rounded-lg px-4 py-2">
+                                <option value="WEEKLY" selected>Week</option>
+                                <option value="MONTHLY">Month</option>
+                            </select>
+                            <button
                                 class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2"
                                 onclick="toggleChartType()">
-                            <i id="chartIcon" class="fas fa-chart-bar"></i> <span id="chartTypeLabel">Biểu đồ
-                                    Cột</span>
-                        </button>
-                        <button
+                                <i id="chartIcon" class="fas fa-chart-bar"></i> <span id="chartTypeLabel">Bar
+                                    Chart</span>
+                            </button>
+                            <button
                                 class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2"
                                 onclick="exportToCSV()">
-                            <i class="fas fa-download"></i> Xuất CSV
+                                <i class="fas fa-download"></i> Export CSV
+                            </button>
+                        </div>
+                    </div>
+                    <div class="h-64 mb-5">
+                        <canvas id="budgetChart"></canvas>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <p class="text-gray-600 text-xs">Total Budgeted</p>
+                            <p id="totalBudgeted" class="font-bold text-lg">$0</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <p class="text-gray-600 text-xs">Total Spent</p>
+                            <p id="totalSpent" class="font-bold text-lg">$0</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <p class="text-gray-600 text-xs">Variance</p>
+                            <p id="varianceAmount" class="font-bold text-lg">$0</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <p class="text-gray-600 text-xs">Spending Rate</p>
+                            <p id="spendingRate" class="font-bold text-lg">0%</p>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-center">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="p-3 font-semibold">Category</th>
+                                    <th class="p-3 font-semibold">Planned Amount</th>
+                                    <th class="p-3 font-semibold">Actual Spending</th>
+                                    <th class="p-3 font-semibold">Variance</th>
+                                    <th class="p-3 font-semibold">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="analysis-table"></tbody>
+                        </table>
+                    </div>
+                    <div id="analysis-pagination" class="flex justify-center mt-4 gap-2"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Create Budget Modal -->
+        <div id="createBudgetModal" class="fixed inset-0 z-[1000] bg-black/50 hidden flex items-center justify-center">
+            <div
+                class="bg-white bg-opacity-90 backdrop-blur-sm rounded-2xl shadow-2xl p-8 w-full max-w-2xl relative overflow-y-auto max-h-[90vh]">
+                <!-- Close Button -->
+                <button onclick="closeModal('createBudgetModal')"
+                    class="absolute top-4 right-4 text-2xl text-gray-500 hover:text-green-600 transition">
+                    ×
+                </button>
+                <!-- Header -->
+                <h3 class="text-2xl font-bold text-green-800 mb-6 flex items-center gap-2">
+                    <i class="fas fa-wallet text-green-600"></i> Create Budget Plan
+                </h3>
+                <!-- Form -->
+                <form id="create-budget-form" class="space-y-6">
+                    <!-- Period & Start Date -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="startDate" class="block text-sm font-semibold text-gray-700 mb-2">Start
+                                Date</label>
+                            <input type="date" name="startDate" id="startDate"
+                                class="w-full p-3 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                                required>
+                        </div>
+                        <div>
+                            <label for="periodType" class="block text-sm font-semibold text-gray-700 mb-2">Budget
+                                Period</label>
+                            <select name="periodType" id="periodType"
+                                class="w-full p-3 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                                required>
+                                <option value="">Select Period</option>
+                                <option value="WEEKLY">Weekly</option>
+                                <option value="MONTHLY">Monthly</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Threshold -->
+                    <div>
+                        <label for="threshold" class="block text-sm font-semibold text-gray-700 mb-2">Alert Threshold
+                            (%)</label>
+                        <input type="number" min="0" max="100" id="threshold" name="threshold" placeholder="E.g., 80"
+                            class="w-full p-3 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                            required>
+                    </div>
+                    <!-- Categories -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Categories and Amounts</label>
+                        <div id="category-list" class="space-y-3"></div>
+                        <div class="flex justify-end mt-4">
+                            <button type="button" onclick="addBudgetCategory()"
+                                class="text-sm font-medium text-green-600 hover:text-green-800 flex items-center gap-1 transition">
+                                <i class="fas fa-plus-circle"></i> Add Category
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Actions -->
+                    <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+                        <button type="button" onclick="closeModal('createBudgetModal')"
+                            class="px-6 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="bg-gradient-to-r from-green-600 to-lime-400 text-white px-6 py-2 rounded-lg font-semibold shadow-md hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2">
+                            <i class="fas fa-save"></i> Save Plan
                         </button>
                     </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Update Budget Modal -->
+        <div id="updateBudgetModal" class="fixed inset-0 z-[1000] bg-black/50 hidden flex items-center justify-center">
+            <div
+                class="bg-white bg-opacity-90 backdrop-blur-sm rounded-2xl shadow-2xl p-8 w-full max-w-2xl relative overflow-y-auto max-h-[90vh]">
+                <!-- Close Button -->
+                <button onclick="closeModal('updateBudgetModal')"
+                    class="absolute top-4 right-4 text-2xl text-gray-500 hover:text-green-600 transition">
+                    ×
+                </button>
+                <!-- Header -->
+                <h3 class="text-2xl font-bold text-green-800 mb-6 flex items-center gap-2">
+                    <i class="fas fa-edit text-green-600"></i> Update Budget Plan
+                </h3>
+                <!-- Form -->
+                <form id="update-budget-form" class="space-y-6">
+                    <input type="hidden" id="update-budget-id" name="budgetId" />
+                    <!-- Period & Start Date -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="update-startDate" class="block text-sm font-semibold text-gray-700 mb-2">Start
+                                Date</label>
+                            <input type="date" name="startDate" id="update-startDate"
+                                class="w-full p-3 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                                required>
+                        </div>
+                        <div>
+                            <label for="update-periodType" class="block text-sm font-semibold text-gray-700 mb-2">Budget
+                                Period</label>
+                            <select name="periodType" id="update-periodType"
+                                class="w-full p-3 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                                required>
+                                <option value="">Select Period</option>
+                                <option value="WEEKLY">Weekly</option>
+                                <option value="MONTHLY">Monthly</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Threshold -->
+                    <div>
+                        <label for="update-threshold" class="block text-sm font-semibold text-gray-700 mb-2">Alert
+                            Threshold (%)</label>
+                        <input type="number" name="threshold" id="update-threshold" min="1" max="100"
+                            class="w-full p-3 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                            required>
+                    </div>
+                    <!-- Budget Categories -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Categories and Amounts</label>
+                        <div id="update-category-list" class="space-y-3"></div>
+                        <div class="flex justify-end mt-4">
+                            <button type="button" onclick="addBudgetCategory('update')"
+                                class="text-sm font-medium text-green-600 hover:text-green-800 flex items-center gap-1 transition">
+                                <i class="fas fa-plus-circle"></i> Add Category
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Actions -->
+                    <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+                        <button type="button" onclick="closeModal('updateBudgetModal')"
+                            class="px-6 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="bg-gradient-to-r from-green-600 to-lime-400 text-white px-6 py-2 rounded-lg font-semibold shadow-md hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2">
+                            <i class="fas fa-save"></i> Update Plan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Budget History Modal -->
+        <div id="budgetHistoryModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[1000]">
+            <div class="bg-white rounded-lg p-6 w-11/12 max-w-4xl shadow-lg relative">
+                <span class="absolute top-2 right-2 text-2xl text-gray-500 hover:text-green-600 cursor-pointer"
+                    onclick="closeModal('budgetHistoryModal')">×</span>
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-history"></i> Budget
+                    History</h3>
+                <div class="mb-4">
+                    <input type="text" id="historySearch" placeholder="Search budget history..."
+                        aria-label="Search budget history"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300">
                 </div>
-                <div class="h-64 mb-5">
-                    <canvas id="budgetChart"></canvas>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <div class="bg-gray-50 p-4 rounded-lg text-center">
-                        <p class="text-gray-600 text-xs">Tổng Ngân sách</p>
-                        <p id="totalBudgeted" class="font-bold text-lg">$0</p>
-                    </div>
-                    <div class="bg-gray-50 p-4 rounded-lg text-center">
-                        <p class="text-gray-600 text-xs">Tổng Chi tiêu</p>
-                        <p id="totalSpent" class="font-bold text-lg">$0</p>
-                    </div>
-                    <div class="bg-gray-50 p-4 rounded-lg text-center">
-                        <p class="text-gray-600 text-xs">Chênh lệch</p>
-                        <p id="varianceAmount" class="font-bold text-lg">$0</p>
-                    </div>
-                    <div class="bg-gray-50 p-4 rounded-lg text-center">
-                        <p class="text-gray-600 text-xs">Tỷ lệ Chi tiêu</p>
-                        <p id="spendingRate" class="font-bold text-lg">0%</p>
-                    </div>
-                </div>
-                <div class="overflow-x-auto">
+                <div class="overflow-y-auto max-h-96">
                     <table class="w-full text-center">
                         <thead>
-                        <tr class="bg-gray-100">
-                            <th class="p-3 font-semibold">Danh mục</th>
-                            <th class="p-3 font-semibold">Số tiền Kế hoạch</th>
-                            <th class="p-3 font-semibold">Chi tiêu Thực tế</th>
-                            <th class="p-3 font-semibold">Chênh lệch</th>
-                            <th class="p-3 font-semibold">Trạng thái</th>
-                        </tr>
+                            <tr class="bg-gray-100">
+                                <th class="p-3 font-semibold">Period</th>
+                                <th class="p-3 font-semibold">Category</th>
+                                <th class="p-3 font-semibold">Amount</th>
+                                <th class="p-3 font-semibold">Dates</th>
+                            </tr>
                         </thead>
-                        <tbody id="analysis-table"></tbody>
+                        <tbody id="budget-history-table"></tbody>
                     </table>
                 </div>
-                <div id="analysis-pagination" class="flex justify-center mt-4 gap-2"></div>
             </div>
         </div>
-    </main>
 
-    <!-- Create Budget Modal -->
-    <div id="createBudgetModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[1000]">
-        <div class="bg-white rounded-lg p-6 w-11/12 max-w-lg shadow-lg relative">
+        <!-- Budget Details Modal -->
+        <div id="budgetDetailsModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[1000]">
+            <div class="bg-white rounded-lg p-6 w-11/12 max-w-3xl shadow-lg relative">
                 <span class="absolute top-2 right-2 text-2xl text-gray-500 hover:text-green-600 cursor-pointer"
-                      onclick="closeModal('createBudgetModal')">×</span>
-            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-plus-circle"></i> Tạo Kế
-                hoạch Ngân sách</h3>
-            <form id="create-budget-form">
-                <div class="mb-4">
-                    <label for="periodType" class="block text-sm font-medium mb-1">Kỳ hạn</label>
-                    <select name="periodType" id="periodType"
-                            class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300"
-                            required>
-                        <option value="" selected>Chọn Kỳ hạn</option>
-                        <option value="DAILY">Hàng ngày</option>
-                        <option value="WEEKLY">Hàng tuần</option>
-                        <option value="MONTHLY">Hàng tháng</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-1">Danh mục và Giới hạn</label>
-                    <div id="category-list" class="mb-3"></div>
-                    <div class="flex justify-end mt-3 mb-2">
-                        <button type="button"
-                                class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-3 py-1 rounded-lg hover:shadow-md hover:-translate-y-0.5 transition flex items-center gap-1 text-sm"
-                                onclick="addBudgetCategory('create')">
-                            <i class="fas fa-plus"></i> Thêm Danh mục
-                        </button>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="mb-4">
-                        <label for="startDate" class="block text-sm font-medium mb-1">Ngày Bắt đầu</label>
-                        <input type="date" name="startDate" id="startDate"
-                               class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300"
-                               required>
-                    </div>
-                    <div class="mb-4">
-                        <label for="endDate" class="block text-sm font-medium mb-1">Ngày Kết thúc</label>
-                        <input type="date" name="endDate" id="endDate"
-                               class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300"
-                               required>
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <label for="threshold" class="block text-sm font-medium mb-1">Ngưỡng Cảnh báo (%)</label>
-                    <input type="number" name="threshold" id="threshold" min="1" max="100" value="80"
-                           class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300"
-                           required>
-                </div>
-                <button type="submit"
-                        class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2">
-                    <i class="fas fa-save"></i> Lưu Kế hoạch
-                </button>
-            </form>
-        </div>
-    </div>
-    <!-- Update Budget Modal -->
-    <div id="updateBudgetModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[1000]">
-        <div class="bg-white rounded-lg p-6 w-11/12 max-w-lg shadow-lg relative">
-                <span class="absolute top-2 right-2 text-2xl text-gray-500 hover:text-green-600 cursor-pointer"
-                      onclick="closeModal('updateBudgetModal')">×</span>
-            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-edit"></i> Cập nhật Kế
-                hoạch Ngân sách</h3>
-            <form id="update-budget-form">
-                <input type="hidden" id="update-budget-id" name="budgetId">
-                <div class="mb-4">
-                    <label for="update-periodType" class="block text-sm font-medium mb-1">Kỳ hạn</label>
-                    <select name="periodType" id="update-periodType"
-                            class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300"
-                            required>
-                        <option value="" selected>Chọn Kỳ hạn</option>
-                        <option value="DAILY">Hàng ngày</option>
-                        <option value="WEEKLY">Hàng tuần</option>
-                        <option value="MONTHLY">Hàng tháng</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-1">Danh mục và Giới hạn</label>
-                    <div id="update-category-list" class="mb-3"></div>
-                    <div class="flex justify-end mt-3 mb-2">
-                        <button type="button"
-                                class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-3 py-1 rounded-lg hover:shadow-md hover:-translate-y-0.5 transition flex items-center gap-1 text-sm"
-                                onclick="addBudgetCategory('update')">
-                            <i class="fas fa-plus"></i> Thêm Danh mục
-                        </button>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="mb-4">
-                        <label for="update-startDate" class="block text-sm font-medium mb-1">Ngày Bắt đầu</label>
-                        <input type="date" name="startDate" id="update-startDate"
-                               class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300"
-                               required>
-                    </div>
-                    <div class="mb-4">
-                        <label for="update-endDate" class="block text-sm font-medium mb-1">Ngày Kết thúc</label>
-                        <input type="date" name="endDate" id="update-endDate"
-                               class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300"
-                               required>
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <label for="update-threshold" class="block text-sm font-medium mb-1">Ngưỡng Cảnh báo (%)</label>
-                    <input type="number" name="threshold" id="update-threshold" min="1" max="100" value="80"
-                           class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300"
-                           required>
-                </div>
-                <button type="submit"
-                        class="bg-gradient-to-r from-green-700 to-lime-300 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2">
-                    <i class="fas fa-save"></i> Cập nhật Kế hoạch
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Budget History Modal -->
-    <div id="budgetHistoryModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[1000]">
-        <div class="bg-white rounded-lg p-6 w-11/12 max-w-4xl shadow-lg relative">
-                <span class="absolute top-2 right-2 text-2xl text-gray-500 hover:text-green-600 cursor-pointer"
-                      onclick="closeModal('budgetHistoryModal')">×</span>
-            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-history"></i> Lịch sử
-                Ngân sách</h3>
-            <div class="mb-4">
-                <input type="text" id="historySearch" placeholder="Tìm kiếm lịch sử ngân sách..."
-                       aria-label="Tìm kiếm lịch sử ngân sách"
-                       class="w-full p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300">
-            </div>
-            <div class="overflow-y-auto max-h-96">
-                <table class="w-full text-center">
-                    <thead>
-                    <tr class="bg-gray-100">
-                        <th class="p-3 font-semibold">Kỳ hạn</th>
-                        <th class="p-3 font-semibold">Danh mục</th>
-                        <th class="p-3 font-semibold">Số tiền</th>
-                        <th class="p-3 font-semibold">Ngày</th>
-                    </tr>
-                    </thead>
-                    <tbody id="budget-history-table"></tbody>
-                </table>
+                    onclick="closeModal('budgetDetailsModal')">×</span>
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <i class="fas fa-info-circle text-teal-600"></i> Budget Details
+                </h3>
+                <div id="budgetDetailsContent" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-900"></div>
             </div>
         </div>
     </div>
-
-    <!-- Budget Details Modal -->
-    <div id="budgetDetailsModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[1000]">
-        <div class="bg-white rounded-lg p-6 w-11/12 max-w-lg shadow-lg relative">
-                <span class="absolute top-2 right-2 text-2xl text-gray-500 hover:text-green-600 cursor-pointer"
-                      onclick="closeModal('budgetDetailsModal')">×</span>
-            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-info-circle"></i> Chi
-                tiết Ngân sách</h3>
-            <div id="budgetDetailsContent" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-900"></div>
-        </div>
-    </div>
-</div>
 </body>
+
 </html>
