@@ -7,6 +7,7 @@
     <title>Premium Packages - Finmate</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="../assets/js/sidebar.js" defer></script>
     <style>
         :root {
             --main-green: #388e3c;
@@ -48,68 +49,6 @@
             min-height: 100vh;
         }
 
-        .sidebar {
-            width: 280px;
-            background: var(--sidebar-bg);
-            color: var(--sidebar-color);
-            padding: 2rem 0;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-        }
-
-        .sidebar-header {
-            padding: 0 2rem 2rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 1.25rem;
-            font-weight: 700;
-        }
-
-        .logo i {
-            width: 32px;
-            height: 32px;
-            background: var(--main-green);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .sidebar-nav {
-            padding: 2rem 0;
-        }
-
-        .nav-item {
-            display: block;
-            padding: 0.75rem 2rem;
-            color: var(--sidebar-color);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            border-left: 3px solid transparent;
-        }
-
-        .nav-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-left-color: var(--sidebar-hover);
-        }
-
-        .nav-item.active {
-            background: rgba(163, 201, 168, 0.2);
-            border-left-color: var(--sidebar-active);
-            color: var(--sidebar-active);
-        }
-
-        .nav-item i {
-            width: 20px;
-            margin-right: 0.75rem;
-        }
-
         .main-content {
             flex: 1;
             margin-left: 280px;
@@ -120,12 +59,6 @@
 
         .content-column {
             flex: 2;
-        }
-
-        .sidebar-column {
-            flex: 1;
-            /* Recent subscriptions column */
-            min-width: 350px;
         }
 
 
@@ -836,49 +769,7 @@
 
 <body>
     <div class="layout">
-        <nav class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
-                    <i class="fas fa-coins"></i>
-                    Finmate
-                </div>
-            </div>
-            <div class="sidebar-nav">
-                <a href="#" class="nav-item">
-                    <i class="fas fa-chart-line"></i>
-                    Overview
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-users"></i>
-                    User Management
-                </a>
-                <a href="#" class="nav-item active">
-                    <i class="fas fa-crown"></i>
-                    Premium Packages
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-credit-card"></i>
-                    Payments
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-chart-bar"></i>
-                    Statistics
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-list-alt"></i>
-                    System Logs
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-money-bill-wave"></i>
-                    Withdrawals
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-cog"></i>
-                    Settings
-                </a>
-            </div>
-        </nav>
-
+        <div id="sidebar-container"></div>
         <main class="main-content">
             <div class="content-column">
                 <header class="header">
@@ -1573,6 +1464,7 @@
         document.addEventListener('DOMContentLoaded', init);
 
         setInterval(() => {
+            loadSideBar(getCurrentUser());
             loadPackages();
             loadRecentSubscriptions();
         }, 5 * 60 * 1000);

@@ -26,6 +26,8 @@ function checkUserRoleAndShowAdminFeatures() {
                 const adminDivider = document.getElementById('adminDivider');
                 const adminDashboardLink = document.getElementById('adminDashboardLink');
                 const userManagementLink = document.getElementById('userManagementLink');
+                const systemLogLink = document.getElementById('systemLogLink');
+                const premiumAdminLink = document.getElementById('premiumAdminLink');
 
                 if (adminDivider) {
                     adminDivider.style.display = 'block';
@@ -42,14 +44,20 @@ function checkUserRoleAndShowAdminFeatures() {
                     console.log('Admin role detected - showing User Management link');
                 }
 
-                // Hide regular user menu if on admin pages
-                const currentPage = window.location.pathname.split('/').pop();
-                if (currentPage === 'admin-dashboard.html' || currentPage === 'user-management.html') {
-                    const userMenuItems = document.querySelectorAll('.user-menu');
-                    userMenuItems.forEach(item => {
-                        item.style.display = 'none';
-                    });
+                if (systemLogLink) {
+                    systemLogLink.style.display = 'block';
+                    console.log('Admin role detected - showing System Log link');
                 }
+
+                if (premiumAdminLink) {
+                    premiumAdminLink.style.display = 'block';
+                    console.log('Admin role detected - showing Premium Manager link');
+                }
+
+                const userMenuItems = document.querySelectorAll('.user-menu');
+                userMenuItems.forEach(item => {
+                    item.style.display = 'none';
+                });
             } else {
                 // Hide admin menu items for regular users
                 const adminMenuItems = document.querySelectorAll('.admin-menu');
@@ -157,6 +165,16 @@ const sidebarTemplate = `
                         <div class="nav-indicator"></div>
                     </a>
                 </li>
+
+                <li class="nav-item user-menu">
+                    <a href="update_premium.html" class="nav-link">
+                        <div class="nav-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <span class="nav-text">Premium Plan</span>
+                        <div class="nav-indicator"></div>
+                    </a>
+                </li>
                 
                 <!-- Admin Menu -->
                 <li class="nav-divider admin-menu" id="adminDivider" style="display: none;">
@@ -180,6 +198,27 @@ const sidebarTemplate = `
                         <div class="nav-indicator"></div>
                     </a>
                 </li>
+                   <li class="nav-item admin-menu" id="systemLogLink" style="display: none;">
+                    <a href="system-log.html" class="nav-link">
+                        <div class="nav-icon">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <span class="nav-text">System Log</span>
+                        <div class="nav-indicator"></div>
+                    </a>
+                </li>
+
+                </li>
+                   <li class="nav-item admin-menu" id="premiumAdminLink" style="display: none;">
+                    <a href="premium-package-management.html" class="nav-link">
+                        <div class="nav-icon">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <span class="nav-text">Premium Manager</span>
+                        <div class="nav-indicator"></div>
+                    </a>
+                </li>
+
             </ul>
         </nav>
     </div>

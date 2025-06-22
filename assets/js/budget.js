@@ -1,13 +1,27 @@
 let budgetChart = null;
 let chartType = 'bar';
-let budgetHistory = [];
 let user;
 let monitorPage = 0;
 let analysisPage = 0;
 const pageSize = 10;
+let customCategories = JSON.parse(localStorage.getItem('customCategories')) || [];
+
+const categoryMap = {
+    "Food & Dining": 6,
+    "Shopping": 7,
+    "Transportation": 8,
+    "Housing": 9,
+    "Entertainment": 10,
+    "Health": 11,
+    "Education": 12,
+    "Bills": 13,
+    "Others": 14
+};
 
 async function initializeUI() {
     await fetchUser();
+    if (!user || !user.userId) return;
+    await loadSideBar(user);
     await updateDateTime();
     await monitorBudgets(0);
     await loadAnalysis(0);
@@ -31,44 +45,158 @@ function toggleSidebar() {
 }
 
 function openModal(modalId) {
-    document.getElementById(modalId).classList.remove('hidden');
-    document.getElementById(modalId).classList.add('flex');
+    const modal = document.getElementById(modalId);
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    const content = modal.querySelector('.modal-content');
+    if (content) {
+        setTimeout(() => content.classList.add('show'), 10);
+    }
 }
 
 function closeModal(modalId) {
     const modal = document.getElementById(modalId);
+    const content = modal.querySelector('.modal-content');
+    if (content) {
+        content.classList.remove('show');
+    }
     modal.classList.add('hidden');
     modal.classList.remove('flex');
-    if (modalId === 'createBudgetModal') {
-        document.getElementById('create-budget-form').reset();
-        document.getElementById('category-list').innerHTML = '';
-        addBudgetCategory();
-        setDefaultModalDates();
-    } else if (modalId === 'updateBudgetModal') {
-        document.getElementById('update-budget-form').reset();
-        document.getElementById('update-category-list').innerHTML = '';
+
+    const modalConfig = {
+        createBudgetModal: { formId: 'create-budget-form', listId: 'category-list', callback: addBudgetCategory },
+        updateBudgetModal: { formId: 'update-budget-form', listId: 'update-category-list' }
+    };
+
+    if (modalConfig[modalId]) {
+        const { formId, listId, callback } = modalConfig[modalId];
+        document.getElementById(formId)?.reset();
+        document.getElementById(listId).innerHTML = '';
+        if (callback) callback();
     }
 }
 
-function addBudgetCategory(type = 'create') {
+async function submitBudgetForm(formId, budgetId = null) {
+    const form = document.getElementById(formId);
+    const formData = new FormData(form);
+    const data = {
+        periodType: formData.get('periodType'),
+        startDate: formData.get('startDate'),
+        threshold: parseInt(formData.get('threshold')),
+        categories: formData.getAll('categories[]').map((category, index) => ({
+            category, amount: parseFloat(formData.getAll('amounts[]')[index])
+        }))
+    };
+
+    if (!validateBudgetData(data)) return;
+    if (!user || !user.userId) {
+        showNotification('Error', 'User not authenticated. Please log in.', 'error');
+        return;
+    }
+
+    try {
+        for (const cat of data.categories) {
+            await saveBudgetCategory(cat, data, budgetId);
+        }
+        showNotification('Success', `Budget plan ${budgetId ? 'updated' : 'created'} successfully!`, 'success');
+        form.reset();
+        closeModal(budgetId ? 'updateBudgetModal' : 'createBudgetModal');
+        if (!budgetId) {
+            document.getElementById('analysisPeriod').value = data.periodType.toLowerCase();
+        }
+        monitorBudgets(0);
+        loadAnalysis(0);
+    } catch (error) {
+        console.error("Error:", error);
+        showNotification('Error', 'Network error. Please check your connection.', 'error');
+    }
+}
+
+function validateBudgetData(data) {
+    const startDate = new Date(data.startDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (startDate < today) {
+        showNotification('Error', 'Start date must be today or in the future.', 'error');
+        return false;
+    }
+    if (!data.periodType) {
+        showNotification('Error', 'Please select a budget period.', 'error');
+        return false;
+    }
+    if (data.categories.some(cat => !cat.category || cat.amount <= 0)) {
+        showNotification('Error', 'Please fill in all categories and valid amounts.', 'error');
+        return false;
+    }
+    return true;
+}
+
+async function saveBudgetCategory(cat, data, budgetId) {
+    const isCustom = cat.category.startsWith('custom_');
+    const categoryId = isCustom ? null : parseInt(cat.category);
+    const userCategoryId = isCustom ? parseInt(cat.category.replace('custom_', '')) : null;
+    const startDate = new Date(data.startDate);
+    const endDate = new Date(startDate);
+    if (data.periodType === 'WEEKLY') {
+        endDate.setDate(startDate.getDate() + 6);
+    } else if (data.periodType === 'MONTHLY') {
+        endDate.setMonth(startDate.getMonth() + 1);
+        endDate.setDate(startDate.getDate() - 1);
+    }
+    const budgetData = {
+        userId: user.userId,
+        categoryId,
+        userCategoryId,
+        amount: cat.amount,
+        periodType: data.periodType,
+        startDate: data.startDate,
+        notificationThreshold: data.threshold
+    };
+    const url = budgetId ? `http://localhost:8080/budget/${budgetId}` : 'http://localhost:8080/budget';
+    const method = budgetId ? 'PUT' : 'POST';
+    const response = await apiRequest(url, {
+        method,
+        headers: { "Content-Type": "application/json", "userId": user.userId.toString() },
+        body: JSON.stringify(budgetData)
+    });
+    const responseData = await response.json();
+    if (!response.ok || responseData.code !== 1000) {
+        showNotification('Error', `Error ${budgetId ? 'updating' : 'creating'} budget for ${isCustom ? customCategories.find(c => c.id === userCategoryId)?.name || 'Unknown Custom Category' : Object.keys(categoryMap).find(key => categoryMap[key] === categoryId) || 'Unknown Category'}`, 'error');
+        throw new Error('API request failed');
+    }
+}
+
+document.getElementById("create-budget-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    await submitBudgetForm("create-budget-form");
+});
+
+document.getElementById("update-budget-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const budgetId = document.getElementById('update-budget-id').value;
+    await submitBudgetForm("update-budget-form", budgetId);
+});
+
+function addBudgetCategory(type = 'create', selectedCategory = null, amount = null) {
     const categoryList = document.getElementById(type === 'create' ? 'category-list' : 'update-category-list');
     const row = document.createElement('div');
-    row.className = 'flex items-center gap-2 mb-2';
+    row.className = 'flex items-center gap-3 mb-3';
     row.innerHTML = `
-        <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
+        <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-teal-600 focus:ring-2 focus:ring-teal-300 transition" required>
             <option value="">Select Category</option>
-            <option value="6">Food & Dining</option>
-            <option value="7">Shopping</option>
-            <option value="8">Transportation</option>
-            <option value="9">Housing</option>
-            <option value="10">Entertainment</option>
-            <option value="11">Health</option>
-            <option value="12">Education</option>
-            <option value="13">Bills</option>
-            <option value="14">Others</option>  
+            <option value="6" ${selectedCategory === 6 || selectedCategory === '6' ? 'selected' : ''}>Food & Dining</option>
+            <option value="7" ${selectedCategory === 7 || selectedCategory === '7' ? 'selected' : ''}>Shopping</option>
+            <option value="8" ${selectedCategory === 8 || selectedCategory === '8' ? 'selected' : ''}>Transportation</option>
+            <option value="9" ${selectedCategory === 9 || selectedCategory === '9' ? 'selected' : ''}>Housing</option>
+            <option value="10" ${selectedCategory === 10 || selectedCategory === '10' ? 'selected' : ''}>Entertainment</option>
+            <option value="11" ${selectedCategory === 11 || selectedCategory === '11' ? 'selected' : ''}>Health</option>
+            <option value="12" ${selectedCategory === 12 || selectedCategory === '12' ? 'selected' : ''}>Education</option>
+            <option value="13" ${selectedCategory === 13 || selectedCategory === '13' ? 'selected' : ''}>Bills</option>
+            <option value="14" ${selectedCategory === 14 || selectedCategory === '14' ? 'selected' : ''}>Others</option>
+            ${customCategories.map(cat => `<option value="custom_${cat.id}" ${selectedCategory === 'custom_' + cat.id ? 'selected' : ''}>${cat.name}</option>`).join('')}
         </select>
-        <input type="number" name="amounts[]" step="0.01" min="0" placeholder="Amount ($)" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-        <button type="button" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700" onclick="removeBudgetCategory(this, '${type}')">×</button>
+        <input type="number" name="amounts[]" step="0.01" min="0" ${amount ? `value="${amount}"` : 'placeholder="Amount ($)"'} class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-teal-600 focus:ring-2 focus:ring-teal-300 transition" required>
+        <button type="button" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 transition" onclick="removeBudgetCategory(this, '${type}')">×</button>
     `;
     categoryList.appendChild(row);
 }
@@ -78,221 +206,62 @@ function removeBudgetCategory(button, type = 'create') {
     if (categoryList.children.length > 1) {
         button.parentElement.remove();
     } else {
-        showAlert('At least one category is required.', 'error');
+        showNotification('Error', 'At least one category is required.', 'error');
     }
 }
 
-function showAlert(message, type = 'error') {
-    const alertContainer = document.getElementById('alertContainer') || createAlertContainer();
-    const alertBar = document.createElement('div');
-    alertBar.className = `fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-lg shadow-lg max-w-md w-full transition-all duration-300 alert-slide-in ${type === 'error' ? 'bg-red-600 text-white' :
-            type === 'warning' ? 'bg-yellow-600 text-white' :
-                'bg-green-600 text-white'
-        }`;
+function showNotification(title, message, type) {
+    const toastContainer = document.getElementById("toastContainer");
+    const notificationCard = document.createElement("div");
+    notificationCard.className = `mb-3 notification-slide-in ${type === 'error' ? 'bg-red-50 text-red-800' : type === 'warning' ? 'bg-yellow-50 text-yellow-800' : 'bg-green-50 text-green-800'}`;
 
-    alertBar.innerHTML = `
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    ${type === 'error' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />' :
-            type === 'warning' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />' :
-                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />'}
+    const iconPath = type === 'error' ?
+        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />' :
+        type === 'warning' ?
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />' :
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
+
+    notificationCard.innerHTML = `
+        <div class="rounded-lg p-3 shadow-sm transition-all duration-300 text-sm">
+            <div class="flex items-start space-x-2">
+                <svg class="w-4 h-4 mt-0.5 ${type === 'error' ? 'text-red-600' : type === 'warning' ? 'text-yellow-600' : 'text-green-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    ${iconPath}
                 </svg>
-                <span class="font-medium">${message}</span>
+                <div class="flex-1">
+                    <h3 class="font-semibold leading-snug">${title}</h3>
+                    <p class="mt-0.5 leading-snug">${message}</p>
+                </div>
             </div>
-            <button onclick="this.parentElement.parentElement.remove()" class="text-white hover:text-gray-200">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
         </div>
     `;
 
-    alertContainer.appendChild(alertBar);
+    toastContainer.appendChild(notificationCard);
     setTimeout(() => {
-        alertBar.classList.remove('alert-slide-in');
-        alertBar.classList.add('alert-slide-out');
-        setTimeout(() => alertBar.remove(), 300);
+        notificationCard.classList.remove('notification-slide-in');
+        notificationCard.classList.add('notification-slide-out');
+        setTimeout(() => notificationCard.remove(), 300);
     }, 3000);
 }
-
-function createAlertContainer() {
-    const container = document.createElement('div');
-    container.id = 'alertContainer';
-    container.className = 'fixed top-0 left-0 w-full z-50 pointer-events-none';
-    document.body.appendChild(container);
-    return container;
-}
-
-document.getElementById("create-budget-form").addEventListener("submit", async function (e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const data = {
-        periodType: formData.get('periodType'),
-        startDate: formData.get('startDate'),
-        threshold: parseInt(formData.get('threshold')),
-        categories: formData.getAll('categories[]').map((category, index) => ({
-            category, amount: parseFloat(formData.getAll('amounts[]')[index])
-        }))
-    };
-
-    const startDate = new Date(data.startDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (startDate < today) {
-        showAlert("Start date must be today or in the future.", 'error');
-        return;
-    }
-    if (!data.periodType) {
-        showAlert("Please select a budget period.", 'error');
-        return;
-    }
-    if (data.categories.some(cat => !cat.category || cat.amount <= 0)) {
-        showAlert("Please fill in all categories and valid amounts.", 'error');
-        return;
-    }
-
-    const categoryMap = {
-        "Food & Dining": 6,
-        "Shopping": 7,
-        "Transportation": 8,
-        "Housing": 9,
-        "Entertainment": 10,
-        "Health": 11,
-        "Education": 12,
-        "Bills": 13,
-        "Others": 14
-    };
-    for (const cat of data.categories) {
-        const categoryId = parseInt(cat.category);
-        const budgetData = {
-            userId: user.userId, categoryId, userCategoryId: null, amount: cat.amount,
-            periodType: data.periodType, startDate: data.startDate,
-            notificationThreshold: data.threshold
-        };
-        try {
-            const response = await apiRequest('http://localhost:8080/budget', {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "userId": user.userId.toString() },
-                body: JSON.stringify(budgetData)
-            });
-            const responseData = await response.json();
-            if (!response.ok || responseData.code !== 1000) {
-                showNotification(`Error creating budget for ${Object.keys(categoryMap).find(key => categoryMap[key] === categoryId)}`, responseData.message || "Unknown error", 'error');
-                return;
-            }
-            budgetHistory.push({ ...budgetData, categoryName: Object.keys(categoryMap).find(key => categoryMap[key] === categoryId) });
-        } catch (error) {
-            console.error("Error:", error);
-            showNotification('Network Error', 'Please check your connection.', 'error');
-            return;
-        }
-    }
-
-    showNotification('Success', 'Budget plan created successfully!', 'success');
-    this.reset();
-    closeModal('createBudgetModal');
-    document.getElementById('analysisPeriod').value = data.periodType.toLowerCase();
-    monitorBudgets(0);
-    loadAnalysis(0);
-});
-
-document.getElementById("update-budget-form").addEventListener("submit", async function (e) {
-    e.preventDefault();
-    const budgetId = document.getElementById('update-budget-id').value;
-    const formData = new FormData(this);
-    const data = {
-        periodType: formData.get('periodType'),
-        startDate: formData.get('startDate'),
-        threshold: parseInt(formData.get('threshold')),
-        categories: formData.getAll('categories[]').map((category, index) => ({
-            category, amount: parseFloat(formData.getAll('amounts[]')[index])
-        }))
-    };
-
-    const startDate = new Date(data.startDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (startDate < today) {
-        showAlert("Start date must be today or in the future.", 'error');
-        return;
-    }
-    if (!data.periodType) {
-        showAlert("Please select a budget period.", 'error');
-        return;
-    }
-    if (data.categories.some(cat => !cat.category || cat.amount <= 0)) {
-        showAlert("Please fill in all categories and valid amounts.", 'error');
-        return;
-    }
-
-    const categoryMap = {
-        "Food & Dining": 6,
-        "Shopping": 7,
-        "Transportation": 8,
-        "Housing": 9,
-        "Entertainment": 10,
-        "Health": 11,
-        "Education": 12,
-        "Bills": 13,
-        "Others": 14
-    };
-
-    try {
-        for (const cat of data.categories) {
-            const categoryId = parseInt(cat.category);
-            const budgetData = {
-                userId: user.userId,
-                categoryId,
-                userCategoryId: null,
-                amount: cat.amount,
-                periodType: data.periodType,
-                startDate: data.startDate,
-                notificationThreshold: data.threshold
-            };
-
-            const response = await apiRequest(`http://localhost:8080/budget/${budgetId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json", "userId": user.userId.toString() },
-                body: JSON.stringify(budgetData)
-            });
-            const responseData = await response.json();
-            if (!response.ok || responseData.code !== 1000) {
-                showNotification('Error', `Error updating budget: ${responseData.message || "Unknown error"}`, 'error');
-                return;
-            }
-        }
-        showNotification('Success', 'Budget plan updated successfully!', 'success');
-        closeModal('updateBudgetModal');
-        monitorBudgets(0);
-        loadAnalysis(0);
-    } catch (error) {
-        console.error("Error:", error);
-        showNotification('Network Error', 'Please check your connection.', 'error');
-    }
-});
 
 async function monitorBudgets(page) {
     monitorPage = page;
     const monitorTableBody = document.getElementById("monitor-table-body");
     const paginationContainer = document.getElementById("monitor-pagination");
-    monitorTableBody.innerHTML = '<tr><td colspan="5" class="p-3"><i class="fas fa-spinner fa-spin"></i> Loading budgets...</td></tr>';
+    monitorTableBody.innerHTML = '<tr><td colspan="6" class="p-3"><i class="fas fa-spinner fa-spin"></i> Loading budgets...</td></tr>';
     paginationContainer.innerHTML = '';
 
     try {
-        const response = await apiRequest(`http://localhost:8080/budget/list?page=${page}&size=${pageSize}`);
+        const response = await apiRequest(`http://localhost:8080/budget/list?page=${page}&size=${pageSize}`, {
+            headers: { "userId": user.userId.toString() }
+        });
         const data = await response.json();
-        console.log("View: ", data);
-        console.log("View details: ", data.result.content);
         if (response.ok && data.result.content.length > 0) {
             monitorTableBody.innerHTML = '';
             data.result.content.forEach(budget => {
-                console.log("bud: ", budget);
                 const usagePercent = budget.percentageUsed.toFixed(2);
                 const remaining = budget.amount - (budget.currentSpending || 0);
                 let progressClass = 'bg-green-500';
                 let statusText = 'On Track';
-
                 if (usagePercent >= 100) {
                     progressClass = 'bg-red-500';
                     statusText = 'Over Budget';
@@ -304,18 +273,20 @@ async function monitorBudgets(page) {
                 }
 
                 const row = document.createElement('tr');
+                row.className = budget.periodType === 'WEEKLY' ? 'weekly-row' : 'monthly-row';
                 row.innerHTML = `
                     <td class="p-3">${budget.categoryName || budget.userCategoryName}</td>
+                    <td class="p-3">${budget.periodType === 'WEEKLY' ? 'Weekly' : 'Monthly'}</td>
                     <td class="p-3">${usagePercent}%</td>
                     <td class="p-3">
                         <div class="w-full max-w-[180px] h-2 bg-gray-200 rounded-full mx-auto">
-                            <div class="${progressClass} h-full rounded-full" style="width: ${Math.min(usagePercent, 100)}%"></div>
+                            <div class="${progressClass} h-full rounded-full transition-all duration-300" style="width: ${Math.min(usagePercent, 100)}%"></div>
                         </div>
                     </td>
                     <td class="p-3">${formatCurrency(remaining)}</td>
                     <td class="p-3">
-                        <button onclick="viewBudgetDetails(${budget.id}, '${budget.categoryName || budget.userCategoryName}', ${budget.amount}, ${budget.currentSpending}, ${budget.notificationThreshold}, '${budget.startDate}', '${budget.endDate}', '${budget.periodType}')" class="text-teal-600 hover:text-teal-800 mr-2"><i class="fas fa-eye"></i></button>
-                        <button onclick="openUpdateModal(${budget.id}, '${budget.periodType}', '${budget.startDate}', ${budget.notificationThreshold}, '${budget.categoryName || budget.userCategoryName}', ${budget.amount})" class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
+                        <button onclick="viewBudgetDetails(${budget.id}, '${budget.categoryName || budget.userCategoryName}', ${budget.amount}, ${budget.currentSpending}, ${budget.notificationThreshold}, '${budget.startDate}', '${budget.endDate}', '${budget.periodType}')" class="text-teal-600 hover:text-teal-800 mr-3"><i class="fas fa-eye"></i></button>
+                        <button onclick="openUpdateModal(${budget.id}, '${budget.periodType}', '${budget.startDate}', ${budget.notificationThreshold}, '${budget.categoryName || budget.userCategoryName}', ${budget.amount}, ${budget.categoryId || 'custom_' + budget.userCategoryId})" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteBudget(${budget.id})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
                     </td>
                 `;
@@ -324,69 +295,26 @@ async function monitorBudgets(page) {
 
             renderPagination(paginationContainer, data.result, monitorBudgets);
         } else {
-            monitorTableBody.innerHTML = '<tr><td colspan="5" class="p-3">No budgets found.</td></tr>';
+            monitorTableBody.innerHTML = '<tr><td colspan="6" class="p-3 italic text-gray-500">No budgets found.</td></tr>';
         }
     } catch (error) {
         console.error("Error:", error);
-        monitorTableBody.innerHTML = '<tr><td colspan="5" class="p-3 text-red-600">Error loading budgets. Please try again.</td></tr>';
+        monitorTableBody.innerHTML = '<tr><td colspan="6" class="p-3 text-red-600">Error loading budgets. Please try again.</td></tr>';
         showNotification('Error', 'Error loading budgets. Please try again.', 'error');
     }
 }
 
 async function fetchUser() {
-    console.log("Fetching user ");
     try {
-        user = getCurrentUser();
-        console.log("user id: ", user.userId);
+        user = await getCurrentUser();
+        if (!user || !user.userId) {
+            throw new Error('User not authenticated');
+        }
     } catch (error) {
-        console.log(error);
+        console.error('Error fetching user:', error);
+        showNotification('Error', 'Please log in to continue.', 'error');
+        window.location.href = '/login';
     }
-}
-
-function showNotification(title, message, type) {
-    const toastContainer = document.getElementById("toastContainer");
-    const notificationCard = document.createElement("div");
-    notificationCard.id = "progressNotificationCard";
-    notificationCard.className = `mb-6 notification-slide-in ${type === 'error' ? 'bg-red-50 text-red-800' : type === 'warning' ? 'bg-yellow-50 text-yellow-800' : 'bg-green-50 text-green-800'}`;
-
-    const iconPath = type === 'error' ?
-        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />' :
-        type === 'warning' ?
-            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />' :
-            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
-
-    notificationCard.innerHTML = `
-        <div id="notificationContent" class="rounded-xl p-5 shadow-sm transition-all duration-300">
-            <div class="flex items-start">
-                <div class="flex-shrink-0">
-                    <svg id="notificationIcon" class="w-6 h-6 ${type === 'error' ? 'text-red-600' : type === 'warning' ? 'text-yellow-600' : 'text-green-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        ${iconPath}
-                    </svg>
-                </div>
-                <div class="ml-4 flex-1">
-                    <div class="flex items-center justify-between">
-                        <h3 id="notificationTitle" class="text-lg font-semibold">${title}</h3>
-                    </div>
-                    <p id="notificationMessage" class="mt-1">${message}</p>
-                    <div id="notificationActions" class="mt-3 flex items-center space-x-3 hidden">
-                        <button id="addContributionBtn" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:bg-gray-400 disabled:text-gray-700 disabled:cursor-not-allowed disabled:opacity-75">
-                            Add Contribution
-                        </button>
-                        <button id="modifyGoalBtn" class="text-orange-600 hover:text-orange-700 text-sm font-medium">
-                            Modify Goal
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    toastContainer.appendChild(notificationCard);
-    setTimeout(() => {
-        notificationCard.classList.remove('notification-slide-in');
-        notificationCard.classList.add('notification-slide-out');
-        setTimeout(() => notificationCard.remove(), 300);
-    }, 1000);
 }
 
 function viewBudgetDetails(id, categoryName, amount, currentSpending, threshold, startDate, endDate, periodType) {
@@ -394,75 +322,63 @@ function viewBudgetDetails(id, categoryName, amount, currentSpending, threshold,
     const remaining = amount - (currentSpending || 0);
 
     const detailsContent = `
-        <div class="col-span-2 flex items-center gap-3 p-3 border rounded-lg bg-gray-50">
+        <div class="col-span-2 flex items-center gap-3 p-4 border rounded-lg bg-teal-50 shadow-sm">
             <i class="fas fa-tag text-teal-600 text-lg"></i>
             <div>
                 <p class="text-sm text-gray-500">Category</p>
                 <p class="font-semibold text-teal-800">${categoryName}</p>
             </div>
         </div>
-
-        <div class="flex items-center gap-3 p-3 border rounded-lg bg-green-50">
+        <div class="flex items-center gap-3 p-4 border rounded-lg bg-green-50 shadow-sm">
             <i class="fas fa-wallet text-green-600 text-lg"></i>
             <div>
                 <p class="text-sm text-gray-500">Budget</p>
                 <p class="font-semibold text-green-800">${formatCurrency(amount)}</p>
             </div>
         </div>
-
-        <div class="flex items-center gap-3 p-3 border rounded-lg bg-red-50">
+        <div class="flex items-center gap-3 p-4 border rounded-lg bg-red-50 shadow-sm">
             <i class="fas fa-money-bill-wave text-red-600 text-lg"></i>
             <div>
                 <p class="text-sm text-gray-500">Current Spending</p>
                 <p class="font-semibold text-red-800">${formatCurrency(currentSpending || 0)}</p>
             </div>
         </div>
-
-        <div class="flex items-center gap-3 p-3 border rounded-lg bg-yellow-50">
+        <div class="flex items-center gap-3 p-4 border rounded-lg bg-yellow-50 shadow-sm">
             <i class="fas fa-percentage text-yellow-600 text-lg"></i>
             <div>
                 <p class="text-sm text-gray-500">Usage Percentage</p>
                 <p class="font-semibold text-yellow-800">${usagePercent}%</p>
             </div>
         </div>
-
-        <div class="flex items-center gap-3 p-3 border rounded-lg bg-blue-50">
+        <div class="flex items-center gap-3 p-4 border rounded-lg bg-blue-50 shadow-sm">
             <i class="fas fa-bell text-blue-600 text-lg"></i>
             <div>
                 <p class="text-sm text-gray-500">Alert Threshold</p>
                 <p class="font-semibold text-blue-800">${threshold}%</p>
             </div>
         </div>
-
-        <div class="flex items-center gap-3 p-3 border rounded-lg bg-gray-50">
+        <div class="flex items-center gap-3 p-4 border rounded-lg bg-gray-50 shadow-sm">
             <i class="fas fa-calendar-day text-gray-600 text-lg"></i>
             <div>
                 <p class="text-sm text-gray-500">Start Date</p>
                 <p class="font-semibold text-gray-800">${startDate}</p>
             </div>
         </div>
-
-        <div class="flex items-center gap-3 p-3 border rounded-lg bg-gray-50">
+        <div class="flex items-center gap-3 p-4 border rounded-lg bg-gray-50 shadow-sm">
             <i class="fas fa-calendar-check text-gray-600 text-lg"></i>
             <div>
                 <p class="text-sm text-gray-500">End Date</p>
                 <p class="font-semibold text-gray-800">${endDate}</p>
             </div>
         </div>
-
-        <div class="flex items-center gap-3 p-3 border rounded-lg bg-purple-50">
+        <div class="flex items-center gap-3 p-4 border rounded-lg bg-purple-50 shadow-sm">
             <i class="fas fa-sync-alt text-purple-600 text-lg"></i>
             <div>
                 <p class="text-sm text-gray-500">Period</p>
-                <p class="font-semibold text-purple-800">
-                    ${periodType === 'WEEKLY' ? 'Weekly' :
-            periodType === 'MONTHLY' ? 'Monthly' :
-                'Yearly'}
-                </p>
+                <p class="font-semibold text-purple-800">${periodType === 'WEEKLY' ? 'Weekly' : 'Monthly'}</p>
             </div>
         </div>
-
-        <div class="flex items-center gap-3 p-3 border rounded-lg bg-emerald-50">
+        <div class="flex items-center gap-3 p-4 border rounded-lg bg-emerald-50 shadow-sm">
             <i class="fas fa-piggy-bank text-emerald-600 text-lg"></i>
             <div>
                 <p class="text-sm text-gray-500">Remaining Balance</p>
@@ -474,7 +390,7 @@ function viewBudgetDetails(id, categoryName, amount, currentSpending, threshold,
     openModal('budgetDetailsModal');
 }
 
-async function openUpdateModal(budgetId, periodType, startDate, threshold) {
+async function openUpdateModal(budgetId, periodType, startDate, threshold, categoryName, amount, categoryId) {
     document.getElementById('update-budget-id').value = budgetId;
     document.getElementById('update-periodType').value = periodType;
     document.getElementById('update-startDate').value = startDate;
@@ -482,40 +398,7 @@ async function openUpdateModal(budgetId, periodType, startDate, threshold) {
 
     const categoryList = document.getElementById('update-category-list');
     categoryList.innerHTML = '';
-
-    try {
-        const response = await apiRequest(`http://localhost:8080/budget/${budgetId}`, {});
-        const budgetData = await response.json();
-        console.log("budgetdata: ", budgetData);
-        if (response.ok && budgetData.result) {
-            const budget = budgetData.result;
-            console.log("res: ", budget);
-
-            const row = document.createElement('div');
-            row.className = 'flex items-center gap-2 mb-2';
-            row.innerHTML = `
-                <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-                    <option value="">Select Category</option>
-                    <option value="6" ${budget.categoryId === 6 ? 'selected' : ''}>Food & Dining</option>
-                    <option value="7" ${budget.categoryId === 7 ? 'selected' : ''}>Shopping</option>
-                    <option value="8" ${budget.categoryId === 8 ? 'selected' : ''}>Transportation</option>
-                    <option value="9" ${budget.categoryId === 9 ? 'selected' : ''}>Housing</option>
-                    <option value="10" ${budget.categoryId === 10 ? 'selected' : ''}>Entertainment</option>
-                    <option value="11" ${budget.categoryId === 11 ? 'selected' : ''}>Health</option>
-                    <option value="12" ${budget.categoryId === 12 ? 'selected' : ''}>Education</option>
-                    <option value="13" ${budget.categoryId === 13 ? 'selected' : ''}>Bills</option>
-                    <option value="14" ${budget.categoryId === 14 ? 'selected' : ''}>Others</option>
-                </select>
-                <input type="number" name="amounts[]" step="0.01" min="0" value="${budget.amount}" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-green-600 focus:ring-2 focus:ring-green-300" required>
-                <button type="button" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700" onclick="removeBudgetCategory(this, 'update')">×</button>
-            `;
-            categoryList.appendChild(row);
-        }
-    } catch (error) {
-        console.error("Error:", error);
-        showNotification('Error', 'Unable to load budget information.', 'error');
-    }
-
+    addBudgetCategory('update', categoryId, amount);
     openModal('updateBudgetModal');
 }
 
@@ -536,7 +419,7 @@ async function deleteBudget(budgetId) {
             }
         } catch (error) {
             console.error("Error:", error);
-            showNotification('Network Error', 'Please check your connection.', 'error');
+            showNotification('Error', 'Network error. Please check your connection.', 'error');
         }
     }
 }
@@ -546,7 +429,7 @@ async function loadAnalysis(page) {
     const table = document.getElementById("analysis-table");
     const period = document.getElementById("analysisPeriod").value;
     const paginationContainer = document.getElementById("analysis-pagination");
-    table.innerHTML = '<tr><td colspan="5" class="p-3"><i class="fas fa-spinner fa-spin"></i> Loading analysis...</td></tr>';
+    table.innerHTML = '<tr><td colspan="6" class="p-3"><i class="fas fa-spinner fa-spin"></i> Loading analysis...</td></tr>';
     paginationContainer.innerHTML = '';
     document.getElementById('totalBudgeted').textContent = '$0';
     document.getElementById('totalSpent').textContent = '$0';
@@ -554,12 +437,15 @@ async function loadAnalysis(page) {
     document.getElementById('spendingRate').textContent = '0%';
 
     try {
-        const response = await apiRequest(`http://localhost:8080/budget/analysis?period=${period}&page=${page}&size=${pageSize}`, {
+        const url = period === 'all' ? 
+            `http://localhost:8080/budget/analysis?page=${page}&size=${pageSize}` :
+            `http://localhost:8080/budget/analysis?period=${period}&page=${page}&size=${pageSize}`;
+        const response = await apiRequest(url, {
             headers: { "userId": user.userId.toString() }
         });
         const data = await response.json();
         if (response.ok && data.result.content.length > 0) {
-            document.querySelector('.h-64').classList.remove('hidden');
+            document.querySelector('.h-80').classList.remove('hidden');
             document.querySelector('.grid').classList.remove('hidden');
             table.innerHTML = '';
             const chartLabels = [];
@@ -577,8 +463,10 @@ async function loadAnalysis(page) {
                 const statusClass = usagePercent >= 100 ? 'bg-red-100 text-red-600' : usagePercent >= budget.notificationThreshold ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600';
 
                 const row = document.createElement('tr');
+                row.className = budget.periodType === 'WEEKLY' ? 'weekly-row' : 'monthly-row';
                 row.innerHTML = `
                     <td class="p-3">${budget.categoryName || budget.userCategoryName}</td>
+                    <td class="p-3">${budget.periodType === 'WEEKLY' ? 'Weekly' : 'Monthly'}</td>
                     <td class="p-3">${formatCurrency(budget.plannedAmount)}</td>
                     <td class="p-3">${formatCurrency(budget.actualSpending || 0)}</td>
                     <td class="p-3 ${variance < 0 ? 'text-red-600' : 'text-green-600'}">${formatCurrency(variance)}</td>
@@ -615,11 +503,11 @@ async function loadAnalysis(page) {
                     maintainAspectRatio: false,
                     scales: {
                         y: { beginAtZero: true, title: { display: true, text: 'Amount ($)' } },
-                        x: { title: { display: true, text: period.includes('day') ? 'Hour' : period.includes('week') ? 'Day' : period.includes('month') ? 'Week' : 'Month' } }
+                        x: { title: { display: true, text: period === 'WEEKLY' || period === 'all' ? 'Day' : 'Week' } }
                     },
                     plugins: {
                         legend: { position: 'top' },
-                        title: { display: true, text: `Budget vs Actual - ${period === 'current_day' ? 'Day' : period === 'current_week' ? 'Week' : period === 'current_month' ? 'Month' : 'Year'}` }
+                        title: { display: true, text: `Budget vs Actual - ${period === 'all' ? 'All' : period === 'WEEKLY' ? 'Weekly' : 'Monthly'}` }
                     }
                 }
             };
@@ -642,50 +530,46 @@ async function loadAnalysis(page) {
             }
 
             budgetChart = new Chart(ctx, chartConfig);
-
             renderPagination(paginationContainer, data.result, loadAnalysis);
         } else {
-            table.innerHTML = '<tr><td colspan="5" class="p-3 italic text-gray-500">No budget data for the selected period.</td></tr>';
+            table.innerHTML = '<tr><td colspan="6" class="p-3 text-gray-500">No budget data for the selected period.</td></tr>';
             if (budgetChart) { budgetChart.destroy(); budgetChart = null; }
-
-            document.querySelector('.h-64').classList.add('hidden');
+            document.querySelector('.h-80').classList.add('hidden');
             document.querySelector('.grid').classList.add('hidden');
         }
-
     } catch (error) {
         console.error("Error:", error);
-        table.innerHTML = '<tr><td colspan="5" class="p-3 text-red-600">Error loading analysis. Please try again.</td></tr>';
+        table.innerHTML = '<tr><td colspan="6" class="p-3 text-red-600">Error loading analysis. Please try again.</td></tr>';
         if (budgetChart) { budgetChart.destroy(); budgetChart = null; }
         showNotification('Error', 'Error loading analysis. Please try again.', 'error');
     }
 }
 
 function renderPagination(container, pageData, fetchFunction) {
-    container.innerHTML = '';
     const { number, totalPages } = pageData;
-    if (totalPages <= 1) return;
-
-    const prevButton = document.createElement('button');
-    prevButton.className = `px-4 py-2 rounded-lg ${number === 0 ? 'bg-gray-300' : 'bg-green-600 hover:bg-green-700'} text-white`;
-    prevButton.disabled = number === 0;
-    prevButton.innerHTML = '<i class="fas fa-chevron-left"></i> Previous';
-    prevButton.onclick = () => fetchFunction(number - 1);
-    container.appendChild(prevButton);
-
-    for (let i = 0; i < totalPages; i++) {
-        const pageButton = document.createElement('button');
-        pageButton.className = `px-4 py-2 rounded-lg ${i === number ? 'bg-green-700' : 'bg-green-600 hover:bg-green-700'} text-white`;
-        pageButton.textContent = i + 1;
-        pageButton.onclick = () => fetchFunction(i);
-        container.appendChild(pageButton);
+    if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
     }
 
-    const nextButton = document.createElement('button');
-    nextButton.className = `px-4 py-2 rounded-lg ${number === totalPages - 1 ? 'bg-gray-300' : 'bg-green-600 hover:bg-green-700'} text-white`;
-    nextButton.disabled = number === totalPages - 1;
-    nextButton.innerHTML = 'Next <i class="fas fa-chevron-right"></i>';
-    nextButton.onclick = () => fetchFunction(number + 1);
-    container.appendChild(nextButton);
+    const maxButtons = 5;
+    let startPage = Math.max(0, number - Math.floor(maxButtons / 2));
+    let endPage = Math.min(totalPages, startPage + maxButtons);
+    startPage = Math.max(0, endPage - maxButtons);
+
+    const createButton = (page, text, disabled = false, icon = '') => {
+        return `<button class="px-4 py-2 rounded-lg ${disabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-teal-600 hover:bg-teal-700'} text-white transition" ${disabled ? 'disabled' : `onclick="(${fetchFunction})(${page})"`}>${icon}${text}</button>`;
+    };
+
+    const buttons = [
+        createButton(number - 1, '', number === 0, '<i class="fas fa-chevron-left"></i>'),
+        ...(startPage > 0 ? [createButton(0, '1'), ...(startPage > 1 ? ['<span class="px-4 py-2 text-gray-500">...</span>'] : [])] : []),
+        ...Array.from({ length: endPage - startPage }, (_, i) => createButton(startPage + i, startPage + i + 1, startPage + i === number)),
+        ...(endPage < totalPages ? [(endPage < totalPages - 1 ? '<span class="px-4 py-2 text-gray-500">...</span>' : ''), createButton(totalPages - 1, totalPages)] : []),
+        createButton(number + 1, '', number === totalPages - 1, '<i class="fas fa-chevron-right"></i>')
+    ];
+
+    container.innerHTML = buttons.join('');
 }
 
 function toggleChartType() {
@@ -709,27 +593,41 @@ function toggleChartType() {
 
 function exportToCSV() {
     const period = document.getElementById("analysisPeriod").value;
-    fetch(`http://localhost:8080/budget/analysis?period=${period}&page=${analysisPage}&size=${pageSize}`, {
+    const url = period === 'all' ? 
+        `http://localhost:8080/budget/analysis?page=0&size=1000` :
+        `http://localhost:8080/budget/analysis?period=${period}&page=0&size=1000`;
+    apiRequest(url, {
         headers: { "userId": user.userId.toString() }
     })
         .then(response => response.json())
         .then(data => {
             if (data.result.content && data.result.content.length > 0) {
-                const headers = ['Category', 'Planned Amount', 'Actual Spending', 'Variance', 'Status'];
+                const headers = ['Category', 'Period', 'Planned Amount', 'Actual Spending', 'Variance', 'Status'];
                 const rows = data.result.content.map(budget => {
                     const usagePercent = (budget.actualSpending / budget.plannedAmount * 100).toFixed(2) || 0;
                     const variance = budget.plannedAmount - (budget.actualSpending || 0);
                     const status = usagePercent >= 100 ? 'Over Budget' : usagePercent >= budget.notificationThreshold ? 'Near Limit' : 'On Track';
-                    return [budget.categoryName || budget.userCategoryName, budget.plannedAmount.toFixed(2), (budget.actualSpending || 0).toFixed(2), variance.toFixed(2), status];
+                    return [
+                        `"${budget.categoryName || budget.userCategoryName}"`,
+                        budget.periodType,
+                        budget.plannedAmount.toFixed(2),
+                        (budget.actualSpending || 0).toFixed(2),
+                        variance.toFixed(2),
+                        status
+                    ];
                 });
 
-                const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+                const csvContent = [
+                    headers.join(','),
+                    ...rows.map(row => row.join(','))
+                ].join('\n');
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = `budget_analysis_${period}_${new Date().toISOString().split('T')[0]}.csv`;
+                link.download = `budget_analysis_${period === 'all' ? 'all' : period}_${new Date().toISOString().split('T')[0]}.csv`;
                 link.click();
                 URL.revokeObjectURL(link.href);
+                showNotification('Success', 'CSV exported successfully!', 'success');
             } else {
                 showNotification('Error', 'No data to export.', 'error');
             }
@@ -738,26 +636,6 @@ function exportToCSV() {
             console.error('Error exporting CSV:', error);
             showNotification('Error', 'Error exporting data. Please try again.', 'error');
         });
-}
-
-function viewBudgetHistory() {
-    loadBudgetHistory();
-    openModal('budgetHistoryModal');
-}
-
-function loadBudgetHistory() {
-    const tableBody = document.getElementById('budget-history-table');
-    tableBody.innerHTML = budgetHistory.length ? '' : '<tr><td colspan="4" class="p-3">No budget history.</td></tr>';
-    budgetHistory.forEach(budget => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td class="p-3">${budget.periodType === 'WEEKLY' ? 'Weekly' : budget.periodType === 'MONTHLY' ? 'Monthly' : 'Yearly'}</td>
-            <td class="p-3">${budget.categoryName}</td>
-            <td class="p-3">${formatCurrency(budget.amount)}</td>
-            <td class="p-3">${budget.startDate} to ${budget.endDate}</td>
-        `;
-        tableBody.appendChild(row);
-    });
 }
 
 function searchBudgets() {
@@ -772,26 +650,19 @@ function searchBudgets() {
     });
 }
 
-function searchBudgetHistory() {
-    const searchTerm = document.getElementById('historySearch').value.toLowerCase();
-    document.querySelectorAll('#budget-history-table tr').forEach(row => {
-        const category = row.cells[1]?.textContent.toLowerCase();
-        row.style.display = category && category.includes(searchTerm) ? '' : 'none';
-    });
-}
-
 function formatCurrency(amount) {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
 }
 
 function setDefaultModalDates() {
-    document.getElementById('startDate').value = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('startDate').value = today;
+    document.getElementById('update-startDate').value = today;
 }
 
 function setupEventListeners() {
     document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
     document.getElementById('searchInput').addEventListener('input', searchBudgets);
-    document.getElementById('historySearch').addEventListener('input', searchBudgetHistory);
     document.getElementById('analysisPeriod').addEventListener('change', () => loadAnalysis(0));
     document.querySelectorAll('.fixed').forEach(modal => {
         modal.addEventListener('click', (e) => {
