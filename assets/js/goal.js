@@ -357,6 +357,7 @@ window.addEventListener('load', () => {
     if (checkAuth()) {
         console.log("hjaha");
         user = getCurrentUser()
+        console.log("xem: ", user);
         initializeUI();
     }
 });

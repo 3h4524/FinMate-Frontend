@@ -151,7 +151,7 @@
                 title.classList.add('text-green-400', 'drop-shadow-[0_0_10px_rgba(74,222,128,0.8)]');
                 message.textContent = 'Thank you for your purchase! Your order has been successfully placed.';
                 button.textContent = 'Continue Shopping';
-                button.href = 'goal.html'; // Assuming 'goal.html' is your home/main page
+                button.href = 'update_premium.html'; 
                 button.classList.add('bg-gradient-to-r', 'from-green-500', 'to-emerald-600', 'hover:from-green-400', 'hover:to-emerald-500', 'text-white');
                 pageTitle.textContent = 'Order Confirmed';
             } else if (status === 'CANCELLED') {
@@ -162,7 +162,7 @@
                 title.classList.add('text-red-500', 'drop-shadow-[0_0_15px_rgba(255,0,0,0.8)]');
                 message.textContent = 'Your payment transaction was cancelled. No charges were made.';
                 button.textContent = 'Back to Home';
-                button.href = 'goal.html';
+                button.href = 'update_premium.html';
                 button.classList.add('bg-gradient-to-r', 'from-red-600', 'to-red-800', 'hover:from-red-500', 'hover:to-red-700', 'text-white');
                 pageTitle.textContent = 'Transaction Cancelled';
             } else if (status === 'PENDING') {

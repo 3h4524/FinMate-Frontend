@@ -65,15 +65,6 @@ const NOTIFICATION_TYPES = {
         badgeClass: 'text-yellow-600 bg-yellow-100',
         icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>`,
         showActions: false
-    },
-    NOT_STARTED: {
-        bgClass: 'bg-gradient-to-r from-yellow-50 to-amber-50 border-l-4 border-yellow-400',
-        iconClass: 'text-yellow-500',
-        titleClass: 'text-yellow-800',
-        messageClass: 'text-yellow-700',
-        badgeClass: 'text-yellow-600 bg-yellow-100',
-        icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>`,
-        showActions: false
     }
 };
 
@@ -163,7 +154,6 @@ async function fetchGoalContributionData(goalId) {
 function renderGoalDetails() {
     pageTitle.textContent = `${goalProgressResponse.name} Progress`;
     document.getElementById('goalName').textContent = goalProgressResponse.name;
-
 
 
     if (goalProgressResponse.status === "IN_PROGRESS") {
@@ -341,9 +331,6 @@ async function renderGoalMessage() {
 
                 showNotStartedNotification();
 
-
-                showNotStartedNotification();
-
                 return;
             }
 
@@ -454,16 +441,7 @@ function showFailedNotification() {
     updateProgressNotification(
         'FAILED',
         'Goal Not Achieved ❌',
-        'Goal Not Achieved ❌',
         'You didn’t meet your goal this time. Keep pushing!'
-    );
-}
-
-function showNotStartedNotification() {
-    updateProgressNotification(
-        'NOT_STARTED',
-        'Goal Not Started ⏳',
-        'Your goal hasn’t started yet. Get ready for the kickoff!'
     );
 }
 
@@ -528,251 +506,222 @@ function closeModalAddContribution() {
 
 // Open edit modal and populate fields
 async function openEditModal() {
-    async function openEditModal() {
-        editGoalModal.classList.remove('hidden');
-        try {
-            const response = await apiRequest(`${API_BASE_URL}/goal/${goalId}`);
-            const data = await response.json();
+    editGoalModal.classList.remove('hidden');
+    try {
+        const response = await apiRequest(`${API_BASE_URL}/goal/${goalId}`);
+        const data = await response.json();
 
-            if (data.code === 1000) {
-                const goalResponse = data.result;
+        if (data.code === 1000) {
+            const goalResponse = data.result;
 
-                document.getElementById('editGoalName').value = goalResponse.name;
-                document.getElementById('editTargetAmount').value = goalResponse.targetAmount.toFixed(2);
-                document.getElementById('editDeadline').value = goalResponse.deadline;
-                document.getElementById('editNotificationEnabled').checked = goalResponse.notificationEnabled || false;
-                editFormError.classList.add('hidden');
-                try {
-                    const response = await apiRequest(`${API_BASE_URL}/goal/${goalId}`);
-                    const data = await response.json();
+            document.getElementById('editGoalName').value = goalResponse.name;
+            document.getElementById('editTargetAmount').value = goalResponse.targetAmount.toFixed(2);
+            document.getElementById('editDeadline').value = goalResponse.deadline;
+            document.getElementById('editNotificationEnabled').checked = goalResponse.notificationEnabled || false;
+            editFormError.classList.add('hidden');
 
-                    if (data.code === 1000) {
-                        const goalResponse = data.result;
+            // Store initial form values
+            initialFormValues = {
+                name: goalResponse.name,
+                targetAmount: goalResponse.targetAmount.toFixed(2),
+                deadline: goalResponse.deadline,
+                notificationEnabled: goalResponse.notificationEnabled || false
+            };
 
-                        document.getElementById('editGoalName').value = goalResponse.name;
-                        document.getElementById('editTargetAmount').value = goalResponse.targetAmount.toFixed(2);
-                        document.getElementById('editDeadline').value = goalResponse.deadline;
-                        document.getElementById('editNotificationEnabled').checked = goalResponse.notificationEnabled || false;
-                        editFormError.classList.add('hidden');
+            updateSaveButtonState();
 
-                        // Store initial form values
-                        initialFormValues = {
-                            name: goalResponse.name,
-                            targetAmount: goalResponse.targetAmount.toFixed(2),
-                            deadline: goalResponse.deadline,
-                            notificationEnabled: goalResponse.notificationEnabled || false
-                        };
-                        // Store initial form values
-                        initialFormValues = {
-                            name: goalResponse.name,
-                            targetAmount: goalResponse.targetAmount.toFixed(2),
-                            deadline: goalResponse.deadline,
-                            notificationEnabled: goalResponse.notificationEnabled || false
-                        };
-
-                        updateSaveButtonState();
-
-                    } else {
-                        throw new Error("Fail to mark as completed");
-                    }
-                } catch (err) {
-                    showResult(err, 'error');
-                }
-                updateSaveButtonState();
-
-            } else {
-                throw new Error("Fail to mark as completed");
-            }
-        } catch (err) {
-            showResult(err, 'error');
-        }
-    }
-
-    // Close edit modal
-    function closeEditModal() {
-        editGoalModal.classList.add('hidden');
-        editFormError.classList.add('hidden');
-    }
-
-    // Check if form values have changed
-    function hasFormChanged() {
-        const currentValues = {
-            name: document.getElementById('editGoalName').value.trim(),
-            targetAmount: document.getElementById('editTargetAmount').value,
-            deadline: document.getElementById('editDeadline').value,
-            notificationEnabled: document.getElementById('editNotificationEnabled').checked
-        };
-
-        return (
-            currentValues.name !== initialFormValues.name ||
-            currentValues.targetAmount !== initialFormValues.targetAmount ||
-            currentValues.deadline !== initialFormValues.deadline ||
-            currentValues.notificationEnabled !== initialFormValues.notificationEnabled
-        );
-    }
-
-    // Update Save button state
-    function updateSaveButtonState() {
-        if (hasFormChanged()) {
-            saveEditButton.disabled = false;
-            saveEditButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
-            saveEditButton.classList.add('bg-gradient-to-r', 'from-teal-600', 'to-teal-700', 'hover:from-teal-700', 'hover:to-teal-800');
         } else {
-            saveEditButton.disabled = true;
-            saveEditButton.classList.add('bg-gray-400', 'cursor-not-allowed');
-            saveEditButton.classList.remove('bg-gradient-to-r', 'from-teal-600', 'to-teal-700', 'hover:from-teal-700', 'hover:to-teal-800');
+            throw new Error("Fail to mark as completed");
         }
+    } catch (err) {
+        showResult(err, 'error');
     }
-
-    // Event listeners for modal and buttons
-    addContributionButton.addEventListener('click', openModalAddContribution);
-    closeModalButton.addEventListener('click', closeModalAddContribution);
-    cancelModalButton.addEventListener('click', closeModalAddContribution);
-
-    editButton.addEventListener('click', openEditModal);
-    closeEditModalButton.addEventListener('click', closeEditModal);
-    cancelEditModalButton.addEventListener('click', closeEditModal);
-
-    // Add input event listeners to update Save button state
-    document.getElementById('editGoalName').addEventListener('input', updateSaveButtonState);
-    document.getElementById('editTargetAmount').addEventListener('input', updateSaveButtonState);
-    document.getElementById('editDeadline').addEventListener('input', updateSaveButtonState);
-    document.getElementById('editNotificationEnabled').addEventListener('change', updateSaveButtonState);
-
-    lineChartButton.addEventListener('click', () => {
-        chartType = 'line';
-        lineChartButton.classList.add('bg-green-100', 'text-teal-600');
-        barChartButton.classList.remove('bg-green-100', 'text-teal-600');
-        renderChart();
-    });
-
-    barChartButton.addEventListener('click', () => {
-        chartType = 'bar';
-        barChartButton.classList.add('bg-green-100', 'text-teal-600');
-        lineChartButton.classList.remove('bg-green-100', 'text-teal-600');
-        renderChart();
-    });
-
-
-    addContributionBtn.addEventListener('click', openModalAddContribution);
-    modifyGoalBtn.addEventListener('click', openEditModal);
-
-
-    document.getElementById('startDate').addEventListener('change', renderContributions);
-    document.getElementById('endDate').addEventListener('change', renderContributions);
-    document.getElementById('refreshGoalContributionsButton').addEventListener('click', renderContributions);
-    document.getElementById('clearFiltersButton').addEventListener('click', () => {
-        document.getElementById('startDate').value = '';
-        document.getElementById('endDate').value = '';
-        renderContributions();
-    });
-
-    cancelButton.addEventListener('click', () => {
-        confirmCancelGoal(goalId)
-    });
-
-    // Form submission
-    contributionForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const amount = parseFloat(document.getElementById('contributionAmount').value);
-        const note = document.getElementById('contributionNote').value;
-        const contributionDate = document.getElementById('contributionDate').value;
-
-        // Validate inputs
-        const today = new Date();
-        today.setHours(23, 59, 59, 999); // Allow contributions for today
-        if (amount <= 0) {
-            formError.classList.remove('hidden');
-            formError.textContent = 'Amount must be greater than 0.';
-            return;
-        }
-        if (new Date(contributionDate) > today) {
-            formError.classList.remove('hidden');
-            formError.textContent = 'Contribution date cannot be in the future.';
-            return;
-        }
-
-        const contribution = {
-            goalId: goalProgressResponse.goalId,
-            amount,
-            note: note || null,
-            contributionDate
-        };
-
-
-        if (await addGoalContribution(contribution)) {
-            closeModalAddContribution();
-            await fetchGoalDetails();
-        }
-    });
-
-    editGoalForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (!hasFormChanged()) {
-            closeEditModal();
-            return;
-        }
-
-        const name = document.getElementById('editGoalName').value.trim();
-        const targetAmount = parseFloat(document.getElementById('editTargetAmount').value);
-        const deadline = document.getElementById('editDeadline').value;
-        const notificationEnabled = document.getElementById('editNotificationEnabled').checked;
-
-        // Validate inputs
-        if (!name) {
-            editFormError.classList.remove('hidden');
-            editErrorMessageModal.textContent = 'Goal name is required.';
-            return;
-        }
-        if (targetAmount <= 0) {
-            editFormError.classList.remove('hidden');
-            editErrorMessageModal.textContent = 'Target amount must be greater than 0.';
-            return;
-        }
-        if (!deadline) {
-            editFormError.classList.remove('hidden');
-            editErrorMessageModal.textContent = 'Deadline is required.';
-            return;
-        }
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (new Date(deadline) < today) {
-            editFormError.classList.remove('hidden');
-            editErrorMessageModal.textContent = 'Deadline cannot be in the past.';
-            return;
-        }
-
-        const updatedGoal = {
-            name,
-            targetAmount,
-            deadline,
-            notificationEnabled
-        };
-
-        try {
-            const response = await apiRequest(`${API_BASE_URL}/goal/${goalId}`, {
-                method: 'PUT',
-                body: JSON.stringify(updatedGoal)
-            });
-            if (!response.ok) throw new Error('Failed to update goal');
-            showResult("Goal updated successfully!", "success");
-            closeEditModal();
-            await fetchGoalDetails();
-        } catch (error) {
-            editFormError.classList.remove('hidden');
-            editErrorMessageModal.textContent = 'Failed to update goal. Please try again.';
-            showResult('Error updating goal:', "error")
-        }
-    });
-
-    async function initiateUI() {
-        await fetchGoalDetails();
-        await loadSideBar(getCurrentUser());
-    }
-
-    window.addEventListener('load', () => {
-        if (checkAuth()) {
-            initiateUI();
-        }
-    });
 }
+
+// Close edit modal
+function closeEditModal() {
+    editGoalModal.classList.add('hidden');
+    editFormError.classList.add('hidden');
+}
+
+// Check if form values have changed
+function hasFormChanged() {
+    const currentValues = {
+        name: document.getElementById('editGoalName').value.trim(),
+        targetAmount: document.getElementById('editTargetAmount').value,
+        deadline: document.getElementById('editDeadline').value,
+        notificationEnabled: document.getElementById('editNotificationEnabled').checked
+    };
+
+    return (
+        currentValues.name !== initialFormValues.name ||
+        currentValues.targetAmount !== initialFormValues.targetAmount ||
+        currentValues.deadline !== initialFormValues.deadline ||
+        currentValues.notificationEnabled !== initialFormValues.notificationEnabled
+    );
+}
+
+// Update Save button state
+function updateSaveButtonState() {
+    if (hasFormChanged()) {
+        saveEditButton.disabled = false;
+        saveEditButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+        saveEditButton.classList.add('bg-gradient-to-r', 'from-teal-600', 'to-teal-700', 'hover:from-teal-700', 'hover:to-teal-800');
+    } else {
+        saveEditButton.disabled = true;
+        saveEditButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+        saveEditButton.classList.remove('bg-gradient-to-r', 'from-teal-600', 'to-teal-700', 'hover:from-teal-700', 'hover:to-teal-800');
+    }
+}
+
+// Event listeners for modal and buttons
+addContributionButton.addEventListener('click', openModalAddContribution);
+closeModalButton.addEventListener('click', closeModalAddContribution);
+cancelModalButton.addEventListener('click', closeModalAddContribution);
+
+editButton.addEventListener('click', openEditModal);
+closeEditModalButton.addEventListener('click', closeEditModal);
+cancelEditModalButton.addEventListener('click', closeEditModal);
+
+// Add input event listeners to update Save button state
+document.getElementById('editGoalName').addEventListener('input', updateSaveButtonState);
+document.getElementById('editTargetAmount').addEventListener('input', updateSaveButtonState);
+document.getElementById('editDeadline').addEventListener('input', updateSaveButtonState);
+document.getElementById('editNotificationEnabled').addEventListener('change', updateSaveButtonState);
+
+lineChartButton.addEventListener('click', () => {
+    chartType = 'line';
+    lineChartButton.classList.add('bg-green-100', 'text-teal-600');
+    barChartButton.classList.remove('bg-green-100', 'text-teal-600');
+    renderChart();
+});
+
+barChartButton.addEventListener('click', () => {
+    chartType = 'bar';
+    barChartButton.classList.add('bg-green-100', 'text-teal-600');
+    lineChartButton.classList.remove('bg-green-100', 'text-teal-600');
+    renderChart();
+});
+
+
+addContributionBtn.addEventListener('click', openModalAddContribution);
+modifyGoalBtn.addEventListener('click', openEditModal);
+
+
+document.getElementById('startDate').addEventListener('change', renderContributions);
+document.getElementById('endDate').addEventListener('change', renderContributions);
+document.getElementById('refreshGoalContributionsButton').addEventListener('click', renderContributions);
+document.getElementById('clearFiltersButton').addEventListener('click', () => {
+    document.getElementById('startDate').value = '';
+    document.getElementById('endDate').value = '';
+    renderContributions();
+});
+
+cancelButton.addEventListener('click', () => {
+    confirmCancelGoal(goalId)
+});
+
+// Form submission
+contributionForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const amount = parseFloat(document.getElementById('contributionAmount').value);
+    const note = document.getElementById('contributionNote').value;
+    const contributionDate = document.getElementById('contributionDate').value;
+
+    // Validate inputs
+    const today = new Date();
+    today.setHours(23, 59, 59, 999); // Allow contributions for today
+    if (amount <= 0) {
+        formError.classList.remove('hidden');
+        formError.textContent = 'Amount must be greater than 0.';
+        return;
+    }
+    if (new Date(contributionDate) > today) {
+        formError.classList.remove('hidden');
+        formError.textContent = 'Contribution date cannot be in the future.';
+        return;
+    }
+
+    const contribution = {
+        goalId: goalProgressResponse.goalId,
+        amount,
+        note: note || null,
+        contributionDate
+    };
+
+
+    if (await addGoalContribution(contribution)) {
+        closeModalAddContribution();
+        await fetchGoalDetails();
+    }
+});
+
+editGoalForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!hasFormChanged()) {
+        closeEditModal();
+        return;
+    }
+
+    const name = document.getElementById('editGoalName').value.trim();
+    const targetAmount = parseFloat(document.getElementById('editTargetAmount').value);
+    const deadline = document.getElementById('editDeadline').value;
+    const notificationEnabled = document.getElementById('editNotificationEnabled').checked;
+
+    // Validate inputs
+    if (!name) {
+        editFormError.classList.remove('hidden');
+        editErrorMessageModal.textContent = 'Goal name is required.';
+        return;
+    }
+    if (targetAmount <= 0) {
+        editFormError.classList.remove('hidden');
+        editErrorMessageModal.textContent = 'Target amount must be greater than 0.';
+        return;
+    }
+    if (!deadline) {
+        editFormError.classList.remove('hidden');
+        editErrorMessageModal.textContent = 'Deadline is required.';
+        return;
+    }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (new Date(deadline) < today) {
+        editFormError.classList.remove('hidden');
+        editErrorMessageModal.textContent = 'Deadline cannot be in the past.';
+        return;
+    }
+
+    const updatedGoal = {
+        name,
+        targetAmount,
+        deadline,
+        notificationEnabled
+    };
+
+    try {
+        const response = await apiRequest(`${API_BASE_URL}/goal/${goalId}`, {
+            method: 'PUT',
+            body: JSON.stringify(updatedGoal)
+        });
+        if (!response.ok) throw new Error('Failed to update goal');
+        showResult("Goal updated successfully!", "success");
+        closeEditModal();
+        await fetchGoalDetails();
+    } catch (error) {
+        editFormError.classList.remove('hidden');
+        editErrorMessageModal.textContent = 'Failed to update goal. Please try again.';
+        showResult('Error updating goal:', "error")
+    }
+});
+
+async function initiateUI() {
+    await fetchGoalDetails();
+    await loadSideBar(getCurrentUser());
+}
+
+window.addEventListener('load', () => {
+    if (checkAuth()) {
+        initiateUI();
+    }
+});

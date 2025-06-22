@@ -408,20 +408,6 @@
             }, 200);
         });
 
-        // Helper function to set active class on sidebar links
-        function setActiveSidebarLink() {
-            const currentPage = window.location.pathname.split('/').pop();
-            const links = document.querySelectorAll('.sidebar nav ul li a');
-            
-            links.forEach(link => {
-                if (link.getAttribute('href') === currentPage) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
-            });
-        }
-
         // Handle logout
         async function handleLogout() {
             console.log('[LOGOUT] Logout triggered');

@@ -4,6 +4,7 @@ const API_BASE_URL = 'http://localhost:8080';
 let packages = [];
 let filteredPackages = [];
 let billingCycle = 'monthly';
+let purchasedList;
 
 const getPackageIcon = () => 'enterprise';
 
@@ -18,6 +19,7 @@ const getDurationText = (value, type) => {
 };
 
 const renderPackages = (packagesData) => {
+
     const container = document.getElementById('packagesContainer');
     if (!packagesData || packagesData.length === 0) {
         container.innerHTML = `
@@ -79,7 +81,7 @@ const renderPackages = (packagesData) => {
                         ` : ''}
                     </ul>
                     <div class="plan-card-footer">
-                        <button class="w-full py-2.5 px-4 rounded-lg font-semibold text-sm bg-gray-800 text-white hover:bg-gray-900 focus:ring-gray-500 shadow-md focus:outline-none focus:ring-2 transition-all duration-300 transform hover:scale-105" onclick="initiatePayment(${pkg.id})">
+                        <button ${isPurchased(pkg.id) ? `disabled` : ''} class="w-full py-2.5 px-4 rounded-lg font-semibold text-sm bg-gray-800 text-white hover:bg-gray-900 focus:ring-gray-500 shadow-md focus:outline-none focus:ring-2 transition-all duration-300 transform hover:scale-105 disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed disabled:hover:bg-gray-400 disabled:hover:scale-100 disabled:shadow-none" onclick="initiatePayment(${pkg.id})">
                             <i data-lucide="credit-card" class="w-4 h-4 inline mr-1"></i>
                             Buy Now
                         </button>
@@ -93,7 +95,12 @@ const renderPackages = (packagesData) => {
     lucide.createIcons();
 };
 
-
+function isPurchased(pkgId) {
+    for (let i = 0; i < purchasedList.length; i++) {
+        if (purchasedList[i].id === pkgId) return true;
+    }
+    return false;
+}
 
 const toggleBilling = (cycle) => {
     billingCycle = cycle;
@@ -123,13 +130,13 @@ const loadPackages = async () => {
         // packages = packagesData.content;
         packages = Array(4).fill(packagesData.content).flat();
         filteredPackages = packages.filter(pkg => pkg.durationType === 'MONTH');
-        renderPackages(filteredPackages);
     }
 };
 
 const init = async () => {
     if (!checkAuth()) return;
     loadSideBar(getCurrentUser());
+    await fetchPurchasedPremiumPlans();
     await loadPackages();
     toggleBilling('monthly');
 };
@@ -144,6 +151,22 @@ const fetchPackages = async (page = 0, size = 6, sortBy = 'price', sortDirection
     } catch (error) {
         console.error('Error fetching packages:', error);
         return null;
+    }
+};
+
+async function fetchPurchasedPremiumPlans() {
+    try {
+        const response = await apiRequest(
+            `${API_BASE_URL}/api/premium-package/purchasedList`
+        );
+
+
+        if (!response) return null;
+        const data = await response.json();
+
+        purchasedList = data.result;
+    } catch (error) {
+        console.error('Error fetching packages:', error);
     }
 };
 

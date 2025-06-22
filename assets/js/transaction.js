@@ -632,10 +632,12 @@ const renderTransactions = (transactions) => {
             (transaction.categoryType || 'EXPENSE') :
             (transaction.userCategoryType || 'EXPENSE');
 
-        const categoryIcon = transaction.categoryIcon || transaction.userCategoryIcon || '';
+        const categoryIcon = transaction.icon || '';
         const categoryName = transaction.categoryName == null ? transaction.userCategoryName : transaction.categoryName;
 
         // Get icon HTML
+        console.log(transaction);
+
         const iconHtml = categoryIcon ? getIconSymbol(categoryIcon) : '<i class="fas fa-question"></i>';
 
         const tr = document.createElement('tr');

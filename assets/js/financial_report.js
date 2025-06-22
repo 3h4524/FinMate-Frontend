@@ -300,6 +300,7 @@ async function initializeUI() {
 window.addEventListener('load', () => {
     if (checkAuth()) {
         user = getCurrentUser();
+        console.log("xem: ", user);
         initializeUI();
     }
 });
