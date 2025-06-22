@@ -99,6 +99,65 @@ body {
     overflow-y: auto;
 }
 
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--card-bg);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    padding: 1.5rem;
+    position: relative;
+}
+
+.stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.stat-title {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.stat-icon.income {
+    background: rgba(56, 142, 60, 0.1);
+    color: var(--main-green);
+}
+
+.stat-icon.spending {
+    background: rgba(211, 47, 47, 0.1);
+    color: var(--danger);
+}
+
+.stat-icon.ratio {
+    color: var(--main-green);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
 /* ===== HEADER ===== */
 .main-header {
     background: var(--header-bg);
@@ -475,6 +534,40 @@ body {
 
 .delete-btn:hover {
     background: var(--red-50);
+}
+
+.error-message {
+    color: var(--red-600);
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+}
+
+/* More button */
+.more-btn {
+    color: var(--gray-600);
+}
+
+.more-btn:hover {
+    background: var(--gray-100);
+}
+
+.form-input-static {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    color: #333;
+    display: block;
+    margin-top: 5px;
+}
+
+.amount-positive {
+    color: var(--green-600);
+}
+
+.amount-negative {
+    color: var(--red-600);
 }
 
 /* ===== MODALS ===== */
@@ -1068,30 +1161,38 @@ body {
     .main-content {
         margin-left: 0;
     }
+
     .goals-grid {
         grid-template-columns: 1fr;
     }
+
     .form-grid {
         grid-template-columns: 1fr;
     }
+
     .content-area {
         padding: 24px;
     }
+
     .transaction-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 16px;
     }
+
     .transaction-actions {
         width: 100%;
         justify-content: flex-end;
     }
+
     .search-input {
         width: 100%;
     }
+
     .wallet-card {
         padding: 20px;
     }
+
     .wallet-balance {
         font-size: 32px;
     }
@@ -1106,6 +1207,7 @@ body {
         width: 95%;
         padding: 20px;
     }
+
     .main-header {
         padding: 16px 20px;
     }
@@ -1134,4 +1236,3 @@ body {
     font-size: 24px !important;
     font-weight: 700 !important;
 }
-

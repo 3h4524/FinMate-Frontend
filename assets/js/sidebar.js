@@ -11,8 +11,6 @@ function setActiveSidebarLink() {
     });
 }
 
-<<<<<<< HEAD
-=======
 // Check user role and show/hide admin features
 function checkUserRoleAndShowAdminFeatures() {
     try {
@@ -65,7 +63,6 @@ function checkUserRoleAndShowAdminFeatures() {
     }
 }
 
->>>>>>> origin/authentication1
 // Handle logout
 async function handleLogout() {
     console.log('[LOGOUT] Logout triggered');
@@ -92,20 +89,6 @@ async function handleLogout() {
     }
 }
 
-<<<<<<< HEAD
-async function loadSideBar(user) {
-    fetch('sidebar.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('sidebar-container').innerHTML = data;
-            const sidebarUserNameSpan = document.querySelector('.sidebar .user-info .user-name');
-            if (sidebarUserNameSpan) {
-                sidebarUserNameSpan.textContent = user.username;
-            }
-            const sidebarAvatar = document.querySelector('.sidebar .user-info img');
-            if (sidebarAvatar) {
-                sidebarAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=388e3c&color=fff`;
-=======
 // Load sidebar với username (for backward compatibility)
 async function loadSideBar(user) {
     const userName = user.username || user.name;
@@ -570,16 +553,11 @@ function loadSideBarSimple(userName) {
     const sidebarAvatar = document.querySelector('.sidebar .user-avatar img');
             if (sidebarAvatar) {
                 sidebarAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=388e3c&color=fff`;
->>>>>>> origin/authentication1
             }
 
             // Set active class for current page in sidebar
             setActiveSidebarLink();
-<<<<<<< HEAD
-        });
-=======
             
             // Show admin features for admin users
                 checkUserRoleAndShowAdminFeatures();
->>>>>>> origin/authentication1
 }

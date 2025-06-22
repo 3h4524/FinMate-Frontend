@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-=======
-function b64DecodeUnicode(str) {
-    // Going backwards: from bytestream, to percent-encoding, to original string.
-    return decodeURIComponent(atob(str).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-}
-
->>>>>>> origin/authentication1
 let cachedToken = null;
 let cachedUser = null;
 
@@ -28,11 +18,7 @@ const getCurrentUser = () => {
     if (!token) return null;
 
     try {
-<<<<<<< HEAD
         const payload = JSON.parse(atob(token.split('.')[1]));
-=======
-        const payload = JSON.parse(b64DecodeUnicode(token.split('.')[1]));
->>>>>>> origin/authentication1
         cachedUser = {
             userId: payload.userId || payload.sub,
             username: payload.username || payload.username,
