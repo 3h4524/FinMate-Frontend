@@ -416,6 +416,7 @@
 
         .feature-list {
             list-style: none;
+            padding: 2%;
         }
 
         .feature-item {
@@ -1104,7 +1105,7 @@
         };
 
         const formatTimeAgo = (localDateTimeStr) => {
-            const now = new Date('2025-06-22T23:56:00+07:00'); // Updated to current date and time
+            const now = new Date('2025-06-23T00:31:00+07:00'); // Updated to current date and time
             const createdAt = new Date(localDateTimeStr);
             const diffMs = now - createdAt;
             const diffMinutes = Math.floor(diffMs / 60000);
@@ -1178,7 +1179,6 @@
                 });
                 return response;
             } catch (error) {
-
                 console.error('Error updating package:', error);
                 throw error;
             }
@@ -1271,7 +1271,7 @@
                         <ul class="feature-list">
                             ${(pkg.features || ['Basic Features', 'Support']).slice(0, 3).map(feature => `
                                 <li class="feature-item">
-                                    ${getFeatureName(feature)}
+                                    <i class="fas fa-check"></i> ${getFeatureName(feature)}
                                 </li>
                             `).join('')}
                             ${pkg.features && pkg.features.length > 3 ? `
@@ -1440,8 +1440,15 @@
                 document.getElementById('updatePrice').value = packageData.price;
                 document.getElementById('updateDurationValue').value = packageData.durationValue;
                 document.getElementById('updateDurationType').value = packageData.durationType;
-                document.getElementById('updateSelectedFeatures').value = packageData.features ? packageData.features.join(',') : '';
-                renderFeatures('updateFeatures', packageData.features || []);
+                // Map feature names to feature codes
+                const featureCodes = packageData.features
+                    ? packageData.features.map(name => {
+                          const feature = allFeatures.find(f => f.featureName === name);
+                          return feature ? feature.featureCode : null;
+                      }).filter(code => code !== null)
+                    : [];
+                document.getElementById('updateSelectedFeatures').value = featureCodes.join(',');
+                renderFeatures('updateFeatures', featureCodes);
                 document.getElementById('updateIsActive').value = packageData.isActive.toString();
                 modal.style.display = 'flex';
             } else {
@@ -1542,7 +1549,7 @@
 
             try {
                 const response = await updatePackage(packageId, packageData);
-                console.log(response.json());
+
                 if (response && response.ok) {
                     closeUpdateModal();
                     await loadPackages();
