@@ -5,408 +5,562 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FINEbank.IO - Transaction Management</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
-    <link rel="stylesheet" href="../assets/css/transaction.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <script src="../assets/js/sidebar.js" defer></script>
     <script src="../assets/js/user_auth.js" defer></script>
+    <style>
+        /* Minimal custom CSS for specific overrides */
+        :root {
+            --main-green: #388e3c;
+            --main-green-dark: #2e7d32;
+            --main-green-light: #a3c9a8;
+        }
+
+        .wallet-card {
+            background: linear-gradient(135deg, var(--main-green) 0%, var(--main-green-dark) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wallet-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(30px, -30px);
+        }
+
+        .wallet-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .category-icon-small {
+            width: 16px;
+            height: 16px;
+            vertical-align: middle;
+            margin-right: 4px;
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
+        }
+
+        .icon-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .icon-grid::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        .icon-grid::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .icon-grid::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
 </head>
 
-<body>
-    <div class="app-container">
-        <!-- Include sidebar component -->
+<body class="font-sans bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800 min-h-screen">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
         <div id="sidebar-container"></div>
-        <div class="main-content" id="mainContent" style="display: none;">
+
+        <!-- Main Content -->
+        <div class="flex-1 ml-0 md:ml-64 p-6 sm:p-8 flex flex-col" id="mainContent">
             <!-- Header -->
-            <div class="main-header">
-                <div class="header-content">
-                    <div>
-                        <h1 class="header-title" id="headerTitle">Transaction Management</h1>
-                    </div>
-                    <div class="header-actions">
-                        <div class="search-box">
-                            <div class="search-icon">🔍</div>
-                            <input type="text" class="search-input" placeholder="Search here">
+            <header class="bg-white shadow-md rounded-xl p-6 mb-6">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800" id="headerTitle">Transaction Management
+                    </h1>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <i
+                                class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input type="text"
+                                class="pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg w-48 sm:w-64 focus:border-green-600 focus:ring focus:ring-green-200 focus:ring-opacity-50"
+                                placeholder="Search here">
                         </div>
-                        <div class="user-avatar">👤</div>
+                        <div
+                            class="w-11 h-11 bg-gradient-to-br from-green-600 to-green-800 rounded-lg flex items-center justify-center text-white text-lg shadow-md cursor-pointer hover:scale-105 transition-transform">
+                            👤
+                        </div>
                     </div>
+                </div>
+            </header>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-sm font-medium text-gray-500">Total Income</span>
+                        <div class="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-dollar-sign text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-800" id="totalIncome">0đ</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-sm font-medium text-gray-500">Total Spending</span>
+                        <div class="w-10 h-10 bg-red-100 text-red-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-dollar-sign text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-800" id="totalSpending">0đ</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-sm font-medium text-gray-500">Income/Expense Ratio</span>
+                        <div class="w-10 h-10 text-green-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-balance-scale text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-800" id="incomeExpenseRatio">0%</div>
                 </div>
             </div>
 
             <!-- Transactions Content -->
-            <div id="transactions-content" class="content-area">
-                <div class="wallet-card">
-                    <div class="wallet-header">
-                        <div class="wallet-title">💳 My Wallet</div>
-                        <button class="wallet-edit-btn" id="editWalletBtn">
-                            ✏️ Edit
+            <div id="transactions-content" class="flex-1">
+                <div class="wallet-card rounded-xl p-6 text-white mb-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="text-lg font-medium opacity-90">💳 My Wallet</div>
+                        <button
+                            class="bg-white bg-opacity-20 text-white px-3 py-2 rounded-lg flex items-center space-x-2 hover:bg-opacity-30 transition"
+                            id="editWalletBtn">
+                            <i class="fas fa-edit"></i><span>Edit</span>
                         </button>
                     </div>
                     <div id="walletContent">
-                        <div id="walletLoading" class="wallet-loading">
+                        <div id="walletLoading" class="flex items-center space-x-2 text-white">
                             <div class="wallet-spinner"></div>
                             <span>Loading wallet...</span>
                         </div>
                         <div id="walletBalance" class="hidden">
-                            <div class="wallet-balance" id="balanceAmount">0.00</div>
-                            <div class="wallet-currency" id="balanceCurrency">VND</div>
+                            <div class="text-3xl font-bold" id="balanceAmount">0.00</div>
+                            <div class="text-sm opacity-80" id="balanceCurrency">VND</div>
                         </div>
-                        <div id="walletError" class="hidden">
-                            <div style="color: rgba(255, 255, 255, 0.8);">Error loading wallet</div>
+                        <div id="walletError" class="hidden text-white opacity-80">Error loading wallet</div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Transaction Management</h2>
+                        <div class="flex space-x-4">
+                            <button
+                                class="bg-blue-600 text-white px-4 py-3 rounded-lg font-semibold flex items-center space-x-2 hover:bg-blue-700 transition"
+                                id="searchBtn">
+                                <i class="fas fa-search"></i><span>Search</span>
+                            </button>
+                            <button
+                                class="bg-green-600 text-white px-4 py-3 rounded-lg font-semibold flex items-center space-x-2 hover:bg-green-700 transition"
+                                id="createBtn">
+                                <i class="fas fa-plus"></i><span>Add Transaction</span>
+                            </button>
+                            <a href="recurring-transaction.html"
+                                class="bg-purple-600 text-white px-4 py-3 rounded-lg font-semibold flex items-center space-x-2 hover:bg-purple-700 transition"
+                                id="recurringBtn">
+                                <i class="fas fa-redo"></i><span>Recurring Transactions</span>
+                            </a>
                         </div>
                     </div>
                 </div>
 
-                <div class="transaction-header">
-                    <h2 class="transaction-title">Transaction Management</h2>
-                    <div class="transaction-actions">
-                        <button class="btn btn-secondary" id="searchBtn">
-                            🔍 Search
-                        </button>
-                        <button class="btn btn-primary" id="createBtn">
-                            ➕ Add Transaction
-                        </button>
+                <div id="loadingDiv" class="hidden text-center py-12">
+                    <div
+                        class="inline-block w-10 h-10 border-4 border-gray-200 border-t-green-600 rounded-full animate-spin">
                     </div>
+                    <p class="mt-2 text-gray-500">Loading...</p>
                 </div>
 
-                <div id="loadingDiv" class="loading hidden">
-                    <div class="spinner"></div>
-                    <p style="margin-top: 8px; color: #6b7280;">Loading...</p>
-                </div>
-
-                <div class="table-container">
-                    <table class="table">
-                        <thead>
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
                             <tr>
-                                <th>Date</th>
-                                <th>Category</th>
-                                <th>Transaction Type</th>
-                                <th>Amount</th>
-                                <th>Note</th>
-                                <th>Payment Method</th>
-                                <th>Location</th>
-                                <th>Recurring</th>
-                                <th style="text-align: right;">Actions</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-800 uppercase">Date</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-800 uppercase">Category
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-800 uppercase">Amount
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-800 uppercase">Note</th>
+                                <th class="px-6 py-4 text-right text-xs font-semibold text-gray-800 uppercase">Actions
+                                </th>
                             </tr>
                         </thead>
                         <tbody id="transactionTableBody">
                             <tr>
-                                <td colspan="9" class="empty-state">No transactions</td>
+                                <td colspan="5" class="text-center py-12 text-gray-500">No transactions</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <div id="paginationDiv" class="pagination hidden">
-                    <button class="pagination-btn" id="prevBtn" disabled>Previous</button>
-                    <div class="pagination-numbers" id="pageNumbers"></div>
-                    <button class="pagination-btn" id="nextBtn" disabled>Next</button>
+                <div id="paginationDiv"
+                    class="hidden flex justify-center items-center space-x-4 mt-8 p-6 bg-white rounded-xl shadow-md">
+                    <button
+                        class="px-4 py-3 bg-white border-2 border-gray-200 rounded-lg font-semibold hover:bg-green-50 hover:border-green-600 transition disabled:opacity-50"
+                        id="prevBtn" disabled>Previous</button>
+                    <div class="flex space-x-2" id="pageNumbers"></div>
+                    <button
+                        class="px-4 py-3 bg-white border-2 border-gray-200 rounded-lg font-semibold hover:bg-green-50 hover:border-green-600 transition disabled:opacity-50"
+                        id="nextBtn" disabled>Next</button>
                 </div>
             </div>
 
-            <!-- Bills Content -->
-            <div id="bills-content" class="content-area hidden">
-                <div style="text-align: center; padding: 48px;">
-                    <h2 style="font-size: 24px; font-weight: bold; color: #1f2937; margin-bottom: 16px;">
-                        Bills
-                    </h2>
-                    <p style="color: #6b7280;">
-                        This feature is under development...
-                    </p>
-                </div>
+            <!-- Other Content Areas (Bills, Expenses, Goals, Settings) -->
+            <div id="bills-content" class="content-area hidden text-center py-12">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Bills</h2>
+                <p class="text-gray-500">This feature is under development...</p>
             </div>
-
-            <!-- Expenses Content -->
-            <div id="expenses-content" class="content-area hidden">
-                <div style="text-align: center; padding: 48px;">
-                    <h2 style="font-size: 24px; font-weight: bold; color: #1f2937; margin-bottom: 16px;">
-                        Expenses
-                    </h2>
-                    <p style="color: #6b7280;">
-                        This feature is under development...
-                    </p>
-                </div>
+            <div id="expenses-content" class="content-area hidden text-center py-12">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Expenses</h2>
+                <p class="text-gray-500">This feature is under development...</p>
             </div>
-
-            <!-- Goals Content -->
-            <div id="goals-content" class="content-area hidden">
-                <div style="text-align: center; padding: 48px;">
-                    <h2 style="font-size: 24px; font-weight: bold; color: #1f2937; margin-bottom: 16px;">
-                        Goals
-                    </h2>
-                    <p style="color: #6b7280;">
-                        This feature is under development...
-                    </p>
-                </div>
+            <div id="goals-content" class="content-area hidden text-center py-12">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Goals</h2>
+                <p class="text-gray-500">This feature is under development...</p>
             </div>
-
-            <!-- Settings Content -->
-            <div id="settings-content" class="content-area hidden">
-                <div style="text-align: center; padding: 48px;">
-                    <h2 style="font-size: 24px; font-weight: bold; color: #1f2937; margin-bottom: 16px;">
-                        Settings
-                    </h2>
-                    <p style="color: #6b7280;">
-                        This feature is under development...
-                    </p>
-                </div>
+            <div id="settings-content" class="content-area hidden text-center py-12">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Settings</h2>
+                <p class="text-gray-500">This feature is under development...</p>
             </div>
         </div>
     </div>
 
     <!-- Wallet Modal -->
-    <div id="walletModal" class="modal-overlay hidden">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title">Edit Wallet Balance</h2>
-                <button class="close-btn" id="closeWalletModalBtn">×</button>
+    <div id="walletModal"
+        class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-xl p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-xl">
+            <div class="flex justify-between items-center mb-6 border-b-2 border-gray-100 pb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Edit Wallet Balance</h2>
+                <button
+                    class="bg-gray-100 text-gray-500 w-10 h-10 rounded-lg flex items-center justify-center hover:bg-gray-200 transition"
+                    id="closeWalletModalBtn">×</button>
             </div>
-
-            <form id="walletForm">
-                <div style="padding: 24px;">
-                    <div class="form-group">
-                        <label class="form-label">💰 Current Balance</label>
-                        <div style="background: #f3f4f6; padding: 12px; border-radius: 8px; color: #6b7280;">
-                            <span id="currentBalanceDisplay">Loading...</span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">💰 New Balance *</label>
-                        <input type="number" step="0.01" class="form-input" id="newBalance" required
-                            placeholder="Enter new balance">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">💱 Currency</label>
-                        <select class="form-input" id="currency">
-                            <option value="VND">VND - Vietnamese Dong</option>
-                            <option value="USD">USD - US Dollar</option>
-                            <option value="EUR">EUR - Euro</option>
-                        </select>
+            <form id="walletForm" class="p-6">
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-800 mb-2">💰 Current Balance</label>
+                    <div class="bg-gray-100 p-3 rounded-lg text-gray-500">
+                        <span id="currentBalanceDisplay">Loading...</span>
                     </div>
                 </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary" id="updateWalletBtn">
-                        💾 Update Balance
-                    </button>
-                    <button type="button" class="btn btn-outline" id="cancelWalletBtn">Cancel</button>
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-800 mb-2">💰 New Balance *</label>
+                    <input type="number" step="0.01"
+                        class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                        id="newBalance" required placeholder="Enter new balance">
+                    <span class="text-red-600 text-xs mt-1 block" id="newBalanceError"></span>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-800 mb-2">💱 Currency</label>
+                    <select
+                        class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                        id="currency">
+                        <option value="VND">VND - Vietnamese Dong</option>
+                        <option value="USD">USD - US Dollar</option>
+                        <option value="EUR">EUR - Euro</option>
+                    </select>
+                </div>
+                <div class="flex space-x-4 pt-6 border-t-2 border-gray-100">
+                    <button type="submit"
+                        class="flex-1 bg-green-600 text-white p-4 rounded-lg font-semibold hover:bg-green-700 transition"
+                        id="updateWalletBtn">💾 Update Balance</button>
+                    <button type="button"
+                        class="flex-1 bg-white text-gray-800 p-4 border-2 border-gray-200 rounded-lg font-semibold hover:bg-gray-50 transition"
+                        id="cancelWalletBtn">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Create/Edit Transaction Modal -->
-    <div id="transactionModal" class="modal-overlay hidden">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title" id="modalTitle">Create New Transaction</h2>
-                <button class="close-btn" id="closeModalBtn">×</button>
+    <div id="transactionModal"
+        class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
+            <div class="flex justify-between items-center mb-6 border-b-2 border-gray-100 pb-4">
+                <h2 class="text-2xl font-bold text-gray-800" id="modalTitle">Create New Transaction</h2>
+                <button
+                    class="bg-gray-100 text-gray-500 w-10 h-10 rounded-lg flex items-center justify-center hover:bg-gray-200 transition"
+                    id="closeModalBtn">×</button>
             </div>
-
-            <form id="transactionForm">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">💰 Amount *</label>
-                        <input type="number" step="0.01" class="form-input" id="amount" required>
+            <form id="transactionForm" class="space-y-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-800 mb-2">💰 Amount *</label>
+                        <input type="number" step="0.01"
+                            class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                            id="amount" required>
+                        <span class="text-red-600 text-xs mt-1 block" id="amountError"></span>
                     </div>
-
-                    <div class="form-group">
-                        <label class="form-label">📅 Transaction Date *</label>
-                        <input type="date" class="form-input" id="transactionDate" required>
-                    </div>
-                </div>
-
-                <div class="form-grid">
-                    <div class="form-group full-width">
-                        <label class="form-label">📋 Transaction Type</label>
-                        <select class="form-input categorySelect" id="category-edit" required>
-                            <option value="">Select transaction type</option>
-                            <!-- Options will be populated dynamically -->
-                        </select>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-800 mb-2">📅 Transaction Date *</label>
+                        <input type="date"
+                            class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                            id="transactionDate" required>
+                        <span class="text-red-600 text-xs mt-1 block" id="transactionDateError"></span>
                     </div>
                 </div>
-
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">💳 Payment Method</label>
-                        <input type="text" class="form-input" id="paymentMethod" maxlength="255">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-2">📋 Transaction Type</label>
+                    <select
+                        class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200 categorySelect"
+                        id="category-edit" required>
+                        <option value="">Select transaction type</option>
+                    </select>
+                    <span class="text-red-600 text-xs mt-1 block" id="categoryEditError"></span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-800 mb-2">💳 Payment Method</label>
+                        <input type="text"
+                            class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                            id="paymentMethod" maxlength="255">
                     </div>
-
-                    <div class="form-group">
-                        <label class="form-label">📍 Location</label>
-                        <input type="text" class="form-input" id="location" maxlength="255">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-800 mb-2">📍 Location</label>
+                        <input type="text"
+                            class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                            id="location" maxlength="255">
                     </div>
                 </div>
-
-                <div class="form-group full-width">
-                    <label class="form-label">📝 Note</label>
-                    <textarea class="form-input form-textarea" id="note" maxlength="255"></textarea>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-2">📝 Note</label>
+                    <textarea
+                        class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200 resize-y min-h-[100px]"
+                        id="note" maxlength="255"></textarea>
                 </div>
-
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">Image URL</label>
-                        <input type="url" class="form-input" id="imageUrl" maxlength="255">
+                <div class="recurring-fields">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-800 mb-2">🔄 Recurring Pattern</label>
+                            <select
+                                class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                                id="recurringPattern">
+                                <option value="">Non-recurring</option>
+                                <option value="Daily">Daily</option>
+                                <option value="Weekly">Weekly</option>
+                                <option value="Monthly">Monthly</option>
+                            </select>
+                        </div>
                     </div>
-
-                    <div class="form-group">
-                        <label class="form-label">🔄 Recurring Pattern</label>
-                        <select class="form-input" id="recurringPattern">
-                            <option value="">Non-recurring</option>
-                            <option value="Daily">Daily</option>
-                            <option value="Weekly">Weekly</option>
-                            <option value="Monthly">Monthly</option>
-                        </select>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 recurring-dates hidden">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-800 mb-2">📅 Start Date *</label>
+                            <input type="date"
+                                class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                                id="startDate">
+                            <span class="text-red-600 text-xs mt-1 block" id="startDateError"></span>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-800 mb-2">📅 End Date *</label>
+                            <input type="date"
+                                class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                                id="endDate">
+                            <span class="text-red-600 text-xs mt-1 block" id="endDateError"></span>
+                        </div>
                     </div>
                 </div>
-
-                <div class="form-grid recurring-dates hidden">
-                    <div class="form-group">
-                        <label class="form-label">📅 Start Date *</label>
-                        <input type="date" class="form-input" id="startDate">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">📅 End Date *</label>
-                        <input type="date" class="form-input" id="endDate">
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary" id="submitBtn">Create Transaction</button>
-                    <button type="button" class="btn btn-outline" id="cancelBtn">Cancel</button>
+                <div class="flex space-x-4 pt-6 border-t-2 border-gray-100">
+                    <button type="submit"
+                        class="flex-1 bg-green-600 text-white p-4 rounded-lg font-semibold hover:bg-green-700 transition"
+                        id="submitBtn">Submit Details</button>
+                    <button type="button"
+                        class="flex-1 bg-white text-gray-800 p-4 border-2 border-gray-200 rounded-lg font-semibold hover:bg-gray-50 transition"
+                        id="cancelBtn">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Search Modal -->
-    <div id="searchModal" class="modal-overlay hidden">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title">Search Transactions</h2>
-                <button class="close-btn" id="closeSearchModalBtn">×</button>
+    <div id="searchModal"
+        class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
+            <div class="flex justify-between items-center mb-6 border-b-2 border-gray-100 pb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Search Transactions</h2>
+                <button
+                    class="bg-gray-100 text-gray-500 w-10 h-10 rounded-lg flex items-center justify-center hover:bg-gray-200 transition"
+                    id="closeSearchModalBtn">×</button>
             </div>
-            <form id="searchForm">
-                <div class="form-grid">
-                    <div class="form-group full-width">
-                        <label class="form-label">📋 Transaction Type</label>
-                        <select class="form-input categorySelect" id="category-search">
-                            <option value="">Select transaction type</option>
-                            <!-- Options will be populated dynamically -->
-                        </select>
+            <form id="searchForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-2">📋 Transaction Type</label>
+                    <select
+                        class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200 categorySelect"
+                        id="category-search">
+                        <option value="">Select transaction type</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-800 mb-2">💰 Minimum Amount</label>
+                        <input type="number" step="0.01"
+                            class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                            id="minAmount">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-800 mb-2">💰 Maximum Amount</label>
+                        <input type="number" step="0.01"
+                            class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                            id="maxAmount">
                     </div>
                 </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">💰 Minimum Amount</label>
-                        <input type="number" step="0.01" class="form-input" id="minAmount">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-800 mb-2">📅 From Date</label>
+                        <input type="date"
+                            class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                            id="searchStartDate">
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">💰 Maximum Amount</label>
-                        <input type="number" step="0.01" class="form-input" id="maxAmount">
-                    </div>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">📅 From Date</label>
-                        <input type="date" class="form-input" id="searchStartDate">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">📅 To Date</label>
-                        <input type="date" class="form-input" id="searchEndDate">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-800 mb-2">📅 To Date</label>
+                        <input type="date"
+                            class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                            id="searchEndDate">
                     </div>
                 </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">💳 Payment Method</label>
-                        <input type="text" class="form-input" id="paymentMethodSearch" maxlength="255">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-800 mb-2">💳 Payment Method</label>
+                        <input type="text"
+                            class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                            id="paymentMethodSearch" maxlength="255">
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">📍 Location</label>
-                        <input type="text" class="form-input" id="locationSearch" maxlength="255">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-800 mb-2">📍 Location</label>
+                        <input type="text"
+                            class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                            id="locationSearch" maxlength="255">
                     </div>
                 </div>
-                <div class="form-group full-width">
-                    <label class="form-label">📝 Note</label>
-                    <input type="text" class="form-input" id="noteSearch" maxlength="255">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-2">📝 Note</label>
+                    <input type="text"
+                        class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                        id="noteSearch" maxlength="255">
                 </div>
-                <div class="form-group full-width">
-                    <label class="form-label">🔄 Recurring Transactions</label>
-                    <select class="form-input" id="isRecurringSearch">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-2">🔄 Recurring Transactions</label>
+                    <select
+                        class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                        id="isRecurringSearch">
                         <option value="">All</option>
                         <option value="true">Yes</option>
                         <option value="false">No</option>
                     </select>
                 </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary" id="submitSearchBtn">Search</button>
-                    <button type="button" class="btn btn-outline" id="cancelSearchBtn">Cancel</button>
+                <div class="flex space-x-4 pt-6 border-t-2 border-gray-100">
+                    <button type="submit"
+                        class="flex-1 bg-green-600 text-white p-4 rounded-lg font-semibold hover:bg-green-700 transition"
+                        id="submitSearchBtn">Search</button>
+                    <button type="button"
+                        class="flex-1 bg-white text-gray-800 p-4 border-2 border-gray-200 rounded-lg font-semibold hover:bg-gray-50 transition"
+                        id="cancelSearchBtn">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
 
-
     <!-- Create Category Modal -->
-    <div id="createCategoryModal" class="modal-overlay hidden">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title">Tạo Danh Mục Mới</h2>
-                <button class="close-btn" id="closeCreateCategoryModalBtn">×</button>
+    <div id="createCategoryModal"
+        class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
+            <div class="flex justify-between items-center mb-6 border-b-2 border-gray-100 pb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Tạo Danh Mục Mới</h2>
+                <button
+                    class="bg-gray-100 text-gray-500 w-10 h-10 rounded-lg flex items-center justify-center hover:bg-gray-200 transition"
+                    id="closeCreateCategoryModalBtn">×</button>
             </div>
-            <form id="createCategoryForm">
-                <div class="form-grid">
-                    <div class="form-group full-width">
-                        <label class="form-label">📋 Tên Danh Mục *</label>
-                        <input type="text" class="form-input" id="categoryName" required maxlength="50"
-                            placeholder="Nhập tên danh mục">
-                    </div>
+            <form id="createCategoryForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-2">📋 Tên Danh Mục *</label>
+                    <input type="text"
+                        class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                        id="categoryName" required maxlength="50" placeholder="Nhập tên danh mục">
                 </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">🎨 Loại Danh Mục *</label>
-                        <select class="form-input" id="categoryType" required>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-800 mb-2">🎨 Loại Danh Mục *</label>
+                        <select
+                            class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                            id="categoryType" required>
                             <option value="">Chọn loại</option>
                             <option value="INCOME">Thu nhập</option>
                             <option value="EXPENSE">Chi tiêu</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">🎨 Màu Sắc</label>
-                        <input type="color" class="form-input" id="categoryColor" value="#4CAF50">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-800 mb-2">🎨 Màu Sắc</label>
+                        <input type="color"
+                            class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
+                            id="categoryColor" value="#4CAF50">
                     </div>
                 </div>
-                <div class="form-grid">
-                    <div class="form-group full-width">
-                        <label class="form-label">🖼️ Chọn Biểu Tượng *</label>
-                        <div class="icon-grid" id="iconGrid">
-                            <!-- Icons sẽ được tạo bằng JavaScript -->
-                        </div>
-                        <input type="hidden" id="categoryIcon" required>
-                    </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-2">🖼️ Chọn Biểu Tượng *</label>
+                    <div class="icon-grid grid grid-cols-4 sm:grid-cols-6 gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg max-h-52 overflow-y-auto"
+                        id="iconGrid"></div>
+                    <input type="hidden" id="categoryIcon" required>
                 </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary" id="submitCategoryBtn">Lưu Danh Mục</button>
-                    <button type="button" class="btn btn-outline" id="cancelCategoryBtn">Hủy</button>
+                <div class="flex space-x-4 pt-6 border-t-2 border-gray-100">
+                    <button type="submit"
+                        class="flex-1 bg-green-600 text-white p-4 rounded-lg font-semibold hover:bg-green-700 transition"
+                        id="submitCategoryBtn">Lưu Danh Mục</button>
+                    <button type="button"
+                        class="flex-1 bg-white text-gray-800 p-4 border-2 border-gray-200 rounded-lg font-semibold hover:bg-gray-50 transition"
+                        id="cancelCategoryBtn">Hủy</button>
                 </div>
             </form>
         </div>
     </div>
-    
+
     <script src="../assets/js/transaction.js"></script>
     <script>
         // Set active sidebar link after auth
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             setTimeout(() => {
                 if (typeof setActiveSidebarLink === 'function') {
                     setActiveSidebarLink();
                 }
             }, 200);
         });
+
+        // Helper function to set active class on sidebar links
+        function setActiveSidebarLink() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const links = document.querySelectorAll('.sidebar nav ul li a');
+            links.forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
 
         // Handle logout
         async function handleLogout() {
@@ -416,11 +570,8 @@
                 if (token) {
                     const response = await fetch('http://localhost:8080/api/v1/auth/logout', {
                         method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
+                        headers: { 'Authorization': `Bearer ${token}` }
                     });
-
                     if (!response.ok) {
                         console.error('[LOGOUT] Logout failed on server');
                     }

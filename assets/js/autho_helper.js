@@ -1,4 +1,3 @@
-
 let cachedToken = null;
 let cachedUser = null;
 
