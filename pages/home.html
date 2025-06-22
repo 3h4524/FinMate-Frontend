@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FinMate - Home</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="../assets/js/sidebar.js" defer></script>
     <script src="../assets/js/user_auth.js" defer></script>
+    <script src="../assets/js/home.js" type="module" defer></script>
 
     <style>
         :root {
@@ -26,6 +27,7 @@
             --success: #388e3c;
             --text-dark: #2d5a3d;
             --text-light: #546e7a;
+            --warning: #f59e0b;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -40,135 +42,155 @@
         .main-content {
             margin-left: 270px;
             flex-grow: 1;
-            padding: 40px 32px 32px 32px;
+            padding: 48px 40px;
             display: none;
             flex-direction: column;
+            animation: fadeIn 0.3s ease-in-out forwards;
         }
         .header {
             background: var(--header-bg);
             border-radius: var(--header-radius);
             box-shadow: var(--header-shadow);
-            padding: 10px 20px;
+            padding: 20px 28px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 18px;
-            min-height: 48px;
+            margin-bottom: 32px;
+            min-height: 72px;
         }
         .header .greeting {
-            font-size: 18px;
+            font-size: 26px;
             font-weight: 700;
             color: var(--main-green-dark);
         }
         .header .date {
-            font-size: 14px;
+            font-size: 15px;
             color: var(--text-light);
-            margin-left: 12px;
+            margin-left: 16px;
         }
         .header .search-bar {
             display: flex;
             align-items: center;
             position: relative;
-            max-width: 300px;
+            max-width: 450px;
             flex: 1;
-            margin: 0 12px;
+            margin: 0 20px;
         }
         .header .search-bar input {
             width: 100%;
-            padding: 7px 32px 7px 12px;
+            padding: 12px 44px 12px 20px;
             border: 2px solid #d1e7dd;
-            border-radius: 16px;
-            font-size: 14px;
+            border-radius: 14px;
+            font-size: 15px;
             background: #f8f9fa;
             color: var(--main-green-dark);
+            transition: all 0.2s ease;
+        }
+        .header .search-bar input:focus {
+            border-color: var(--main-green);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(56, 142, 60, 0.2);
         }
         .header .search-bar i {
             position: absolute;
-            right: 10px;
+            right: 16px;
             top: 50%;
             transform: translateY(-50%);
-            color: #a3c9a8;
+            color: var(--main-green-light);
             cursor: pointer;
+            font-size: 18px;
         }
         .header .icons i {
-            font-size: 18px;
-            margin-left: 10px;
-            color: #a3c9a8;
+            font-size: 22px;
+            margin-left: 16px;
+            color: var(--main-green-light);
             cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        .header .icons i:hover {
+            color: var(--main-green);
         }
         .dashboard-layout {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
             gap: 28px;
         }
         .card {
             background: var(--card-bg);
             border-radius: var(--card-radius);
             box-shadow: var(--card-shadow);
-            padding: 28px 24px;
+            padding: 28px;
             display: flex;
             flex-direction: column;
-            min-height: 180px;
-            transition: box-shadow 0.2s;
+            min-height: 260px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            animation: slideUp 0.3s ease-out;
         }
         .card:hover {
+            transform: translateY(-4px);
             box-shadow: 0 12px 32px rgba(56, 142, 60, 0.18);
         }
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 18px;
+            margin-bottom: 20px;
         }
         .card-header h3 {
-            font-size: 18px;
+            font-size: 22px;
             font-weight: 700;
             color: var(--main-green-dark);
         }
         .card-header .view-all {
-            font-size: 14px;
+            font-size: 15px;
             color: var(--main-green);
             text-decoration: none;
             font-weight: 600;
+            transition: color 0.2s ease;
         }
         .card-header .view-all:hover {
-            text-decoration: underline;
+            color: var(--main-green-dark);
         }
         .total-balance-card .balance-amount {
-            font-size: 36px;
+            font-size: 34px;
             font-weight: 800;
             color: var(--main-green-dark);
-            margin-bottom: 12px;
+            margin-bottom: 20px;
         }
         .account-card {
-            background: linear-gradient(135deg, #388e3c 0%, #a3c9a8 100%);
+            background: linear-gradient(135deg, var(--main-green) 0%, var(--main-green-light) 100%);
             color: #fff;
-            border-radius: 12px;
-            padding: 18px 22px;
+            border-radius: 14px;
+            padding: 20px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 10px;
+            margin-top: 16px;
         }
         .account-card .account-type {
             font-weight: 700;
-            margin-bottom: 4px;
+            font-size: 17px;
+            margin-bottom: 6px;
         }
         .account-card .card-logo i {
-            font-size: 32px;
+            font-size: 30px;
         }
         .goal-progress-circle {
             width: 90px;
             height: 90px;
             border-radius: 50%;
-            background: conic-gradient(var(--main-green) 70%, #e0e0e0 70%);
+            background: conic-gradient(var(--main-green) 0% 70%, #e0e0e0 70% 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 700;
-            color: var(--main-green);
-            margin: 18px auto;
+            color: var(--main-green-dark);
+            margin: 20px auto;
+            position: relative;
+            background-clip: padding-box;
+            border: 5px solid #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         .bill-amount {
             font-weight: 700;
@@ -179,6 +201,83 @@
         }
         .transaction-amount.debit {
             color: var(--danger);
+        }
+        .budget-status, .goal-status {
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 15px;
+        }
+        .budget-status.on-track, .goal-status.on-track {
+            background: #e6f4ea;
+            color: var(--success);
+        }
+        .budget-status.near-limit, .goal-status.near-limit {
+            background: #fef3c7;
+            color: var(--warning);
+        }
+        .budget-status.over-budget, .goal-status.over-budget {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+        .budget-progress, .goal-progress {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .budget-progress-bar, .goal-progress-bar {
+            height: 100%;
+            background: var(--main-green);
+            transition: width 0.3s ease;
+        }
+        .budget-item, .goal-item, .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e6f0ed;
+        }
+        .budget-item:last-child, .goal-item:last-child, .transaction-item:last-child {
+            border-bottom: none;
+        }
+        .budget-item-details, .goal-item-details, .transaction-item-details {
+            flex: 1;
+        }
+        .budget-item-name, .goal-item-name, .transaction-item-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 16px;
+        }
+        .budget-item-amount, .goal-item-amount, .transaction-item-amount {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        .transaction-item-date {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        .add-new-btn {
+            margin-top: auto;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--main-green) 0%, var(--main-green-dark) 100%);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .add-new-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(56, 142, 60, 0.2);
         }
         #loadingSpinner {
             position: fixed;
@@ -191,29 +290,165 @@
         #loadingSpinner::before {
             content: '';
             display: block;
-            width: 40px;
-            height: 40px;
+            width: 48px;
+            height: 48px;
             border: 4px solid var(--main-green);
             border-top: 4px solid transparent;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 14px 28px;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            animation: notificationSlideIn 0.3s ease-out;
+        }
+        .notification.info {
+            border-left: 4px solid var(--main-green);
+        }
+        .notification.success {
+            border-left: 4px solid var(--success);
+        }
+        .notification.error {
+            border-left: 4px solid var(--danger);
+        }
+        .notification.warning {
+            border-left: 4px solid var(--warning);
+        }
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .modal-header h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--main-green-dark);
+        }
+        .close-modal-btn {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: var(--text-light);
+            cursor: pointer;
+        }
+        .close-modal-btn:hover {
+            color: var(--main-green-dark);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--main-green-dark);
+            margin-bottom: 10px;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #d1e7dd;
+            border-radius: 14px;
+            font-size: 15px;
+            color: var(--main-green-dark);
+            background: #f8f9fa;
+            transition: all 0.2s ease;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--main-green);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(56, 142, 60, 0.2);
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        .save-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--main-green) 0%, var(--main-green-dark) 100%);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .save-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(56, 142, 60, 0.2);
+        }
+        .cancel-btn {
+            padding: 12px 24px;
+            background: #f8f9fa;
+            border: 2px solid #d1e7dd;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--main-green-dark);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .cancel-btn:hover {
+            background: #e6f0ed;
+            border-color: var(--main-green);
+        }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        @media (max-width: 1100px) {
-            .main-content { padding: 24px 8px 8px 8px; }
-            .dashboard-layout { gap: 16px; }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes notificationSlideIn {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
         @media (max-width: 900px) {
-            .main-content { margin-left: 0; }
+            .main-content { margin-left: 0; padding: 32px 20px; }
         }
         @media (max-width: 600px) {
-            .main-content { padding: 8px; }
-            .header { flex-direction: column; padding: 8px; gap: 6px; }
-            .header .search-bar { margin: 0 0 6px 0; }
-            .dashboard-layout { grid-template-columns: 1fr; }
+            .main-content { padding: 24px 12px; }
+            .header { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .header .search-bar { margin: 0; width: 100%; }
+            .dashboard-layout { grid-template-columns: 1fr; gap: 20px; }
         }
     </style>
     <script>
@@ -229,19 +464,129 @@
 
         // Show notification
         function showNotification(message, type = 'info') {
+            const toastContainer = document.getElementById('toastContainer');
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
             notification.textContent = message;
-            document.body.appendChild(notification);
-            setTimeout(() => notification.remove(), 5000);
+            toastContainer.appendChild(notification);
+            setTimeout(() => {
+                notification.classList.add('notification-slide-out');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
         }
 
-        // Initialize additional home features after auth
-        document.addEventListener('DOMContentLoaded', function() {
-            // Update current date
-            updateCurrentDate();
+        // Open modal
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
 
-            // Search functionality
+        // Prevent page reload on sidebar link clicks
+        function setActiveSidebarLink() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const links = document.querySelectorAll('.sidebar nav ul li a');
+
+            links.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+
+                link.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const href = link.getAttribute('href');
+                    history.pushState(null, null, href);
+                    loadPageContent(href);
+                });
+            });
+        }
+
+        // Load page content dynamically
+        function loadPageContent(page) {
+            const mainContent = document.querySelector('.main-content');
+            mainContent.style.opacity = '0';
+            fetch(page)
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newContent = doc.querySelector('.main-content').innerHTML;
+                    mainContent.innerHTML = newContent;
+                    mainContent.style.opacity = '1';
+                    updateCurrentDate();
+                    initializePageScripts(page);
+                })
+                .catch(error => console.error('Error loading page:', error));
+        }
+
+        // Initialize page scripts
+        function initializePageScripts(page) {
+            if (page === 'home.html') {
+                const searchInput = document.querySelector('.search-bar input');
+                const searchIcon = document.querySelector('.search-bar i');
+                if (searchIcon && searchInput) {
+                    searchIcon.addEventListener('click', () => {
+                        const searchTerm = searchInput.value.trim();
+                        if (searchTerm) {
+                            console.log('[SEARCH] Searching for:', searchTerm);
+                            showNotification('Search functionality coming soon!', 'info');
+                        }
+                    });
+                    searchInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            searchIcon.click();
+                        }
+                    });
+                }
+                const addTransactionBtn = document.getElementById('addTransactionBtn');
+                if (addTransactionBtn) {
+                    addTransactionBtn.addEventListener('click', () => {
+                        openModal('transactionModal');
+                    });
+                }
+                const closeModalBtn = document.getElementById('closeModalBtn');
+                if (closeModalBtn) {
+                    closeModalBtn.addEventListener('click', () => {
+                        document.getElementById('transactionModal').style.display = 'none';
+                    });
+                }
+                const cancelTransactionBtn = document.getElementById('cancelTransactionBtn');
+                if (cancelTransactionBtn) {
+                    cancelTransactionBtn.addEventListener('click', () => {
+                        document.getElementById('transactionModal').style.display = 'none';
+                    });
+                }
+                const addBudgetBtn = document.getElementById('addBudgetBtn');
+                if (addBudgetBtn) {
+                    addBudgetBtn.addEventListener('click', () => {
+                        openModal('createBudgetModal');
+                    });
+                }
+                const closeBudgetModalBtn = document.getElementById('closeBudgetModalBtn');
+                if (closeBudgetModalBtn) {
+                    closeBudgetModalBtn.addEventListener('click', () => {
+                        document.getElementById('createBudgetModal').style.display = 'none';
+                    });
+                }
+                const cancelBudgetBtn = document.getElementById('cancelBudgetBtn');
+                if (cancelBudgetBtn) {
+                    cancelBudgetBtn.addEventListener('click', () => {
+                        document.getElementById('createBudgetModal').style.display = 'none';
+                    });
+                }
+            }
+        }
+
+        // Initialize home page
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentDate();
+            const mainContent = document.getElementById('mainContent');
+            if (mainContent) {
+                mainContent.style.display = 'flex';
+            }
+
             const searchInput = document.querySelector('.search-bar input');
             const searchIcon = document.querySelector('.search-bar i');
             if (searchIcon && searchInput) {
@@ -249,6 +594,7 @@
                     const searchTerm = searchInput.value.trim();
                     if (searchTerm) {
                         console.log('[SEARCH] Searching for:', searchTerm);
+                        showNotification('Search functionality coming soon!', 'info');
                     }
                 });
                 searchInput.addEventListener('keypress', (e) => {
@@ -258,17 +604,51 @@
                 });
             }
 
-            // Logout button
-            const logoutButton = document.querySelector('.logout-btn');
-            if (logoutButton) {
-                logoutButton.addEventListener('click', handleLogout);
+            const addTransactionBtn = document.getElementById('addTransactionBtn');
+            if (addTransactionBtn) {
+                addTransactionBtn.addEventListener('click', () => {
+                    openModal('transactionModal');
+                });
             }
 
-            // Hide loading spinner
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', () => {
+                    document.getElementById('transactionModal').style.display = 'none';
+                });
+            }
+
+            const cancelTransactionBtn = document.getElementById('cancelTransactionBtn');
+            if (cancelTransactionBtn) {
+                cancelTransactionBtn.addEventListener('click', () => {
+                    document.getElementById('transactionModal').style.display = 'none';
+                });
+            }
+
+            const addBudgetBtn = document.getElementById('addBudgetBtn');
+            if (addBudgetBtn) {
+                addBudgetBtn.addEventListener('click', () => {
+                    openModal('createBudgetModal');
+                });
+            }
+
+            const closeBudgetModalBtn = document.getElementById('closeBudgetModalBtn');
+            if (closeBudgetModalBtn) {
+                closeBudgetModalBtn.addEventListener('click', () => {
+                    document.getElementById('createBudgetModal').style.display = 'none';
+                });
+            }
+
+            const cancelBudgetBtn = document.getElementById('cancelBudgetBtn');
+            if (cancelBudgetBtn) {
+                cancelBudgetBtn.addEventListener('click', () => {
+                    document.getElementById('createBudgetModal').style.display = 'none';
+                });
+            }
+
             const loadingSpinner = document.getElementById('loadingSpinner');
             if (loadingSpinner) loadingSpinner.style.display = 'none';
 
-            // Update header with user name
             setTimeout(() => {
                 const userData = localStorage.getItem('userData');
                 if (userData) {
@@ -278,22 +658,141 @@
                         headerUserName.textContent = user.name || user.email.split('@')[0];
                     }
                 }
+                // Hard-coded budget data
+                const totalBudgeted = document.getElementById('totalBudgeted');
+                const totalSpent = document.getElementById('totalSpent');
+                const budgetList = document.getElementById('budgetList');
+                const noBudgetsMessage = document.querySelector('.no-budgets-message');
+                if (totalBudgeted && totalSpent && budgetList && noBudgetsMessage) {
+                    totalBudgeted.textContent = '$1,500.00';
+                    totalSpent.textContent = '$950.00';
+                    noBudgetsMessage.style.display = 'none';
+                    budgetList.innerHTML = `
+                        <li class="budget-item">
+                            <div class="budget-item-details">
+                                <span class="budget-item-name">Groceries</span>
+                                <span class="budget-item-amount">$300.00 / $500.00</span>
+                                <div class="budget-progress">
+                                    <div class="budget-progress-bar" style="width: 60%;"></div>
+                                </div>
+                            </div>
+                            <span class="budget-status on-track">On Track</span>
+                        </li>
+                        <li class="budget-item">
+                            <div class="budget-item-details">
+                                <span class="budget-item-name">Entertainment</span>
+                                <span class="budget-item-amount">$200.00 / $250.00</span>
+                                <div class="budget-progress">
+                                    <div class="budget-progress-bar" style="width: 80%; background: var(--warning);"></div>
+                                </div>
+                            </div>
+                            <span class="budget-status near-limit">Near Limit</span>
+                        </li>
+                        <li class="budget-item">
+                            <div class="budget-item-details">
+                                <span class="budget-item-name">Utilities</span>
+                                <span class="budget-item-amount">$150.00 / $150.00</span>
+                                <div class="budget-progress">
+                                    <div class="budget-progress-bar" style="width: 100%; background: var(--danger);"></div>
+                                </div>
+                            </div>
+                            <span class="budget-status over-budget">Over Budget</span>
+                        </li>
+                    `;
+                }
+                // Hard-coded goals data
+                const goalsList = document.querySelector('.goals-list');
+                const noGoalsMessage = document.querySelector('.no-goals-message');
+                if (goalsList && noGoalsMessage) {
+                    noGoalsMessage.style.display = 'none';
+                    goalsList.innerHTML = `
+                        <li class="goal-item">
+                            <div class="goal-item-details">
+                                <span class="goal-item-name">Vacation Fund</span>
+                                <span class="goal-item-amount">$1,200.00 / $2,000.00</span>
+                                <div class="goal-progress">
+                                    <div class="goal-progress-bar" style="width: 60%;"></div>
+                                </div>
+                            </div>
+                            <span class="goal-status on-track">On Track</span>
+                        </li>
+                        <li class="goal-item">
+                            <div class="goal-item-details">
+                                <span class="goal-item-name">Emergency Savings</span>
+                                <span class="goal-item-amount">$3,500.00 / $5,000.00</span>
+                                <div class="goal-progress">
+                                    <div class="goal-progress-bar" style="width: 70%;"></div>
+                                </div>
+                            </div>
+                            <span class="goal-status on-track">On Track</span>
+                        </li>
+                        <li class="goal-item">
+                            <div class="goal-item-details">
+                                <span class="goal-item-name">New Laptop</span>
+                                <span class="goal-item-amount">$900.00 / $1,200.00</span>
+                                <div class="goal-progress">
+                                    <div class="goal-progress-bar" style="width: 75%; background: var(--warning);"></div>
+                                </div>
+                            </div>
+                            <span class="goal-status near-limit">Near Limit</span>
+                        </li>
+                    `;
+                }
+                // Hard-coded transactions data
+                const incomeAmount = document.getElementById('incomeAmount');
+                const expenseAmount = document.getElementById('expenseAmount');
+                const transactionList = document.getElementById('transactionList');
+                const noTransactionsMessage = document.querySelector('.no-transactions-message');
+                if (incomeAmount && expenseAmount && transactionList && noTransactionsMessage) {
+                    incomeAmount.textContent = '$2,500.00';
+                    expenseAmount.textContent = '$1,800.00';
+                    noTransactionsMessage.style.display = 'none';
+                    transactionList.innerHTML = `
+                        <li class="transaction-item">
+                            <div class="transaction-item-details">
+                                <span class="transaction-item-name">Salary</span>
+                                <span class="transaction-item-amount transaction-amount credit">+$2,000.00</span>
+                                <span class="transaction-item-date">2025-06-20</span>
+                            </div>
+                        </li>
+                        <li class="transaction-item">
+                            <div class="transaction-item-details">
+                                <span class="transaction-item-name">Grocery Shopping</span>
+                                <span class="transaction-item-amount transaction-amount debit">-$150.00</span>
+                                <span class="transaction-item-date">2025-06-19</span>
+                            </div>
+                        </li>
+                        <li class="transaction-item">
+                            <div class="transaction-item-details">
+                                <span class="transaction-item-name">Freelance Work</span>
+                                <span class="transaction-item-amount transaction-amount credit">+$500.00</span>
+                                <span class="transaction-item-date">2025-06-18</span>
+                            </div>
+                        </li>
+                        <li class="transaction-item">
+                            <div class="transaction-item-details">
+                                <span class="transaction-item-name">Internet Bill</span>
+                                <span class="transaction-item-amount transaction-amount debit">-$80.00</span>
+                                <span class="transaction-item-date">2025-06-17</span>
+                            </div>
+                        </li>
+                    `;
+                }
             }, 100);
         });
     </script>
 </head>
 <body>
     <div id="loadingSpinner"></div>
+    <div id="toastContainer" class="fixed top-4 right-4 z-[1000]"></div>
     <div class="app-container">
-        <!-- Include sidebar component -->
         <div id="sidebar-container"></div>
-        
-        <div class="main-content" id="mainContent" style="display: none;">
+        <div class="main-content" id="mainContent">
             <header class="header">
                 <div class="greeting">Hello <span id="userFullNameHeader">Loading...</span></div>
                 <div class="date">Loading...</div>
                 <div class="search-bar">
-                    <input type="text" placeholder="Search here">
+                    <input type="text" placeholder="Search accounts, transactions, budgets...">
                     <i class="fas fa-search"></i>
                 </div>
                 <div class="icons">
@@ -301,7 +800,6 @@
                 </div>
             </header>
             <div class="dashboard-layout">
-                <!-- Total Balance Card -->
                 <div class="card total-balance-card">
                     <div class="card-header">
                         <h3>Total Balance</h3>
@@ -320,25 +818,21 @@
                         </div>
                     </div>
                 </div>
-                <!-- Goals Card -->
                 <div class="card goals-card">
                     <div class="card-header">
                         <h3>Goals</h3>
-                        <a href="#" class="view-all">View All</a>
+                        <a href="goal.html" class="view-all">View All</a>
                     </div>
                     <div class="card-body">
-                        <ul class="goals-list">
-                            <!-- Goal items will be inserted here by JavaScript -->
-                        </ul>
+                        <ul class="goals-list"></ul>
                         <p class="no-goals-message" style="display: none;">No goals set yet.</p>
                     </div>
-                    <button class="add-new-btn"><i class="fas fa-plus"></i> Add New Goal</button>
+                    <button class="add-new-btn" onclick="window.location.href='goal.html'"><i class="fas fa-plus"></i> Add New Goal</button>
                 </div>
-                <!-- Recent Transactions Card -->
                 <div class="card recent-transactions-card">
                     <div class="card-header">
                         <h3>Recent Transactions</h3>
-                        <a href="#" class="view-all">View All</a>
+                        <a href="transaction.html" class="view-all">View All</a>
                     </div>
                     <div class="card-body">
                         <div class="transaction-summary">
@@ -352,19 +846,38 @@
                             </div>
                         </div>
                         <div class="transaction-list-container">
-                            <ul class="transaction-list" id="transactionList">
-                                <!-- Transaction items will be inserted here by JavaScript -->
-                            </ul>
+                            <ul class="transaction-list" id="transactionList"></ul>
                             <p class="no-transactions-message" style="display: none;">No recent transactions.</p>
                         </div>
                     </div>
                     <button class="add-new-btn" id="addTransactionBtn"><i class="fas fa-plus"></i> Add New Transaction</button>
                 </div>
+                <div class="card budgets-card">
+                    <div class="card-header">
+                        <h3>Budgets</h3>
+                        <a href="budget.html" class="view-all">View All</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="budget-summary">
+                            <div class="summary-item">
+                                <span class="summary-label">Total Budgeted</span>
+                                <span class="summary-amount" id="totalBudgeted">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Spent</span>
+                                <span class="summary-amount" id="totalSpent">$0.00</span>
+                            </div>
+                        </div>
+                        <div class="budget-list-container">
+                            <ul class="budget-list" id="budgetList"></ul>
+                            <p class="no-budgets-message" style="display: none;">No budgets set yet.</p>
+                        </div>
+                    </div>
+                    <button class="add-new-btn" id="addBudgetBtn"><i class="fas fa-plus"></i> Add New Budget</button>
+                </div>
             </div>
         </div>
     </div>
-    
-    <!-- Transaction Modal -->
     <div id="transactionModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -374,26 +887,31 @@
             <div class="modal-body">
                 <form id="transactionForm">
                     <div class="form-group">
-                        <label for="description">Description</label>
-                        <input type="text" id="description" name="description" required>
+                        <label for="description">Description *</label>
+                        <input type="text" id="description" name="description" placeholder="e.g., Grocery Shopping" required>
                     </div>
                     <div class="form-group">
-                        <label for="amount">Amount</label>
-                        <input type="number" id="amount" name="amount" step="0.01" required>
+                        <label for="amount">Amount ($) *</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">$</span>
+                            <input type="number" id="amount" name="amount" step="0.01" placeholder="0.00" class="pl-10" required>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="type">Type</label>
+                        <label for="type">Type *</label>
                         <select id="type" name="type" required>
                             <option value="income">Income</option>
                             <option value="expense">Expense</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="category">Category</label>
-                        <input type="text" id="category" name="category" required>
+                        <label for="category">Category *</label>
+                        <select id="category" name="category" class="categorySelect" required>
+                            <option value="">Select Category</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label for="date">Date</label>
+                        <label for="date">Date *</label>
                         <input type="date" id="date" name="date" required>
                     </div>
                     <div class="modal-footer">
@@ -404,14 +922,45 @@
             </div>
         </div>
     </div>
-    
-    <!-- Notification element -->
-    <div id="notification" class="notification">
+    <div id="createBudgetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create Budget</h3>
+                <button class="close-modal-btn" id="closeBudgetModalBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="create-budget-form">
+                    <div class="form-group">
+                        <label for="periodType">Period</label>
+                        <select id="period-type" name="periodType" required>
+                            <option value="">Select Period</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="startDate">Start Date</label>
+                        <input type="date" id="startDate" name="startDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="threshold">Notification Threshold (%)</label>
+                        <input type="number" id="threshold" name="threshold" min="0" max="100" placeholder="e.g., 80" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Categories</label>
+                        <div id="category-list"></div>
+                        <button type="button" class="text-sm text-teal-600 hover:text-teal-700 mt-2" onclick="addBudgetCategory()">+ Add Category</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="save-btn">Create Budget</button>
+                        <button type="button" class="cancel-btn" id="cancelBudgetBtn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="notification" class="notification" style="display: none;">
         <span id="notificationText"></span>
     </div>
-    
-    <script src="../assets/js/home.js" type="module"></script>
-
-    
 </body>
 </html>
