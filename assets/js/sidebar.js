@@ -99,6 +99,9 @@ async function handleLogout() {
 
 // Load sidebar với username (for backward compatibility)
 async function loadSideBar(user) {
+    console.log("loadSideBar ne: ", user.username );
+    console.log("loadSideBar ne: ", user );
+
     const userName = user.username || user.name;
     loadSideBarSimple(userName);
 }

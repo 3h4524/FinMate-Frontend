@@ -1456,6 +1456,7 @@
             document.getElementById('updatePackageForm').addEventListener('submit', handleUpdatePackage);
 
             await Promise.all([
+                loadSideBar(getCurrentUser()),
                 loadPackages(),
                 loadRecentSubscriptions()
             ]);
@@ -1464,7 +1465,6 @@
         document.addEventListener('DOMContentLoaded', init);
 
         setInterval(() => {
-            loadSideBar(getCurrentUser());
             loadPackages();
             loadRecentSubscriptions();
         }, 5 * 60 * 1000);
