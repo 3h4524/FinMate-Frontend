@@ -169,7 +169,6 @@ const apiService = {
             });
 
             const data = await response.json();
-            
             if (!response.ok) {
                 throw new Error(data.message || 'Google login failed');
             }
@@ -178,7 +177,7 @@ const apiService = {
                 throw new Error(data.message || 'Google login failed');
             }
 
-            return data.result;
+            return data;
         } catch (error) {
             console.error('Google login error:', error);
             throw error;

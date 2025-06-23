@@ -91,6 +91,10 @@ async function loginUser(email, password) {
 async function sendGoogleTokenToBackend(idToken) {
     try {
         const response = await apiService.processGoogleLogin(idToken);
+         if (data.result.isDelete) {
+                showNotification('Your account has been banned. Please contact support for assistance.', 'error');
+                return;
+        }
         
         if (response.needSetPassword) {
             sessionStorage.setItem('userEmail', response.email);

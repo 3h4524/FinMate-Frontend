@@ -40,24 +40,31 @@ const googleAuthConfig = {
 // Handle Google Sign-In response
 async function handleGoogleSignIn(response) {
     try {
-        const result = await apiService.processGoogleLogin(response.credential);
+        const apiResponse = await apiService.processGoogleLogin(response.credential);
+        
+        const data = apiResponse.result;
+        
+         if (data.isDelete) {
+                    showNotification('Your account has been banned. Please contact support for assistance.', 'error');
+                    return;
+             }
         
         // Google users don't need email verification since Google already verified their email
         showNotification('Google login successful! Redirecting...', 'success');
         
         // Validate token before storing
-        if (!result.token) {
+        if (!data.token) {
             throw new Error('Invalid token received from server');
         }
 
         // Store authentication state and user data in localStorage
-        localStorage.setItem('token', result.token);
+        localStorage.setItem('token', data.token);
         localStorage.setItem('userData', JSON.stringify({
-            email: result.email,
-            name: result.name,
-            role: result.role,
-            userId: result.userId,
-            premium: result.premium
+            email: data.email,
+            name: data.name,
+            role: data.role,
+            userId: data.userId,
+            premium: data.premium
         }));
 
         // Verify token is stored correctly

@@ -1,6 +1,7 @@
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 }
+
 
 function formatDate_ddMMyyyy(date) {
     const d = new Date(date);
