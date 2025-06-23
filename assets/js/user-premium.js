@@ -127,8 +127,8 @@ const toggleBilling = (cycle) => {
 const loadPackages = async () => {
     const packagesData = await fetchPackages(0, 6);
     if (packagesData) {
-        // packages = packagesData.content;
-        packages = Array(4).fill(packagesData.content).flat();
+        packages = packagesData.content;
+        // packages = Array(4).fill(packagesData.content).flat();
         filteredPackages = packages.filter(pkg => pkg.durationType === 'MONTH');
     }
 };

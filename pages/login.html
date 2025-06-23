@@ -596,30 +596,44 @@
                         showNotification('Your account has been banned. Please contact support for assistance.', 'error');
                         return;
                     }
-                    
+
+                    if (!data.result.verified) {
+                        if (data.result.role === 'ADMIN') {
+                            showNotification('You must verify before login. Redirecting to verfication page...', 'error');
+
+                        } else {
+                            showNotification('Your account is not verified. Redirecting to verfication page...', 'error');
+
+                        }
+                        setTimeout(() => {
+                            window.location.href = 'verify-email.html?email=' + encodeURIComponent(email);
+                        }, 1000);
+                        return;
+                    }
+
                     // Store user data
                     localStorage.setItem('token', data.result.token);
-                    
+
                     // Store user data from response
                     const userData = {
                         email: data.result.email,
                         name: data.result.name,
                         role: data.result.role
                     };
-                    
+
                     localStorage.setItem('userData', JSON.stringify(userData));
                     console.log('Stored user data:', userData);
 
                     showNotification('Login successful! Redirecting...', 'success');
-                   setTimeout(() => {
+                    setTimeout(() => {
                         // Check user role and redirect accordingly
-                       const userRole = data.result.role;
-                       if (userRole === 'ADMIN') {
-                           window.location.href = '/pages/admin-dashboard.html';
+                        const userRole = data.result.role;
+                        if (userRole === 'ADMIN') {
+                            window.location.href = '/pages/admin-dashboard.html';
                         } else {
-                           window.location.href = '/pages/home.html';
-                    }
-                   }, 1000);
+                            window.location.href = '/pages/home.html';
+                        }
+                    }, 1000);
                 } else {
                     showNotification(data.message || 'Login failed!', 'error');
                 }

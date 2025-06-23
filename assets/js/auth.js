@@ -128,63 +128,63 @@ export function initPasswordValidation() {
 }
 
 // Form submission handlers
-export function initRegisterForm() {
-    const registerForm = document.getElementById('register-form');
-    if (!registerForm) return;
+// export function initRegisterForm() {
+//     const registerForm = document.getElementById('register-form');
+//     if (!registerForm) return;
 
-    registerForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirm-password').value;
+//     registerForm.addEventListener('submit', async function(e) {
+//         e.preventDefault();
+//         const name = document.getElementById('name').value;
+//         const email = document.getElementById('email').value;
+//         const password = document.getElementById('password').value;
+//         const confirmPassword = document.getElementById('confirm-password').value;
 
-        // Check password match
-        if (password !== confirmPassword) {
-            showNotification('Passwords do not match!', 'error');
-            return;
-        }
+//         // Check password match
+//         if (password !== confirmPassword) {
+//             showNotification('Passwords do not match!', 'error');
+//             return;
+//         }
 
-        try {
-            const response = await fetch('http://localhost:8080/api/v1/auth/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify({ name, email, password })
-            });
+//         try {
+//             const response = await fetch('http://localhost:8080/api/v1/auth/register', {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                     'Accept': 'application/json'
+//                 },
+//                 credentials: 'include',
+//                 body: JSON.stringify({ name, email, password })
+//             });
 
-            const data = await response.json();
-            console.log('Register response:', data);
+//             const data = await response.json();
+//             console.log('Register response:', data);
 
-            if (data.code === 1000) {
-                showNotification('Registration successful! Please check your email to verify your account.', 'success');
-                // Redirect to email verification page
-                setTimeout(() => {
-                    window.location.href = 'verify-email.html?email=' + encodeURIComponent(email);
-                }, 2000);
-            } else {
-                // Show error message
-                const errorMessage = data.message || 'Registration failed!';
-                showNotification(errorMessage, 'error');
+//             if (data.code === 1000) {
+//                 showNotification('Registration successful! Please check your email to verify your account.', 'success');
+//                 // Redirect to email verification page
+//                 setTimeout(() => {
+//                     window.location.href = 'verify-email.html?email=' + encodeURIComponent(email);
+//                 }, 2000);
+//             } else {
+//                 // Show error message
+//                 const errorMessage = data.message || 'Registration failed!';
+//                 showNotification(errorMessage, 'error');
                 
-                // If it's an email already exists error, show it in the email field
-                if (data.code === 1014) {
-                    const emailError = document.getElementById('email-error');
-                    if (emailError) {
-                        emailError.textContent = 'Email already registered';
-                        emailError.style.display = 'block';
-                    }
-                }
-            }
-        } catch (error) {
-            console.error('Register error:', error);
-            showNotification('An error occurred during registration! Please try again later.', 'error');
-        }
-    });
-}
+//                 // If it's an email already exists error, show it in the email field
+//                 if (data.code === 1014) {
+//                     const emailError = document.getElementById('email-error');
+//                     if (emailError) {
+//                         emailError.textContent = 'Email already registered';
+//                         emailError.style.display = 'block';
+//                     }
+//                 }
+//             }
+//         } catch (error) {
+//             console.error('Register error:', error);
+//             showNotification('An error occurred during registration! Please try again later.', 'error');
+//         }
+//     });
+// }
 
 // export function initLoginForm() {
 //     const loginForm = document.getElementById('loginForm');

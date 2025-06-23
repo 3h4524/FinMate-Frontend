@@ -7,15 +7,14 @@ const pageSize = 10;
 let customCategories = JSON.parse(localStorage.getItem('customCategories')) || [];
 
 const categoryMap = {
-    "Food & Dining": 6,
-    "Shopping": 7,
-    "Transportation": 8,
-    "Housing": 9,
-    "Entertainment": 10,
-    "Health": 11,
-    "Education": 12,
-    "Bills": 13,
-    "Others": 14
+    "Ăn uống": 19,
+    "Mua sắm": 20,
+    "Di chuyển": 21,
+    "Nhà cửa": 22,
+    "Giải trí": 23,
+    "Sức khỏe": 24,
+    "Giáo dục": 25,
+    "Hóa đơn": 26
 };
 
 async function initializeUI() {
@@ -183,16 +182,15 @@ function addBudgetCategory(type = 'create', selectedCategory = null, amount = nu
     row.className = 'flex items-center gap-3 mb-3';
     row.innerHTML = `
         <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-teal-600 focus:ring-2 focus:ring-teal-300 transition" required>
-            <option value="">Select Category</option>
-            <option value="6" ${selectedCategory === 6 || selectedCategory === '6' ? 'selected' : ''}>Food & Dining</option>
-            <option value="7" ${selectedCategory === 7 || selectedCategory === '7' ? 'selected' : ''}>Shopping</option>
-            <option value="8" ${selectedCategory === 8 || selectedCategory === '8' ? 'selected' : ''}>Transportation</option>
-            <option value="9" ${selectedCategory === 9 || selectedCategory === '9' ? 'selected' : ''}>Housing</option>
-            <option value="10" ${selectedCategory === 10 || selectedCategory === '10' ? 'selected' : ''}>Entertainment</option>
-            <option value="11" ${selectedCategory === 11 || selectedCategory === '11' ? 'selected' : ''}>Health</option>
-            <option value="12" ${selectedCategory === 12 || selectedCategory === '12' ? 'selected' : ''}>Education</option>
-            <option value="13" ${selectedCategory === 13 || selectedCategory === '13' ? 'selected' : ''}>Bills</option>
-            <option value="14" ${selectedCategory === 14 || selectedCategory === '14' ? 'selected' : ''}>Others</option>
+            <option value="">Chọn danh mục</option>
+            <option value="19" ${selectedCategory == 19 ? 'selected' : ''}>Ăn uống</option>
+            <option value="20" ${selectedCategory == 20 ? 'selected' : ''}>Mua sắm</option>
+            <option value="21" ${selectedCategory == 21 ? 'selected' : ''}>Di chuyển</option>
+            <option value="22" ${selectedCategory == 22 ? 'selected' : ''}>Nhà cửa</option>
+            <option value="23" ${selectedCategory == 23 ? 'selected' : ''}>Giải trí</option>
+            <option value="24" ${selectedCategory == 24 ? 'selected' : ''}>Sức khỏe</option>
+            <option value="25" ${selectedCategory == 25 ? 'selected' : ''}>Giáo dục</option>
+            <option value="26" ${selectedCategory == 26 ? 'selected' : ''}>Hóa đơn</option>
             ${customCategories.map(cat => `<option value="custom_${cat.id}" ${selectedCategory === 'custom_' + cat.id ? 'selected' : ''}>${cat.name}</option>`).join('')}
         </select>
         <input type="number" name="amounts[]" step="0.01" min="0" ${amount ? `value="${amount}"` : 'placeholder="Amount ($)"'} class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-teal-600 focus:ring-2 focus:ring-teal-300 transition" required>
@@ -437,7 +435,7 @@ async function loadAnalysis(page) {
     document.getElementById('spendingRate').textContent = '0%';
 
     try {
-        const url = period === 'all' ? 
+        const url = period === 'all' ?
             `http://localhost:8080/budget/analysis?page=${page}&size=${pageSize}` :
             `http://localhost:8080/budget/analysis?period=${period}&page=${page}&size=${pageSize}`;
         const response = await apiRequest(url, {
@@ -593,7 +591,7 @@ function toggleChartType() {
 
 function exportToCSV() {
     const period = document.getElementById("analysisPeriod").value;
-    const url = period === 'all' ? 
+    const url = period === 'all' ?
         `http://localhost:8080/budget/analysis?page=0&size=1000` :
         `http://localhost:8080/budget/analysis?period=${period}&page=0&size=1000`;
     apiRequest(url, {

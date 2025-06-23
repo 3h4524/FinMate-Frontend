@@ -922,8 +922,6 @@
                 <div class="form-group">
                     <label for="createDurationType">Duration Type</label>
                     <select id="createDurationType" required>
-                        <option value="DAY">Day</option>
-                        <option value="WEEK">Week</option>
                         <option value="MONTH">Month</option>
                         <option value="YEAR">Year</option>
                     </select>
@@ -1159,6 +1157,7 @@
         };
 
         const createPackage = async (packageData) => {
+            console.log("Xem cai pakge: ", packageData);
             try {
                 const response = await apiRequest(API_BASE_URL, {
                     method: 'POST',
@@ -1515,9 +1514,10 @@
                 price: parseInt(document.getElementById('createPrice').value),
                 durationValue: parseInt(document.getElementById('createDurationValue').value),
                 durationType: document.getElementById('createDurationType').value,
-                features: document.getElementById('createSelectedFeatures').value ? document.getElementById('createSelectedFeatures').value.split(',').filter(f => f.trim()) : [],
-                isActive: 'true'
+                features: document.getElementById('createSelectedFeatures').value ? document.getElementById('createSelectedFeatures').value.split(',').filter(f => f.trim()) : []
             };
+
+            console.log(packageData);
 
             try {
                 const response = await createPackage(packageData);
