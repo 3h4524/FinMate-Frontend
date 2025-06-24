@@ -1,20 +1,18 @@
 let budgetChart = null;
 let chartType = 'bar';
 let user;
-let monitorPage = 0;
-let analysisPage = 0;
 const pageSize = 10;
 let customCategories = JSON.parse(localStorage.getItem('customCategories')) || [];
 
 const categoryMap = {
-    "Ăn uống": 19,
-    "Mua sắm": 20,
-    "Di chuyển": 21,
-    "Nhà cửa": 22,
-    "Giải trí": 23,
-    "Sức khỏe": 24,
-    "Giáo dục": 25,
-    "Hóa đơn": 26
+    "Ăn uống": 5,
+    "Mua sắm": 6,
+    "Di chuyển": 7,
+    "Nhà cửa": 8,
+    "Giải trí": 9,
+    "Sức khỏe": 10,
+    "Giáo dục": 11,
+    "Hóa đơn": 12
 };
 
 async function initializeUI() {
@@ -35,8 +33,9 @@ function updateDateTime() {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
         hour: '2-digit', minute: '2-digit', timeZoneName: 'short', timeZone: 'Asia/Ho_Chi_Minh'
     });
-    setTimeout(updateDateTime, 60000);
 }
+updateDateTime();
+setInterval(updateDateTime, 60000);
 
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('-translate-x-full');
@@ -100,14 +99,16 @@ async function submitBudgetForm(formId, budgetId = null) {
         showNotification('Success', `Budget plan ${budgetId ? 'updated' : 'created'} successfully!`, 'success');
         form.reset();
         closeModal(budgetId ? 'updateBudgetModal' : 'createBudgetModal');
-        if (!budgetId) {
-            document.getElementById('analysisPeriod').value = data.periodType.toLowerCase();
-        }
+        document.getElementById('analysisPeriod').value = 'all';
         monitorBudgets(0);
         loadAnalysis(0);
     } catch (error) {
         console.error("Error:", error);
+        if (error.message.includes('BUDGET_LIMIT_EXCEEDED')) {
+            showNotification('Error', 'You have reached the limit. Please purchase an upgrade to use the function')
+        }else {
         showNotification('Error', 'Network error. Please check your connection.', 'error');
+        }
     }
 }
 
@@ -183,14 +184,14 @@ function addBudgetCategory(type = 'create', selectedCategory = null, amount = nu
     row.innerHTML = `
         <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-teal-600 focus:ring-2 focus:ring-teal-300 transition" required>
             <option value="">Chọn danh mục</option>
-            <option value="19" ${selectedCategory == 19 ? 'selected' : ''}>Ăn uống</option>
-            <option value="20" ${selectedCategory == 20 ? 'selected' : ''}>Mua sắm</option>
-            <option value="21" ${selectedCategory == 21 ? 'selected' : ''}>Di chuyển</option>
-            <option value="22" ${selectedCategory == 22 ? 'selected' : ''}>Nhà cửa</option>
-            <option value="23" ${selectedCategory == 23 ? 'selected' : ''}>Giải trí</option>
-            <option value="24" ${selectedCategory == 24 ? 'selected' : ''}>Sức khỏe</option>
-            <option value="25" ${selectedCategory == 25 ? 'selected' : ''}>Giáo dục</option>
-            <option value="26" ${selectedCategory == 26 ? 'selected' : ''}>Hóa đơn</option>
+            <option value="5" ${selectedCategory == 5 ? 'selected' : ''}>Ăn uống</option>
+            <option value="6" ${selectedCategory == 6 ? 'selected' : ''}>Mua sắm</option>
+            <option value="7" ${selectedCategory == 7 ? 'selected' : ''}>Di chuyển</option>
+            <option value="8" ${selectedCategory == 8 ? 'selected' : ''}>Nhà cửa</option>
+            <option value="9" ${selectedCategory == 9 ? 'selected' : ''}>Giải trí</option>
+            <option value="10" ${selectedCategory == 10 ? 'selected' : ''}>Sức khỏe</option>
+            <option value="11" ${selectedCategory == 11 ? 'selected' : ''}>Giáo dục</option>
+            <option value="12" ${selectedCategory == 12 ? 'selected' : ''}>Hóa đơn</option>
             ${customCategories.map(cat => `<option value="custom_${cat.id}" ${selectedCategory === 'custom_' + cat.id ? 'selected' : ''}>${cat.name}</option>`).join('')}
         </select>
         <input type="number" name="amounts[]" step="0.01" min="0" ${amount ? `value="${amount}"` : 'placeholder="Amount ($)"'} class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-teal-600 focus:ring-2 focus:ring-teal-300 transition" required>
@@ -213,25 +214,24 @@ function showNotification(title, message, type) {
     const notificationCard = document.createElement("div");
     notificationCard.className = `mb-3 notification-slide-in ${type === 'error' ? 'bg-red-50 text-red-800' : type === 'warning' ? 'bg-yellow-50 text-yellow-800' : 'bg-green-50 text-green-800'}`;
 
-    const iconPath = type === 'error' ?
-        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />' :
-        type === 'warning' ?
-            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />' :
-            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />';
-
+    const iconPaths = {
+        error: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />',
+        warning: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />',
+        success: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />'
+    };
     notificationCard.innerHTML = `
-        <div class="rounded-lg p-3 shadow-sm transition-all duration-300 text-sm">
-            <div class="flex items-start space-x-2">
-                <svg class="w-4 h-4 mt-0.5 ${type === 'error' ? 'text-red-600' : type === 'warning' ? 'text-yellow-600' : 'text-green-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    ${iconPath}
-                </svg>
-                <div class="flex-1">
-                    <h3 class="font-semibold leading-snug">${title}</h3>
-                    <p class="mt-0.5 leading-snug">${message}</p>
-                </div>
+    <div class="rounded-lg p-3 shadow-sm transition-all duration-300 text-sm">
+        <div class="flex items-start space-x-2">
+            <svg class="w-4 h-4 mt-0.5 ${type === 'error' ? 'text-red-600' : type === 'warning' ? 'text-yellow-600' : 'text-green-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                ${iconPaths[type]}
+            </svg>
+            <div class="flex-1">
+                <h3 class="font-semibold leading-snug">${title}</h3>
+                <p class="mt-0.5 leading-snug">${message}</p>
             </div>
         </div>
-    `;
+    </div>
+`;
 
     toastContainer.appendChild(notificationCard);
     setTimeout(() => {
@@ -242,7 +242,6 @@ function showNotification(title, message, type) {
 }
 
 async function monitorBudgets(page) {
-    monitorPage = page;
     const monitorTableBody = document.getElementById("monitor-table-body");
     const paginationContainer = document.getElementById("monitor-pagination");
     monitorTableBody.innerHTML = '<tr><td colspan="6" class="p-3"><i class="fas fa-spinner fa-spin"></i> Loading budgets...</td></tr>';
@@ -293,7 +292,7 @@ async function monitorBudgets(page) {
 
             renderPagination(paginationContainer, data.result, monitorBudgets);
         } else {
-            monitorTableBody.innerHTML = '<tr><td colspan="6" class="p-3 italic text-gray-500">No budgets found.</td></tr>';
+            monitorTableBody.innerHTML = '<tr><td colspan="6" class="p-3 text-gray-500">No budgets found.</td></tr>';
         }
     } catch (error) {
         console.error("Error:", error);
@@ -423,7 +422,6 @@ async function deleteBudget(budgetId) {
 }
 
 async function loadAnalysis(page) {
-    analysisPage = page;
     const table = document.getElementById("analysis-table");
     const period = document.getElementById("analysisPeriod").value;
     const paginationContainer = document.getElementById("analysis-pagination");
@@ -464,7 +462,6 @@ async function loadAnalysis(page) {
                 row.className = budget.periodType === 'WEEKLY' ? 'weekly-row' : 'monthly-row';
                 row.innerHTML = `
                     <td class="p-3">${budget.categoryName || budget.userCategoryName}</td>
-                    <td class="p-3">${budget.periodType === 'WEEKLY' ? 'Weekly' : 'Monthly'}</td>
                     <td class="p-3">${formatCurrency(budget.plannedAmount)}</td>
                     <td class="p-3">${formatCurrency(budget.actualSpending || 0)}</td>
                     <td class="p-3 ${variance < 0 ? 'text-red-600' : 'text-green-600'}">${formatCurrency(variance)}</td>
@@ -586,7 +583,7 @@ function toggleChartType() {
         chartIcon.className = 'fas fa-chart-bar';
         chartTypeLabel.textContent = 'Bar Chart';
     }
-    loadAnalysis(analysisPage);
+    loadAnalysis(0); // Sử dụng 0 làm giá trị mặc định
 }
 
 function exportToCSV() {
