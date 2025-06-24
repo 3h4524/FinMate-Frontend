@@ -19,7 +19,6 @@ const getDurationText = (value, type) => {
 };
 
 const renderPackages = (packagesData) => {
-
     const container = document.getElementById('packagesContainer');
     if (!packagesData || packagesData.length === 0) {
         container.innerHTML = `
@@ -81,9 +80,14 @@ const renderPackages = (packagesData) => {
                         ` : ''}
                     </ul>
                     <div class="plan-card-footer">
-                        <button ${isPurchased(pkg.id) ? `disabled` : ''} class="w-full py-2.5 px-4 rounded-lg font-semibold text-sm bg-gray-800 text-white hover:bg-gray-900 focus:ring-gray-500 shadow-md focus:outline-none focus:ring-2 transition-all duration-300 transform hover:scale-105 disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed disabled:hover:bg-gray-400 disabled:hover:scale-100 disabled:shadow-none" onclick="initiatePayment(${pkg.id})">
+                        <button 
+                            ${isPurchased(pkg.id) ? `disabled` : ''} 
+                            class="buy-now-btn w-full py-2.5 px-4 rounded-lg font-semibold text-sm bg-gray-800 text-white hover:bg-gray-900 focus:ring-gray-500 shadow-md focus:outline-none focus:ring-2 transition-all duration-300 transform hover:scale-105 disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed disabled:hover:bg-gray-400 disabled:hover:scale-100 disabled:shadow-none" 
+                            data-package-id="${pkg.id}"
+                            onclick="initiatePayment(${pkg.id})"
+                        >
                             <i data-lucide="credit-card" class="w-4 h-4 inline mr-1"></i>
-                            Buy Now
+                            ${isPurchased(pkg.id) ? 'Purchased' : 'Buy Now'}
                         </button>
                     </div>
                 </div>
@@ -172,7 +176,39 @@ async function fetchPurchasedPremiumPlans() {
 
 document.addEventListener('DOMContentLoaded', init);
 
+// Thêm function để disable/enable tất cả nút Buy Now
+function setAllBuyButtonsState(disabled) {
+    const buyButtons = document.querySelectorAll('button[onclick^="initiatePayment"]');
+    buyButtons.forEach(button => {
+        button.disabled = disabled;
+
+        if (disabled) {
+            // Thêm loading state
+            button.innerHTML = `
+                <i data-lucide="loader-2" class="w-4 h-4 inline mr-1 animate-spin"></i>
+                Processing...
+            `;
+            button.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            // Reset về trạng thái ban đầu
+            button.innerHTML = `
+                <i data-lucide="credit-card" class="w-4 h-4 inline mr-1"></i>
+                Buy Now
+            `;
+            button.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+    });
+
+    // Recreate icons sau khi thay đổi HTML
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+// Updated initiatePayment function
 async function initiatePayment(packageId) {
+    // Disable tất cả nút ngay khi bắt đầu
+    setAllBuyButtonsState(true);
 
     try {
         const response = await apiRequest(`${API_BASE_URL}/api/checkout/create?packageId=${packageId}`, {
@@ -183,11 +219,22 @@ async function initiatePayment(packageId) {
 
         const data = await response.json();
         if (data.code === 1000) {
-            window.location.href = data.result; // Redirect to PayOS checkout URL
+            // Redirect thành công - không cần enable lại vì sẽ chuyển trang
+            window.location.href = data.result;
         } else {
             console.error('Checkout failed:', data.message);
+            // Enable lại nút nếu có lỗi
+            setAllBuyButtonsState(false);
+
+            // Có thể thêm thông báo lỗi cho user
+            alert('Checkout failed: ' + data.message);
         }
     } catch (error) {
         console.error('Error initiating checkout:', error);
+        // Enable lại nút nếu có lỗi
+        setAllBuyButtonsState(false);
+
+        // Thông báo lỗi cho user
+        alert('An error occurred while processing your payment. Please try again.');
     }
 }

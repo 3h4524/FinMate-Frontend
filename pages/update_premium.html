@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +17,7 @@
             display: flex;
             min-height: 100vh;
         }
+
         .main-content {
             margin-left: 270px;
             flex-grow: 1;
@@ -24,27 +26,33 @@
             flex-direction: column;
             background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
         }
+
         .plan-card {
             display: flex;
             flex-direction: column;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+
         .plan-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
         }
+
         .plan-card-content {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
         }
+
         .plan-card-footer {
             margin-top: auto;
         }
+
         .popular-badge {
             background: linear-gradient(135deg, #ff6b6b, #ff8e53);
             clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
         }
+
         .header-section {
             position: relative;
             padding: 24px 0;
@@ -52,6 +60,7 @@
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
+
         .header-section::before {
             content: '';
             position: absolute;
@@ -63,37 +72,45 @@
             z-index: 0;
             border-radius: 12px;
         }
+
         .header-content {
             position: relative;
             z-index: 1;
         }
+
         .rocket-icon-container {
             animation: spin 12s linear infinite;
         }
+
         @keyframes spin {
             from {
                 transform: rotate(0deg);
             }
+
             to {
                 transform: rotate(360deg);
             }
         }
+
         @media (max-width: 900px) {
             .main-content {
                 margin-left: 0;
                 padding: 12px;
             }
         }
+
         @media (min-width: 1280px) {
             .plans-grid {
                 max-width: 80vw;
             }
         }
+
         @media (min-width: 768px) and (max-width: 1279px) {
             .plans-grid {
                 max-width: 90vw;
             }
         }
+
         @media (max-width: 767px) {
             .plans-grid {
                 max-width: 100vw;
@@ -101,6 +118,7 @@
         }
     </style>
 </head>
+
 <body class="bg-gray-50">
     <div class="app-container">
         <div id="sidebar-container"></div>
@@ -110,12 +128,15 @@
                 <div class="header-section text-center mb-6">
                     <div class="header-content">
                         <div class="flex justify-center mb-3">
-                            <div class="bg-gradient-to-r from-teal-500 to-teal-600 p-3 rounded-full rocket-icon-container">
+                            <div
+                                class="bg-gradient-to-r from-teal-500 to-teal-600 p-3 rounded-full rocket-icon-container">
                                 <i data-lucide="rocket" class="w-8 h-8 text-white"></i>
                             </div>
                         </div>
                         <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
-                            Choose Your <span class="bg-gradient-to-r from-teal-500 to-teal-600 bg-clip-text text-transparent">Premium</span> Plan
+                            Choose Your <span
+                                class="bg-gradient-to-r from-teal-500 to-teal-600 bg-clip-text text-transparent">Premium</span>
+                            Plan
                         </h1>
                         <p class="text-base text-gray-600 max-w-xl mx-auto">
                             Unlock premium features and elevate your experience today.
@@ -127,12 +148,17 @@
                 <div class="flex justify-center mb-6">
                     <div class="bg-white p-1.5 rounded-full shadow-md border">
                         <div class="flex items-center space-x-1">
-                            <button id="monthly-btn" class="px-4 py-1.5 rounded-full font-medium transition-all duration-300 bg-teal-500 text-white shadow-sm" onclick="toggleBilling('monthly')">
+                            <button id="monthly-btn"
+                                class="px-4 py-1.5 rounded-full font-medium transition-all duration-300 bg-teal-500 text-white shadow-sm"
+                                onclick="toggleBilling('monthly')">
                                 Monthly
                             </button>
-                            <button id="yearly-btn" class="px-4 py-1.5 rounded-full font-medium transition-all duration-300 text-gray-600 hover:text-teal-500 relative" onclick="toggleBilling('yearly')">
+                            <button id="yearly-btn"
+                                class="px-4 py-1.5 rounded-full font-medium transition-all duration-300 text-gray-600 hover:text-teal-500 relative"
+                                onclick="toggleBilling('yearly')">
                                 Yearly
-                                <div class="absolute -top-1.5 -right-1.5 bg-gradient-to-r from-green-400 to-green-500 text-white text-xs px-1.5 py-0.5 rounded-full flex items-center">
+                                <div
+                                    class="absolute -top-1.5 -right-1.5 bg-gradient-to-r from-green-400 to-green-500 text-white text-xs px-1.5 py-0.5 rounded-full flex items-center">
                                     <i data-lucide="gift" class="w-2.5 h-2.5 inline mr-0.5"></i>
                                     -17%
                                 </div>
@@ -142,8 +168,10 @@
                 </div>
 
                 <!-- Plans Grid -->
-                <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 plans-grid mx-auto" id="packagesContainer">
-                    <div class="relative bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 plan-card">
+                <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 plans-grid mx-auto"
+                    id="packagesContainer">
+                    <div
+                        class="relative bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 plan-card">
                         <div class="bg-gradient-to-r from-gray-500 to-gray-600 p-5 text-white">
                             <div class="flex items-center justify-center mb-3">
                                 <i data-lucide="loader" class="w-6 h-6 animate-spin"></i>
@@ -157,4 +185,5 @@
         </div>
     </div>
 </body>
+
 </html>
