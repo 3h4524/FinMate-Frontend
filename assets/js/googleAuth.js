@@ -95,7 +95,7 @@ async function handleGoogleSignIn(response) {
                 showNotification('Authentication failed. Please try again.', 'error');
                 return;
             }   
-            window.location.href = '/pages/home.html';
+            window.location.href = '/pages/home';
         }, 1000);
     } catch (error) {
         console.error('Google login error:', error);

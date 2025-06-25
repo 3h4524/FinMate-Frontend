@@ -14,24 +14,24 @@ const state = {
 
 // Icon mapping
 const iconMapping = {
-    'bank-coin': '../assets/images/bank-coin.svg',
-    'bank-fee': '../assets/images/bank-fee.svg',
-    'car': '../assets/images/car.svg',
-    'card': '../assets/images/card.svg',
-    'coffee': '../assets/images/coffee.svg',
-    'cost': '../assets/images/cost.svg',
-    'electric-bill': '../assets/images/electric-bill.svg',
-    'entertainment': '../assets/images/entertainment.svg',
-    'financial-management': '../assets/images/financial-management.svg',
-    'food': '../assets/images/food.svg',
-    'game': '../assets/images/game.svg',
-    'relax': '../assets/images/relax.svg',
-    'shopping': '../assets/images/shopping.svg',
-    'television': '../assets/images/television.svg',
-    'travel': '../assets/images/travel.svg',
-    'water-fee': '../assets/images/water-fee.svg',
-    'world': '../assets/images/world.svg',
-    'more': '../assets/images/more.svg'
+    'bank-coin': '/assets/images/bank-coin.svg',
+    'bank-fee': '/assets/images/bank-fee.svg',
+    'car': '/assets/images/car.svg',
+    'card': '/assets/images/card.svg',
+    'coffee': '/assets/images/coffee.svg',
+    'cost': '/assets/images/cost.svg',
+    'electric-bill': '/assets/images/electric-bill.svg',
+    'entertainment': '/assets/images/entertainment.svg',
+    'financial-management': '/assets/images/financial-management.svg',
+    'food': '/assets/images/food.svg',
+    'game': '/assets/images/game.svg',
+    'relax': '/assets/images/relax.svg',
+    'shopping': '/assets/images/shopping.svg',
+    'television': '/assets/images/television.svg',
+    'travel': '/assets/images/travel.svg',
+    'water-fee': '/assets/images/water-fee.svg',
+    'world': '/assets/images/world.svg',
+    'more': '/assets/images/more.svg'
 };
 
 
@@ -151,7 +151,6 @@ const loadCategories = async () => {
         updateCategorySelects(state.categories);
         return;
     }
-    if (!checkAuth()) return;
     const user = getCurrentUser();
     try {
         const [systemRes, userRes] = await Promise.all([
@@ -239,7 +238,6 @@ const createIconGrid = () => {
 };
 
 const createUserCategory = async (formData) => {
-    if (!checkAuth()) return;
     const user = getCurrentUser();
     try {
         const response = await apiRequest('http://localhost:8080/api/userCategories', {

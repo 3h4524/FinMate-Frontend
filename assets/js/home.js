@@ -2,9 +2,6 @@
 import apiService from './services/api.js';
 
 // DOM Elements
-const userMenuButton = document.getElementById('userMenuButton');
-const userMenuDropdown = document.getElementById('userMenuDropdown');
-const dashboardGrid = document.getElementById('dashboardGrid');
 const transactionList = document.getElementById('transactionList');
 const errorMessage = document.getElementById('errorMessage');
 const successMessage = document.getElementById('successMessage');
@@ -21,17 +18,6 @@ const mainContent = document.querySelector('.main-content');
 let transactions = [];
 let editingTransactionId = null;
 
-// User Menu Toggle
-userMenuButton.addEventListener('click', function() {
-    userMenuDropdown.classList.toggle('show');
-});
-
-// Close user menu when clicking outside
-document.addEventListener('click', function(e) {
-    if (!userMenuButton.contains(e.target) && !userMenuDropdown.contains(e.target)) {
-        userMenuDropdown.classList.remove('show');
-    }
-});
 
 // Format currency
 function formatCurrency(amount) {
@@ -73,63 +59,6 @@ function showSuccess(message) {
     errorMessage.style.display = 'none';
 }
 
-// Check authentication
-async function checkAuth() {
-    try {
-        const token = localStorage.getItem('token');
-        const userData = localStorage.getItem('userData');
-        
-        if (!token || !userData) {
-            console.log('No token or user data found');
-            window.location.href = '/login.html';
-            return false;
-        }
-
-        // Verify token with backend
-        const response = await fetch('http://localhost:8080/api/v1/auth/verify-token', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            console.log('Token verification failed');
-            localStorage.removeItem('token');
-            localStorage.removeItem('userData');
-            window.location.href = '/login.html';
-            return false;
-        }
-
-        const data = await response.json();
-        if (!data.success) {
-            console.log('Token verification failed:', data.message);
-            localStorage.removeItem('token');
-            localStorage.removeItem('userData');
-            window.location.href = '/login.html';
-            return false;
-        }
-
-        // Token is valid, show the main content
-        const mainContent = document.querySelector('.main-content');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        if (mainContent) mainContent.style.display = 'flex';
-        if (loadingSpinner) loadingSpinner.style.display = 'none';
-
-        return true;
-    } catch (error) {
-        console.error('Auth check error:', error);
-        localStorage.removeItem('token');
-        localStorage.removeItem('userData');
-        window.location.href = '/login.html';
-        return false;
-    }
-}
-
-// Call checkAuth when page loads
-document.addEventListener('DOMContentLoaded', checkAuth);
-
 // Initialize page
 async function initializePage() {
     try {
@@ -137,11 +66,6 @@ async function initializePage() {
         showLoading(dashboardGrid);
         showLoading(transactionList);
 
-        // Check authentication
-        const isAuthenticated = await checkAuth();
-        if (!isAuthenticated) {
-            return;
-        }
 
         // Show main content
         mainContent.style.display = 'flex';
@@ -273,34 +197,8 @@ function updateTransactionList(transactions) {
     `).join('');
 }
 
-// Logout function
-function logout() {
-    localStorage.removeItem('token');
-    window.location.href = 'login.html';
-}
-
-// Add logout event listener
-document.getElementById('logoutButton').addEventListener('click', function(e) {
-    e.preventDefault();
-    logout();
-});
-
 // Initialize page when DOM is loaded
 document.addEventListener('DOMContentLoaded', initializePage);
-
-// Update user info in sidebar
-function updateUserInfo(userProfile) {
-    const userNameElement = document.querySelector('.user-info .user-name');
-    const userAvatarElement = document.querySelector('.user-info img');
-    
-    if (userNameElement) {
-        userNameElement.textContent = userProfile.name;
-    }
-    
-    if (userAvatarElement) {
-        userAvatarElement.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile.name)}&background=388e3c&color=fff`;
-    }
-}
 
 // Load transactions
 async function loadTransactions() {

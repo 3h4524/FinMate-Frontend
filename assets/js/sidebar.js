@@ -93,7 +93,7 @@ async function handleLogout() {
     } finally {
         localStorage.removeItem('token');
         localStorage.removeItem('userData');
-        window.location.href = 'login.html';
+        window.location.href = '/pages/login';
     }
 }
 
@@ -124,7 +124,7 @@ const sidebarTemplate = `
             <ul class="nav-list">
                 <!-- Regular User Menu -->
                 <li class="nav-item user-menu">
-                    <a href="home.html" class="nav-link">
+                    <a href="/pages/home" class="nav-link">
                         <div class="nav-icon">
                             <i class="fas fa-home"></i>
                         </div>
@@ -133,7 +133,7 @@ const sidebarTemplate = `
                     </a>
                 </li>
                 <li class="nav-item user-menu">
-                    <a href="transaction.html" class="nav-link">
+                    <a href="/pages/transaction" class="nav-link">
                         <div class="nav-icon">
                             <i class="fas fa-exchange-alt"></i>
                         </div>
@@ -142,7 +142,7 @@ const sidebarTemplate = `
                     </a>
                 </li>
                 <li class="nav-item user-menu">
-                    <a href="goal.html" class="nav-link">
+                    <a href="/pages/goal" class="nav-link">
                         <div class="nav-icon">
                             <i class="fas fa-bullseye"></i>
                         </div>
@@ -151,7 +151,7 @@ const sidebarTemplate = `
                     </a>
                 </li>
                 <li class="nav-item user-menu">
-                    <a href="budget.html" class="nav-link">
+                    <a href="/pages/budget" class="nav-link">
                         <div class="nav-icon">
                             <i class="fas fa-calculator"></i>
                         </div>
@@ -160,7 +160,7 @@ const sidebarTemplate = `
                     </a>
                 </li>
                 <li class="nav-item user-menu">
-                    <a href="financial_report.html" class="nav-link">
+                    <a href="/pages/financial_report" class="nav-link">
                         <div class="nav-icon">
                             <i class="fas fa-chart-pie"></i>
                         </div>
@@ -170,7 +170,7 @@ const sidebarTemplate = `
                 </li>
 
                 <li class="nav-item user-menu">
-                    <a href="update_premium.html" class="nav-link">
+                    <a href="/pages/user_premium" class="nav-link">
                         <div class="nav-icon">
                             <i class="fas fa-chart-pie"></i>
                         </div>
@@ -184,7 +184,7 @@ const sidebarTemplate = `
                     <span>Admin</span>
                 </li>
                 <li class="nav-item admin-menu" id="adminDashboardLink" style="display: none;">
-                    <a href="admin-dashboard.html" class="nav-link">
+                    <a href="/pages/admin-dashboard" class="nav-link">
                         <div class="nav-icon">
                             <i class="fas fa-tachometer-alt"></i>
                         </div>
@@ -193,7 +193,7 @@ const sidebarTemplate = `
                     </a>
                 </li>
                 <li class="nav-item admin-menu" id="userManagementLink" style="display: none;">
-                    <a href="user-management.html" class="nav-link">
+                    <a href="/pages/user-management" class="nav-link">
                         <div class="nav-icon">
                             <i class="fas fa-users-cog"></i>
                         </div>
@@ -202,7 +202,7 @@ const sidebarTemplate = `
                     </a>
                 </li>
                    <li class="nav-item admin-menu" id="systemLogLink" style="display: none;">
-                    <a href="system-log.html" class="nav-link">
+                    <a href="/pages/system-log" class="nav-link">
                         <div class="nav-icon">
                             <i class="fas fa-users-cog"></i>
                         </div>
@@ -213,7 +213,7 @@ const sidebarTemplate = `
 
                 </li>
                    <li class="nav-item admin-menu" id="premiumAdminLink" style="display: none;">
-                    <a href="premium-package-management.html" class="nav-link">
+                    <a href="/pages/subscription-manager" class="nav-link">
                         <div class="nav-icon">
                             <i class="fas fa-users-cog"></i>
                         </div>

@@ -22,6 +22,7 @@ const getCurrentUser = () => {
         cachedUser = {
             userId: payload.userId || payload.sub,
             username: payload.username || payload.username,
+            role: payload.scope,
             exp: payload.exp
         };
         return cachedUser;
@@ -39,7 +40,7 @@ const clearCache = () => {
 const redirectToLogin = () => {
     localStorage.removeItem('token');
     clearCache(); // Xóa cache khi đăng xuất
-    window.location.href = '../pages/login.html';
+    window.location.href = '/pages/login';
 };
 
 const isTokenExpired = () => {

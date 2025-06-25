@@ -1,118 +1,183 @@
-// Toggle password visibility
 function togglePassword() {
     const passwordInput = document.getElementById('password');
-    const confirmPasswordInput = document.getElementById('confirmPassword');
-    const passwordToggle = document.querySelector('.password-toggle');
-    
+    const toggleIcon = document.querySelector('.password-toggle');
+
     if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
-        confirmPasswordInput.type = 'text';
-        passwordToggle.classList.remove('fa-eye-slash');
-        passwordToggle.classList.add('fa-eye');
+        toggleIcon.classList.remove('fa-eye-slash');
+        toggleIcon.classList.add('fa-eye');
     } else {
         passwordInput.type = 'password';
-        confirmPasswordInput.type = 'password';
-        passwordToggle.classList.remove('fa-eye');
-        passwordToggle.classList.add('fa-eye-slash');
+        toggleIcon.classList.remove('fa-eye');
+        toggleIcon.classList.add('fa-eye-slash');
     }
 }
 
-// Form validation
-function validateForm() {
-    let isValid = true;
-    const fullName = document.getElementById('fullName').value;
+function toggleConfirmPassword() {
+    const confirmPasswordInput = document.getElementById('confirm-password');
+    const toggleIcon = document.querySelectorAll('.password-toggle')[1];
+
+    if (confirmPasswordInput.type === 'password') {
+        confirmPasswordInput.type = 'text';
+        toggleIcon.classList.remove('fa-eye-slash');
+        toggleIcon.classList.add('fa-eye');
+    } else {
+        confirmPasswordInput.type = 'password';
+        toggleIcon.classList.remove('fa-eye');
+        toggleIcon.classList.add('fa-eye-slash');
+    }
+}
+
+// Add notification functions
+function showNotification(message, type = 'info') {
+    const notification = document.getElementById('notification');
+    const messageElement = document.getElementById('notification-message');
+
+    // Remove existing classes
+    notification.classList.remove('success', 'error', 'info');
+    // Add new type class
+    notification.classList.add(type);
+
+    messageElement.textContent = message;
+    notification.classList.add('show');
+
+    // Auto hide after 5 seconds
+    setTimeout(() => {
+        hideNotification();
+    }, 5000);
+}
+
+function hideNotification() {
+    const notification = document.getElementById('notification');
+    notification.classList.remove('show');
+}
+
+
+// Password validation
+function initPasswordValidation() {
+    const password = document.getElementById('password');
+    if (!password) return;
+
+    const requirements = {
+        length: document.getElementById('length'),
+        uppercase: document.getElementById('uppercase'),
+        lowercase: document.getElementById('lowercase'),
+        number: document.getElementById('number'),
+        special: document.getElementById('special')
+    };
+
+    // Initially mark all requirements as invalid
+    Object.values(requirements).forEach(li => li.classList.add('invalid'));
+
+    password.addEventListener('input', function () {
+        const value = this.value;
+
+        // Check length
+        if (value.length >= 8) {
+            requirements.length.classList.add('valid');
+            requirements.length.classList.remove('invalid');
+        } else {
+            requirements.length.classList.remove('valid');
+            requirements.length.classList.add('invalid');
+        }
+
+        // Check uppercase
+        if (/[A-Z]/.test(value)) {
+            requirements.uppercase.classList.add('valid');
+            requirements.uppercase.classList.remove('invalid');
+        } else {
+            requirements.uppercase.classList.remove('valid');
+            requirements.uppercase.classList.add('invalid');
+        }
+
+        // Check lowercase
+        if (/[a-z]/.test(value)) {
+            requirements.lowercase.classList.add('valid');
+            requirements.lowercase.classList.remove('invalid');
+        } else {
+            requirements.lowercase.classList.remove('valid');
+            requirements.lowercase.classList.add('invalid');
+        }
+
+        // Check number
+        if (/[0-9]/.test(value)) {
+            requirements.number.classList.add('valid');
+            requirements.number.classList.remove('invalid');
+        } else {
+            requirements.number.classList.remove('valid');
+            requirements.number.classList.add('invalid');
+        }
+
+        // Check special character
+        if (/[!@#$%^&*]/.test(value)) {
+            requirements.special.classList.add('valid');
+            requirements.special.classList.remove('invalid');
+        } else {
+            requirements.special.classList.remove('valid');
+            requirements.special.classList.add('invalid');
+        }
+    });
+}
+
+// Xử lý đăng ký
+document.getElementById('register-form').addEventListener('submit', async function (e) {
+    console.log("XEM");
+    e.preventDefault();
+    const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirmPassword').value;
-    
-    // Reset error messages
-    document.getElementById('fullNameError').style.display = 'none';
+    const confirmPassword = document.getElementById('confirm-password').value;
+
+    // Clear previous errors
+    document.getElementById('nameError').style.display = 'none';
     document.getElementById('emailError').style.display = 'none';
     document.getElementById('passwordError').style.display = 'none';
     document.getElementById('confirmPasswordError').style.display = 'none';
-    
-    // Full name validation
-    if (!fullName) {
-        document.getElementById('fullNameError').textContent = 'Full name is required';
-        document.getElementById('fullNameError').style.display = 'block';
-        isValid = false;
-    }
-    
-    // Email validation
-    if (!email) {
-        document.getElementById('emailError').textContent = 'Email is required';
-        document.getElementById('emailError').style.display = 'block';
-        isValid = false;
-    } else if (!isValidEmail(email)) {
-        document.getElementById('emailError').textContent = 'Please enter a valid email address';
-        document.getElementById('emailError').style.display = 'block';
-        isValid = false;
-    }
-    
-    // Password validation
-    if (!password) {
-        document.getElementById('passwordError').textContent = 'Password is required';
-        document.getElementById('passwordError').style.display = 'block';
-        isValid = false;
-    } else if (password.length < 8) {
-        document.getElementById('passwordError').textContent = 'Password must be at least 8 characters long';
-        document.getElementById('passwordError').style.display = 'block';
-        isValid = false;
-    }
-    
-    // Confirm password validation
-    if (!confirmPassword) {
-        document.getElementById('confirmPasswordError').textContent = 'Please confirm your password';
-        document.getElementById('confirmPasswordError').style.display = 'block';
-        isValid = false;
-    } else if (password !== confirmPassword) {
+
+    // Check password match
+    if (password !== confirmPassword) {
+        showNotification('Passwords do not match!', 'error');
         document.getElementById('confirmPasswordError').textContent = 'Passwords do not match';
         document.getElementById('confirmPasswordError').style.display = 'block';
-        isValid = false;
-    }
-    
-    return isValid;
-}
-
-// Email format validation
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
-// Handle form submission
-document.getElementById('registerForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    if (!validateForm()) {
         return;
     }
-    
-    const fullName = document.getElementById('fullName').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    
+
     try {
-        const response = await fetch('http://localhost:8080/api/auth/register', {
+        const response = await fetch('http://localhost:8080/api/v1/auth/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ fullName, email, password }),
-            credentials: 'include'
+            body: JSON.stringify({ name, email, password })
         });
-        
+
         const data = await response.json();
-        
-        if (response.ok) {
-            window.location.href = 'verify-email.html';
+        console.log('Register response:', data);
+
+        if (data.code === 1000) {
+            showNotification('Registration successful! Please check your email to verify your account.', 'success');
+            // Redirect to email verification page
+            setTimeout(() => {
+                window.location.href = 'verify-email.html?email=' + encodeURIComponent(email);
+            }, 2000);
         } else {
-            document.getElementById('emailError').textContent = data.message || 'Registration failed';
-            document.getElementById('emailError').style.display = 'block';
+            // Show error message
+            const errorMessage = data.message || 'Registration failed!';
+            showNotification(errorMessage, 'error');
+
+            // If it's an email already exists error, show it in the email field
+            if (data.code === 1014) {
+                document.getElementById('emailError').textContent = 'Email already registered';
+                document.getElementById('emailError').style.display = 'block';
+            }
         }
     } catch (error) {
-        console.error('Registration error:', error);
-        document.getElementById('emailError').textContent = 'An error occurred. Please try again.';
-        document.getElementById('emailError').style.display = 'block';
+        console.error('Register error:', error);
+        showNotification('An error occurred during registration! Please try again later.', 'error');
     }
-}); 
+});
+
+// Initialize password validation on page load
+document.addEventListener('DOMContentLoaded', function () {
+    initPasswordValidation();
+});

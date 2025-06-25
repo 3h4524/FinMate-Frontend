@@ -8,10 +8,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="../assets/js/helper_functions.js"></script>
-    <script src="../assets/js/financial_report.js" defer></script>
-    <script src="../assets/js/autho_helper.js" defer></script>
-    <script src="../assets/js/sidebar.js" defer></script>
+    <script src="/assets/js/helper_functions.js"></script>
+    <script src="/assets/js/financial_report.js" defer></script>
+    <script src="/assets/js/autho_helper.js" defer></script>
+    <script src="/assets/js/sidebar.js" defer></script>
     <style>
         html,
         body {
@@ -246,7 +246,7 @@
 
                             <h3 class="text-lg font-medium text-gray-900 mb-2">No transaction found</h3>
                             <p class="text-gray-600 mb-6">Record your transaction to view detailed statistics.</p>
-                            <button onclick="window.location.href = 'transaction.html';" id="goToTransactionPage"
+                            <button onclick="window.location.href = '/pages/transaction';" id="goToTransactionPage"
                                 class="bg-teal-600 text-white px-6 py-3 rounded-lg hover:bg-teal-700 transition-colors flex items-center mx-auto">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -273,7 +273,7 @@
                     </table>
 
                     <div id="viewMoreContainer" class="mt-4 flex justify-center hidden">
-                        <button onclick="window.location.href = 'transaction.html';" id="viewMoreButton"
+                        <button onclick="window.location.href = '/pages/transaction';" id="viewMoreButton"
                             class="bg-teal-500 text-white px-6 py-3 rounded-lg hover:bg-teal-600 transition-all duration-200 font-medium shadow-md">
                             Show More Transactions
                         </button>

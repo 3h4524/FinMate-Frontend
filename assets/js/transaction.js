@@ -57,24 +57,24 @@ const DOM = {
 };
 
 const iconOptions = [
-  { src: '../assets/images/bank-coin.svg', name: 'Bank Coin' },
-  { src: '../assets/images/bank-fee.svg', name: 'Bank Fee' },
-  { src: '../assets/images/car.svg', name: 'Car' },
-  { src: '../assets/images/card.svg', name: 'Card' },
-  { src: '../assets/images/coffee.svg', name: 'Coffee' },
-  { src: '../assets/images/cost.svg', name: 'Cost' },
-  { src: '../assets/images/electric-bill.svg', name: 'Electric Bill' },
-  { src: '../assets/images/entertainment.svg', name: 'Entertainment' },
-  { src: '../assets/images/financial-management.svg', name: 'Financial' },
-  { src: '../assets/images/food.svg', name: 'Food' },
-  { src: '../assets/images/game.svg', name: 'Game' },
-  { src: '../assets/images/relax.svg', name: 'Relax' },
-  { src: '../assets/images/shopping.svg', name: 'Shopping' },
-  { src: '../assets/images/television.svg', name: 'TV' },
-  { src: '../assets/images/travel.svg', name: 'Travel' },
-  { src: '../assets/images/water-fee.svg', name: 'Water Bill' },
-  { src: '../assets/images/world.svg', name: 'World' },
-  { src: '../assets/images/more.svg', name: 'More' },
+  { src: ' /assets/images/bank-coin.svg', name: 'Bank Coin' },
+  { src: ' /assets/images/bank-fee.svg', name: 'Bank Fee' },
+  { src: ' /assets/images/car.svg', name: 'Car' },
+  { src: ' /assets/images/card.svg', name: 'Card' },
+  { src: ' /assets/images/coffee.svg', name: 'Coffee' },
+  { src: ' /assets/images/cost.svg', name: 'Cost' },
+  { src: ' /assets/images/electric-bill.svg', name: 'Electric Bill' },
+  { src: ' /assets/images/entertainment.svg', name: 'Entertainment' },
+  { src: ' /assets/images/financial-management.svg', name: 'Financial' },
+  { src: ' /assets/images/food.svg', name: 'Food' },
+  { src: ' /assets/images/game.svg', name: 'Game' },
+  { src: ' /assets/images/relax.svg', name: 'Relax' },
+  { src: ' /assets/images/shopping.svg', name: 'Shopping' },
+  { src: ' /assets/images/television.svg', name: 'TV' },
+  { src: ' /assets/images/travel.svg', name: 'Travel' },
+  { src: ' /assets/images/water-fee.svg', name: 'Water Bill' },
+  { src: ' /assets/images/world.svg', name: 'World' },
+  { src: ' /assets/images/more.svg', name: 'More' },
 ];
 
 const iconMapping = iconOptions.reduce((map, icon) => {
@@ -121,48 +121,6 @@ const formatLabel = (iconName, categoryName) => {
     return `<img src="${iconPath}" class="category-icon-small w-4 h-4 mr-1.5">${categoryName}`;
   }
   return `📁 ${categoryName}`;
-};
-
-const getToken = () => localStorage.getItem('token');
-
-const getCurrentUser = () => {
-  const token = getToken();
-  if (!token) return null;
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return {
-      userId: payload.userId || payload.sub,
-      username: payload.username || payload.name,
-      exp: payload.exp,
-    };
-  } catch (error) {
-    console.error('Error parsing token:', error);
-    return null;
-  }
-};
-
-const isTokenExpired = () => {
-  const user = getCurrentUser();
-  if (!user) return true;
-  return Date.now() >= user.exp * 1000;
-};
-
-const redirectToLogin = () => {
-  localStorage.removeItem('token');
-  window.location.href = '../pages/login.html';
-};
-
-const getAuthHeaders = () => {
-  const token = getToken();
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
-
-const checkAuth = () => {
-  if (!getToken() || isTokenExpired()) {
-    redirectToLogin();
-    return false;
-  }
-  return true;
 };
 
 const formatAmount = (amount) =>
@@ -293,26 +251,6 @@ const validateCategoryForm = () => {
   return true;
 };
 
-const apiRequest = async (url, options = {}) => {
-  if (!checkAuth()) return null;
-  const headers = {
-    'Content-Type': 'application/json',
-    ...getAuthHeaders(),
-    ...options.headers,
-  };
-  try {
-    const response = await fetch(url, { ...options, headers });
-    if (response.status === 401) {
-      redirectToLogin();
-      return null;
-    }
-    return response;
-  } catch (error) {
-    console.error('API Request Error:', error);
-    throw error;
-  }
-};
-
 const loadWalletBalance = async () => {
   if (!checkAuth()) return;
   const user = getCurrentUser();
@@ -377,7 +315,6 @@ const updateWalletBalance = async (newBalance, currency) => {
 };
 
 const loadTransactions = async (searchParams = {}) => {
-  if (!checkAuth()) return;
   const user = getCurrentUser();
   showLoading();
   try {
@@ -414,7 +351,6 @@ const loadTransactions = async (searchParams = {}) => {
 
 
 const createTransaction = async (formData) => {
-  if (!checkAuth()) return;
   const user = getCurrentUser();
   try {
     let url = formData.recurringPattern ? RECURRING_API_BASE_URL : API_BASE_URL;
@@ -465,7 +401,6 @@ const createTransaction = async (formData) => {
 };
 
 const updateTransaction = async (transactionId, formData) => {
-  if (!checkAuth()) return;
   const user = getCurrentUser();
   try {
     const url = `${API_BASE_URL}/${transactionId}?userId=${user.userId}`;
@@ -502,7 +437,6 @@ const updateTransaction = async (transactionId, formData) => {
 
 const deleteTransaction = async (transactionId) => {
   if (!confirm('Bạn có chắc chắn muốn xóa giao dịch này?')) return;
-  if (!checkAuth()) return;
   const user = getCurrentUser();
   try {
     const url = `${API_BASE_URL}/${transactionId}?userId=${user.userId}`;
@@ -527,7 +461,6 @@ const deleteTransaction = async (transactionId) => {
 };
 
 const searchTransactions = async () => {
-  if (!checkAuth()) return;
   const user = getCurrentUser();
   const [type, id] = document.getElementById('category-search').value.split('-');
   const searchParams = {
@@ -586,7 +519,6 @@ const searchTransactions = async () => {
 };
 
 const searchRecurringTransactions = async () => {
-  if (!checkAuth()) return;
   const user = getCurrentUser();
   const [type, id] = document.getElementById('category-search').value.split('-');
   const searchParams = {
@@ -858,7 +790,6 @@ const closeCreateCategoryModal = () => {
 };
 
 const createUserCategory = async (formData) => {
-  if (!checkAuth()) return;
   const user = getCurrentUser();
   try {
     const response = await apiRequest('http://localhost:8080/api/userCategories', {
@@ -1084,7 +1015,6 @@ const initEventListeners = () => {
 };
 
 const init = async () => {
-  if (!checkAuth()) return;
   initEventListeners();
   await loadTransactions();
   await loadCategories();
@@ -1129,15 +1059,4 @@ const updateStats = async () => {
       ? '#D32F2F'
       : '#4CAF50';
   }
-};
-
-
-// Utility Functions
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(amount);
 };

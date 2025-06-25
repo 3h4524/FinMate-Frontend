@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - FinMate</title>
-    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="/assets/css/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="../assets/css/admin-dashboard.css" rel="stylesheet">
-    <script src="../assets/js/helper_functions.js"></script>
-    <script src="../assets/js/autho_helper.js" defer></script>
-    <script src="../assets/js/sidebar.js" defer></script>
+    <link href="/assets/css/admin-dashboard.css" rel="stylesheet">
+    <script src="/assets/js/helper_functions.js"></script>
+    <script src="/assets/js/autho_helper.js" defer></script>
+    <script src="/assets/js/sidebar.js" defer></script>
 </head>
 <body>
     <div class="app-container">
@@ -116,7 +116,7 @@
                     <section class="quick-actions-section">
                         <h3 class="section-subtitle">Quick Actions</h3>
                         <div class="quick-actions-grid">
-                            <a href="user-management.html" class="action-card">
+                            <a href="/pages/user-management" class="action-card">
                                 <div class="action-icon">
                                     <i class="fas fa-users-cog"></i>
                                 </div>
@@ -146,7 +146,7 @@
                                 </div>
                             </div>
 
-                            <a href="system-log.html" class="action-card">
+                            <a href="/pages/system-log" class="action-card">
                                 <div class="action-icon">
                                     <i class="fas fa-file-alt"></i>
                                 </div>
@@ -218,7 +218,7 @@
             
             if (!token || !userData) {
                 console.log('[AUTH] No token or user data found, redirecting to login');
-                window.location.href = 'login.html';
+                window.location.href = '/pages/login';
                 return;
             }
 
@@ -256,7 +256,7 @@
                     if (userRole !== 'ADMIN') {
                         console.log('[AUTH] Access denied: User does not have ADMIN role');
                         alert('Access denied. This page is only available for administrators.');
-                        window.location.href = 'home.html';
+                        window.location.href = '/pages/home';
                         return;
                     }
                 } catch (e) {
@@ -291,7 +291,7 @@
         function redirectToLogin() {
             localStorage.removeItem('token');
             localStorage.removeItem('userData');
-            window.location.href = 'login.html';
+            window.location.href = '/pages/login';
         }
 
         async function loadDashboardData() {

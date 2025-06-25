@@ -245,9 +245,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize forms based on current page
     if (window.location.pathname.includes('register.html')) {
-        initRegisterForm();
-        initPasswordValidation();
+        // initRegisterForm();
+        // initPasswordValidation();
     } else if (window.location.pathname.includes('login.html')) {
-        initLoginForm();
+        // initLoginForm();
     }
 }); 
