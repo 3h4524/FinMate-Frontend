@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,160 +11,181 @@
     <script src="../assets/js/sidebar.js" defer></script>
     <script src="../assets/js/system-log.js" defer></script>
     <style>
-        @keyframes slideIn {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        :root {
+            --primary: #0d9488;
+            --primary-dark: #0c7a6e;
+            --primary-light: #ccfbf1;
+            --text-dark: #1e293b;
+            --text-light: #6b7280;
+            --success: #0d9488;
+            --error: #dc2626;
+            --warning: #f59e0b;
         }
-
-        @keyframes slideOut {
-            from {
-                transform: translateY(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
+        body {
+            background: linear-gradient(135deg, #f0fdf4, #e5f7fb);
         }
-
-        .notification-slide-in {
-            animation: slideIn 0.4s ease-out;
-        }
-
-        .notification-slide-out {
-            animation: slideOut 0.4s ease-in;
-        }
-
         .table-row-hover {
-            transition: background-color 0.2s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
-
         .table-row-hover:hover {
-            background-color: #f1f5f9;
+            background-color: rgba(13, 148, 136, 0.1);
+            transform: translateY(-2px);
         }
-
-        .custom-shadow {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        .action-icon {
+            transition: transform 0.3s ease, color 0.3s ease;
         }
-
-        .weekly-row {
-            background: linear-gradient(to right, rgba(34, 197, 94, 0.1), transparent);
+        .action-icon:hover {
+            transform: scale(1.3);
         }
-
-        .monthly-row {
-            background: linear-gradient(to right, rgba(59, 130, 246, 0.1), transparent);
+        .view-icon:hover {
+            color: var(--primary);
+        }
+        .delete-icon:hover {
+            color: var(--error);
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+        .modal-content {
+            transform: scale(0.95);
+            transition: transform 0.2s ease-in-out;
+        }
+        .modal-content.show {
+            transform: scale(1);
+        }
+        @keyframes notificationSlideIn {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes notificationSlideOut {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(-100%); opacity: 0; }
+        }
+        .notification-slide-in {
+            animation: notificationSlideIn 0.3s ease-out;
+        }
+        .notification-slide-out {
+            animation: notificationSlideOut 0.3s ease-in;
         }
     </style>
 </head>
-
-<body class="font-sans text-gray-900 bg-gradient-to-br from-green-50 to-teal-50">
+<body class="font-sans text-gray-900">
     <div class="flex min-h-screen">
         <div id="sidebar-container"></div>
-        <!-- Main Content -->
         <main class="flex-1 md:ml-64 p-6 transition-all">
-            <header
-                class="bg-white rounded-2xl p-5 shadow-lg flex flex-col md:flex-row justify-between items-center mb-6">
+            <header class="bg-gradient-to-r from-teal-600 to-lime-400 rounded-2xl p-5 shadow-lg flex flex-col md:flex-row justify-between items-center mb-6 card-hover">
                 <div class="mb-4 md:mb-0">
-                    <h1 class="text-2xl font-bold text-teal-800">System Logs Management</h1>
-                    <div class="text-sm text-gray-600" id="current-date-time"></div>
+                    <h1 class="text-3xl font-extrabold text-white">System Logs Management</h1>
+                    <div class="text-sm text-white opacity-80" id="current-date-time"></div>
                 </div>
                 <div class="relative flex-1 max-w-md mx-4">
                     <input type="text" id="searchInput" placeholder="Search logs..." aria-label="Search logs"
-                        class="w-full p-3 pl-4 pr-10 border border-gray-300 rounded-full bg-gray-50 focus:border-teal-600 focus:ring-2 focus:ring-teal-300 transition">
-                    <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        class="w-full p-3 pl-4 pr-10 border border-gray-200 rounded-full bg-white focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary-light)] transition shadow-sm" />
+                    <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-light)]"></i>
                 </div>
                 <div class="flex items-center gap-3">
-                    <button
-                        class="bg-gradient-to-r from-teal-600 to-lime-400 text-white px-5 py-2 rounded-xl hover:shadow-xl hover:-translate-y-1 transition flex items-center gap-2"
-                        id="filterBtn">
-                        <i class="fas fa-filter"></i> Apply Filters
+                    <button class="bg-white text-[var(--primary)] px-5 py-2 rounded-xl hover:shadow-xl hover:-translate-y-1 transition flex items-center gap-2 shadow-sm" id="refreshBtn">
+                        <i class="fas fa-sync-alt"></i> Refresh
                     </button>
-                    <button
-                        class="bg-gradient-to-r from-teal-600 to-lime-400 text-white px-5 py-2 rounded-xl hover:shadow-xl hover:-translate-y-1 transition flex items-center gap-2"
-                        id="exportBtn">
+                    <button class="bg-white text-[var(--primary)] px-5 py-2 rounded-xl hover:shadow-xl hover:-translate-y-1 transition flex items-center gap-2 shadow-sm" id="exportBtn">
                         <i class="fas fa-download"></i> Export CSV
                     </button>
-                    <button id="menuToggle" class="p-3 rounded-full bg-gray-200 hover:bg-gray-300 md:hidden"><i
-                            class="fas fa-bars"></i></button>
+                    <button id="menuToggle" class="p-3 rounded-full bg-white hover:bg-gray-100 md:hidden shadow-sm">
+                        <i class="fas fa-bars text-[var(--primary)]"></i>
+                    </button>
                 </div>
             </header>
-
-            <div class="flex flex-col gap-6 items-center">
-                <!-- Filter Section -->
-                <div class="bg-white rounded-2xl p-6 shadow-lg w-full">
+            <div class="bg-white rounded-2xl p-6 shadow-lg w-full mb-6 card-hover">
+                <h2 class="text-xl font-semibold text-[var(--text-dark)] mb-4">Log Statistics</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-4 bg-teal-50 rounded-xl text-center shadow-sm">
+                        <p class="text-sm text-[var(--text-light)]">Total Logs</p>
+                        <p class="text-2xl font-bold text-[var(--text-dark)]" id="totalLogs">0</p>
+                    </div>
+                    <div class="p-4 bg-teal-50 rounded-xl text-center shadow-sm">
+                        <p class="text-sm text-[var(--text-light)]">Total Admin</p>
+                        <p class="text-2xl font-bold text-[var(--text-dark)]" id="actionStats">-</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col gap-6">
+                <div class="bg-white rounded-2xl p-6 shadow-lg w-full card-hover">
                     <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold flex items-center gap-2"><i
-                                class="fas fa-filter text-teal-600"></i> Filter Logs</h2>
+                        <h2 class="text-xl font-semibold text-[var(--text-dark)] flex items-center gap-2">
+                            <i class="fas fa-filter text-[var(--primary)]"></i> Filter Logs
+                        </h2>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div>
-                            <label for="startDate" class="block text-sm font-medium text-gray-700">Start Date</label>
-                            <input type="date" id="startDate"
-                                class="w-full p-3 rounded-lg border border-gray-200 bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition" />
+                            <label for="startDate" class="block text-sm font-medium text-[var(--text-dark)]">Start Date</label>
+                            <input type="date" id="startDate" class="w-full p-3 rounded-lg border border-gray-200 bg-white focus:ring-2 focus:ring-[var(--primary-light)] focus:border-[var(--primary)] transition shadow-sm" />
                         </div>
                         <div>
-                            <label for="endDate" class="block text-sm font-medium text-gray-700">End Date</label>
-                            <input type="date" id="endDate"
-                                class="w-full p-3 rounded-lg border border-gray-200 bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition" />
+                            <label for="endDate" class="block text-sm font-medium text-[var(--text-dark)]">End Date</label>
+                            <input type="date" id="endDate" class="w-full p-3 rounded-lg border border-gray-200 bg-white focus:ring-2 focus:ring-[var(--primary-light)] focus:border-[var(--primary)] transition shadow-sm" />
                         </div>
                         <div>
-                            <label for="entityType" class="block text-sm font-medium text-gray-700">Entity Type</label>
-                            <input type="text" id="entityType" placeholder="E.g., User, Transaction"
-                                class="w-full p-3 rounded-lg border border-gray-200 bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition" />
+                            <label for="entityType" class="block text-sm font-medium text-[var(--text-dark)]">Entity Type</label>
+                            <input type="text" id="entityType" placeholder="E.g., User, Transaction" class="w-full p-3 rounded-lg border border-gray-200 bg-white focus:ring-2 focus:ring-[var(--primary-light)] focus:border-[var(--primary)] transition shadow-sm" />
                         </div>
                         <div>
-                            <label for="adminId" class="block text-sm font-medium text-gray-700">Admin ID</label>
-                            <input type="number" id="adminId" placeholder="E.g., 1"
-                                class="w-full p-3 rounded-lg border border-gray-200 bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition" />
+                            <label for="adminId" class="block text-sm font-medium text-[var(--text-dark)]">Admin ID</label>
+                            <input type="number" id="adminId" placeholder="E.g., 1" class="w-full p-3 rounded-lg border border-gray-200 bg-white focus:ring-2 focus:ring-[var(--primary-light)] focus:border-[var(--primary)] transition shadow-sm" />
                         </div>
                     </div>
                 </div>
-
-                <!-- Logs Table -->
-                <div class="bg-white rounded-2xl p-6 shadow-lg w-full">
+                <div class="bg-white rounded-2xl p-6 shadow-lg w-full card-hover">
                     <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold flex items-center gap-2"><i
-                                class="fas fa-database text-teal-600"></i> Log Entries</h2>
-                        <button
-                            class="bg-gradient-to-r from-teal-600 to-lime-400 text-white px-5 py-2 rounded-xl hover:shadow-xl hover:-translate-y-1 transition flex items-center gap-2"
-                            onclick="loadLogs(0, 10)">
-                            <i class="fas fa-sync-alt"></i> Refresh
+                        <h2 class="text-xl font-semibold text-[var(--text-dark)] flex items-center gap-2">
+                            <i class="fas fa-database text-[var(--primary)]"></i> Log Entries
+                        </h2>
+                        <button class="bg-gradient-to-r from-teal-600 to-lime-400 text-white px-5 py-2 rounded-xl hover:shadow-xl hover:-translate-y-1 transition flex items-center gap-2 shadow-sm" id="filterBtn">
+                            <i class="fas fa-filter"></i> Apply Filters
                         </button>
                     </div>
                     <div class="overflow-x-auto">
                         <table id="logsTable" class="w-full text-center">
-                            <thead class="bg-gray-100 text-gray-700">
+                            <thead class="bg-gray-100 text-[var(--text-light)]">
                                 <tr>
-                                    <th class="p-3 font-semibold text-sm">#</th>
+                                    <th class="p-3 font-semibold text-sm rounded-tl-xl">ID</th>
                                     <th class="p-3 font-semibold text-sm">Admin ID</th>
                                     <th class="p-3 font-semibold text-sm">Action</th>
                                     <th class="p-3 font-semibold text-sm">Entity Type</th>
-                                    <th class="p-3 font-semibold text-sm">Entity ID</th>
-                                    <th class="p-3 font-semibold text-sm">Timestamp</th>
-                                    <th class="p-3 font-semibold text-sm">Details</th>
+                                    <th class="p-3 font-semibold text-sm rounded-tr-xl">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="logsBody" class="divide-y divide-gray-200"></tbody>
                         </table>
                     </div>
-                    <div id="pagination" class="flex justify-center mt-4 gap-2"></div>
+                    <div id="pagination" class="flex justify-center mt-4 gap-2">
+                        <button class="px-4 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 transition disabled:bg-gray-300 disabled:cursor-not-allowed" id="prevBtn">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div id="pageNumbers"></div>
+                        <button class="px-4 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 transition disabled:bg-gray-300 disabled:cursor-not-allowed" id="nextBtn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div id="logDetailModal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-[1000]">
+                        <div class="bg-white bg-opacity-95 backdrop-blur-md rounded-2xl shadow-2xl p-8 w-full max-w-lg relative modal-content">
+                            <button onclick="closeLogDetails()" class="absolute top-4 right-4 text-2xl text-gray-500 hover:text-[var(--primary)] transition">×</button>
+                            <h3 class="text-2xl font-bold text-[var(--text-dark)] mb-6 flex items-center gap-2">
+                                <i class="fas fa-info-circle text-[var(--primary)]"></i> Log Details
+                            </h3>
+                            <div id="logDetailsContent" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                            <div class="mt-6 flex justify-end">
+                                <button class="bg-gradient-to-r from-teal-600 to-lime-400 text-white px-5 py-2 rounded-xl hover:shadow-xl hover:-translate-y-1 transition shadow-sm" onclick="closeLogDetails()">Close</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
-
-        <!-- Notification -->
-        <div id="notification"
-            class="fixed top-4 right-4 hidden p-4 rounded-lg shadow-md text-sm z-50 transition"
-            role="alert">
-            <span id="notificationMessage"></span>
-        </div>
+        <div id="toastContainer" class="fixed top-4 right-4 z-[1000] space-y-2 w-[320px] max-w-full"></div>
     </div>
 </body>
-
 </html>

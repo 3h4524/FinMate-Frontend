@@ -54,13 +54,6 @@
             transform: scale(1);
         }
 
-        .weekly-row {
-            background: linear-gradient(to right, rgba(34, 197, 94, 0.1), transparent);
-        }
-
-        .monthly-row {
-            background: linear-gradient(to right, rgba(59, 130, 246, 0.1), transparent);
-        }
     </style>
 </head>
 
@@ -173,7 +166,6 @@
                             <thead>
                                 <tr class="bg-gray-100">
                                     <th class="p-3 font-semibold">Category</th>
-                                    <th class="p-3 font-semibold">Period</th>
                                     <th class="p-3 font-semibold">Planned Amount</th>
                                     <th class="p-3 font-semibold">Actual Spending</th>
                                     <th class="p-3 font-semibold">Variance</th>
@@ -235,6 +227,10 @@
                         </div>
                     </div>
                     <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+                        <button type="button" onclick="closeModal('createBudgetModal')"
+                            class="px-6 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition">
+                            Cancel
+                        </button>
                         <button type="submit"
                             class="bg-gradient-to-r from-teal-600 to-lime-400 text-white px-6 py-2 rounded-lg font-semibold shadow-md hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2">
                             <i class="fas fa-save"></i> Save Plan
