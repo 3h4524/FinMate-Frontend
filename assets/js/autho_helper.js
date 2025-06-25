@@ -40,7 +40,7 @@ const clearCache = () => {
 const redirectToLogin = () => {
     localStorage.removeItem('token');
     clearCache(); // Xóa cache khi đăng xuất
-    window.location.href = '/pages/login';
+    window.location.href = '../login';
 };
 
 const isTokenExpired = () => {

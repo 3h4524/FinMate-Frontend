@@ -147,7 +147,7 @@
 
         // Initialize page scripts
         function initializePageScripts(page) {
-            if (page === '/pages/home') {
+            if (page === '../home') {
                 const searchInput = document.querySelector('.search-bar input');
                 const searchIcon = document.querySelector('.search-bar i');
                 if (searchIcon && searchInput) {
@@ -203,7 +203,7 @@
                 const addGoalBtn = document.getElementById('addGoalBtn');
                 if (addGoalBtn) {
                     addGoalBtn.addEventListener('click', () => {
-                        window.location.href = '/pages/goal';
+                        window.location.href = '../goal';
                     });
                 }
             }
@@ -280,7 +280,7 @@
             const addGoalBtn = document.getElementById('addGoalBtn');
             if (addGoalBtn) {
                 addGoalBtn.addEventListener('click', () => {
-                    window.location.href = '/pages/goal';
+                    window.location.href = '../goal';
                 });
             }
 
@@ -445,7 +445,7 @@
                 <div class="card total-balance-card bg-white border-2 border-[var(--main-green)] rounded-2xl p-8 shadow-lg hover:scale-[1.02] hover:shadow-xl transition-all duration-300">
                     <div class="card-header flex justify-between items-center mb-6">
                         <h3 class="text-2xl font-bold text-[var(--main-green-dark)]">Total Balance</h3>
-                        <a href="/pages/accounts" class="text-sm font-semibold text-[var(--main-green)] hover:text-[var(--main-green-dark)] transition">All Accounts</a>
+                        <a href="../accounts" class="text-sm font-semibold text-[var(--main-green)] hover:text-[var(--main-green-dark)] transition">All Accounts</a>
                     </div>
                     <div class="card-body flex flex-col items-center">
                         <span class="balance-amount text-4xl font-extrabold text-[var(--main-green-dark)] mb-6" id="totalBalance">$10.210.221</span>
@@ -462,7 +462,7 @@
                     <div class="card goals-card bg-white rounded-2xl p-6 shadow-lg hover:scale-[1.02] hover:shadow-xl transition-all duration-300">
                         <div class="card-header flex justify-between items-center mb-4">
                             <h3 class="text-xl font-semibold text-[var(--main-green-dark)]">Goals</h3>
-                            <a href="/pages/goal" class="text-sm font-semibold text-[var(--main-green)] hover:text-[var(--main-green-dark)] transition">View All</a>
+                            <a href="../goal" class="text-sm font-semibold text-[var(--main-green)] hover:text-[var(--main-green-dark)] transition">View All</a>
                         </div>
                         <div class="card-body scrollbar-custom max-h-64 overflow-y-auto">
                             <ul class="goals-list space-y-4"></ul>
@@ -475,7 +475,7 @@
                     <div class="card recent-transactions-card bg-white rounded-2xl p-6 shadow-lg hover:scale-[1.02] hover:shadow-xl transition-all duration-300">
                         <div class="card-header flex justify-between items-center mb-4">
                             <h3 class="text-xl font-semibold text-[var(--main-green-dark)]">Recent Transactions</h3>
-                            <a href="/pages/transaction" class="text-sm font-semibold text-[var(--main-green)] hover:text-[var(--main-green-dark)] transition">View All</a>
+                            <a href="../transaction" class="text-sm font-semibold text-[var(--main-green)] hover:text-[var(--main-green-dark)] transition">View All</a>
                         </div>
                         <div class="card-body scrollbar-custom max-h-64 overflow-y-auto">
                             <div class="transaction-summary grid grid-cols-2 gap-4 mb-4">
@@ -500,7 +500,7 @@
                     <div class="card budgets-card bg-white rounded-2xl p-6 shadow-lg hover:scale-[1.02] hover:shadow-xl transition-all duration-300">
                         <div class="card-header flex justify-between items-center mb-4">
                             <h3 class="text-xl font-semibold text-[var(--main-green-dark)]">Budgets</h3>
-                            <a href="/pages/budget" class="text-sm font-semibold text-[var(--main-green)] hover:text-[var(--main-green-dark)] transition">View All</a>
+                            <a href="../budget" class="text-sm font-semibold text-[var(--main-green)] hover:text-[var(--main-green-dark)] transition">View All</a>
                         </div>
                         <div class="card-body scrollbar-custom max-h-64 overflow-y-auto">
                             <div class="budget-summary grid grid-cols-2 gap-4 mb-4">

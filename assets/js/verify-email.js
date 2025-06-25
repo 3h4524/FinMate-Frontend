@@ -24,7 +24,7 @@ const emailFromUrl = urlParams.get('email');
 
 if (!emailFromUrl && requiresVerification !== 'true' && !pendingEmail) {
     // if (isAuthenticated === 'true') {
-    // window.location.href = '/pages/home';
+    // window.location.href = '../home';
     // } else {
     // window.location.href = 'login.html';
     // }
@@ -144,7 +144,7 @@ document.getElementById('verificationForm').addEventListener('submit', async (e)
 
             setTimeout(() => {
                 try {
-                    window.location.assign('/pages/login');
+                    window.location.assign('../login');
                 } catch (error) {
                     console.error('Redirection failed:', error);
                     showNotification('Could not redirect. Please go to the login page manually.', 'error');

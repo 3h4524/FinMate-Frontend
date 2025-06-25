@@ -116,7 +116,7 @@
                     <section class="quick-actions-section">
                         <h3 class="section-subtitle">Quick Actions</h3>
                         <div class="quick-actions-grid">
-                            <a href="/pages/user-management" class="action-card">
+                            <a href="../user-management" class="action-card">
                                 <div class="action-icon">
                                     <i class="fas fa-users-cog"></i>
                                 </div>
@@ -146,7 +146,7 @@
                                 </div>
                             </div>
 
-                            <a href="/pages/system-log" class="action-card">
+                            <a href="../system-log" class="action-card">
                                 <div class="action-icon">
                                     <i class="fas fa-file-alt"></i>
                                 </div>
@@ -218,7 +218,7 @@
             
             if (!token || !userData) {
                 console.log('[AUTH] No token or user data found, redirecting to login');
-                window.location.href = '/pages/login';
+                window.location.href = '../login';
                 return;
             }
 
@@ -256,7 +256,7 @@
                     if (userRole !== 'ADMIN') {
                         console.log('[AUTH] Access denied: User does not have ADMIN role');
                         alert('Access denied. This page is only available for administrators.');
-                        window.location.href = '/pages/home';
+                        window.location.href = '../home';
                         return;
                     }
                 } catch (e) {
@@ -291,7 +291,7 @@
         function redirectToLogin() {
             localStorage.removeItem('token');
             localStorage.removeItem('userData');
-            window.location.href = '/pages/login';
+            window.location.href = '../login';
         }
 
         async function loadDashboardData() {
