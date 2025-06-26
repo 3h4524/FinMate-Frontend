@@ -47,7 +47,7 @@ async function loadStats(startDate = '', endDate = '') {
         const stats = await response.json();
         const data = stats.result;
         document.getElementById('totalLogs').textContent = data.totalLogs || 0;
-        document.getElementById('actionStats').textContent = Object.values(data.actionStats || {}).reduce((sum, val) => sum + val, 0);
+        document.getElementById('actionStats').textContent = data.totalAdmins || 0; 
     } catch (error) {
         showNotification('Error', 'Failed to load stats. Please try again.', 'error');
         console.error('Error loading stats:', error);
@@ -87,9 +87,6 @@ async function loadLogs(page = 0, size = 10, startDate = '', endDate = '', entit
                     <button class="action-icon view-icon mx-2" onclick="showLogDetails(${log.id})" title="View Details">
                         <i class="fas fa-eye text-teal-600 hover:text-teal-800"></i>
                     </button>
-                    <button class="action-icon delete-icon mx-2" onclick="deleteLog(${log.id})" title="Delete">
-                        <i class="fas fa-trash text-red-600 hover:text-red-800"></i>
-                    </button>
                 </td>
             `;
             tbody.appendChild(tr);
@@ -117,9 +114,6 @@ async function showLogDetails(logId) {
         if (!response.ok) throw new Error('Failed to load log details');
         const log = await response.json();
         const logData = log.result;
-        const timestamp = logData.createdAt ? 
-            `${new Date(logData.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}<br>
-            ${new Date(logData.createdAt).toLocaleDateString('vi-VN')}` : 'N/A';
         document.getElementById('logDetailsContent').innerHTML = `
             <div class="col-span-2 flex items-center gap-3 p-4 border rounded-lg bg-teal-50 shadow-sm">
                 <i class="fas fa-id-badge text-teal-600 text-lg"></i>
@@ -160,7 +154,8 @@ async function showLogDetails(logId) {
                 <i class="fas fa-calendar-day text-gray-600 text-lg"></i>
                 <div>
                     <p class="text-sm text-[var(--text-light)]">Timestamp</p>
-                    <p class="font-semibold text-[var(--text-dark)]">${timestamp}</p>
+                    
+                    <p class="font-semibold text-[var(--text-dark)] text-center" style="white-space:pre-line">${formatTimestamp(logData.createdAt)}</p>
                 </div>
             </div>
             <div class="col-span-2 flex items-start gap-3 p-4 border rounded-lg bg-purple-50 shadow-sm">
@@ -189,20 +184,6 @@ function closeLogDetails() {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
     }, 200);
-}
-
-async function deleteLog(logId) {
-    if (!confirm('Are you sure you want to delete this log?')) return;
-    try {
-        const response = await apiRequest(`http://localhost:8080/api/admin/logs/${logId}`, { method: 'DELETE' });
-        if (!response.ok) throw new Error('Delete failed');
-        showNotification('Success', 'Log deleted successfully!', 'success');
-        const filters = loadFilters();
-        loadLogs(currentPage, 10, filters.startDate, filters.endDate, filters.entityType, filters.adminId, filters.keyword);
-    } catch (error) {
-        showNotification('Error', 'Failed to delete log. Please try again.', 'error');
-        console.error('Error deleting log:', error);
-    }
 }
 
 function renderPagination() {
@@ -325,4 +306,13 @@ function showNotification(title, message, type) {
         notificationCard.classList.add('notification-slide-out');
         setTimeout(() => notificationCard.remove(), 300);
     }, 3000);
+    
+}
+
+function formatTimestamp(isoString) {
+    if (!isoString) return 'N/A';
+    const date = new Date(isoString);
+    const time = date.toLocaleTimeString('en-GB', { hour12: false }); // 19:20:57
+    const day = date.toISOString().split('T')[0]; // 2025-06-25
+    return `${time}<br>${day}`;
 }

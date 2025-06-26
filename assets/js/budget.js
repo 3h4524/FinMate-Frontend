@@ -3,23 +3,15 @@ let chartType = 'bar';
 let user;
 const pageSize = 10;
 let customCategories = JSON.parse(localStorage.getItem('customCategories')) || [];
+let systemCategories = [];
 
-const categoryMap = {
-    "Ăn uống": 5,
-    "Mua sắm": 6,
-    "Di chuyển": 7,
-    "Nhà cửa": 8,
-    "Giải trí": 9,
-    "Sức khỏe": 10,
-    "Giáo dục": 11,
-    "Hóa đơn": 12
-};
 
 async function initializeUI() {
     await fetchUser();
     if (!user || !user.userId) return;
     await loadSideBar(user);
-    await updateDateTime();
+    await loadSystemCategories(); 
+    await loadUserCategories();
     await monitorBudgets(0);
     await loadAnalysis(0);
     await setDefaultModalDates();
@@ -85,7 +77,6 @@ async function submitBudgetForm(formId, budgetId = null) {
             category, amount: parseFloat(formData.getAll('amounts[]')[index])
         }))
     };
-
     if (!validateBudgetData(data)) return;
     if (!user || !user.userId) {
         showNotification('Error', 'User not authenticated. Please log in.', 'error');
@@ -103,12 +94,6 @@ async function submitBudgetForm(formId, budgetId = null) {
         monitorBudgets(0);
         loadAnalysis(0);
     } catch (error) {
-        console.error("Error:", error);
-        if (error.message.includes('BUDGET_LIMIT_EXCEEDED')) {
-            showNotification('Error', 'You have reached the limit. Please purchase an upgrade to use the function')
-        }else {
-        showNotification('Error', 'Network error. Please check your connection.', 'error');
-        }
     }
 }
 
@@ -160,9 +145,10 @@ async function saveBudgetCategory(cat, data, budgetId) {
         body: JSON.stringify(budgetData)
     });
     const responseData = await response.json();
+    console.log(responseData);
     if (!response.ok || responseData.code !== 1000) {
-        showNotification('Error', `Error ${budgetId ? 'updating' : 'creating'} budget for ${isCustom ? customCategories.find(c => c.id === userCategoryId)?.name || 'Unknown Custom Category' : Object.keys(categoryMap).find(key => categoryMap[key] === categoryId) || 'Unknown Category'}`, 'error');
-        throw new Error('API request failed');
+        showNotification('Error', responseData.message || 'Error saving budget', 'error');
+        throw new Error(responseData.message || 'Error saving budget');
     }
 }
 
@@ -184,20 +170,60 @@ function addBudgetCategory(type = 'create', selectedCategory = null, amount = nu
     row.innerHTML = `
         <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-teal-600 focus:ring-2 focus:ring-teal-300 transition" required>
             <option value="">Chọn danh mục</option>
-            <option value="5" ${selectedCategory == 5 ? 'selected' : ''}>Ăn uống</option>
-            <option value="6" ${selectedCategory == 6 ? 'selected' : ''}>Mua sắm</option>
-            <option value="7" ${selectedCategory == 7 ? 'selected' : ''}>Di chuyển</option>
-            <option value="8" ${selectedCategory == 8 ? 'selected' : ''}>Nhà cửa</option>
-            <option value="9" ${selectedCategory == 9 ? 'selected' : ''}>Giải trí</option>
-            <option value="10" ${selectedCategory == 10 ? 'selected' : ''}>Sức khỏe</option>
-            <option value="11" ${selectedCategory == 11 ? 'selected' : ''}>Giáo dục</option>
-            <option value="12" ${selectedCategory == 12 ? 'selected' : ''}>Hóa đơn</option>
+            ${systemCategories.map(cat => `<option value="${cat.id}" ${selectedCategory == cat.id ? 'selected' : ''}>${cat.name}</option>`).join('')}
             ${customCategories.map(cat => `<option value="custom_${cat.id}" ${selectedCategory === 'custom_' + cat.id ? 'selected' : ''}>${cat.name}</option>`).join('')}
         </select>
-        <input type="number" name="amounts[]" step="0.01" min="0" ${amount ? `value="${amount}"` : 'placeholder="Amount ($)"'} class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-teal-600 focus:ring-2 focus:ring-teal-300 transition" required>
+        <input type="number" name="amounts[]" step="0.01" min="0" ${amount ? `value="${amount}"` : 'placeholder="Số tiền ($)"'} class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-teal-600 focus:ring-2 focus:ring-teal-300 transition" required>
         <button type="button" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 transition" onclick="removeBudgetCategory(this, '${type}')">×</button>
     `;
     categoryList.appendChild(row);
+}
+
+async function loadSystemCategories() {
+    try {
+        const response = await apiRequest('http://localhost:8080/api/categories', {
+            headers: { "userId": user.userId.toString() }
+        });
+        const data = await response.json();
+        if (response.ok && data.result) {
+            systemCategories = data.result.map(category => {
+                if (category.type === 'EXPENSE') {
+                    return {
+                        id: category.categoryId,
+                        name: category.categoryName
+                    };
+                }
+            }).filter(cat => cat !== undefined);
+        } else {
+            showNotification('Error', 'Failed to load system categories.', 'error');
+        }
+    } catch (error) {
+        showNotification('Error', 'Network error while loading system categories.', 'error');
+    }
+}
+
+async function loadUserCategories() {
+    try {
+        const response = await apiRequest(`http://localhost:8080/api/userCategories/${user.userId}`, {
+            headers: { "userId": user.userId.toString() }
+        });
+        const data = await response.json();
+        if (response.ok && data.result) {
+            customCategories = data.result.map(category => {
+                if (category.type === 'EXPENSE') {
+                    return {
+                        id: category.categoryId,
+                        name: category.categoryName
+                    };
+                }
+            }).filter(cat => cat !== undefined); 
+            localStorage.setItem('customCategories', JSON.stringify(customCategories));
+        } else {
+            showNotification('Error', 'Failed to load user categories.', 'error');
+        }
+    } catch (error) {
+        showNotification('Error', 'Network error while loading user categories.', 'error');
+    }
 }
 
 function removeBudgetCategory(button, type = 'create') {
@@ -238,7 +264,7 @@ function showNotification(title, message, type) {
         notificationCard.classList.remove('notification-slide-in');
         notificationCard.classList.add('notification-slide-out');
         setTimeout(() => notificationCard.remove(), 300);
-    }, 3000);
+    }, 4000);
 }
 
 async function monitorBudgets(page) {
@@ -254,6 +280,8 @@ async function monitorBudgets(page) {
         const data = await response.json();
         if (response.ok && data.result.content.length > 0) {
             monitorTableBody.innerHTML = '';
+            const overBudgets = [];
+            const nearBudgets = [];
             data.result.content.forEach(budget => {
                 const usagePercent = budget.percentageUsed.toFixed(2);
                 const remaining = budget.amount - (budget.currentSpending || 0);
@@ -262,11 +290,11 @@ async function monitorBudgets(page) {
                 if (usagePercent >= 100) {
                     progressClass = 'bg-red-500';
                     statusText = 'Over Budget';
-                    showNotification('Warning', `Over budget: ${budget.categoryName || budget.userCategoryName}`, 'error');
+                    overBudgets.push(budget.categoryName || budget.userCategoryName);
                 } else if (usagePercent >= budget.notificationThreshold) {
                     progressClass = 'bg-yellow-500';
                     statusText = 'Near Limit';
-                    showNotification('Warning', `Near limit: ${budget.categoryName || budget.userCategoryName}`, 'warning');
+                    nearBudgets.push(budget.categoryName || budget.userCategoryName);
                 }
 
                 const row = document.createElement('tr');
@@ -289,6 +317,13 @@ async function monitorBudgets(page) {
                 `;
                 monitorTableBody.appendChild(row);
             });
+
+            if (overBudgets.length > 0) {
+                showNotification('Warning', `Over budget: ${overBudgets.join(', ')}`, 'error');
+            }
+            if (nearBudgets.length > 0) {
+                showNotification('Warning', `Near limit: ${nearBudgets.join(', ')}`, 'warning');
+            }
 
             renderPagination(paginationContainer, data.result, monitorBudgets);
         } else {
@@ -583,7 +618,7 @@ function toggleChartType() {
         chartIcon.className = 'fas fa-chart-bar';
         chartTypeLabel.textContent = 'Bar Chart';
     }
-    loadAnalysis(0); // Sử dụng 0 làm giá trị mặc định
+    loadAnalysis(0); 
 }
 
 function exportToCSV() {
