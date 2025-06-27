@@ -1,10 +1,10 @@
-lucide.createIcons();
-
 const API_BASE_URL = 'http://localhost:8080';
 let packages = [];
 let filteredPackages = [];
 let billingCycle = 'monthly';
 let purchasedList;
+let selectedPackageId = null;
+const COUPON_CODE_MAX_LENGTH = 50;
 
 const getPackageIcon = () => 'enterprise';
 
@@ -84,7 +84,7 @@ const renderPackages = (packagesData) => {
                             ${isPurchased(pkg.id) ? `disabled` : ''} 
                             class="buy-now-btn w-full py-2.5 px-4 rounded-lg font-semibold text-sm bg-gray-800 text-white hover:bg-gray-900 focus:ring-gray-500 shadow-md focus:outline-none focus:ring-2 transition-all duration-300 transform hover:scale-105 disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed disabled:hover:bg-gray-400 disabled:hover:scale-100 disabled:shadow-none" 
                             data-package-id="${pkg.id}"
-                            onclick="initiatePayment(${pkg.id})"
+                            onclick="showCouponModal(${pkg.id})"
                         >
                             <i data-lucide="credit-card" class="w-4 h-4 inline mr-1"></i>
                             ${isPurchased(pkg.id) ? 'Purchased' : 'Buy Now'}
@@ -132,7 +132,6 @@ const loadPackages = async () => {
     const packagesData = await fetchPackages(0, 6);
     if (packagesData) {
         packages = packagesData.content;
-        // packages = Array(4).fill(packagesData.content).flat();
         filteredPackages = packages.filter(pkg => pkg.durationType === 'MONTH');
     }
 };
@@ -143,7 +142,9 @@ const init = async () => {
     await fetchPurchasedPremiumPlans();
     await loadPackages();
     toggleBilling('monthly');
+    setupCouponModal();
 };
+
 const fetchPackages = async (page = 0, size = 6, sortBy = 'price', sortDirection = 'DESC') => {
     try {
         const response = await apiRequest(
@@ -163,34 +164,26 @@ async function fetchPurchasedPremiumPlans() {
         const response = await apiRequest(
             `${API_BASE_URL}/api/premium-package/purchasedList`
         );
-
-
         if (!response) return null;
         const data = await response.json();
-
         purchasedList = data.result;
     } catch (error) {
         console.error('Error fetching packages:', error);
     }
 };
 
-document.addEventListener('DOMContentLoaded', init);
-
 // Thêm function để disable/enable tất cả nút Buy Now
 function setAllBuyButtonsState(disabled) {
-    const buyButtons = document.querySelectorAll('button[onclick^="initiatePayment"]');
+    const buyButtons = document.querySelectorAll('button[onclick^="showCouponModal"]');
     buyButtons.forEach(button => {
         button.disabled = disabled;
-
         if (disabled) {
-            // Thêm loading state
             button.innerHTML = `
                 <i data-lucide="loader-2" class="w-4 h-4 inline mr-1 animate-spin"></i>
                 Processing...
             `;
             button.classList.add('opacity-50', 'cursor-not-allowed');
         } else {
-            // Reset về trạng thái ban đầu
             button.innerHTML = `
                 <i data-lucide="credit-card" class="w-4 h-4 inline mr-1"></i>
                 Buy Now
@@ -198,43 +191,119 @@ function setAllBuyButtonsState(disabled) {
             button.classList.remove('opacity-50', 'cursor-not-allowed');
         }
     });
-
-    // Recreate icons sau khi thay đổi HTML
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
 }
 
-// Updated initiatePayment function
-async function initiatePayment(packageId) {
-    // Disable tất cả nút ngay khi bắt đầu
-    setAllBuyButtonsState(true);
+// Show coupon modal and store package ID
+function showCouponModal(packageId) {
+    selectedPackageId = packageId;
+    const couponModal = document.getElementById('couponModal');
+    const couponInput = document.getElementById('couponCode');
+    const couponError = document.getElementById('couponError');
 
-    try {
-        const response = await apiRequest(`${API_BASE_URL}/api/checkout/create?packageId=${packageId}`, {
-            method: 'POST',
-        });
-
-        if (!response.ok) throw new Error("Fail to fetch");
-
-        const data = await response.json();
-        if (data.code === 1000) {
-            // Redirect thành công - không cần enable lại vì sẽ chuyển trang
-            window.location.href = data.result;
-        } else {
-            console.error('Checkout failed:', data.message);
-            // Enable lại nút nếu có lỗi
-            setAllBuyButtonsState(false);
-
-            // Có thể thêm thông báo lỗi cho user
-            alert('Checkout failed: ' + data.message);
-        }
-    } catch (error) {
-        console.error('Error initiating checkout:', error);
-        // Enable lại nút nếu có lỗi
-        setAllBuyButtonsState(false);
-
-        // Thông báo lỗi cho user
-        alert('An error occurred while processing your payment. Please try again.');
-    }
+    couponInput.value = '';
+    couponError.classList.add('hidden');
+    couponModal.classList.remove('hidden');
 }
+
+// Setup coupon modal event listeners
+function setupCouponModal() {
+    const couponModal = document.getElementById('couponModal');
+    const closeCouponModal = document.getElementById('closeCouponModal');
+    const cancelCouponBtn = document.getElementById('cancelCouponBtn');
+    const proceedPaymentBtn = document.getElementById('proceedPaymentBtn');
+    const couponInput = document.getElementById('couponCode');
+    const couponError = document.getElementById('couponError');
+
+    // Close modal
+    const closeModal = () => {
+        couponModal.classList.add('hidden');
+        selectedPackageId = null;
+        couponInput.value = '';
+        couponError.classList.add('hidden');
+    };
+
+    closeCouponModal.addEventListener('click', closeModal);
+    cancelCouponBtn.addEventListener('click', closeModal);
+
+    // Validate coupon
+    async function validateCoupon(couponCode) {
+        if (!couponCode) {
+            couponModal.classList.add('hidden');
+            return true;
+        }
+
+        if (couponCode.length > COUPON_CODE_MAX_LENGTH) {
+            couponError.textContent = `Coupon code cannot exceed ${COUPON_CODE_MAX_LENGTH} characters`;
+            couponError.classList.remove('hidden');
+            return false;
+        }
+
+        try {
+            const response = await apiRequest(`${API_BASE_URL}/api/coupon/validate/${couponCode}`);
+
+            const data = await response.json();
+
+            if (data.code === 1000) {
+                couponError.classList.add('hidden');
+                couponModal.classList.add('hidden');
+                return true;
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            couponError.textContent = error.message;
+            couponError.classList.remove('hidden');
+            return false;
+        }
+    };
+
+    // Proceed to payment
+    proceedPaymentBtn.addEventListener('click', async () => {
+        if (!selectedPackageId) return;
+
+        const couponCode = couponInput.value.trim();
+
+        let isValid = await validateCoupon(couponCode);
+
+
+        if (isValid === true) {
+            setAllBuyButtonsState(true);
+
+            try {
+
+                const paymentRequest = {
+                    packageId: selectedPackageId,
+                    code: couponCode
+                };
+
+                const response = await apiRequest(`${API_BASE_URL}/api/payment/create`, {
+                    method: 'POST',
+                    body: JSON.stringify(paymentRequest)
+                });
+
+                if (!response.ok) throw new Error('Failed to initiate payment');
+
+                const data = await response.json();
+                if (data.code === 1000) {
+                    window.location.href = data.result;
+                } else {
+                    throw new Error(data.message || 'payment failed');
+                }
+            } catch (error) {
+                console.error('Error initiating payment:', error);
+                setAllBuyButtonsState(false);
+                alert('An error occurred while processing your payment. Please try again.');
+            }
+        }
+    });
+}
+
+// Updated initiatePayment to integrate with modal
+async function initiatePayment(packageId) {
+    showCouponModal(packageId);
+}
+
+document.addEventListener('DOMContentLoaded', init);

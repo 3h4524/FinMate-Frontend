@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title id="page-title">Order Status</title>
@@ -10,13 +11,15 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            overflow: hidden; /* Prevent scrollbar from animation */
+            overflow: hidden;
+            /* Prevent scrollbar from animation */
         }
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
             }
+
             to {
                 opacity: 1;
             }
@@ -27,6 +30,7 @@
                 transform: translateY(50px);
                 opacity: 0;
             }
+
             to {
                 transform: translateY(0);
                 opacity: 1;
@@ -38,10 +42,12 @@
                 transform: scale(0.1);
                 opacity: 0;
             }
+
             60% {
                 transform: scale(1.2);
                 opacity: 1;
             }
+
             100% {
                 transform: scale(1);
             }
@@ -89,6 +95,7 @@
     <script>
         const API_BASE_URL = 'http://localhost:8080';
         const urlParams = new URLSearchParams(window.location.search);
+        const couponId = urlParams.get('couponId') || null;
         const status = urlParams.get('status');
         const paymentId = urlParams.get('id');
         const orderCode = urlParams.get('orderCode'); // Get orderCode for API call
@@ -97,13 +104,14 @@
             console.log("Entering fetchPaymentStatus...");
             try {
                 const paymentResponse = {
+                    couponId: couponId,
                     orderCode: orderCode,
                     status: status
                 };
                 console.log("Sending payment status update:", paymentResponse);
 
                 // Assuming apiRequest is defined in autho_helper.js and handles token/auth
-                const response = await apiRequest(`${API_BASE_URL}/api/checkout/return`, {
+                const response = await apiRequest(`${API_BASE_URL}/api/payment/return`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -150,7 +158,7 @@
                 title.classList.add('text-green-400', 'drop-shadow-[0_0_10px_rgba(74,222,128,0.8)]');
                 message.textContent = 'Thank you for your purchase! Your order has been successfully placed.';
                 button.textContent = 'Continue Shopping';
-                button.href = 'update_premium.html'; 
+                button.href = 'user_premium/';
                 button.classList.add('bg-gradient-to-r', 'from-green-500', 'to-emerald-600', 'hover:from-green-400', 'hover:to-emerald-500', 'text-white');
                 pageTitle.textContent = 'Order Confirmed';
             } else if (status === 'CANCELLED') {
@@ -161,7 +169,7 @@
                 title.classList.add('text-red-500', 'drop-shadow-[0_0_15px_rgba(255,0,0,0.8)]');
                 message.textContent = 'Your payment transaction was cancelled. No charges were made.';
                 button.textContent = 'Back to Home';
-                button.href = 'update_premium.html';
+                button.href = 'user_premium/';
                 button.classList.add('bg-gradient-to-r', 'from-red-600', 'to-red-800', 'hover:from-red-500', 'hover:to-red-700', 'text-white');
                 pageTitle.textContent = 'Transaction Cancelled';
             } else if (status === 'PENDING') {
@@ -183,7 +191,7 @@
                 title.classList.add('text-red-600', 'drop-shadow-[0_0_15px_rgba(255,0,0,0.8)]');
                 message.textContent = 'Something went wrong with your order. Please try again or contact support.';
                 button.textContent = 'Try Again';
-                button.href = 'premiumPackage.html'; // Or a more general 'shop' page
+                button.href = 'user_premium/'; // Or a more general 'shop' page
                 button.classList.add('bg-gradient-to-r', 'from-red-700', 'to-red-900', 'hover:from-red-600', 'hover:to-red-800', 'text-white');
                 pageTitle.textContent = 'Order Failed';
             }
