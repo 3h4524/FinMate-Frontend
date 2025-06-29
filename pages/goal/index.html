@@ -250,27 +250,27 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="targetAmountModal" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Target Amount ($) *
+                                Mục tiêu (VND) *
                             </label>
                             <div class="relative">
                                 <span
-                                    class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">$</span>
-                                <input type="number" id="targetAmountModal" name="targetAmountModal" step="0.01"
+                                    class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">₫</span>
+                                <input type="number" id="targetAmountModal" name="targetAmountModal" step="1000"
                                     class="w-full border-2 border-gray-200 rounded-xl pl-8 pr-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900"
-                                    placeholder="10,000.00" required>
+                                    placeholder="10,000,000" required>
                             </div>
                         </div>
 
                         <div>
                             <label for="currentAmountModal" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Current Amount ($) *
+                                Hiện tại (VND) *
                             </label>
                             <div class="relative">
                                 <span
-                                    class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">$</span>
-                                <input type="number" id="currentAmountModal" name="currentAmountModal" step="0.01"
+                                    class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">₫</span>
+                                <input type="number" id="currentAmountModal" name="currentAmountModal" step="1000"
                                     class="w-full border-2 border-gray-200 rounded-xl pl-8 pr-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900"
-                                    placeholder="0.00" required>
+                                    placeholder="0" required>
                             </div>
                         </div>
                     </div>
@@ -306,37 +306,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Goal Type
-                <div class="bg-purple-50 rounded-xl p-5">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-                        <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                        Goal Type
-                    </h3>
-                    <label class="flex items-center space-x-3 cursor-pointer group">
-                        <div class="relative">
-                            <input type="checkbox" id="isLongTermModal" name="isLongTermModal" class="sr-only peer">
-                            <div
-                                class="w-6 h-6 border-2 border-gray-300 rounded-md peer-checked:bg-purple-600 peer-checked:border-purple-600 transition-all duration-200 flex items-center justify-center">
-                                <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity"
-                                    fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div>
-                            <span
-                                class="text-gray-700 font-semibold group-hover:text-purple-700 transition-colors">Long-term
-                                Goal</span>
-                            <p class="text-sm text-gray-500">Goals that take more than a year to achieve</p>
-                        </div>
-                    </label>
-                </div> -->
 
                 <!-- Error Display -->
                 <div id="errorDisplay" class="hidden bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl">
