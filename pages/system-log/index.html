@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>System Logs - FinMate</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'indigo-50': '#eef2ff',
+                        'indigo-100': '#e0e7ff',
+                        'indigo-500': '#6366f1',
+                        'indigo-600': '#4f46e5',
+                        'purple-50': '#faf5ff',
+                        'purple-100': '#f3e8ff',
+                        'purple-500': '#a855f7',
+                        'purple-600': '#9333ea'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href=" /assets/css/global-layout.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src=" /assets/js/page-loader.js" defer></script>
+    <script src=" /assets/js/header.js" defer></script>
+    <script src=" /assets/js/sidebar.js" defer></script>
+    <script src=" /assets/js/helper_functions.js"></script>
+    <script src=" /assets/js/autho_helper.js" defer></script>
+    <script src=" /assets/js/system-log.js" defer></script>
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-white to-purple-50 min-h-screen">
+    <div id="header-container"></div>
+    <div id="sidebar-container"></div>
+    <div class="main-content" id="mainContent" style="display: none;">
+        <div class="container mx-auto px-6 py-8">
+            <!-- Header Section -->
+            <div class="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-indigo-100">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                    <div class="flex-1 mb-6 lg:mb-0">
+                        <h1 class="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                            System Logs
+                        </h1>
+                        <p class="text-gray-600 text-lg">Monitor system activities and admin actions</p>
+                        <div class="text-sm text-gray-500 mt-2" id="current-date-time"></div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                        <!-- Search Box -->
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                            <input type="text" id="searchInput" placeholder="Search logs..." aria-label="Search logs"
+                                class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-2xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex space-x-3">
+                            <button class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-2xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2" id="refreshBtn">
+                                <i class="fas fa-sync-alt"></i>
+                                <span>Refresh</span>
+                            </button>
+                            <button class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-2xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2" id="exportBtn">
+                                <i class="fas fa-download"></i>
+                                <span>Export</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Statistics Overview -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Log Statistics</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Total Logs -->
+                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-indigo-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-3xl font-bold text-gray-900" id="totalLogs">0</h3>
+                                <p class="text-gray-600 mt-1">Total Logs</p>
+                            </div>
+                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);">
+                                <i class="fas fa-clipboard-list text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Admins -->
+                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-green-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-3xl font-bold text-gray-900" id="actionStats">-</h3>
+                                <p class="text-gray-600 mt-1">Active Admins</p>
+                            </div>
+                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                <i class="fas fa-user-shield text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Today's Activities -->
+                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-blue-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-3xl font-bold text-gray-900" id="todayLogs">0</h3>
+                                <p class="text-gray-600 mt-1">Today's Activities</p>
+                            </div>
+                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+                                <i class="fas fa-calendar-day text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-amber-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-3xl font-bold text-gray-900" id="recentLogs">0</h3>
+                                <p class="text-gray-600 mt-1">Last Hour</p>
+                            </div>
+                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                                <i class="fas fa-clock text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="bg-white rounded-3xl shadow-lg p-8 mb-8 border border-indigo-100">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center space-x-3">
+                        <span class="text-2xl">🔍</span>
+                        <span>Filter Logs</span>
+                    </h2>
+                    <button class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-2xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2" id="filterBtn">
+                        <i class="fas fa-filter"></i>
+                        <span>Apply Filters</span>
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div>
+                        <label for="startDate" class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+                        <input type="date" id="startDate" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" />
+                    </div>
+                    <div>
+                        <label for="endDate" class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                        <input type="date" id="endDate" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" />
+                    </div>
+                    <div>
+                        <label for="entityType" class="block text-sm font-medium text-gray-700 mb-2">Entity Type</label>
+                        <input type="text" id="entityType" placeholder="E.g., User, Transaction" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" />
+                    </div>
+                    <div>
+                        <label for="adminId" class="block text-sm font-medium text-gray-700 mb-2">Admin ID</label>
+                        <input type="number" id="adminId" placeholder="E.g., 1" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" />
+                    </div>
+                </div>
+            </div>
+            <!-- Logs Table -->
+            <div class="bg-white rounded-3xl shadow-lg border border-indigo-100">
+                <!-- Table Header -->
+                <div class="p-8 border-b border-gray-200">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center space-x-3">
+                        <span class="text-2xl">📋</span>
+                        <span>Log Entries</span>
+                    </h2>
+                </div>
+
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table id="logsTable" class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admin</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entity Type</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
+                                <th scope="col" class="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logsBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Logs will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="px-8 py-6 border-t border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1 flex justify-between sm:hidden">
+                            <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" id="prevBtn">
+                                Previous
+                            </button>
+                            <button class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" id="nextBtn">
+                                Next
+                            </button>
+                        </div>
+                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                            <div>
+                                <p class="text-sm text-gray-700">
+                                    Showing <span class="font-medium" id="showingFrom">0</span> to <span class="font-medium" id="showingTo">0</span> of <span class="font-medium" id="totalResults">0</span> results
+                                </p>
+                            </div>
+                            <div>
+                                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" id="pagination">
+                                    <!-- Pagination will be added here -->
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Log Detail Modal -->
+    <div id="logDetailModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <div class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                <div class="bg-white px-6 pt-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center space-x-3">
+                            <span class="text-2xl">📄</span>
+                            <span>Log Details</span>
+                        </h2>
+                        <button class="text-gray-400 hover:text-gray-600 transition-colors" onclick="closeLogDetails()">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div id="logDetailsContent" class="space-y-4">
+                        <!-- Log details will be loaded here -->
+                    </div>
+                    <div class="bg-gray-50 px-6 py-4 mt-6 -mx-6 flex justify-end">
+                        <button class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl hover:from-indigo-700 hover:to-purple-700 font-medium transition-all duration-300 hover:scale-105" onclick="closeLogDetails()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2 w-80 max-w-full">
+        <!-- Toast notifications will be added here -->
+    </div>
+
+</body>
+</html>
