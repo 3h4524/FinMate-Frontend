@@ -209,7 +209,7 @@
                         <div id="editGoalModal"
                             class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
                             <div
-                                class="bg-white rounded-2xl shadow-2xl p-0 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto animate-slide-up">
+                                class="bg-white rounded-2xl shadow-2xl p-0 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto animate-slide-up">
                                 <!-- Header -->
                                 <div class="bg-gradient-to-r from-teal-600 to-teal-700 text-white p-6 rounded-t-2xl">
                                     <div class="flex items-center justify-between">
@@ -239,7 +239,7 @@
                                             </svg>
                                             Goal Details
                                         </h3>
-                                        <div class="space-y-4">
+                                        <div class="space-y-5">
                                             <div>
                                                 <label for="editGoalName"
                                                     class="block text-sm font-semibold text-gray-700 mb-2">
@@ -273,11 +273,18 @@
                                             </div>
                                             <div>
                                                 <label for="editNotificationEnabled"
-                                                    class="block text-sm font-semibold text-gray-700 mb-2">
+                                                    class="block text-sm font-semibold text-gray-700 mb-3">
                                                     Enable Notifications
                                                 </label>
-                                                <input type="checkbox" id="editNotificationEnabled"
-                                                    class="h-5 w-5 text-teal-600 focus:ring-teal-500 border-gray-300 rounded">
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" id="editNotificationEnabled"
+                                                        class="sr-only peer">
+                                                    <div
+                                                        class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-teal-600 after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border after:border-gray-300 after:h-5 after:w-5 after:rounded-full after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white">
+                                                    </div>
+                                                    <span class="ml-3 text-sm text-gray-600">Receive updates on goal
+                                                        progress</span>
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
