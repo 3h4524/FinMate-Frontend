@@ -6,896 +6,114 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Packages - Finmate</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src=" /assets/js/helper_functions.js"></script>
-    <script src=" /assets/js/autho_helper.js" defer></script>
-    <script src=" /assets/js/sidebar.js" defer></script>
-    <style>
-        :root {
-            --main-green: #388e3c;
-            --main-green-dark: #2e7d32;
-            --main-green-light: #a3c9a8;
-            --main-bg: linear-gradient(135deg, #f0f4f3 0%, #e6f0ed 100%);
-            --card-bg: #fff;
-            --card-radius: 18px;
-            --card-shadow: 0 8px 32px rgba(56, 142, 60, 0.10);
-            --sidebar-bg: linear-gradient(135deg, #2d5a3d 0%, #1a3d2e 50%, #0f2922 100%);
-            --sidebar-color: #fff;
-            --sidebar-active: #a3c9a8;
-            --sidebar-hover: #388e3c;
-            --header-bg: #fff;
-            --header-radius: 16px;
-            --header-shadow: 0 4px 16px rgba(56, 142, 60, 0.08);
-            --primary: #388e3c;
-            --danger: #d32f2f;
-            --success: #388e3c;
-            --text-dark: #2d5a3d;
-            --text-light: #546e7a;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--main-bg);
-            color: var(--text-dark);
-            line-height: 1.5;
-        }
-
-        .layout {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .main-content {
-            flex: 1;
-            margin-left: 280px;
-            padding: 2rem;
-            display: flex;
-            gap: 2rem;
-        }
-
-        .content-column {
-            flex: 2;
-        }
-
-
-        .header {
-            background: var(--header-bg);
-            border-radius: var(--header-radius);
-            box-shadow: var(--header-shadow);
-            padding: 1.5rem 2rem;
-            margin-bottom: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .page-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .page-subtitle {
-            color: var(--text-light);
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .search-box {
-            position: relative;
-        }
-
-        .search-box input {
-            padding: 0.5rem 1rem 0.5rem 2.5rem;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            width: 300px;
-            font-size: 0.875rem;
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-light);
-        }
-
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--main-green-dark);
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #b71c1c;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: var(--card-bg);
-            border-radius: var(--card-radius);
-            box-shadow: var(--card-shadow);
-            padding: 1.5rem;
-            position: relative;
-        }
-
-        .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-        }
-
-        .stat-title {
-            font-size: 0.875rem;
-            color: var(--text-light);
-            font-weight: 500;
-        }
-
-        .stat-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-        }
-
-        .stat-icon.revenue {
-            background: rgba(56, 142, 60, 0.1);
-            color: var(--main-green);
-        }
-
-        .stat-icon.users {
-            background: rgba(33, 150, 243, 0.1);
-            color: #2196F3;
-        }
-
-        .stat-icon.conversion {
-            background: rgba(255, 152, 0, 0.1);
-            color: #FF9800;
-        }
-
-        .stat-icon.avg {
-            background: rgba(156, 39, 176, 0.1);
-            color: #9C27B0;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-change {
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .stat-change.positive {
-            color: var(--success);
-        }
-
-        .stat-change.negative {
-            color: var(--danger);
-        }
-
-        .content-card {
-            border-radius: var(--card-radius);
-            overflow: hidden;
-            display: flex;
-            justify-content: space-between;
-            align-items: stretch;
-            gap: 1rem;
-        }
-
-        .premium-package-container {
-            background-color: var(--card-bg);
-            border-radius: var(--card-radius);
-            flex: 0 0 68%;
-        }
-
-        .recent-subscription {
-            background-color: var(--card-bg);
-            border-radius: var(--card-radius);
-            flex: 0 0 30%;
-            height: 60%;
-        }
-
-        .card-header {
-            padding: 1.5rem 2rem;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .filter-tabs {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .tab-btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            background: transparent;
-            color: var(--text-light);
-            font-size: 0.875rem;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-        }
-
-        .tab-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .packages-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            padding: 2rem;
-        }
-
-        .package-card {
-            border: 1px solid #f0f0f0;
-            border-radius: 12px;
-            padding: 1.5rem;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .package-card:hover {
-            box-shadow: 0 4px 20px rgba(56, 142, 60, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .package-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-        }
-
-        .package-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            color: white;
-        }
-
-        .package-icon.basic {
-            background: linear-gradient(135deg, #64B5F6, #2196F3);
-        }
-
-        .package-icon.pro {
-            background: linear-gradient(135deg, #BA68C8, #9C27B0);
-        }
-
-        .package-icon.enterprise {
-            background: linear-gradient(135deg, #81C784, #4CAF50);
-        }
-
-        .package-icon.yearly {
-            background: linear-gradient(135deg, #FFB74D, #FF9800);
-        }
-
-        .package-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .action-btn {
-            width: 32px;
-            height: 32px;
-            border: none;
-            border-radius: 6px;
-            background: #f5f5f5;
-            color: var(--text-light);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .action-btn:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .package-name {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 0.25rem;
-        }
-
-        .package-type {
-            font-size: 0.75rem;
-            color: var(--text-light);
-            text-transform: uppercase;
-            font-weight: 500;
-        }
-
-        .package-price {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin: 1rem 0;
-        }
-
-        .package-period {
-            font-size: 0.875rem;
-            color: var(--text-light);
-        }
-
-        .package-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin: 1rem 0;
-        }
-
-        .package-stat {
-            text-align: center;
-        }
-
-        .package-stat-value {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .package-stat-label {
-            font-size: 0.75rem;
-            color: var(--text-light);
-            margin-top: 0.25rem;
-        }
-
-        .package-features {
-            margin: 1rem 0;
-        }
-
-        .features-title {
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .feature-list {
-            list-style: none;
-            padding: 2%;
-        }
-
-        .feature-item {
-            font-size: 0.875rem;
-            color: var(--text-light);
-            margin-bottom: 0.25rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .feature-item i {
-            color: var(--success);
-            font-size: 0.75rem;
-        }
-
-        .package-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            margin-top: 1rem;
-        }
-
-        .package-status.active {
-            background: rgba(76, 175, 80, 0.1);
-            color: #4CAF50;
-        }
-
-        .package-status.inactive {
-            background: rgba(158, 158, 158, 0.1);
-            color: #9E9E9E;
-        }
-
-        .subscription-item {
-            display: flex;
-            align-items: center;
-            padding: 1rem 2rem;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .subscription-item:last-child {
-            border-bottom: none;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--main-green-light);
-            color: var(--main-green-dark);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            margin-right: 1rem;
-            font-size: 1rem;
-        }
-
-        .user-avatar.j {
-            background: rgba(33, 150, 243, 0.1);
-            color: #2196F3;
-        }
-
-        .user-avatar.s {
-            background: rgba(76, 175, 80, 0.1);
-            color: #4CAF50;
-        }
-
-        .user-avatar.m {
-            background: rgba(0, 188, 212, 0.1);
-            color: #00BCD4;
-        }
-
-        .user-avatar.e {
-            background: rgba(156, 39, 176, 0.1);
-            color: #9C27B0;
-        }
-
-        .user-avatar.r {
-            background: rgba(255, 152, 0, 0.1);
-            color: #FF9800;
-        }
-
-        .subscription-info {
-            flex: 1;
-        }
-
-        .subscription-name {
-            font-weight: 600;
-            color: #2d5a3d;
-            font-size: 0.875rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .subscription-package {
-            font-size: 0.75rem;
-            color: #546e7a;
-        }
-
-        .subscription-details {
-            text-align: right;
-        }
-
-        .subscription-price {
-            font-weight: 600;
-            color: #2d5a3d;
-            font-size: 0.875rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .subscription-time {
-            font-size: 0.75rem;
-            color: #546e7a;
-            margin-bottom: 0.5rem;
-        }
-
-        .subscription-status {
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            text-align: center;
-            display: inline-block;
-        }
-
-        .subscription-status.active {
-            background: rgba(76, 175, 80, 0.1);
-            color: #4CAF50;
-        }
-
-        .subscription-status.pending {
-            background: rgba(255, 152, 0, 0.1);
-            color: #FF9800;
-        }
-
-        .subscription-status.expired {
-            background: rgba(244, 67, 54, 0.1);
-            color: #F44336;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            border-radius: var(--card-radius);
-            box-shadow: var(--card-shadow);
-            max-width: 500px;
-            width: 90%;
-            padding: 2rem;
-            position: relative;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .modal-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.25rem;
-            color: var(--text-light);
-            cursor: pointer;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text-dark);
-            margin-bottom: 0.25rem;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 0.875rem;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-            margin-top: 2rem;
-        }
-
-        .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 3rem;
-            color: var(--text-light);
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 1rem;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: var(--text-light);
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 1rem 2rem;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .pagination-btn {
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #e0e0e0;
-            background: white;
-            color: var(--text-light);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .pagination-btn:hover:not(:disabled) {
-            background: var(--primary);
-            color: white;
-        }
-
-        .pagination-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .pagination-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 0.5rem;
-            max-height: 150px;
-            overflow-y: auto;
-            padding: 0.5rem;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem;
-            border-radius: 6px;
-            background: #f5f5f5;
-            cursor: pointer;
-            font-size: 0.875rem;
-            color: var(--text-dark);
-        }
-
-        .feature-item:hover {
-            background: rgba(56, 142, 60, 0.1);
-        }
-
-        .feature-item i {
-            color: var(--success);
-            font-size: 0.75rem;
-        }
-
-        .feature-item.unselected i {
-            color: var(--text-light);
-        }
-
-        @media (max-width: 1200px) {
-            .main-content {
-                flex-direction: column;
-            }
-        }
-
-        @media (max-width: 1024px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            }
-
-            .packages-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                padding: 1rem;
-            }
-
-            .header {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: flex-start;
-            }
-
-            .search-box input {
-                width: 100%;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="/assets/js/helper_functions.js"></script>
+    <script src="/assets/js/autho_helper.js" defer></script>
+    <script src="/assets/js/sidebar.js" defer></script>
 </head>
 
-<body>
-    <div class="layout">
+<body class="font-sans bg-gradient-to-br from-gray-100 to-gray-200 text-green-900 leading-normal">
+    <div class="flex min-h-screen">
         <div id="sidebar-container"></div>
-        <main class="main-content">
-            <div class="content-column">
-                <header class="header">
+        <main class="flex-1 ml-0 lg:ml-72 p-4 lg:p-8 flex gap-8 flex-col lg:flex-row">
+            <div class="flex-1">
+                <header class="bg-white rounded-2xl shadow-md p-6 mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center">
                     <div>
-                        <h1 class="page-title">Premium Packages</h1>
-                        <p class="page-subtitle">Manage subscription plans and pricing</p>
+                        <h1 class="text-2xl font-semibold text-green-900">Premium Packages</h1>
+                        <p class="text-gray-600 text-sm mt-1">Manage subscription plans and pricing</p>
                     </div>
-                    <div class="header-actions">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search packages..." id="searchInput">
+                    <div class="flex gap-4 items-center mt-4 lg:mt-0">
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+                            <input type="text" placeholder="Search packages..." id="searchInput" class="pl-10 p-2 border border-gray-300 rounded-lg w-full lg:w-72 text-sm">
                         </div>
-                        <button class="btn btn-primary" onclick="openNewPackageModal()">
-                            <i class="fas fa-plus"></i>
-                            New Package
+                        <button class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-green-800 transition" onclick="openNewPackageModal()">
+                            <i class="fas fa-plus"></i> New Package
                         </button>
-                        <button class="btn" onclick="location.reload()">
+                        <button class="bg-gray-100 text-gray-600 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-green-700 hover:text-white transition" onclick="location.reload()">
                             <i class="fas fa-bell"></i>
                         </button>
                     </div>
                 </header>
 
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-title">Revenue</div>
-                            <div class="stat-icon revenue">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-2xl shadow-md p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="text-gray-600 text-sm font-medium">Revenue</div>
+                            <div class="w-10 h-10 rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-lg">
                                 <i class="fas fa-dollar-sign"></i>
                             </div>
                         </div>
-                        <div class="stat-value" id="totalRevenue">0đ</div>
-                        <div class="stat-change positive" id="revenueChange">+0%</div>
+                        <div class="text-3xl font-bold text-green-900" id="totalRevenue">0đ</div>
+                        <div class="text-green-700 text-xs font-medium mt-2" id="revenueChange">+0%</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-title">Active Subscribers</div>
-                            <div class="stat-icon users">
+                    <div class="bg-white rounded-2xl shadow-md p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="text-gray-600 text-sm font-medium">Active Subscribers</div>
+                            <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-lg">
                                 <i class="fas fa-users"></i>
                             </div>
                         </div>
-                        <div class="stat-value" id="totalSubscribers">0</div>
-                        <div class="stat-change positive" id="subscribersChange">+0%</div>
+                        <div class="text-3xl font-bold text-green-900" id="totalSubscribers">0</div>
+                        <div class="text-green-700 text-xs font-medium mt-2" id="subscribersChange">+0%</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-title">Conversion Rate</div>
-                            <div class="stat-icon conversion">
+                    <div class="bg-white rounded-2xl shadow-md p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="text-gray-600 text-sm font-medium">Conversion Rate</div>
+                            <div class="w-10 h-10 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center text-lg">
                                 <i class="fas fa-percentage"></i>
                             </div>
                         </div>
-                        <div class="stat-value" id="conversionRate">0%</div>
-                        <div class="stat-change positive" id="conversionChange">+0.0%</div>
+                        <div class="text-3xl font-bold text-green-900" id="conversionRate">0%</div>
+                        <div class="text-green-700 text-xs font-medium mt-2" id="conversionChange">+0.0%</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-title">Avg Revenue/User</div>
-                            <div class="stat-icon avg">
+                    <div class="bg-white rounded-2xl shadow-md p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="text-gray-600 text-sm font-medium">Avg Revenue/User</div>
+                            <div class="w-10 h-10 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center text-lg">
                                 <i class="fas fa-chart-line"></i>
                             </div>
                         </div>
-                        <div class="stat-value" id="avgRevenue">0đ</div>
-                        <div class="stat-change negative" id="avgRevenueChange">-0%</div>
+                        <div class="text-3xl font-bold text-green-900" id="avgRevenue">0đ</div>
+                        <div class="text-red-700 text-xs font-medium mt-2" id="avgRevenueChange">-0%</div>
                     </div>
                 </div>
 
-                <div class="content-card">
-                    <div class="premium-package-container">
-                        <div class="card-header">
-                            <h2 class="card-title">All Packages</h2>
-                            <div class="filter-tabs">
-                                <button class="tab-btn active" data-filter="all">All</button>
-                                <button class="tab-btn" data-filter="monthly">Monthly</button>
-                                <button class="tab-btn" data-filter="yearly">Yearly</button>
-                                <button class="tab-btn" data-filter="active">Active</button>
+                <div class="flex flex-col lg:flex-row gap-4">
+                    <div class="bg-white rounded-2xl flex-1">
+                        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                            <h2 class="text-lg font-semibold text-green-900">All Packages</h2>
+                            <div class="flex gap-2">
+                                <button class="tab-btn px-4 py-2 text-sm text-gray-600 rounded-md hover:bg-green-700 hover:text-white transition bg-green-700 text-white" data-filter="all">All</button>
+                                <button class="tab-btn px-4 py-2 text-sm text-gray-600 rounded-md hover:bg-green-700 hover:text-white transition" data-filter="monthly">Monthly</button>
+                                <button class="tab-btn px-4 py-2 text-sm text-gray-600 rounded-md hover:bg-green-700 hover:text-white transition" data-filter="yearly">Yearly</button>
+                                <button class="tab-btn px-4 py-2 text-sm text-gray-600 rounded-md hover:bg-green-700 hover:text-white transition" data-filter="active">Active</button>
                             </div>
                         </div>
-                        <div id="packagesContainer">
-                            <div class="loading">
-                                <div class="spinner"></div>
+                        <div id="packagesContainer" class="p-6">
+                            <div class="flex justify-center items-center p-12 text-gray-600">
+                                <div class="w-10 h-10 border-4 border-gray-200 border-t-green-700 rounded-full animate-spin mr-4"></div>
                                 Loading packages...
                             </div>
                         </div>
-                        <div class="pagination" id="pagination" style="display: none;">
-                            <button class="pagination-btn" id="prevBtn" onclick="changePage(currentPage - 1)">
+                        <div class="pagination border-t border-gray-200 p-4 flex justify-center items-center gap-2 hidden" id="pagination">
+                            <button class="pagination-btn px-3 py-2 border border-gray-300 rounded-md text-gray-600 hover:bg-green-700 hover:text-white transition" id="prevBtn" onclick="changePage(currentPage - 1)">
                                 <i class="fas fa-chevron-left"></i>
                             </button>
                             <div id="pageNumbers"></div>
-                            <button class="pagination-btn" id="nextBtn" onclick="changePage(currentPage + 1)">
+                            <button class="pagination-btn px-3 py-2 border border-gray-300 rounded-md text-gray-600 hover:bg-green-700 hover:text-white transition" id="nextBtn" onclick="changePage(currentPage + 1)">
                                 <i class="fas fa-chevron-right"></i>
                             </button>
                         </div>
                     </div>
-                    <div class="recent-subscription">
-                        <div class="card-header">
-                            <h2 class="card-title">Recent Subscriptions</h2>
-                            <a href="#" class="btn">View All</a>
+                    <div class="bg-white rounded-2xl w-full lg:w-1/3">
+                        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                            <h2 class="text-lg font-semibold text-green-900">Recent Subscriptions</h2>
+                            <a href="#" class="text-sm text-gray-600 hover:text-green-700">View All</a>
                         </div>
-                        <div id="recentSubscriptions">
-                            <div class="loading">
-                                <div class="spinner"></div>
+                        <div id="recentSubscriptions" class="p-6">
+                            <div class="flex justify-center items-center p-12 text-gray-600">
+                                <div class="w-10 h-10 border-4 border-gray-200 border-t-green-700 rounded-full animate-spin mr-4"></div>
                                 Loading recent subscriptions...
                             </div>
                         </div>
@@ -905,89 +123,89 @@
         </main>
     </div>
 
-    <div id="createPackageModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Create New Package</h2>
-                <button class="close-btn" onclick="closeNewPackageModal()">×</button>
+    <div id="createPackageModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-md w-11/12 max-w-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-semibold text-green-900">Create New Package</h2>
+                <button class="text-gray-600 text-xl hover:text-green-900" onclick="closeNewPackageModal()">×</button>
             </div>
             <form id="createPackageForm">
-                <div class="form-group">
-                    <label for="createName">Package Name</label>
-                    <input type="text" id="createName" required>
+                <div class="mb-4">
+                    <label for="createName" class="block text-sm font-medium text-green-900 mb-1">Package Name</label>
+                    <input type="text" id="createName" class="w-full p-2 border border-gray-300 rounded-md text-sm" required>
                 </div>
-                <div class="form-group">
-                    <label for="createPrice">Price (VND)</label>
-                    <input type="number" id="createPrice" step="1000" required>
+                <div class="mb-4">
+                    <label for="createPrice" class="block text-sm font-medium text-green-900 mb-1">Price (VND)</label>
+                    <input type="number" id="createPrice" step="1000" class="w-full p-2 border border-gray-300 rounded-md text-sm" required>
                 </div>
-                <div class="form-group">
-                    <label for="createDurationValue">Duration Value</label>
-                    <input type="number" id="createDurationValue" required>
+                <div class="mb-4">
+                    <label for="createDurationValue" class="block text-sm font-medium text-green-900 mb-1">Duration Value</label>
+                    <input type="number" id="createDurationValue" class="w-full p-2 border border-gray-300 rounded-md text-sm" required>
                 </div>
-                <div class="form-group">
-                    <label for="createDurationType">Duration Type</label>
-                    <select id="createDurationType" required>
+                <div class="mb-4">
+                    <label for="createDurationType" class="block text-sm font-medium text-green-900 mb-1">Duration Type</label>
+                    <select id="createDurationType" class="w-full p-2 border border-gray-300 rounded-md text-sm" required>
                         <option value="MONTH">Month</option>
                         <option value="YEAR">Year</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="createFeatures">Features</label>
-                    <div id="createFeatures" class="feature-grid"></div>
+                <div class="mb-4">
+                    <label for="createFeatures" class="block text-sm font-medium text-green-900 mb-1">Features</label>
+                    <div id="createFeatures" class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 border border-gray-300 rounded-md"></div>
                     <input type="hidden" id="createSelectedFeatures">
                 </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn" onclick="closeNewPackageModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create Package</button>
+                <div class="flex justify-end gap-4 mt-6">
+                    <button type="button" class="px-4 py-2 text-sm text-gray-600 rounded-md hover:bg-gray-100" onclick="closeNewPackageModal()">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-sm text-white bg-green-700 rounded-md hover:bg-green-800">Create Package</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="updatePackageModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Update Package</h2>
-                <button class="close-btn" onclick="closeUpdateModal()">×</button>
+    <div id="updatePackageModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-md w-11/12 max-w-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-semibold text-green-900">Update Package</h2>
+                <button class="text-gray-600 text-xl hover:text-green-900" onclick="closeUpdateModal()">×</button>
             </div>
             <form id="updatePackageForm">
                 <input type="hidden" id="updatePackageId">
-                <div class="form-group">
-                    <label for="updateName">Package Name</label>
-                    <input type="text" id="updateName" required>
+                <div class="mb-4">
+                    <label for="updateName" class="block text-sm font-medium text-green-900 mb-1">Package Name</label>
+                    <input type="text" id="updateName" class="w-full p-2 border border-gray-300 rounded-md text-sm" required>
                 </div>
-                <div class="form-group">
-                    <label for="updatePrice">Price (VND)</label>
-                    <input type="number" id="updatePrice" step="1000" required>
+                <div class="mb-4">
+                    <label for="updatePrice" class="block text-sm font-medium text-green-900 mb-1">Price (VND)</label>
+                    <input type="number" id="updatePrice" step="1000" class="w-full p-2 border border-gray-300 rounded-md text-sm" required>
                 </div>
-                <div class="form-group">
-                    <label for="updateDurationValue">Duration Value</label>
-                    <input type="number" id="updateDurationValue" required>
+                <div class="mb-4">
+                    <label for="updateDurationValue" class="block text-sm font-medium text-green-900 mb-1">Duration Value</label>
+                    <input type="number" id="updateDurationValue" class="w-full p-2 border border-gray-300 rounded-md text-sm" required>
                 </div>
-                <div class="form-group">
-                    <label for="updateDurationType">Duration Type</label>
-                    <select id="updateDurationType" required>
+                <div class="mb-4">
+                    <label for="updateDurationType" class="block text-sm font-medium text-green-900 mb-1">Duration Type</label>
+                    <select id="updateDurationType" class="w-full p-2 border border-gray-300 rounded-md text-sm" required>
                         <option value="DAY">Day</option>
                         <option value="WEEK">Week</option>
                         <option value="MONTH">Month</option>
                         <option value="YEAR">Year</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="updateFeatures">Features</label>
-                    <div id="updateFeatures" class="feature-grid"></div>
+                <div class="mb-4">
+                    <label for="updateFeatures" class="block text-sm font-medium text-green-900 mb-1">Features</label>
+                    <div id="updateFeatures" class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 border border-gray-300 rounded-md"></div>
                     <input type="hidden" id="updateSelectedFeatures">
                 </div>
-                <div class="form-group">
-                    <label for="updateIsActive">Status</label>
-                    <select id="updateIsActive" required>
+                <div class="mb-4">
+                    <label for="updateIsActive" class="block text-sm font-medium text-green-900 mb-1">Status</label>
+                    <select id="updateIsActive" class="w-full p-2 border border-gray-300 rounded-md text-sm" required>
                         <option value="true">Active</option>
                         <option value="false">Inactive</option>
                     </select>
                 </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn" onclick="closeUpdateModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Update Package</button>
+                <div class="flex justify-end gap-4 mt-6">
+                    <button type="button" class="px-4 py-2 text-sm text-gray-600 rounded-md hover:bg-gray-100" onclick="closeUpdateModal()">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-sm text-white bg-green-700 rounded-md hover:bg-green-800">Update Package</button>
                 </div>
             </form>
         </div>
@@ -1004,14 +222,13 @@
         let packages = [];
         let allFeatures = [];
 
-
         const getPackageIcon = (name) => {
             const lowerName = name.toLowerCase();
-            if (lowerName.includes('basic')) return 'basic';
-            if (lowerName.includes('pro') || lowerName.includes('premium')) return 'pro';
-            if (lowerName.includes('enterprise')) return 'enterprise';
-            if (lowerName.includes('yearly') || lowerName.includes('annual')) return 'yearly';
-            return 'basic';
+            if (lowerName.includes('basic')) return 'bg-gradient-to-br from-blue-300 to-blue-600';
+            if (lowerName.includes('pro') || lowerName.includes('premium')) return 'bg-gradient-to-br from-purple-300 to-purple-600';
+            if (lowerName.includes('enterprise')) return 'bg-gradient-to-br from-green-300 to-green-600';
+            if (lowerName.includes('yearly') || lowerName.includes('annual')) return 'bg-gradient-to-br from-yellow-300 to-yellow-600';
+            return 'bg-gradient-to-br from-blue-300 to-blue-600';
         };
 
         const getDurationText = (value, type) => {
@@ -1025,7 +242,7 @@
         };
 
         const formatTimeAgo = (localDateTimeStr) => {
-            const now = new Date('2025-06-23T00:31:00+07:00'); // Updated to current date and time
+            const now = new Date('2025-06-27T10:32:00+07:00');
             const createdAt = new Date(localDateTimeStr);
             const diffMs = now - createdAt;
             const diffMinutes = Math.floor(diffMs / 60000);
@@ -1079,7 +296,6 @@
         };
 
         const createPackage = async (packageData) => {
-            console.log("Xem cai pakge: ", packageData);
             try {
                 const response = await apiRequest(API_BASE_URL, {
                     method: 'POST',
@@ -1122,7 +338,6 @@
                 const response = await apiRequest(`${SUBSCRIPTION_API_URL}/recent?page=0&size=5&sortBy=createdAt&sortDirection=DESC`);
                 if (!response) return [];
                 const data = await response.json();
-                console.log("hahae: ", data);
                 return data.result.content || [];
             } catch (error) {
                 console.error('Error fetching recent subscriptions:', error);
@@ -1136,9 +351,9 @@
 
             if (!packagesData || !packagesData.content || packagesData.content.length === 0) {
                 container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-box-open"></i>
-                        <h3>No packages found</h3>
+                    <div class="text-center p-12 text-gray-600">
+                        <i class="fas fa-box-open text-5xl mb-4"></i>
+                        <h3 class="text-lg font-semibold">No packages found</h3>
                         <p>Create your first premium package to get started</p>
                     </div>
                 `;
@@ -1155,62 +370,62 @@
             };
 
             const packagesHTML = packages.map(pkg => `
-                <div class="package-card" data-type="${pkg.durationType?.toLowerCase() || 'monthly'}" data-active="${pkg.isActive}">
-                    <div class="package-header">
+                <div class="package-card border border-gray-200 rounded-lg p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300" data-type="${pkg.durationType?.toLowerCase() || 'monthly'}" data-active="${pkg.isActive}">
+                    <div class="flex justify-between items-start mb-4">
                         <div>
-                            <div class="package-icon ${getPackageIcon(pkg.name)}">
+                            <div class="w-10 h-10 rounded-lg ${getPackageIcon(pkg.name)} flex items-center justify-center text-white text-lg">
                                 <i class="fas fa-crown"></i>
                             </div>
                         </div>
-                        <div class="package-actions">
-                            <button class="action-btn" onclick="openUpdateModal(${pkg.id})" title="Edit">
+                        <div class="flex gap-2">
+                            <button class="w-8 h-8 bg-gray-100 text-gray-600 rounded-md flex items-center justify-center hover:bg-green-700 hover:text-white transition" onclick="openUpdateModal(${pkg.id})" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="action-btn" onclick="deletePackage(${pkg.id})" title="Delete">
+                            <button class="w-8 h-8 bg-gray-100 text-gray-600 rounded-md flex items-center justify-center hover:bg-green-700 hover:text-white transition" onclick="deletePackage(${pkg.id})" title="Delete">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
                     </div>
-                    <div class="package-name">${pkg.name}</div>
-                    <div class="package-type">${pkg.durationType?.toLowerCase() || 'monthly'}</div>
-                    <div class="package-price">
+                    <div class="text-lg font-semibold text-green-900 mb-1">${pkg.name}</div>
+                    <div class="text-xs text-gray-600 uppercase font-medium">${pkg.durationType?.toLowerCase() || 'monthly'}</div>
+                    <div class="text-2xl font-bold text-green-900 my-4">
                         ${formatCurrency(pkg.price)}
-                        <span class="package-period">${getDurationText(pkg.durationValue, pkg.durationType)}</span>
+                        <span class="text-sm text-gray-600">${getDurationText(pkg.durationValue, pkg.durationType)}</span>
                     </div>
-                    <div class="package-stats">
-                        <div class="package-stat">
-                            <div class="package-stat-value">${formatNumber(pkg.subscribers || 0)}</div>
-                            <div class="package-stat-label">Subscribers</div>
+                    <div class="grid grid-cols-2 gap-4 my-4">
+                        <div class="text-center">
+                            <div class="text-lg font-semibold text-green-900">${formatNumber(pkg.subscribers || 0)}</div>
+                            <div class="text-xs text-gray-600 mt-1">Subscribers</div>
                         </div>
-                        <div class="package-stat">
-                            <div class="package-stat-value">${formatCurrency(pkg.revenue || 0)}</div>
-                            <div class="package-stat-label">Revenue</div>
+                        <div class="text-center">
+                            <div class="text-lg font-semibold text-green-900">${formatCurrency(pkg.revenue || 0)}</div>
+                            <div class="text-xs text-gray-600 mt-1">Revenue</div>
                         </div>
                     </div>
-                    <div class="package-features">
-                        <div class="features-title">Features</div>
-                        <ul class="feature-list">
+                    <div class="mb-4">
+                        <div class="text-sm font-medium text-green-900 mb-2">Features</div>
+                        <ul class="list-none p-0">
                             ${(pkg.features || ['Basic Features', 'Support']).slice(0, 3).map(feature => `
-                                <li class="feature-item">
-                                    <i class="fas fa-check"></i> ${getFeatureName(feature)}
+                                <li class="text-sm text-gray-600 mb-1 flex items-center gap-2">
+                                    <i class="fas fa-check text-green-700 text-xs"></i> ${getFeatureName(feature)}
                                 </li>
                             `).join('')}
                             ${pkg.features && pkg.features.length > 3 ? `
-                                <li class="feature-item">
-                                    <i class="fas fa-plus"></i>
+                                <li class="text-sm text-gray-600 mb-1 flex items-center gap-2">
+                                    <i class="fas fa-plus text-green-700 text-xs"></i>
                                     +${pkg.features.length - 3} more
                                 </li>
                             ` : ''}
                         </ul>
                     </div>
-                    <div class="package-status ${pkg.isActive ? 'active' : 'inactive'}">
-                        <i class="fas fa-circle"></i>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${pkg.isActive ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'}">
+                        <i class="fas fa-circle text-xs"></i>
                         ${pkg.isActive ? 'Active' : 'Inactive'}
                     </div>
                 </div>
             `).join('');
 
-            container.innerHTML = `<div class="packages-grid">${packagesHTML}</div>`;
+            container.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">${packagesHTML}</div>`;
             updatePagination();
         };
 
@@ -1219,9 +434,9 @@
 
             if (!subscriptions || subscriptions.length === 0) {
                 container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-users"></i>
-                        <h3>No recent subscriptions</h3>
+                    <div class="text-center p-12 text-gray-600">
+                        <i class="fas fa-users text-5xl mb-4"></i>
+                        <h3 class="text-lg font-semibold">No recent subscriptions</h3>
                         <p>Recent subscription activity will appear here</p>
                     </div>
                 `;
@@ -1229,16 +444,18 @@
             }
 
             const subscriptionsHTML = subscriptions.map(sub => `
-                <div class="subscription-item">
-                    <div class="user-avatar">${sub.userName?.charAt(0).toUpperCase() || 'U'}</div>
-                    <div class="subscription-info">
-                        <div class="subscription-name">${sub.userName || 'Unknown User'}</div>
-                        <div class="subscription-package">${sub.packageName || 'Premium Package'}</div>
+                <div class="flex items-center p-4 border-b border-gray-200 last:border-b-0">
+                    <div class="w-10 h-10 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-semibold text-lg">
+                        ${sub.userName?.charAt(0).toUpperCase() || 'U'}
                     </div>
-                    <div class="subscription-details">
-                        <div class="subscription-price">${formatCurrency(sub.amount || 0)}</div>
-                        <div class="subscription-time">${formatTimeAgo(sub.createdAt)}</div>
-                        <div class="subscription-status ${sub.status?.toLowerCase() || 'completed'}">
+                    <div class="flex-1 ml-4">
+                        <div class="font-semibold text-sm text-green-900">${sub.userName || 'Unknown User'}</div>
+                        <div class="text-xs text-gray-600">${sub.packageName || 'Premium Package'}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-semibold text-sm text-green-900">${formatCurrency(sub.amount || 0)}</div>
+                        <div class="text-xs text-gray-600 mb-2">${formatTimeAgo(sub.createdAt)}</div>
+                        <div class="inline-block px-3 py-1 rounded-full text-xs font-medium ${sub.status?.toLowerCase() === 'active' ? 'bg-green-100 text-green-600' : sub.status?.toLowerCase() === 'pending' ? 'bg-orange-100 text-orange-600' : 'bg-red-100 text-red-600'}">
                             ${sub.status || 'Completed'}
                         </div>
                     </div>
@@ -1251,15 +468,15 @@
         const renderFeatures = (containerId, selectedFeatures = []) => {
             const container = document.getElementById(containerId);
             if (!allFeatures || allFeatures.length === 0) {
-                container.innerHTML = '<p>No features available</p>';
+                container.innerHTML = '<p class="text-gray-600">No features available</p>';
                 return;
             }
 
             const featuresHTML = allFeatures.map(feature => `
-                <div class="feature-item ${selectedFeatures.includes(feature.featureCode) ? '' : 'unselected'}" 
+                <div class="feature-item flex items-center gap-2 p-2 rounded-md bg-gray-100 cursor-pointer text-sm text-green-900 ${selectedFeatures.includes(feature.featureCode) ? '' : 'opacity-75'}" 
                      data-feature-code="${feature.featureCode}" 
                      onclick="toggleFeature('${containerId}', '${feature.featureCode}')">
-                    <i class="fas ${selectedFeatures.includes(feature.featureCode) ? 'fa-check' : 'fa-plus'}"></i>
+                    <i class="fas ${selectedFeatures.includes(feature.featureCode) ? 'fa-check text-green-700' : 'fa-plus text-gray-600'} text-xs"></i>
                     ${feature.featureName}
                 </div>
             `).join('');
@@ -1274,14 +491,14 @@
 
             if (selectedFeatures.includes(featureCode)) {
                 selectedFeatures = selectedFeatures.filter(code => code !== featureCode);
-                featureItem.classList.add('unselected');
-                featureItem.querySelector('i').classList.remove('fa-check');
-                featureItem.querySelector('i').classList.add('fa-plus');
+                featureItem.classList.add('opacity-75');
+                featureItem.querySelector('i').classList.remove('fa-check', 'text-green-700');
+                featureItem.querySelector('i').classList.add('fa-plus', 'text-gray-600');
             } else {
                 selectedFeatures.push(featureCode);
-                featureItem.classList.remove('unselected');
-                featureItem.querySelector('i').classList.remove('fa-plus');
-                featureItem.querySelector('i').classList.add('fa-check');
+                featureItem.classList.remove('opacity-75');
+                featureItem.querySelector('i').classList.remove('fa-plus', 'text-gray-600');
+                featureItem.querySelector('i').classList.add('fa-check', 'text-green-700');
             }
 
             input.value = selectedFeatures.join(',');
@@ -1305,11 +522,11 @@
             const nextBtn = document.getElementById('nextBtn');
 
             if (totalPages <= 1) {
-                pagination.style.display = 'none';
+                pagination.classList.add('hidden');
                 return;
             }
 
-            pagination.style.display = 'flex';
+            pagination.classList.remove('hidden');
 
             prevBtn.disabled = currentPage === 0;
             nextBtn.disabled = currentPage >= totalPages - 1;
@@ -1325,7 +542,7 @@
 
             for (let i = startPage; i <= endPage; i++) {
                 pageNumbersHTML += `
-                    <button class="pagination-btn ${i === currentPage ? 'active' : ''}" 
+                    <button class="pagination-btn px-3 py-2 border border-gray-300 rounded-md text-gray-600 hover:bg-green-700 hover:text-white transition ${i === currentPage ? 'bg-green-700 text-white' : ''}" 
                             onclick="changePage(${i})">
                         ${i + 1}
                     </button>
@@ -1341,12 +558,12 @@
             document.getElementById('createPackageForm').reset();
             document.getElementById('createSelectedFeatures').value = '';
             renderFeatures('createFeatures', []);
-            modal.style.display = 'flex';
+            modal.classList.remove('hidden');
         };
 
         const closeNewPackageModal = () => {
             const modal = document.getElementById('createPackageModal');
-            modal.style.display = 'none';
+            modal.classList.add('hidden');
             document.getElementById('createPackageForm').reset();
             document.getElementById('createSelectedFeatures').value = '';
         };
@@ -1361,7 +578,6 @@
                 document.getElementById('updatePrice').value = packageData.price;
                 document.getElementById('updateDurationValue').value = packageData.durationValue;
                 document.getElementById('updateDurationType').value = packageData.durationType;
-                // Map feature names to feature codes
                 const featureCodes = packageData.features
                     ? packageData.features.map(name => {
                         const feature = allFeatures.find(f => f.featureName === name);
@@ -1371,7 +587,7 @@
                 document.getElementById('updateSelectedFeatures').value = featureCodes.join(',');
                 renderFeatures('updateFeatures', featureCodes);
                 document.getElementById('updateIsActive').value = packageData.isActive.toString();
-                modal.style.display = 'flex';
+                modal.classList.remove('hidden');
             } else {
                 alert('Failed to load package data');
             }
@@ -1379,7 +595,7 @@
 
         const closeUpdateModal = () => {
             const modal = document.getElementById('updatePackageModal');
-            modal.style.display = 'none';
+            modal.classList.add('hidden');
             document.getElementById('updatePackageForm').reset();
             document.getElementById('updateSelectedFeatures').value = '';
         };
@@ -1396,9 +612,9 @@
             currentFilter = filter;
 
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
+                btn.classList.remove('bg-green-700', 'text-white');
                 if (btn.dataset.filter === filter) {
-                    btn.classList.add('active');
+                    btn.classList.add('bg-green-700', 'text-white');
                 }
             });
 
@@ -1438,8 +654,6 @@
                 durationType: document.getElementById('createDurationType').value,
                 features: document.getElementById('createSelectedFeatures').value ? document.getElementById('createSelectedFeatures').value.split(',').filter(f => f.trim()) : []
             };
-
-            console.log(packageData);
 
             try {
                 const response = await createPackage(packageData);

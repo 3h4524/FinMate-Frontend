@@ -326,3 +326,4 @@ function showNotification(title, message, type) {
         setTimeout(() => notificationCard.remove(), 300);
     }, 3000);
 }
+
