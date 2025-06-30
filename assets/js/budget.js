@@ -3,105 +3,22 @@ let chartType = 'bar';
 let user;
 const pageSize = 10;
 let customCategories = JSON.parse(localStorage.getItem('customCategories')) || [];
+let systemCategories = [];
 
-const categoryMap = {
-    "Ăn uống": 5,
-    "Mua sắm": 6,
-    "Di chuyển": 7,
-    "Nhà cửa": 8,
-    "Giải trí": 9,
-    "Sức khỏe": 10,
-    "Giáo dục": 11,
-    "Hóa đơn": 12
-};
-
-// Fallback functions if helper files are not loaded
-if (typeof apiRequest === 'undefined') {
-  window.apiRequest = async (url, options = {}) => {
-    try {
-      const token = localStorage.getItem('authToken');
-      const defaultOptions = {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` })
-        }
-      };
-      
-      const response = await fetch(url, { ...defaultOptions, ...options });
-      return response;
-    } catch (error) {
-      console.error('API request failed:', error);
-      return null;
-    }
-  };
-}
-
-if (typeof getCurrentUser === 'undefined') {
-  window.getCurrentUser = () => {
-    try {
-      const user = localStorage.getItem('currentUser');
-      return user ? JSON.parse(user) : { userId: 1 }; // fallback user
-    } catch (error) {
-      console.error('Error getting current user:', error);
-      return { userId: 1 };
-    }
-  };
-}
-
-if (typeof loadSideBarSimple === 'undefined') {
-  window.loadSideBarSimple = () => {
-    console.log('Sidebar loading function not available');
-  };
-}
-
-if (typeof loadHeaderSimple === 'undefined') {
-  window.loadHeaderSimple = () => {
-    console.log('Header loading function not available');
-  };
-}
 
 async function initializeUI() {
-    try {
-        console.log('Initializing budget page...');
-        
-        // Load sidebar and header first
-        if (typeof loadSideBarSimple === 'function') {
-            loadSideBarSimple();
-        } else {
-            console.error('loadSideBarSimple function not found');
-        }
-        
-        if (typeof loadHeaderSimple === 'function') {
-            loadHeaderSimple();
-        } else {
-            console.error('loadHeaderSimple function not found');
-        }
-        
-        await fetchUser();
-        if (!user || !user.userId) return;
-        
-        await updateDateTime();
-        await monitorBudgets(0);
-        await loadAnalysis(0);
-        await setDefaultModalDates();
-        await addBudgetCategory();
-        await setupEventListeners();
-        
-        console.log('Budget page initialized successfully');
-    } catch (error) {
-        console.error('Error initializing budget page:', error);
-    }
+    await fetchUser();
+    if (!user || !user.userId) return;
+    await loadSideBar(user);
+    await loadSystemCategories();
+    await loadUserCategories();
+    await loadBudgetOverview();
+    await monitorBudgets(0);
+    await loadAnalysis(0);
+    await setDefaultModalDates();
+    await addBudgetCategory();
+    await setupEventListeners();
 }
-
-function updateDateTime() {
-    const now = new Date();
-    document.getElementById('current-date-time').textContent = now.toLocaleString('en-US', {
-        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-        hour: '2-digit', minute: '2-digit', timeZoneName: 'short', timeZone: 'Asia/Ho_Chi_Minh'
-    });
-}
-updateDateTime();
-setInterval(updateDateTime, 60000);
 
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('-translate-x-full');
@@ -151,7 +68,6 @@ async function submitBudgetForm(formId, budgetId = null) {
             category, amount: parseFloat(formData.getAll('amounts[]')[index])
         }))
     };
-
     if (!validateBudgetData(data)) return;
     if (!user || !user.userId) {
         showNotification('Error', 'User not authenticated. Please log in.', 'error');
@@ -166,15 +82,10 @@ async function submitBudgetForm(formId, budgetId = null) {
         form.reset();
         closeModal(budgetId ? 'updateBudgetModal' : 'createBudgetModal');
         document.getElementById('analysisPeriod').value = 'all';
+        await loadBudgetOverview();
         monitorBudgets(0);
         loadAnalysis(0);
     } catch (error) {
-        console.error("Error:", error);
-        if (error.message.includes('BUDGET_LIMIT_EXCEEDED')) {
-            showNotification('Error', 'You have reached the limit. Please purchase an upgrade to use the function')
-        }else {
-        showNotification('Error', 'Network error. Please check your connection.', 'error');
-        }
     }
 }
 
@@ -226,9 +137,10 @@ async function saveBudgetCategory(cat, data, budgetId) {
         body: JSON.stringify(budgetData)
     });
     const responseData = await response.json();
+    console.log(responseData);
     if (!response.ok || responseData.code !== 1000) {
-        showNotification('Error', `Error ${budgetId ? 'updating' : 'creating'} budget for ${isCustom ? customCategories.find(c => c.id === userCategoryId)?.name || 'Unknown Custom Category' : Object.keys(categoryMap).find(key => categoryMap[key] === categoryId) || 'Unknown Category'}`, 'error');
-        throw new Error('API request failed');
+        showNotification('Error', responseData.message || 'Error saving budget', 'error');
+        throw new Error(responseData.message || 'Error saving budget');
     }
 }
 
@@ -248,22 +160,141 @@ function addBudgetCategory(type = 'create', selectedCategory = null, amount = nu
     const row = document.createElement('div');
     row.className = 'flex items-center gap-3 mb-3';
     row.innerHTML = `
-        <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-teal-600 focus:ring-2 focus:ring-teal-300 transition" required>
+        <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-300 transition" required>
             <option value="">Chọn danh mục</option>
-            <option value="5" ${selectedCategory == 5 ? 'selected' : ''}>Ăn uống</option>
-            <option value="6" ${selectedCategory == 6 ? 'selected' : ''}>Mua sắm</option>
-            <option value="7" ${selectedCategory == 7 ? 'selected' : ''}>Di chuyển</option>
-            <option value="8" ${selectedCategory == 8 ? 'selected' : ''}>Nhà cửa</option>
-            <option value="9" ${selectedCategory == 9 ? 'selected' : ''}>Giải trí</option>
-            <option value="10" ${selectedCategory == 10 ? 'selected' : ''}>Sức khỏe</option>
-            <option value="11" ${selectedCategory == 11 ? 'selected' : ''}>Giáo dục</option>
-            <option value="12" ${selectedCategory == 12 ? 'selected' : ''}>Hóa đơn</option>
+            ${systemCategories.map(cat => `<option value="${cat.id}" ${selectedCategory == cat.id ? 'selected' : ''}>${cat.name}</option>`).join('')}
             ${customCategories.map(cat => `<option value="custom_${cat.id}" ${selectedCategory === 'custom_' + cat.id ? 'selected' : ''}>${cat.name}</option>`).join('')}
         </select>
-        <input type="number" name="amounts[]" step="0.01" min="0" ${amount ? `value="${amount}"` : 'placeholder="Amount ($)"'} class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-teal-600 focus:ring-2 focus:ring-teal-300 transition" required>
+        <input type="number" name="amounts[]" step="0.01" min="0" ${amount ? `value="${amount}"` : 'placeholder="Số tiền ($)"'} class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-300 transition" required>
         <button type="button" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 transition" onclick="removeBudgetCategory(this, '${type}')">×</button>
     `;
     categoryList.appendChild(row);
+}
+
+async function loadSystemCategories() {
+    try {
+        const response = await apiRequest('http://localhost:8080/api/categories', {
+            headers: { "userId": user.userId.toString() }
+        });
+        const data = await response.json();
+        if (response.ok && data.result) {
+            systemCategories = data.result.map(category => {
+                if (category.type === 'EXPENSE') {
+                    return {
+                        id: category.categoryId,
+                        name: category.categoryName
+                    };
+                }
+            }).filter(cat => cat !== undefined);
+        } else {
+            showNotification('Error', 'Failed to load system categories.', 'error');
+        }
+    } catch (error) {
+        showNotification('Error', 'Network error while loading system categories.', 'error');
+    }
+}
+
+async function loadUserCategories() {
+    try {
+        const response = await apiRequest(`http://localhost:8080/api/userCategories/${user.userId}`, {
+            headers: { "userId": user.userId.toString() }
+        });
+        const data = await response.json();
+        if (response.ok && data.result) {
+            customCategories = data.result.map(category => {
+                if (category.type === 'EXPENSE') {
+                    return {
+                        id: category.categoryId,
+                        name: category.categoryName
+                    };
+                }
+            }).filter(cat => cat !== undefined);
+            localStorage.setItem('customCategories', JSON.stringify(customCategories));
+        } else {
+            showNotification('Error', 'Failed to load user categories.', 'error');
+        }
+    } catch (error) {
+        showNotification('Error', 'Network error while loading user categories.', 'error');
+    }
+}
+
+async function loadBudgetOverview() {
+    try {
+        const response = await apiRequest(`http://localhost:8080/budget/list?page=0&size=1000`, {
+            headers: { "userId": user.userId.toString() }
+        });
+        const data = await response.json();
+        
+        if (response.ok && data.result.content.length > 0) {
+            const budgets = data.result.content;
+            let totalBudget = 0;
+            let totalSpent = 0;
+            let overBudgetCount = 0;
+            let nearLimitCount = 0;
+            
+            budgets.forEach(budget => {
+                totalBudget += budget.amount;
+                totalSpent += budget.currentSpending || 0;
+                
+                const usagePercent = budget.percentageUsed;
+                if (usagePercent >= 100) {
+                    overBudgetCount++;
+                } else if (usagePercent >= budget.notificationThreshold) {
+                    nearLimitCount++;
+                }
+            });
+            
+            const remaining = totalBudget - totalSpent;
+            const overallProgress = totalBudget > 0 ? (totalSpent / totalBudget * 100) : 0;
+            
+            // Update overview elements
+            document.getElementById('activeBudgets').textContent = budgets.length;
+            document.getElementById('totalBudgetAmount').textContent = formatCurrency(totalBudget);
+            document.getElementById('totalSpentAmount').textContent = formatCurrency(totalSpent);
+            document.getElementById('totalRemainingAmount').textContent = formatCurrency(remaining);
+            document.getElementById('overallProgressPercent').textContent = `${overallProgress.toFixed(1)}%`;
+            document.getElementById('overallProgressBar').style.width = `${Math.min(overallProgress, 100)}%`;
+            document.getElementById('overBudgetCount').textContent = overBudgetCount;
+            document.getElementById('nearLimitCount').textContent = nearLimitCount;
+            
+            // Update progress bar color based on overall progress
+            const progressBar = document.getElementById('overallProgressBar');
+            if (overallProgress >= 100) {
+                progressBar.className = 'bg-gradient-to-r from-red-500 to-red-600 h-2 rounded-full transition-all duration-300';
+            } else if (overallProgress >= 80) {
+                progressBar.className = 'bg-gradient-to-r from-yellow-500 to-orange-500 h-2 rounded-full transition-all duration-300';
+            } else {
+                progressBar.className = 'bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300';
+            }
+            
+        } else {
+            // Reset to default values if no budgets
+            document.getElementById('activeBudgets').textContent = '0';
+            document.getElementById('totalBudgetAmount').textContent = '$0';
+            document.getElementById('totalSpentAmount').textContent = '$0';
+            document.getElementById('totalRemainingAmount').textContent = '$0';
+            document.getElementById('overallProgressPercent').textContent = '0%';
+            document.getElementById('overallProgressBar').style.width = '0%';
+            document.getElementById('overBudgetCount').textContent = '0';
+            document.getElementById('nearLimitCount').textContent = '0';
+            document.getElementById('overviewLastUpdated').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+        }
+    } catch (error) {
+        console.error("Error loading budget overview:", error);
+        showNotification('Error', 'Failed to load budget overview.', 'error');
+    }
+}
+
+async function refreshAllData() {
+    try {
+        await loadBudgetOverview();
+        await monitorBudgets(0);
+        await loadAnalysis(0);
+        showNotification('Success', 'Data refreshed successfully!', 'success');
+    } catch (error) {
+        console.error("Error refreshing data:", error);
+        showNotification('Error', 'Failed to refresh data.', 'error');
+    }
 }
 
 function removeBudgetCategory(button, type = 'create') {
@@ -278,7 +309,7 @@ function removeBudgetCategory(button, type = 'create') {
 function showNotification(title, message, type) {
     const toastContainer = document.getElementById("toastContainer");
     const notificationCard = document.createElement("div");
-    notificationCard.className = `mb-3 notification-slide-in ${type === 'error' ? 'bg-red-50 text-red-800' : type === 'warning' ? 'bg-yellow-50 text-yellow-800' : 'bg-green-50 text-green-800'}`;
+    notificationCard.className = `mb- notification-slide-in ${type === 'error' ? 'bg-red-50 text-red-800' : type === 'warning' ? 'bg-yellow-50 text-yellow-800' : 'bg-green-50 text-green-800'}`;
 
     const iconPaths = {
         error: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />',
@@ -304,7 +335,7 @@ function showNotification(title, message, type) {
         notificationCard.classList.remove('notification-slide-in');
         notificationCard.classList.add('notification-slide-out');
         setTimeout(() => notificationCard.remove(), 300);
-    }, 3000);
+    }, 4000);
 }
 
 async function monitorBudgets(page) {
@@ -320,6 +351,8 @@ async function monitorBudgets(page) {
         const data = await response.json();
         if (response.ok && data.result.content.length > 0) {
             monitorTableBody.innerHTML = '';
+            const overBudgets = [];
+            const nearBudgets = [];
             data.result.content.forEach(budget => {
                 const usagePercent = budget.percentageUsed.toFixed(2);
                 const remaining = budget.amount - (budget.currentSpending || 0);
@@ -328,11 +361,11 @@ async function monitorBudgets(page) {
                 if (usagePercent >= 100) {
                     progressClass = 'bg-red-500';
                     statusText = 'Over Budget';
-                    showNotification('Warning', `Over budget: ${budget.categoryName || budget.userCategoryName}`, 'error');
+                    overBudgets.push(budget.categoryName || budget.userCategoryName);
                 } else if (usagePercent >= budget.notificationThreshold) {
                     progressClass = 'bg-yellow-500';
                     statusText = 'Near Limit';
-                    showNotification('Warning', `Near limit: ${budget.categoryName || budget.userCategoryName}`, 'warning');
+                    nearBudgets.push(budget.categoryName || budget.userCategoryName);
                 }
 
                 const row = document.createElement('tr');
@@ -348,13 +381,20 @@ async function monitorBudgets(page) {
                     </td>
                     <td class="p-3">${formatCurrency(remaining)}</td>
                     <td class="p-3">
-                        <button onclick="viewBudgetDetails(${budget.id}, '${budget.categoryName || budget.userCategoryName}', ${budget.amount}, ${budget.currentSpending}, ${budget.notificationThreshold}, '${budget.startDate}', '${budget.endDate}', '${budget.periodType}')" class="text-teal-600 hover:text-teal-800 mr-3"><i class="fas fa-eye"></i></button>
+                        <button onclick="viewBudgetDetails(${budget.id}, '${budget.categoryName || budget.userCategoryName}', ${budget.amount}, ${budget.currentSpending}, ${budget.notificationThreshold}, '${budget.startDate}', '${budget.endDate}', '${budget.periodType}')" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-eye"></i></button>
                         <button onclick="openUpdateModal(${budget.id}, '${budget.periodType}', '${budget.startDate}', ${budget.notificationThreshold}, '${budget.categoryName || budget.userCategoryName}', ${budget.amount}, ${budget.categoryId || 'custom_' + budget.userCategoryId})" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteBudget(${budget.id})" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
                     </td>
                 `;
                 monitorTableBody.appendChild(row);
             });
+
+            if (overBudgets.length > 0) {
+                showNotification('Warning', `Over budget: ${overBudgets.join(', ')}`, 'error');
+            }
+            if (nearBudgets.length > 0) {
+                showNotification('Warning', `Near limit: ${nearBudgets.join(', ')}`, 'warning');
+            }
 
             renderPagination(paginationContainer, data.result, monitorBudgets);
         } else {
@@ -385,11 +425,11 @@ function viewBudgetDetails(id, categoryName, amount, currentSpending, threshold,
     const remaining = amount - (currentSpending || 0);
 
     const detailsContent = `
-        <div class="col-span-2 flex items-center gap-3 p-4 border rounded-lg bg-teal-50 shadow-sm">
-            <i class="fas fa-tag text-teal-600 text-lg"></i>
+        <div class="col-span-2 flex items-center gap-3 p-4 border rounded-lg bg-blue-50 shadow-sm">
+            <i class="fas fa-tag text-blue-600 text-lg"></i>
             <div>
                 <p class="text-sm text-gray-500">Category</p>
-                <p class="font-semibold text-teal-800">${categoryName}</p>
+                <p class="font-semibold text-blue-800">${categoryName}</p>
             </div>
         </div>
         <div class="flex items-center gap-3 p-4 border rounded-lg bg-green-50 shadow-sm">
@@ -474,6 +514,7 @@ async function deleteBudget(budgetId) {
             });
             if (response.ok) {
                 showNotification('Success', 'Budget deleted successfully!', 'success');
+                await loadBudgetOverview();
                 monitorBudgets(0);
                 loadAnalysis(0);
             } else {
@@ -551,57 +592,165 @@ async function loadAnalysis(page) {
 
             if (budgetChart) budgetChart.destroy();
             const ctx = document.getElementById('budgetChart').getContext('2d');
-            const chartConfig = {
-                data: {
-                    labels: chartLabels,
-                    datasets: [
-                        { label: 'Budget', data: plannedData, backgroundColor: 'rgba(46, 125, 50, 0.6)', borderColor: 'rgba(46, 125, 50, 1)', borderWidth: 1 },
-                        { label: 'Actual', data: actualData, backgroundColor: 'rgba(211, 47, 47, 0.6)', borderColor: 'rgba(211, 47, 47, 1)', borderWidth: 1 }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true, title: { display: true, text: 'Amount ($)' } },
-                        x: { title: { display: true, text: period === 'WEEKLY' || period === 'all' ? 'Day' : 'Week' } }
+            
+            // Tạo chart configuration dựa trên chart type
+            let chartConfig;
+            
+            if (chartType === 'pie') {
+                // Pie chart - hiển thị tổng budget vs actual cho tất cả categories
+                chartConfig = {
+                    type: 'pie',
+                    data: {
+                        labels: ['Total Budget', 'Total Spent'],
+                        datasets: [{
+                            data: [totalBudgeted, totalSpent],
+                            backgroundColor: ['rgba(46, 125, 50, 0.8)', 'rgba(211, 47, 47, 0.8)'],
+                            borderColor: ['rgba(46, 125, 50, 1)', 'rgba(211, 47, 47, 1)'],
+                            borderWidth: 2
+                        }]
                     },
-                    plugins: {
-                        legend: { position: 'top' },
-                        title: { display: true, text: `Budget vs Actual - ${period === 'all' ? 'All' : period === 'WEEKLY' ? 'Weekly' : 'Monthly'}` }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: {
+                            duration: 1000,
+                            easing: 'easeInOutQuart'
+                        },
+                        plugins: {
+                            legend: { 
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20
+                                }
+                            },
+                            title: { 
+                                display: true, 
+                                text: `Budget Overview - ${period === 'all' ? 'All Periods' : period === 'WEEKLY' ? 'Weekly' : 'Monthly'}`,
+                                font: {
+                                    size: 16,
+                                    weight: 'bold'
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.parsed;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((value / total) * 100).toFixed(1);
+                                        return `${label}: ${formatCurrency(value)} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
                     }
+                };
+            } else {
+                // Bar hoặc Line chart - hiển thị từng category
+                chartConfig = {
+                    type: chartType === 'bar' ? 'bar' : 'line',
+                    data: {
+                        labels: chartLabels,
+                        datasets: [
+                            { 
+                                label: 'Planned Budget', 
+                                data: plannedData, 
+                                backgroundColor: 'rgba(46, 125, 50, 0.6)', 
+                                borderColor: 'rgba(46, 125, 50, 1)', 
+                                borderWidth: 2,
+                                fill: chartType === 'line' ? false : true
+                            },
+                            { 
+                                label: 'Actual Spending', 
+                                data: actualData, 
+                                backgroundColor: 'rgba(211, 47, 47, 0.6)', 
+                                borderColor: 'rgba(211, 47, 47, 1)', 
+                                borderWidth: 2,
+                                fill: chartType === 'line' ? false : true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: {
+                            duration: 1000,
+                            easing: 'easeInOutQuart'
+                        },
+                        scales: {
+                            y: { 
+                                beginAtZero: true, 
+                                title: { display: true, text: 'Amount ($)' },
+                                ticks: {
+                                    callback: function(value) {
+                                        return formatCurrency(value);
+                                    }
+                                }
+                            },
+                            x: { 
+                                title: { 
+                                    display: true, 
+                                    text: 'Categories' 
+                                } 
+                            }
+                        },
+                        plugins: {
+                            legend: { 
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20
+                                }
+                            },
+                            title: { 
+                                display: true, 
+                                text: `Budget vs Actual by Category - ${period === 'all' ? 'All Periods' : period === 'WEEKLY' ? 'Weekly' : 'Monthly'}`,
+                                font: {
+                                    size: 16,
+                                    weight: 'bold'
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.dataset.label || '';
+                                        const value = context.parsed.y;
+                                        return `${label}: ${formatCurrency(value)}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                
+                // Thêm tension cho line chart
+                if (chartType === 'line') {
+                    chartConfig.data.datasets.forEach(dataset => {
+                        dataset.tension = 0.1;
+                    });
                 }
-            };
-
-            if (chartType === 'bar') {
-                chartConfig.type = 'bar';
-            } else if (chartType === 'line') {
-                chartConfig.type = 'line';
-                chartConfig.data.datasets.forEach(dataset => {
-                    dataset.fill = false;
-                    dataset.tension = 0.1;
-                });
-            } else if (chartType === 'pie') {
-                chartConfig.type = 'pie';
-                chartConfig.data.datasets = [
-                    { label: 'Budget vs Actual', data: [totalBudgeted, totalSpent], backgroundColor: ['rgba(46, 125, 50, 0.6)', 'rgba(211, 47, 47, 0.6)'], borderColor: ['rgba(46, 125, 50, 1)', 'rgba(211, 47, 47, 1)'], borderWidth: 1 }
-                ];
-                chartConfig.data.labels = ['Budget', 'Actual'];
-                chartConfig.options.scales = {};
             }
 
             budgetChart = new Chart(ctx, chartConfig);
             renderPagination(paginationContainer, data.result, loadAnalysis);
         } else {
             table.innerHTML = '<tr><td colspan="6" class="p-3 text-gray-500">No budget data for the selected period.</td></tr>';
-            if (budgetChart) { budgetChart.destroy(); budgetChart = null; }
+            if (budgetChart) {
+                budgetChart.destroy();
+                budgetChart = null;
+            }
             document.querySelector('.h-80').classList.add('hidden');
             document.querySelector('.grid').classList.add('hidden');
+            showNotification('Info', 'No data available for the selected period.', 'warning');
         }
     } catch (error) {
         console.error("Error:", error);
         table.innerHTML = '<tr><td colspan="6" class="p-3 text-red-600">Error loading analysis. Please try again.</td></tr>';
-        if (budgetChart) { budgetChart.destroy(); budgetChart = null; }
+        if (budgetChart) {
+            budgetChart.destroy();
+            budgetChart = null;
+        }
         showNotification('Error', 'Error loading analysis. Please try again.', 'error');
     }
 }
@@ -619,7 +768,7 @@ function renderPagination(container, pageData, fetchFunction) {
     startPage = Math.max(0, endPage - maxButtons);
 
     const createButton = (page, text, disabled = false, icon = '') => {
-        return `<button class="px-4 py-2 rounded-lg ${disabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-teal-600 hover:bg-teal-700'} text-white transition" ${disabled ? 'disabled' : `onclick="(${fetchFunction})(${page})"`}>${icon}${text}</button>`;
+        return `<button class="px-4 py-2 rounded-lg ${disabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white transition" ${disabled ? 'disabled' : `onclick="(${fetchFunction})(${page})"`}>${icon}${text}</button>`;
     };
 
     const buttons = [
@@ -636,6 +785,8 @@ function renderPagination(container, pageData, fetchFunction) {
 function toggleChartType() {
     const chartIcon = document.getElementById('chartIcon');
     const chartTypeLabel = document.getElementById('chartTypeLabel');
+
+    // Toggle qua 3 loại biểu đồ: bar -> line -> pie -> bar
     if (chartType === 'bar') {
         chartType = 'line';
         chartIcon.className = 'fas fa-chart-line';
@@ -649,7 +800,9 @@ function toggleChartType() {
         chartIcon.className = 'fas fa-chart-bar';
         chartTypeLabel.textContent = 'Bar Chart';
     }
-    loadAnalysis(0); // Sử dụng 0 làm giá trị mặc định
+    
+    // Reload analysis với chart type mới
+    loadAnalysis(0);
 }
 
 function exportToCSV() {
@@ -724,7 +877,20 @@ function setDefaultModalDates() {
 function setupEventListeners() {
     document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
     document.getElementById('searchInput').addEventListener('input', searchBudgets);
-    document.getElementById('analysisPeriod').addEventListener('change', () => loadAnalysis(0));
+    
+    // Event listener cho analysis period với reset chart type
+    document.getElementById('analysisPeriod').addEventListener('change', () => {
+        // Reset chart type về bar chart khi thay đổi period
+        chartType = 'bar';
+        const chartIcon = document.getElementById('chartIcon');
+        const chartTypeLabel = document.getElementById('chartTypeLabel');
+        chartIcon.className = 'fas fa-chart-bar';
+        chartTypeLabel.textContent = 'Bar Chart';
+        
+        // Load analysis với period mới
+        loadAnalysis(0);
+    });
+    
     document.querySelectorAll('.fixed').forEach(modal => {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) closeModal(modal.id);
@@ -732,32 +898,8 @@ function setupEventListeners() {
     });
 }
 
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        console.log('DOM loaded, starting budget page initialization...');
-        
-        // Check authentication
-        if (typeof checkAuth !== 'undefined' && !checkAuth()) {
-            console.log('Authentication check failed');
-            return;
-        }
-        
-        await initializeUI();
-    } catch (error) {
-        console.error('Error during budget page initialization:', error);
-    }
-});
-
-// Fallback for window load
-window.addEventListener('load', async () => {
-    try {
-        // Only run if not already initialized
-        if (!document.querySelector('#sidebar-container').hasChildNodes()) {
-            console.log('Window loaded, initializing budget page...');
-            await initializeUI();
-        }
-    } catch (error) {
-        console.error('Error during window load initialization:', error);
+window.addEventListener('load', () => {
+    if (checkAuth()) {
+        initializeUI();
     }
 });
