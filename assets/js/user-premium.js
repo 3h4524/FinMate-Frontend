@@ -64,7 +64,7 @@ const renderPackages = (packagesData) => {
         return `
             <div class="relative bg-white rounded-3xl shadow-2xl overflow-hidden transition-all duration-500 plan-card border border-indigo-100 hover:shadow-indigo-200">
                 ${isPopular ? `<div class="popular-badge absolute top-0 left-0 text-white text-xs font-semibold px-4 py-1 z-10">Most Popular</div>` : ''}
-                <div class="bg-gradient-to-r from-indigo-600 to-purple-700 p-8 text-white">
+                <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-8 text-white">
                     <div class="flex items-center justify-center mb-4">
                         <i data-lucide="crown" class="w-8 h-8"></i>
                     </div>
@@ -102,7 +102,11 @@ const renderPackages = (packagesData) => {
                     <div class="plan-card-footer">
                         <button 
                             ${isPurchased(pkg.id) ? `disabled` : ''} 
-                            class="buy-now-btn w-full py-4 px-6 rounded-xl font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-lg focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-all duration-300 transform hover:scale-105 hover:shadow-xl disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-lg" 
+                            class="buy-now-btn w-full py-4 px-6 rounded-xl font-semibold 
+                            bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-lg 
+                            focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-all duration-300 transform 
+                            hover:scale-105 hover:shadow-xl 
+                            disabled:bg-none disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed disabled:hover:bg-gray-400 disabled:hover:scale-100 disabled:shadow-none" 
                             data-package-id="${pkg.id}"
                             onclick="showCouponModal(${pkg.id})">
                             <i data-lucide="credit-card" class="w-5 h-5 inline mr-2"></i>

@@ -85,68 +85,68 @@ function renderGoals() {
         const averageProgress = Math.round(inprogressGoals.reduce((sum, goal) => sum + goal.percentage, 0) / inprogressGoals.length) || 0;
         document.getElementById('averageProgress').textContent = `${averageProgress}%`;
         goalsList.innerHTML = filteredGoals.map(goal => `
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:bg-gray-50 hover:shadow-md transition-all">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900 truncate max-w-[70%]">${goal.name}</h3>
-                    ${goal.status === 'IN_PROGRESS' ? `
-                        <button onclick="confirmCancelGoal('${goal.goalId}');" class="flex items-center text-red-600 hover:text-red-700 font-medium">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                            Cancel
-                        </button>` : `
-                        <button disabled class="flex items-center text-red-600 opacity-50 font-medium cursor-not-allowed">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                            Cancel
-                        </button>`}
-                </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:bg-gray-50 hover:shadow-md transition-all">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900 truncate max-w-[70%]">${goal.name}</h3>
+            ${goal.status === 'IN_PROGRESS' ? `
+                <button onclick="confirmCancelGoal('${goal.goalId}');" class="flex items-center text-red-600 hover:text-red-700 font-medium">
+                    <svg class="w-4 h-4 mr-1 md:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    <span class="md:inline hidden">Cancel</span>
+                </button>` : `
+                <button disabled class="flex items-center text-red-600 opacity-50 font-medium cursor-not-allowed">
+                    <svg class="w-4 h-4 mr-1 md:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    <span class="md:inline hidden">Cancel</span>
+                </button>`}
+        </div>
 
-                <div class="flex items-center justify-between mb-4 w-full">
-                    <div>
-                        ${goal.status === 'IN_PROGRESS' ? `
-                            <button onclick="markAsComplete('${goal.goalId}')" class="inline-flex items-center text-sm text-green-600 hover:text-green-700 font-semibold px-3 py-1.5 rounded-md hover:bg-green-50 transition-all duration-200">
-                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                Mark as Complete
-                            </button>` : `
-                            <button disabled class="inline-flex items-center text-sm text-green-600 opacity-50 font-semibold px-3 py-1.5 rounded-md cursor-not-allowed">
-                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                Mark as Complete
-                            </button>`}
-                    </div>
-                    
-                    <div class="flex items-center space-x-4">
-                        <div class="px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(goal.status)}">${goal.status}</div>
-                        <button onclick="window.location.href = '../goal/goal_detail/?goalId=${goal.goalId}';" class="flex items-center text-blue-600 hover:text-blue-700 font-medium">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                            View Details
-                        </button>
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <div class="flex justify-between text-sm text-gray-600 mb-2">
-                        <span>${formatCurrency(goal.amount)} of ${formatCurrency(goal.targetAmount)}</span>
-                        <span>${goal.percentage}%</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-3">
-                        <div class="h-3 rounded-full ${getProgressColor(goal.percentage)}" style="width: ${goal.percentage}%"></div>
-                    </div>
-                </div>
-                <div class="flex items-center justify-between text-sm text-gray-600">
-                    <div class="flex items-center">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        ${goal.timeRemaining || 'N/A'}
-                    </div>
-                    <div class="flex items-center">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Progress Date: ${formatDate_ddMMyyyy(goal.progressDate)}
-                    </div>
-                </div>
+        <div class="flex flex-wrap items-center justify-between mb-4 w-full">
+            <div>
+                ${goal.status === 'IN_PROGRESS' ? `
+                    <button onclick="markAsComplete('${goal.goalId}')" class="inline-flex items-center text-sm text-green-600 hover:text-green-700 font-semibold px-3 py-1.5 rounded-md hover:bg-green-50 transition-all duration-200">
+                        <svg class="w-4 h-4 mr-1.5 md:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span class="md:inline hidden">Mark as Complete</span>
+                    </button>` : `
+                    <button disabled class="inline-flex items-center text-sm text-green-600 opacity-50 font-semibold px-3 py-1.5 rounded-md cursor-not-allowed">
+                        <svg class="w-4 h-4 mr-1.5 md:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span class="md:inline hidden">Mark as Complete</span>
+                    </button>`}
             </div>
-        `).join('');
+            
+            <div class="flex items-center space-x-4">
+                <div class="px-3 py-1 rounded-full text-xs font-medium truncate ${getStatusColor(goal.status)}">${goal.status}</div>
+                <button onclick="window.location.href = '../goal/goal_detail/?goalId=${goal.goalId}';" class="flex items-center text-blue-600 hover:text-blue-700 font-medium">
+                    <svg class="w-4 h-4 mr-1 md:mr-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    <span class="md:inline hidden">View Details</span>
+                </button>
+            </div>
+        </div>
+        <div class="mb-4">
+            <div class="flex justify-between text-sm text-gray-600 mb-2">
+                <span class="truncate">${formatCurrency(goal.amount)} of ${formatCurrency(goal.targetAmount)}</span>
+                <span>${goal.percentage}%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3">
+                <div class="h-3 rounded-full ${getProgressColor(goal.percentage)}" style="width: ${goal.percentage}%"></div>
+            </div>
+        </div>
+        <div class="flex items-center justify-between text-sm text-gray-600">
+            <div class="flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                ${goal.timeRemaining || 'N/A'}
+            </div>
+            <div class="flex items-center truncate">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="md:inline hidden">Progress Date: </span>${formatDate_ddMMyyyy(goal.progressDate)}
+            </div>
+        </div>
+    </div>
+`).join('');
     }
 }
 

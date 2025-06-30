@@ -284,22 +284,15 @@ function formatCurrency(amount) {
     }).format(amount);
 }
 
-<<<<<<< HEAD
-// Format date
-function formatDate(dateString) {
-    return new Date(dateString).toLocaleDateString('en-US', {
-=======
 function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
->>>>>>> origin/release1.3
         year: 'numeric',
         month: 'short',
         day: 'numeric'
     });
 }
 
-<<<<<<< HEAD
 // Show loading state
 function showLoading(element) {
     element.innerHTML = `
@@ -621,21 +614,3 @@ function showNotification(message, type = 'info') {
         notification.classList.remove('show');
     }, 5000);
 } 
-=======
-// Modal Event Handlers
-document.addEventListener('click', function(e) {
-    const modal = document.getElementById('transactionModal');
-    if (e.target === modal) {
-        closeTransactionModal();
-    }
-});
-
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        const modal = document.getElementById('transactionModal');
-        if (modal && !modal.classList.contains('hidden')) {
-            closeTransactionModal();
-        }
-    }
-}); 
->>>>>>> origin/release1.3
