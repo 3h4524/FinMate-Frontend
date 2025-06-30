@@ -5,166 +5,215 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Management - FinMate</title>
-    <link rel="stylesheet" href=" /assets/css/styles.css">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'indigo-50': '#eef2ff',
+                        'indigo-100': '#e0e7ff',
+                        'indigo-500': '#6366f1',
+                        'indigo-600': '#4f46e5',
+                        'purple-50': '#faf5ff',
+                        'purple-100': '#f3e8ff',
+                        'purple-500': '#a855f7',
+                        'purple-600': '#9333ea'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="/assets/css/global-layout.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href=" /assets/css/user-management.css" rel="stylesheet">
-    <script src=" /assets/js/helper_functions.js"></script>
-    <script src=" /assets/js/autho_helper.js" defer></script>
-    <script src=" /assets/js/sidebar.js" defer></script>
+    <script src="/assets/js/page-loader.js" defer></script>
+    <script src="/assets/js/header.js" defer></script>
+    <script src="/assets/js/sidebar.js" defer></script>
+    <script src="/assets/js/helper_functions.js"></script>
+    <script src="/assets/js/autho_helper.js" defer></script>
 
 </head>
 
-<body>
-    <div class="app-container">
-        <!-- Include sidebar component -->
-        <div id="sidebar-container"></div>
-        <div class="main-content" id="mainContent" style="display: none;">
+<body class="bg-gradient-to-br from-indigo-50 via-white to-purple-50 min-h-screen">
+    <div id="header-container"></div>
+    <div id="sidebar-container"></div>
+    <div class="main-content" id="mainContent" style="display: none;">
+        <div class="container mx-auto px-6 py-8">
             <!-- Header Section -->
-            <header class="admin-header">
-                <div class="header-content">
-                    <div class="header-left">
-                        <h1 class="header-title">User Management</h1>
-                        <div class="header-subtitle">Manage all user accounts and activities</div>
+            <div class="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-indigo-100">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                    <div class="flex-1">
+                        <h1 class="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                            User Management
+                        </h1>
+                        <p class="text-gray-600 text-lg">Manage all user accounts and activities</p>
                     </div>
-                    <div class="header-right">
-                        <div class="admin-profile">
-                            <div class="admin-avatar">
-                                <i class="fas fa-user-shield"></i>
+                    <div class="mt-6 md:mt-0 flex items-center space-x-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+                                <span class="text-white text-xl">👤</span>
                             </div>
-                            <div class="admin-info">
-                                <span class="admin-name" id="adminName">Admin</span>
-                                <span class="admin-role">Administrator</span>
+                            <div>
+                                <div class="font-semibold text-gray-900" id="adminName">Admin</div>
+                                <div class="text-sm text-gray-500">Administrator</div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </header>
+            </div>
 
-            <!-- Main Content -->
-            <div class="dashboard-content">
-                <!-- Statistics Overview -->
-                <section class="stats-section">
-                    <h2 class="section-title">User Statistics</h2>
-                    <div class="stats-grid">
-                        <div class="stat-card primary">
-                            <div class="stat-content">
-                                <div class="stat-info">
-                                    <h3 class="stat-number" id="totalUsers">0</h3>
-                                    <p class="stat-label">Total Users</p>
-                                </div>
-                                <div class="stat-change positive">
-                                    <i class="fas fa-arrow-up"></i>
-                                    <span id="totalUsersChange">+0%</span>
+            <!-- Statistics Overview -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">User Statistics</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Total Users -->
+                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-indigo-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-3xl font-bold text-gray-900" id="totalUsers">0</h3>
+                                <p class="text-gray-600 mt-1">Total Users</p>
+                                <div class="flex items-center mt-2 text-green-600">
+                                    <i class="fas fa-arrow-up text-xs"></i>
+                                    <span class="text-sm ml-1" id="totalUsersChange">+0%</span>
                                 </div>
                             </div>
-                            <div class="stat-icon">
-                                <i class="fas fa-users"></i>
-                            </div>
-                        </div>
-
-                        <div class="stat-card success">
-                            <div class="stat-content">
-                                <div class="stat-info">
-                                    <h3 class="stat-number" id="activeUsers">0</h3>
-                                    <p class="stat-label">Active Users</p>
-                                </div>
-                                <div class="stat-change positive">
-                                    <i class="fas fa-arrow-up"></i>
-                                    <span id="activeUsersChange">+0%</span>
-                                </div>
-                            </div>
-                            <div class="stat-icon">
-                                <i class="fas fa-user-check"></i>
-                            </div>
-                        </div>
-
-                        <div class="stat-card warning">
-                            <div class="stat-content">
-                                <div class="stat-info">
-                                    <h3 class="stat-number" id="premiumUsers">0</h3>
-                                    <p class="stat-label">Premium Users</p>
-                                </div>
-                                <div class="stat-change positive">
-                                    <i class="fas fa-arrow-up"></i>
-                                    <span id="premiumUsersChange">+0%</span>
-                                </div>
-                            </div>
-                            <div class="stat-icon">
-                                <i class="fas fa-crown"></i>
-                            </div>
-                        </div>
-
-                        <div class="stat-card info">
-                            <div class="stat-content">
-                                <div class="stat-info">
-                                    <h3 class="stat-number" id="newUsers">0</h3>
-                                    <p class="stat-label">New Users (30d)</p>
-                                </div>
-                                <div class="stat-change positive">
-                                    <i class="fas fa-arrow-up"></i>
-                                    <span id="newUsersChange">+0%</span>
-                                </div>
-                            </div>
-                            <div class="stat-icon">
-                                <i class="fas fa-user-plus"></i>
+                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);">
+                                <i class="fas fa-users text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
                             </div>
                         </div>
                     </div>
-                </section>
 
-                <!-- User Management Section -->
-                <div class="management-section">
-                    <div class="management-header">
-                        <div class="section-title">
-                            <h2>All Users</h2>
-                            <p>Manage user accounts and activities</p>
-                        </div>
-                        <div class="management-actions">
-                            <div class="search-container">
-                                <div class="search-box">
-                                    <i class="fas fa-search search-icon"></i>
-                                    <input type="text" class="search-input" placeholder="Search users...">
+                    <!-- Active Users -->
+                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-green-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-3xl font-bold text-gray-900" id="activeUsers">0</h3>
+                                <p class="text-gray-600 mt-1">Active Users</p>
+                                <div class="flex items-center mt-2 text-green-600">
+                                    <i class="fas fa-arrow-up text-xs"></i>
+                                    <span class="text-sm ml-1" id="activeUsersChange">+0%</span>
                                 </div>
                             </div>
-                            <div class="filter-container">
-                                <select class="status-filter" id="statusFilter">
-                                    <option value="">All Status</option>
-                                    <option value="active">Active</option>
-                                    <option value="suspended">Suspended</option>
-                                    <option value="premium">Premium</option>
-                                    <option value="basic">Basic</option>
-                                </select>
+                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                <i class="fas fa-user-check text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
                             </div>
-                            <button class="btn btn-primary" onclick="openAddUserModal()">
+                        </div>
+                    </div>
+
+                    <!-- Premium Users -->
+                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-amber-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-3xl font-bold text-gray-900" id="premiumUsers">0</h3>
+                                <p class="text-gray-600 mt-1">Premium Users</p>
+                                <div class="flex items-center mt-2 text-green-600">
+                                    <i class="fas fa-arrow-up text-xs"></i>
+                                    <span class="text-sm ml-1" id="premiumUsersChange">+0%</span>
+                                </div>
+                            </div>
+                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                                <span class="text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;">👑</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- New Users -->
+                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-blue-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-3xl font-bold text-gray-900" id="newUsers">0</h3>
+                                <p class="text-gray-600 mt-1">New Users (30d)</p>
+                                <div class="flex items-center mt-2 text-green-600">
+                                    <i class="fas fa-arrow-up text-xs"></i>
+                                    <span class="text-sm ml-1" id="newUsersChange">+0%</span>
+                                </div>
+                            </div>
+                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+                                <i class="fas fa-user-plus text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Management Section -->
+            <div class="bg-white rounded-3xl shadow-lg border border-indigo-100">
+                <!-- Management Header -->
+                <div class="p-8 border-b border-gray-200">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900">All Users</h2>
+                            <p class="text-gray-600 mt-1">Manage user accounts and activities</p>
+                        </div>
+                        <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                            <!-- Search Box -->
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-gray-400"></i>
+                                </div>
+                                <input type="text" class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-2xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Search users...">
+                            </div>
+                            
+                            <!-- Status Filter -->
+                            <select class="px-4 py-3 border border-gray-300 rounded-2xl bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" id="statusFilter">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="suspended">Suspended</option>
+                                <option value="premium">Premium</option>
+                                <option value="basic">Basic</option>
+                            </select>
+                            
+                            <!-- Add User Button -->
+                            <button class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-2xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2" onclick="openAddUserModal()">
                                 <i class="fas fa-plus"></i>
-                                Add User
+                                <span>Add User</span>
                             </button>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Users Table -->
-                    <div class="table-container">
-                        <table class="users-table">
-                            <thead>
-                                <tr>
-                                    <th>USER</th>
-                                    <th>BALANCE</th>
-                                    <th>ACCOUNT TYPE</th>
-                                    <th>STATUS</th>
-                                    <th>LAST LOGIN</th>
-                                    <th>ACTIONS</th>
-                                </tr>
-                            </thead>
-                            <tbody id="usersTableBody">
-                                <!-- Users will be loaded here -->
-                            </tbody>
-                        </table>
-                    </div>
+                <!-- Users Table -->
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">USER</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BALANCE</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ACCOUNT TYPE</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">STATUS</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">LAST LOGIN</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="usersTableBody">
+                            <!-- Users will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
 
-                    <!-- Pagination -->
-                    <div class="pagination-container">
-                        <div class="pagination" id="pagination">
-                            <!-- Pagination will be added here -->
+                <!-- Pagination -->
+                <div class="px-8 py-6 border-t border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1 flex justify-between sm:hidden">
+                            <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                Previous
+                            </button>
+                            <button class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                Next
+                            </button>
+                        </div>
+                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                            <div>
+                                <p class="text-sm text-gray-700">
+                                    Showing <span class="font-medium" id="showingFrom">1</span> to <span class="font-medium" id="showingTo">10</span> of <span class="font-medium" id="totalResults">0</span> results
+                                </p>
+                            </div>
+                            <div>
+                                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" id="pagination">
+                                    <!-- Pagination will be added here -->
+                                </nav>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -173,104 +222,126 @@
     </div>
 
     <!-- Edit User Modal -->
-    <div id="editUserModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Edit User</h2>
-                <button class="close-btn" onclick="closeModal('editUserModal')">&times;</button>
+    <div id="editUserModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
-            <form id="editUserForm">
-                <input type="hidden" id="editUserId">
-                <div class="form-group">
-                    <label for="editName">Name</label>
-                    <input type="text" id="editName" required>
+            <div class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-6 pt-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">Edit User</h2>
+                        <button class="text-gray-400 hover:text-gray-600 transition-colors" onclick="closeModal('editUserModal')">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <form id="editUserForm">
+                        <input type="hidden" id="editUserId">
+                        <div class="space-y-4">
+                            <div>
+                                <label for="editName" class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                                <input type="text" id="editName" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label for="editEmail" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                <input type="email" id="editEmail" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div id="passwordGroup" style="display: none;">
+                                <label for="editPassword" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                                <input type="password" id="editPassword" placeholder="Enter password for new user" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label for="editRole" class="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                                <select id="editRole" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option value="USER">User</option>
+                                    <option value="ADMIN">Admin</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="editIsPremium" class="block text-sm font-medium text-gray-700 mb-2">Premium Status</label>
+                                <select id="editIsPremium" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="editVerified" class="block text-sm font-medium text-gray-700 mb-2">Verified Status</label>
+                                <select id="editVerified" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-4 mt-6 -mx-6 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3 space-y-3 space-y-reverse sm:space-y-0">
+                            <button type="button" class="w-full sm:w-auto px-6 py-3 border border-gray-300 rounded-2xl text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors" onclick="closeModal('editUserModal')">Cancel</button>
+                            <button type="submit" class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl hover:from-indigo-700 hover:to-purple-700 font-medium transition-all duration-300 hover:scale-105">Save Changes</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label for="editEmail">Email</label>
-                    <input type="email" id="editEmail" required>
-                </div>
-                <div class="form-group" id="passwordGroup" style="display: none;">
-                    <label for="editPassword">Password</label>
-                    <input type="password" id="editPassword" placeholder="Enter password for new user">
-                </div>
-                <div class="form-group">
-                    <label for="editRole">Role</label>
-                    <select id="editRole" required>
-                        <option value="USER">User</option>
-                        <option value="ADMIN">Admin</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="editIsPremium">Premium Status</label>
-                    <select id="editIsPremium" required>
-                        <option value="false">No</option>
-                        <option value="true">Yes</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="editVerified">Verified Status</label>
-                    <select id="editVerified" required>
-                        <option value="false">No</option>
-                        <option value="true">Yes</option>
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="cancel-btn" onclick="closeModal('editUserModal')">Cancel</button>
-                    <button type="submit" class="save-btn">Save Changes</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 
     <!-- User Detail Modal -->
-    <div id="userDetailModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">User Details</h2>
-                <button class="close-btn" onclick="closeModal('userDetailModal')">&times;</button>
+    <div id="userDetailModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
-            <div class="user-details">
-                <div class="detail-group">
-                    <label>ID:</label>
-                    <span id="detailId"></span>
-                </div>
-                <div class="detail-group">
-                    <label>Name:</label>
-                    <span id="detailName"></span>
-                </div>
-                <div class="detail-group">
-                    <label>Email:</label>
-                    <span id="detailEmail"></span>
-                </div>
-                <div class="detail-group">
-                    <label>Role:</label>
-                    <span id="detailRole"></span>
-                </div>
-                <div class="detail-group">
-                    <label>Premium Status:</label>
-                    <span id="detailPremium"></span>
-                </div>
-                <div class="detail-group">
-                    <label>Verified:</label>
-                    <span id="detailVerified"></span>
-                </div>
-                <div class="detail-group">
-                    <label>Last Login:</label>
-                    <span id="detailLastLogin"></span>
-                </div>
-                <div class="detail-group">
-                    <label>Created At:</label>
-                    <span id="detailCreatedAt"></span>
-                </div>
-                <div class="detail-group">
-                    <label>Premium Packages:</label>
-                    <div id="detailPremiumPackages" class="premium-packages">
-                        <!-- Premium packages will be loaded here -->
+            <div class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-6 pt-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">User Details</h2>
+                        <button class="text-gray-400 hover:text-gray-600 transition-colors" onclick="closeModal('userDetailModal')">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="flex justify-between py-2 border-b border-gray-200">
+                                <span class="font-medium text-gray-700">ID:</span>
+                                <span id="detailId" class="text-gray-900"></span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-200">
+                                <span class="font-medium text-gray-700">Name:</span>
+                                <span id="detailName" class="text-gray-900"></span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-200">
+                                <span class="font-medium text-gray-700">Email:</span>
+                                <span id="detailEmail" class="text-gray-900"></span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-200">
+                                <span class="font-medium text-gray-700">Role:</span>
+                                <span id="detailRole" class="text-gray-900"></span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-200">
+                                <span class="font-medium text-gray-700">Premium Status:</span>
+                                <span id="detailPremium" class="text-gray-900"></span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-200">
+                                <span class="font-medium text-gray-700">Verified:</span>
+                                <span id="detailVerified" class="text-gray-900"></span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-200">
+                                <span class="font-medium text-gray-700">Last Login:</span>
+                                <span id="detailLastLogin" class="text-gray-900"></span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-200">
+                                <span class="font-medium text-gray-700">Created At:</span>
+                                <span id="detailCreatedAt" class="text-gray-900"></span>
+                            </div>
+                            <div class="py-2">
+                                <span class="font-medium text-gray-700 block mb-2">Premium Packages:</span>
+                                <div id="detailPremiumPackages" class="space-y-2">
+                                    <!-- Premium packages will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-6 py-4 mt-6 -mx-6 flex justify-end">
+                        <button class="px-6 py-3 border border-gray-300 rounded-2xl text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors" onclick="closeModal('userDetailModal')">Close</button>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button class="cancel-btn" onclick="closeModal('userDetailModal')">Close</button>
             </div>
         </div>
     </div>
@@ -280,38 +351,45 @@
         const pageSize = 10;
         let user;
 
-        document.addEventListener('DOMContentLoaded', async function () {
-            // Parse token to get role
-            user = getCurrentUser();
-
-            console.log(user);
-
-            if (user.role !== 'ADMIN') {
-                console.log('[AUTH] Access denied: User does not have ADMIN role');
-                alert('Access denied. This page is only available for administrators.');
-                window.location.href = '../home';
-                return;
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Initializing user management page...');
+            try {
+                // Parse token to get role
+                user = getCurrentUser();
+                if (user.role !== 'ADMIN') {
+                    console.log('[AUTH] Access denied: User does not have ADMIN role');
+                    alert('Access denied. This page is only available for administrators.');
+                    window.location.href = '../home';
+                    return;
+                }
+                // Load sidebar and header first to avoid flash
+                if (typeof loadSideBarSimple === 'function') {
+                    await loadSideBarSimple();
+                } else {
+                    console.error('loadSideBarSimple function not found');
+                }
+                if (typeof loadHeader === 'function') {
+                    await loadHeader();
+                } else {
+                    console.error('loadHeader function not found');
+                }
+                // Ẩn mainContent khi bắt đầu load data
+                const mainContent = document.getElementById('mainContent');
+                if (mainContent) mainContent.style.display = 'none';
+                // Update admin info
+                const adminName = user.username || "Unknown";
+                document.getElementById('adminName').textContent = adminName;
+                // Load users data và stats
+                await loadUserStats();
+                await loadUsers();
+                // Hiện mainContent sau khi load xong data
+                if (mainContent) mainContent.style.display = 'block';
+                console.log('User management page initialized successfully');
+            } catch (error) {
+                console.error('Error initializing user management page:', error);
             }
-
-            // Token is valid and user is admin, show the main content
-            const mainContent = document.querySelector('.main-content');
-            if (mainContent) mainContent.style.display = 'flex';
-
-            // Update admin info
-            const adminName = user.username || "Unknown";
-            document.getElementById('adminName').textContent = adminName;
-
-
-            // Load sidebar
-            loadSideBarSimple(adminName);
-
-            // Load users data and stats
-            await loadUserStats();
-            await loadUsers();
-
         });
-
-
 
         async function loadUsers(page = 0) {
             try {
@@ -368,9 +446,11 @@
             if (!users || users.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-light);">
-                            <i class="fas fa-users" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
-                            <div>No users found</div>
+                        <td colspan="6" class="px-6 py-12 text-center">
+                            <div class="flex flex-col items-center">
+                                <i class="fas fa-users text-5xl text-gray-300 mb-4"></i>
+                                <div class="text-gray-500">No users found</div>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -379,6 +459,7 @@
 
             users.forEach(user => {
                 const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50 transition-colors';
                 const userInitials = user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase();
 
                 // Get balance from wallet or default to 0
@@ -392,41 +473,56 @@
                 const lastLogin = formatRelativeTime(user.lastLoginAt);
 
                 tr.innerHTML = `
-                    <td>
-                        <div class="user-info">
-                            <div class="user-avatar">${userInitials}</div>
-                            <div class="user-details">
-                                <h4>${user.name || 'N/A'}</h4>
-                                <p>${user.email}</p>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-12 w-12">
+                                <div class="h-12 w-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold text-lg">
+                                    ${userInitials}
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">${user.name || 'N/A'}</div>
+                                <div class="text-sm text-gray-500">${user.email}</div>
                             </div>
                         </div>
                     </td>
-                    <td>
-                        <div class="balance-amount">${balanceAmount}</div>
-                        <div class="balance-label">Total Balance</div>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-semibold text-gray-900">${balanceAmount}</div>
+                        <div class="text-xs text-gray-500">Total Balance</div>
                     </td>
-                    <td>
-                        <span class="badge ${user.isPremium ? 'badge-premium' : 'badge-basic'}">
-                            ${user.isPremium ? 'Premium' : 'Basic'}
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-3 py-1 text-xs font-medium rounded-full ${user.isPremium 
+                            ? 'bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-800 border border-amber-200' 
+                            : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 border border-gray-300'}">
+                            ${user.isPremium ? '👑 Premium' : 'Basic'}
                         </span>
                     </td>
-                    <td>
-                        <span class="status-badge ${user.isDelete ? 'status-suspended' : 'status-active'}">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-3 py-1 text-xs font-medium rounded-full ${user.isDelete 
+                            ? 'bg-gradient-to-r from-red-100 to-pink-100 text-red-800 border border-red-200' 
+                            : 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200'}">
+                            <div class="w-2 h-2 ${user.isDelete ? 'bg-red-500' : 'bg-green-500'} rounded-full mr-2 mt-0.5"></div>
                             ${user.isDelete ? 'Suspended' : 'Active'}
                         </span>
                     </td>
-                    <td>
-                        <div style="color: var(--text-light); font-size: 14px;">${lastLogin}</div>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${lastLogin}
                     </td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="action-btn view-btn" onclick="openDetailModal(${user.id})" title="View Details">
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <button onclick="openDetailModal(${user.id})" 
+                                class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 p-2 rounded-lg transition-all duration-200 hover:scale-105" 
+                                title="View Details">
                                 <i class="fas fa-eye"></i>
-                        </button>
-                            <button class="action-btn edit-btn" onclick="openEditModal(${user.id})" title="Edit User">
+                            </button>
+                            <button onclick="openEditModal(${user.id})" 
+                                class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 p-2 rounded-lg transition-all duration-200 hover:scale-105" 
+                                title="Edit User">
                                 <i class="fas fa-edit"></i>
-                        </button>
-                            <button class="action-btn delete-btn" onclick="${user.isDelete ? 'restoreUser' : 'banUser'}(${user.id})" title="${user.isDelete ? 'Restore User' : 'Ban User'}">
+                            </button>
+                            <button onclick="${user.isDelete ? 'restoreUser' : 'banUser'}(${user.id})" 
+                                class="text-${user.isDelete ? 'blue' : 'red'}-600 hover:text-${user.isDelete ? 'blue' : 'red'}-900 bg-${user.isDelete ? 'blue' : 'red'}-50 hover:bg-${user.isDelete ? 'blue' : 'red'}-100 p-2 rounded-lg transition-all duration-200 hover:scale-105" 
+                                title="${user.isDelete ? 'Restore User' : 'Ban User'}">
                                 <i class="fas fa-${user.isDelete ? 'undo' : 'ban'}"></i>
                             </button>
                         </div>
@@ -573,7 +669,7 @@
             // Clear the form
             document.getElementById('editUserForm').reset();
             document.getElementById('editUserId').value = '';
-            document.querySelector('#editUserModal .modal-title').textContent = 'Add New User';
+            document.querySelector('#editUserModal h2').textContent = 'Add New User';
 
             // Show password field for new user
             document.getElementById('passwordGroup').style.display = 'block';
@@ -584,7 +680,7 @@
             document.getElementById('editIsPremium').value = 'false';
             document.getElementById('editVerified').value = 'false';
 
-            document.getElementById('editUserModal').style.display = 'block';
+            document.getElementById('editUserModal').classList.remove('hidden');
         }
 
         function formatDate(dateString) {
@@ -598,18 +694,45 @@
             const pagination = document.getElementById('pagination');
             pagination.innerHTML = '';
 
+            // Update pagination info
+            const showingFrom = Math.min(currentPage * pageSize + 1, totalPages * pageSize);
+            const showingTo = Math.min((currentPage + 1) * pageSize, totalPages * pageSize);
+            const totalResults = totalPages * pageSize;
+            
+            document.getElementById('showingFrom').textContent = showingFrom;
+            document.getElementById('showingTo').textContent = showingTo;
+            document.getElementById('totalResults').textContent = totalResults;
+
+            if (totalPages <= 1) return;
+
             // Previous button
             const prevBtn = document.createElement('button');
-            prevBtn.className = 'pagination-btn';
+            prevBtn.className = `relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors ${
+                currentPage === 0 ? 'cursor-not-allowed opacity-50' : 'hover:text-gray-700'
+            }`;
             prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
             prevBtn.disabled = currentPage === 0;
-            prevBtn.onclick = () => loadUsers(currentPage - 1);
+            if (currentPage > 0) {
+                prevBtn.onclick = () => loadUsers(currentPage - 1);
+            }
             pagination.appendChild(prevBtn);
 
             // Page numbers
-            for (let i = 0; i < totalPages; i++) {
+            const maxVisiblePages = 5;
+            let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1);
+            
+            if (endPage - startPage < maxVisiblePages - 1) {
+                startPage = Math.max(0, endPage - maxVisiblePages + 1);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
                 const pageBtn = document.createElement('button');
-                pageBtn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.className = `relative inline-flex items-center px-4 py-2 border text-sm font-medium transition-colors ${
+                    i === currentPage 
+                        ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600' 
+                        : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                }`;
                 pageBtn.textContent = i + 1;
                 pageBtn.onclick = () => loadUsers(i);
                 pagination.appendChild(pageBtn);
@@ -617,15 +740,19 @@
 
             // Next button
             const nextBtn = document.createElement('button');
-            nextBtn.className = 'pagination-btn';
+            nextBtn.className = `relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors ${
+                currentPage === totalPages - 1 ? 'cursor-not-allowed opacity-50' : 'hover:text-gray-700'
+            }`;
             nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
             nextBtn.disabled = currentPage === totalPages - 1;
-            nextBtn.onclick = () => loadUsers(currentPage + 1);
+            if (currentPage < totalPages - 1) {
+                nextBtn.onclick = () => loadUsers(currentPage + 1);
+            }
             pagination.appendChild(nextBtn);
         }
 
         async function searchUsers() {
-            const keyword = document.querySelector('.search-input').value.trim();
+            const keyword = document.querySelector('input[placeholder="Search users..."]').value.trim();
             const statusFilter = document.getElementById('statusFilter').value;
 
             try {
@@ -734,7 +861,7 @@
         // Add event listeners for search and filter
         document.addEventListener('DOMContentLoaded', function () {
             // Search input listener
-            const searchInput = document.querySelector('.search-input');
+            const searchInput = document.querySelector('input[placeholder="Search users..."]');
             if (searchInput) {
                 searchInput.addEventListener('input', debounce(searchUsers, 500));
                 searchInput.addEventListener('keypress', function (e) {
@@ -789,8 +916,8 @@
                 document.getElementById('passwordGroup').style.display = 'none';
                 document.getElementById('editPassword').required = false;
 
-                document.querySelector('#editUserModal .modal-title').textContent = 'Edit User';
-                document.getElementById('editUserModal').style.display = 'block';
+                document.querySelector('#editUserModal h2').textContent = 'Edit User';
+                document.getElementById('editUserModal').classList.remove('hidden');
             } catch (error) {
                 console.error('Error loading user data:', error);
                 alert('Failed to load user data. Please try again.');
@@ -798,7 +925,10 @@
         }
 
         function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('hidden');
+            }
         }
 
         document.getElementById('editUserForm').addEventListener('submit', async (e) => {
@@ -974,7 +1104,7 @@
                     premiumPackagesDiv.innerHTML = '<p style="color: var(--text-light); font-style: italic;">No premium packages purchased</p>';
                 }
 
-                document.getElementById('userDetailModal').style.display = 'block';
+                document.getElementById('userDetailModal').classList.remove('hidden');
             } catch (error) {
                 console.error('Error loading user data:', error);
                 alert('Failed to load user data. Please try again.');
@@ -982,7 +1112,5 @@
         }
     </script>
 </body>
-
-</html>
 
 </html>

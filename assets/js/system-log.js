@@ -1,5 +1,6 @@
 let currentPage = 0;
 let totalPages = 0;
+const pageSize = 10;
 
 // Utility function for debouncing
 function debounce(func, wait) {
@@ -38,23 +39,67 @@ function loadFilters() {
 }
 
 async function loadStats(startDate = '', endDate = '') {
+    hideMainContent();
     try {
         const params = new URLSearchParams();
         if (startDate) params.append('startDate', startDate);
         if (endDate) params.append('endDate', endDate);
+        
         const response = await apiRequest(`http://localhost:8080/api/admin/logs/stats?${params.toString()}`);
         if (!response.ok) throw new Error('Failed to load stats');
+        
         const stats = await response.json();
         const data = stats.result;
+        
+        // Update statistics cards
         document.getElementById('totalLogs').textContent = data.totalLogs || 0;
         document.getElementById('actionStats').textContent = Object.values(data.actionStats || {}).reduce((sum, val) => sum + val, 0);
+        
+        // Calculate today's logs (if API doesn't provide this, we'll estimate)
+        const today = new Date();
+        const todayString = today.toISOString().split('T')[0];
+        const todayParams = new URLSearchParams(params);
+        todayParams.set('startDate', todayString);
+        todayParams.set('endDate', todayString);
+        
+        try {
+            const todayResponse = await apiRequest(`http://localhost:8080/api/admin/logs/stats?${todayParams.toString()}`);
+            const todayData = await todayResponse.json();
+            document.getElementById('todayLogs').textContent = todayData.result?.totalLogs || 0;
+        } catch {
+            document.getElementById('todayLogs').textContent = '0';
+        }
+        
+        // Calculate recent logs (last hour)
+        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+        const recentParams = new URLSearchParams();
+        recentParams.set('startDate', oneHourAgo.toISOString());
+        recentParams.set('endDate', today.toISOString());
+        
+        try {
+            const recentResponse = await apiRequest(`http://localhost:8080/api/admin/logs/stats?${recentParams.toString()}`);
+            const recentData = await recentResponse.json();
+            document.getElementById('recentLogs').textContent = recentData.result?.totalLogs || 0;
+        } catch {
+            document.getElementById('recentLogs').textContent = '0';
+        }
+        
+        showMainContent();
     } catch (error) {
+        showMainContent();
         showNotification('Error', 'Failed to load stats. Please try again.', 'error');
         console.error('Error loading stats:', error);
+        
+        // Set default values on error
+        document.getElementById('totalLogs').textContent = '0';
+        document.getElementById('actionStats').textContent = '0';
+        document.getElementById('todayLogs').textContent = '0';
+        document.getElementById('recentLogs').textContent = '0';
     }
 }
 
 async function loadLogs(page = 0, size = 10, startDate = '', endDate = '', entityType = '', adminId = '', keyword = '') {
+    hideMainContent();
     try {
         const params = new URLSearchParams({ page, size });
         if (startDate) params.append('startDate', startDate);
@@ -75,35 +120,126 @@ async function loadLogs(page = 0, size = 10, startDate = '', endDate = '', entit
 
         const tbody = document.getElementById('logsBody');
         tbody.innerHTML = '';
-        logs.forEach((log, index) => {
-            const tr = document.createElement('tr');
-            tr.className = 'table-row-hover';
-            tr.innerHTML = `
-                <td class="p-3">${index + 1 + page * size}</td>
-                <td class="p-3">${log.adminId}</td>
-                <td class="p-3">${log.action}</td>
-                <td class="p-3">${log.entityType}</td>
-                <td class="p-3">
-                    <button class="action-icon view-icon mx-2" onclick="showLogDetails(${log.id})" title="View Details">
-                        <i class="fas fa-eye text-teal-600 hover:text-teal-800"></i>
-                    </button>
-                    <button class="action-icon delete-icon mx-2" onclick="deleteLog(${log.id})" title="Delete">
-                        <i class="fas fa-trash text-red-600 hover:text-red-800"></i>
-                    </button>
-                </td>
+        
+        if (logs.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                        <div class="flex flex-col items-center space-y-2">
+                            <i class="fas fa-inbox text-4xl text-gray-300"></i>
+                            <p class="text-lg font-medium">No logs found</p>
+                            <p class="text-sm">Try adjusting your search filters</p>
+                        </div>
+                    </td>
+                </tr>
             `;
-            tbody.appendChild(tr);
-        });
+        } else {
+            logs.forEach((log, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50 transition-colors';
+                
+                // Format timestamp
+                const timestamp = log.createdAt ? new Date(log.createdAt) : null;
+                const timeString = timestamp ? 
+                    `${timestamp.toLocaleDateString('en-US')} ${timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}` : 
+                    'N/A';
+                
+                // Create admin name/badge
+                const adminDisplay = log.adminId ? 
+                    `<div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                            A${log.adminId}
+                        </div>
+                        <span class="text-sm font-medium text-gray-900">Admin ${log.adminId}</span>
+                    </div>` : 'N/A';
+                
+                // Create action badge
+                const actionColor = getActionColor(log.action);
+                const actionBadge = `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${actionColor}">
+                    ${log.action || 'Unknown'}
+                </span>`;
+                
+                // Create entity type badge
+                const entityColor = getEntityColor(log.entityType);
+                const entityBadge = `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${entityColor}">
+                    ${log.entityType || 'Unknown'}
+                </span>`;
 
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">#${log.id || (index + 1 + page * size)}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        ${adminDisplay}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        ${actionBadge}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        ${entityBadge}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">${timeString}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                        <button class="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-xl text-white bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 transition-all duration-300 hover:scale-105" onclick="showLogDetails(${log.id})" title="View Details">
+                            <i class="fas fa-eye mr-1"></i>
+                            View
+                        </button>
+                        <button class="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-xl text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition-all duration-300 hover:scale-105" onclick="deleteLog(${log.id})" title="Delete">
+                            <i class="fas fa-trash mr-1"></i>
+                            Delete
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        updatePaginationInfo(logs.length, data.result.totalElements, page, size);
         renderPagination();
         showNotification('Success', 'Logs loaded successfully!', 'success');
+        showMainContent();
     } catch (error) {
+        showMainContent();
         showNotification('Error', `Failed to load logs: ${error.message}`, 'error');
         console.error('Error loading logs:', error);
     }
 }
 
+function getActionColor(action) {
+    const colorMap = {
+        'CREATE': 'bg-green-100 text-green-800',
+        'UPDATE': 'bg-blue-100 text-blue-800',
+        'DELETE': 'bg-red-100 text-red-800',
+        'LOGIN': 'bg-indigo-100 text-indigo-800',
+        'LOGOUT': 'bg-gray-100 text-gray-800'
+    };
+    return colorMap[action?.toUpperCase()] || 'bg-gray-100 text-gray-800';
+}
+
+function getEntityColor(entityType) {
+    const colorMap = {
+        'USER': 'bg-purple-100 text-purple-800',
+        'TRANSACTION': 'bg-amber-100 text-amber-800',
+        'BUDGET': 'bg-green-100 text-green-800',
+        'GOAL': 'bg-blue-100 text-blue-800',
+        'SYSTEM': 'bg-gray-100 text-gray-800'
+    };
+    return colorMap[entityType?.toUpperCase()] || 'bg-gray-100 text-gray-800';
+}
+
+function updatePaginationInfo(currentPageItems, totalItems, page, size) {
+    const showingFrom = totalItems === 0 ? 0 : (page * size) + 1;
+    const showingTo = Math.min((page + 1) * size, totalItems);
+    
+    document.getElementById('showingFrom').textContent = showingFrom;
+    document.getElementById('showingTo').textContent = showingTo;
+    document.getElementById('totalResults').textContent = totalItems;
+}
+
 async function refreshData() {
+    hideMainContent();
     const filters = loadFilters();
     await Promise.all([
         loadLogs(0, 10, filters.startDate, filters.endDate, filters.entityType, filters.adminId, filters.keyword),
@@ -206,49 +342,102 @@ async function deleteLog(logId) {
 }
 
 function renderPagination() {
-    const pageNumbers = document.getElementById('pageNumbers');
-    pageNumbers.innerHTML = '';
+    const pagination = document.getElementById('pagination');
+    pagination.innerHTML = '';
+    
+    if (totalPages <= 1) return;
+
     const maxButtons = 5;
     let startPage = Math.max(0, currentPage - Math.floor(maxButtons / 2));
     let endPage = Math.min(totalPages, startPage + maxButtons);
     startPage = Math.max(0, endPage - maxButtons);
 
-    const createButton = (page, text, disabled = false) => {
-        return `<button class="px-4 py-2 rounded-lg ${disabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-teal-600 hover:bg-teal-700'} text-white transition" ${disabled ? 'disabled' : `onclick="loadLogs(${page}, 10, loadFilters().startDate, loadFilters().endDate, loadFilters().entityType, loadFilters().adminId, loadFilters().keyword)"`}>${text}</button>`;
+    const createButton = (page, text, disabled = false, current = false) => {
+        const baseClasses = 'relative inline-flex items-center px-4 py-2 border text-sm font-medium';
+        let classes = baseClasses;
+        
+        if (current) {
+            classes += ' z-10 bg-indigo-50 border-indigo-500 text-indigo-600';
+        } else if (disabled) {
+            classes += ' bg-gray-50 border-gray-300 text-gray-300 cursor-not-allowed';
+        } else {
+            classes += ' bg-white border-gray-300 text-gray-500 hover:bg-gray-50';
+        }
+        
+        const onclick = disabled || current ? '' : `onclick="loadLogsForPage(${page})"`;
+        return `<button class="${classes}" ${onclick} ${disabled ? 'disabled' : ''}>${text}</button>`;
     };
 
-    const buttons = [
-        ...(startPage > 0 ? [createButton(0, '1'), ...(startPage > 1 ? ['<span class="px-4 py-2 text-gray-500">...</span>'] : [])] : []),
-        ...Array.from({ length: endPage - startPage }, (_, i) => createButton(startPage + i, startPage + i + 1, startPage + i === currentPage)),
-        ...(endPage < totalPages ? [(endPage < totalPages - 1 ? '<span class="px-4 py-2 text-gray-500">...</span>' : ''), createButton(totalPages - 1, totalPages)] : []),
-    ];
+    // Previous button
+    pagination.innerHTML += createButton(
+        currentPage - 1, 
+        '<i class="fas fa-chevron-left"></i>', 
+        currentPage === 0
+    );
 
-    pageNumbers.innerHTML = buttons.join('');
-    document.getElementById('prevBtn').disabled = currentPage === 0;
-    document.getElementById('nextBtn').disabled = currentPage >= totalPages - 1;
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-    updateDateTime();
-    setInterval(updateDateTime, 60000);
-    if (!checkAuth()) return;
-
-    const user = getCurrentUser();
-    if (user) {
-        const userInfo = JSON.parse(localStorage.getItem('userData') || '{}');
-        const userName = userInfo.name || userInfo.email?.split('@')[0] || 'Admin';
-        loadSideBarSimple(userName);
-        const filters = loadFilters();
-        await loadLogs(0, 10, filters.startDate, filters.endDate, filters.entityType, filters.adminId, filters.keyword);
-        await loadStats(filters.startDate, filters.endDate);
+    // First page
+    if (startPage > 0) {
+        pagination.innerHTML += createButton(0, '1');
+        if (startPage > 1) {
+            pagination.innerHTML += '<span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">...</span>';
+        }
     }
 
-    document.getElementById('searchInput').addEventListener('input', debounce(() => {
+    // Page numbers
+    for (let i = startPage; i < endPage; i++) {
+        pagination.innerHTML += createButton(i, i + 1, false, i === currentPage);
+    }
+
+    // Last page
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            pagination.innerHTML += '<span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">...</span>';
+        }
+        pagination.innerHTML += createButton(totalPages - 1, totalPages);
+    }
+
+    // Next button
+    pagination.innerHTML += createButton(
+        currentPage + 1, 
+        '<i class="fas fa-chevron-right"></i>', 
+        currentPage >= totalPages - 1
+    );
+
+    // Update mobile pagination buttons
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    
+    if (prevBtn) {
+        prevBtn.disabled = currentPage === 0;
+        prevBtn.className = `relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md ${
+            currentPage === 0 ? 'text-gray-300 bg-gray-50 cursor-not-allowed' : 'text-gray-700 bg-white hover:bg-gray-50'
+        }`;
+    }
+    
+    if (nextBtn) {
+        nextBtn.disabled = currentPage >= totalPages - 1;
+        nextBtn.className = `ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md ${
+            currentPage >= totalPages - 1 ? 'text-gray-300 bg-gray-50 cursor-not-allowed' : 'text-gray-700 bg-white hover:bg-gray-50'
+        }`;
+    }
+}
+
+function loadLogsForPage(page) {
+    const filters = loadFilters();
+    loadLogs(page, 10, filters.startDate, filters.endDate, filters.entityType, filters.adminId, filters.keyword);
+}
+
+// Remove the old DOMContentLoaded since it's now handled in the HTML file
+// The new structure uses async loading with page loader
+
+// Function to setup event listeners (called from HTML)
+function setupSystemLogEventListeners() {
+    document.getElementById('searchInput')?.addEventListener('input', debounce(() => {
         const filters = loadFilters();
         loadLogs(0, 10, filters.startDate, filters.endDate, filters.entityType, filters.adminId, filters.keyword);
     }, 500));
 
-    document.getElementById('filterBtn').addEventListener('click', () => {
+    document.getElementById('filterBtn')?.addEventListener('click', () => {
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
         const entityType = document.getElementById('entityType').value;
@@ -259,7 +448,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadStats(startDate, endDate);
     });
 
-    document.getElementById('prevBtn').addEventListener('click', () => {
+    document.getElementById('prevBtn')?.addEventListener('click', () => {
         if (currentPage > 0) {
             currentPage--;
             const filters = loadFilters();
@@ -267,7 +456,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    document.getElementById('nextBtn').addEventListener('click', () => {
+    document.getElementById('nextBtn')?.addEventListener('click', () => {
         if (currentPage < totalPages - 1) {
             currentPage++;
             const filters = loadFilters();
@@ -275,9 +464,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    document.getElementById('refreshBtn').addEventListener('click', refreshData);
+    document.getElementById('refreshBtn')?.addEventListener('click', refreshData);
 
-    document.getElementById('exportBtn').addEventListener('click', async () => {
+    document.getElementById('exportBtn')?.addEventListener('click', async () => {
         try {
             const response = await apiRequest('http://localhost:8080/api/admin/logs/export', { responseType: 'blob' });
             if (!response.ok) throw new Error('Export failed');
@@ -295,7 +484,98 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error('Error exporting file:', error);
         }
     });
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('Initializing system log page...');
+    
+    try {
+        // Check authentication first
+        const user = getCurrentUser();
+        if (!user || user.role !== 'ADMIN') {
+            console.log('[AUTH] Access denied: User does not have ADMIN role');
+            alert('Access denied. This page is only available for administrators.');
+            window.location.href = '../home';
+            return;
+        }
+
+        // Load sidebar and header first to avoid flash
+        if (typeof loadSideBarSimple === 'function') {
+            await loadSideBarSimple();
+        } else {
+            console.error('loadSideBarSimple function not found');
+        }
+        
+        if (typeof loadHeader === 'function') {
+            await loadHeader();
+        } else {
+            console.error('loadHeader function not found');
+        }
+        
+        // Show main content after loading sidebar/header
+        const mainApp = document.getElementById('main-app');
+        if (mainApp) {
+            mainApp.style.display = 'flex';
+        }
+        
+        // Hide page loader if exists
+        const pageLoader = document.getElementById('page-loader');
+        if (pageLoader) {
+            pageLoader.style.display = 'none';
+        }
+
+        // Setup event listeners
+        setupSystemLogEventListeners();
+        
+        // Update current date/time
+        updateSystemLogDateTime();
+        setInterval(updateSystemLogDateTime, 60000); // Update every minute
+
+        // Load initial data
+        const filters = loadFilters ? loadFilters() : {};
+        await Promise.all([
+            loadLogs(0, 10, filters.startDate, filters.endDate, filters.entityType, filters.adminId, filters.keyword),
+            loadStats(filters.startDate, filters.endDate)
+        ]);
+
+        console.log('System log page initialized successfully');
+    } catch (error) {
+        console.error('Error initializing system log page:', error);
+    }
 });
+
+function updateSystemLogDateTime() {
+    const now = new Date();
+    const dateTimeString = now.toLocaleString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    const dateTimeElement = document.getElementById('current-date-time');
+    if (dateTimeElement) {
+        dateTimeElement.textContent = dateTimeString;
+    }
+}
+
+function closeLogDetails() {
+    const modal = document.getElementById('logDetailModal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+// Expose functions for global access
+window.loadLogs = loadLogs;
+window.loadStats = loadStats;
+window.setupSystemLogEventListeners = setupSystemLogEventListeners;
+window.closeLogDetails = closeLogDetails;
+window.showLogDetails = showLogDetails;
+window.deleteLog = deleteLog;
+window.loadLogsForPage = loadLogsForPage;
 
 function showNotification(title, message, type) {
     const toastContainer = document.getElementById('toastContainer');
@@ -325,4 +605,12 @@ function showNotification(title, message, type) {
         notificationCard.classList.add('notification-slide-out');
         setTimeout(() => notificationCard.remove(), 300);
     }, 3000);
+}
+
+// Thêm hàm show/hide mainContent
+function showMainContent() {
+    document.getElementById('mainContent').style.display = '';
+}
+function hideMainContent() {
+    document.getElementById('mainContent').style.display = 'none';
 }

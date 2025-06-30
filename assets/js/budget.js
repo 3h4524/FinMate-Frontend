@@ -15,16 +15,82 @@ const categoryMap = {
     "Hóa đơn": 12
 };
 
+// Fallback functions if helper files are not loaded
+if (typeof apiRequest === 'undefined') {
+  window.apiRequest = async (url, options = {}) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const defaultOptions = {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+      };
+      
+      const response = await fetch(url, { ...defaultOptions, ...options });
+      return response;
+    } catch (error) {
+      console.error('API request failed:', error);
+      return null;
+    }
+  };
+}
+
+if (typeof getCurrentUser === 'undefined') {
+  window.getCurrentUser = () => {
+    try {
+      const user = localStorage.getItem('currentUser');
+      return user ? JSON.parse(user) : { userId: 1 }; // fallback user
+    } catch (error) {
+      console.error('Error getting current user:', error);
+      return { userId: 1 };
+    }
+  };
+}
+
+if (typeof loadSideBarSimple === 'undefined') {
+  window.loadSideBarSimple = () => {
+    console.log('Sidebar loading function not available');
+  };
+}
+
+if (typeof loadHeaderSimple === 'undefined') {
+  window.loadHeaderSimple = () => {
+    console.log('Header loading function not available');
+  };
+}
+
 async function initializeUI() {
-    await fetchUser();
-    if (!user || !user.userId) return;
-    await loadSideBar(user);
-    await updateDateTime();
-    await monitorBudgets(0);
-    await loadAnalysis(0);
-    await setDefaultModalDates();
-    await addBudgetCategory();
-    await setupEventListeners();
+    try {
+        console.log('Initializing budget page...');
+        
+        // Load sidebar and header first
+        if (typeof loadSideBarSimple === 'function') {
+            loadSideBarSimple();
+        } else {
+            console.error('loadSideBarSimple function not found');
+        }
+        
+        if (typeof loadHeaderSimple === 'function') {
+            loadHeaderSimple();
+        } else {
+            console.error('loadHeaderSimple function not found');
+        }
+        
+        await fetchUser();
+        if (!user || !user.userId) return;
+        
+        await updateDateTime();
+        await monitorBudgets(0);
+        await loadAnalysis(0);
+        await setDefaultModalDates();
+        await addBudgetCategory();
+        await setupEventListeners();
+        
+        console.log('Budget page initialized successfully');
+    } catch (error) {
+        console.error('Error initializing budget page:', error);
+    }
 }
 
 function updateDateTime() {
@@ -666,8 +732,32 @@ function setupEventListeners() {
     });
 }
 
-window.addEventListener('load', () => {
-    if (checkAuth()) {
-        initializeUI();
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        console.log('DOM loaded, starting budget page initialization...');
+        
+        // Check authentication
+        if (typeof checkAuth !== 'undefined' && !checkAuth()) {
+            console.log('Authentication check failed');
+            return;
+        }
+        
+        await initializeUI();
+    } catch (error) {
+        console.error('Error during budget page initialization:', error);
+    }
+});
+
+// Fallback for window load
+window.addEventListener('load', async () => {
+    try {
+        // Only run if not already initialized
+        if (!document.querySelector('#sidebar-container').hasChildNodes()) {
+            console.log('Window loaded, initializing budget page...');
+            await initializeUI();
+        }
+    } catch (error) {
+        console.error('Error during window load initialization:', error);
     }
 });

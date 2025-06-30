@@ -144,7 +144,7 @@ document.getElementById('verificationForm').addEventListener('submit', async (e)
 
             setTimeout(() => {
                 try {
-                    window.location.assign('../login');
+                    window.location.assign('../../pages/login');
                 } catch (error) {
                     console.error('Redirection failed:', error);
                     showNotification('Could not redirect. Please go to the login page manually.', 'error');

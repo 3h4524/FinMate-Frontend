@@ -3,609 +3,353 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinMate - Home</title>
+    <title>FinMate - Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="../../assets/css/global-layout.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="/assets/js/sidebar.js" defer></script>
-    <script src="/assets/js/user_auth.js" defer></script>
-    <script src="/assets/js/home.js" type="module" defer></script>
-
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#8b5cf6'
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --main-green: #388e3c;
-            --main-green-dark: #2e7d32;
-            --main-green-light: #a3c9a8;
-            --main-bg: linear-gradient(135deg, #f0f4f3 0%, #e6f0ed 100%);
-            --card-bg: #fff;
-            --card-radius: 18px;
-            --card-shadow: 0 8px 32px rgba(56, 142, 60, 0.10);
-            --header-bg: #fff;
-            --header-radius: 16px;
-            --header-shadow: 0 4px 16px rgba(56, 142, 60, 0.08);
-            --primary: #388e3c;
-            --danger: #d32f2f;
-            --success: #388e3c;
-            --text-dark: #2d5a3d;
-            --text-light: #546e7a;
-            --warning: #f59e0b;
+        /* Layout adjustments for proper spacing */
+        .main-content {
+            transition: margin-left 0.3s ease !important;
+            position: relative !important;
+            min-height: 100vh !important;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        
+        /* Force exact values with highest specificity */
+        @media (min-width: 1025px) {
+            /* Default expanded state */
+            body .main-content {
+                margin-left: 256px !important;
+                padding-top: 64px !important;
+                width: calc(100% - 256px) !important;
+            }
+            
+            /* Collapsed state - MUST override default */
+            body .main-content.sidebar-collapsed {
+                margin-left: 80px !important;
+                width: calc(100% - 80px) !important;
+            }
         }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        
+        /* Mobile: No margin, full width */
+        @media (max-width: 1024px) {
+            body .main-content,
+            body .main-content.sidebar-collapsed {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding-top: 64px !important;
+            }
         }
-        @keyframes notificationSlideIn {
-            from { transform: translateY(-100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+
+        /* Ensure no extra spacing */
+        .no-scroll-margin {
+            margin: 0;
+            padding: 0;
         }
-        @keyframes notificationSlideOut {
-            from { transform: translateY(0); opacity: 1; }
-            to { transform: translateY(-100%); opacity: 0; }
-        }
-        .notification-slide-out {
-            animation: notificationSlideOut 0.3s ease-in;
-        }
-        .scrollbar-custom::-webkit-scrollbar {
-            width: 4px;
-        }
-        .scrollbar-custom::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .scrollbar-custom::-webkit-scrollbar-thumb {
-            background: var(--main-green-light);
-            border-radius: 2px;
-        }
-        .scrollbar-custom::-webkit-scrollbar-thumb:hover {
-            background: var(--main-green);
-        }
-        .budget-status.on-track, .goal-status.on-track {
-            background: #e6f4ea;
-            color: var(--success);
-        }
-        .budget-status.near-limit, .goal-status.near-limit {
-            background: #fef3c7;
-            color: var(--warning);
-        }
-        .budget-status.over-budget, .goal-status.over-budget {
-            background: #fee2e2;
-            color: var(--danger);
+        
+        /* Override any Tailwind or other CSS conflicts */
+        .main-content * {
+            box-sizing: border-box !important;
         }
     </style>
-    <script>
-        // Update current date on header
-        function updateCurrentDate() {
-            const dateElement = document.querySelector('.header .date');
-            if (dateElement) {
-                const now = new Date();
-                const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                dateElement.textContent = now.toLocaleDateString('en-US', options);
-            }
-        }
-
-        // Show notification
-        function showNotification(message, type = 'info') {
-            const toastContainer = document.getElementById('toastContainer');
-            const notification = document.createElement('div');
-            notification.className = `notification bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-4 border-l-4 ${type === 'success' ? 'border-[var(--success)]' : type === 'error' ? 'border-[var(--danger)]' : type === 'warning' ? 'border-[var(--warning)]' : 'border-blue-600'}`;
-            notification.textContent = message;
-            toastContainer.appendChild(notification);
-            setTimeout(() => {
-                notification.classList.add('notification-slide-out');
-                setTimeout(() => notification.remove(), 300);
-            }, 5000);
-        }
-
-        // Open modal
-        function openModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            }
-        }
-
-        // Prevent page reload on sidebar link clicks
-        function setActiveSidebarLink() {
-            const currentPage = window.location.pathname.split('/').pop();
-            const links = document.querySelectorAll('.sidebar nav ul li a');
-
-            links.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === currentPage) {
-                    link.classList.add('active');
-                }
-
-                link.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    const href = link.getAttribute('href');
-                    history.pushState(null, null, href);
-                    loadPageContent(href);
-                });
-            });
-        }
-
-        // Load page content dynamically
-        function loadPageContent(page) {
-            const mainContent = document.querySelector('.main-content');
-            mainContent.style.opacity = '0';
-            fetch(page)
-                .then(response => response.text())
-                .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const newContent = doc.querySelector('.main-content').innerHTML;
-                    mainContent.innerHTML = newContent;
-                    mainContent.style.opacity = '1';
-                    updateCurrentDate();
-                    initializePageScripts(page);
-                })
-                .catch(error => console.error('Error loading page:', error));
-        }
-
-        // Initialize page scripts
-        function initializePageScripts(page) {
-            if (page === '../home') {
-                const searchInput = document.querySelector('.search-bar input');
-                const searchIcon = document.querySelector('.search-bar i');
-                if (searchIcon && searchInput) {
-                    searchIcon.addEventListener('click', () => {
-                        const searchTerm = searchInput.value.trim();
-                        if (searchTerm) {
-                            console.log('[SEARCH] Searching for:', searchTerm);
-                            showNotification('Search functionality coming soon!', 'info');
-                        }
-                    });
-                    searchInput.addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter') {
-                            searchIcon.click();
-                        }
-                    });
-                }
-                const addTransactionBtn = document.getElementById('addTransactionBtn');
-                if (addTransactionBtn) {
-                    addTransactionBtn.addEventListener('click', () => {
-                        openModal('transactionModal');
-                    });
-                }
-                const closeModalBtn = document.getElementById('closeModalBtn');
-                if (closeModalBtn) {
-                    closeModalBtn.addEventListener('click', () => {
-                        document.getElementById('transactionModal').classList.add('hidden');
-                    });
-                }
-                const cancelTransactionBtn = document.getElementById('cancelTransactionBtn');
-                if (cancelTransactionBtn) {
-                    cancelTransactionBtn.addEventListener('click', () => {
-                        document.getElementById('transactionModal').classList.add('hidden');
-                    });
-                }
-                const addBudgetBtn = document.getElementById('addBudgetBtn');
-                if (addBudgetBtn) {
-                    addBudgetBtn.addEventListener('click', () => {
-                        openModal('createBudgetModal');
-                    });
-                }
-                const closeBudgetModalBtn = document.getElementById('closeBudgetModalBtn');
-                if (closeBudgetModalBtn) {
-                    closeBudgetModalBtn.addEventListener('click', () => {
-                        document.getElementById('createBudgetModal').classList.add('hidden');
-                    });
-                }
-                const cancelBudgetBtn = document.getElementById('cancelBudgetBtn');
-                if (cancelBudgetBtn) {
-                    cancelBudgetBtn.addEventListener('click', () => {
-                        document.getElementById('createBudgetModal').classList.add('hidden');
-                    });
-                }
-                const addGoalBtn = document.getElementById('addGoalBtn');
-                if (addGoalBtn) {
-                    addGoalBtn.addEventListener('click', () => {
-                        window.location.href = '../goal';
-                    });
-                }
-            }
-        }
-
-        // Initialize home page
-        document.addEventListener('DOMContentLoaded', function() {
-            updateCurrentDate();
-            const mainContent = document.getElementById('mainContent');
-            if (mainContent) {
-                mainContent.classList.remove('hidden');
-                mainContent.classList.add('flex');
-            }
-
-            const searchInput = document.querySelector('.search-bar input');
-            const searchIcon = document.querySelector('.search-bar i');
-            if (searchIcon && searchInput) {
-                searchIcon.addEventListener('click', () => {
-                    const searchTerm = searchInput.value.trim();
-                    if (searchTerm) {
-                        console.log('[SEARCH] Searching for:', searchTerm);
-                        showNotification('Search functionality coming soon!', 'info');
-                    }
-                });
-                searchInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        searchIcon.click();
-                    }
-                });
-            }
-
-            const addTransactionBtn = document.getElementById('addTransactionBtn');
-            if (addTransactionBtn) {
-                addTransactionBtn.addEventListener('click', () => {
-                    openModal('transactionModal');
-                });
-            }
-
-            const closeModalBtn = document.getElementById('closeModalBtn');
-            if (closeModalBtn) {
-                closeModalBtn.addEventListener('click', () => {
-                    document.getElementById('transactionModal').classList.add('hidden');
-                });
-            }
-
-            const cancelTransactionBtn = document.getElementById('cancelTransactionBtn');
-            if (cancelTransactionBtn) {
-                cancelTransactionBtn.addEventListener('click', () => {
-                    document.getElementById('transactionModal').classList.add('hidden');
-                });
-            }
-
-            const addBudgetBtn = document.getElementById('addBudgetBtn');
-            if (addBudgetBtn) {
-                addBudgetBtn.addEventListener('click', () => {
-                    openModal('createBudgetModal');
-                });
-            }
-
-            const closeBudgetModalBtn = document.getElementById('closeBudgetModalBtn');
-            if (closeBudgetModalBtn) {
-                closeBudgetModalBtn.addEventListener('click', () => {
-                    document.getElementById('createBudgetModal').classList.add('hidden');
-                });
-            }
-
-            const cancelBudgetBtn = document.getElementById('cancelBudgetBtn');
-            if (cancelBudgetBtn) {
-                cancelBudgetBtn.addEventListener('click', () => {
-                    document.getElementById('createBudgetModal').classList.add('hidden');
-                });
-            }
-
-            const addGoalBtn = document.getElementById('addGoalBtn');
-            if (addGoalBtn) {
-                addGoalBtn.addEventListener('click', () => {
-                    window.location.href = '../goal';
-                });
-            }
-
-            const loadingSpinner = document.getElementById('loadingSpinner');
-            if (loadingSpinner) loadingSpinner.classList.add('hidden');
-
-            setTimeout(() => {
-                const userData = localStorage.getItem('userData');
-                if (userData) {
-                    const user = JSON.parse(userData);
-                    const headerUserName = document.getElementById('userFullNameHeader');
-                    if (headerUserName) {
-                        headerUserName.textContent = user.name || user.email.split('@')[0];
-                    }
-                }
-                // Hard-coded budget data
-                const totalBudgeted = document.getElementById('totalBudgeted');
-                const totalSpent = document.getElementById('totalSpent');
-                const budgetList = document.getElementById('budgetList');
-                const noBudgetsMessage = document.querySelector('.no-budgets-message');
-                if (totalBudgeted && totalSpent && budgetList && noBudgetsMessage) {
-                    totalBudgeted.textContent = '$1,500.00';
-                    totalSpent.textContent = '$950.00';
-                    noBudgetsMessage.classList.add('hidden');
-                    budgetList.innerHTML = `
-                        <li class="budget-item flex justify-between items-center py-3 border-b border-gray-200 last:border-0">
-                            <div class="budget-item-details flex-1">
-                                <span class="budget-item-name font-semibold text-[var(--text-dark)]">Groceries</span>
-                                <span class="budget-item-amount text-sm text-[var(--text-light)]">$300.00 / $500.00</span>
-                                <div class="budget-progress h-2 bg-gray-200 rounded-full mt-2">
-                                    <div class="budget-progress-bar h-full bg-[var(--main-green)] rounded-full" style="width: 60%;"></div>
-                                </div>
-                            </div>
-                            <span class="budget-status on-track text-sm font-semibold px-3 py-1 rounded-lg">On Track</span>
-                        </li>
-                        <li class="budget-item flex justify-between items-center py-3 border-b border-gray-200 last:border-0">
-                            <div class="budget-item-details flex-1">
-                                <span class="budget-item-name font-semibold text-[var(--text-dark)]">Entertainment</span>
-                                <span class="budget-item-amount text-sm text-[var(--text-light)]">$200.00 / $250.00</span>
-                                <div class="budget-progress h-2 bg-gray-200 rounded-full mt-2">
-                                    <div class="budget-progress-bar h-full bg-[var(--warning)] rounded-full" style="width: 80%;"></div>
-                                </div>
-                            </div>
-                            <span class="budget-status near-limit text-sm font-semibold px-3 py-1 rounded-lg">Near Limit</span>
-                        </li>
-                        <li class="budget-item flex justify-between items-center py-3 border-b border-gray-200 last:border-0">
-                            <div class="budget-item-details flex-1">
-                                <span class="budget-item-name font-semibold text-[var(--text-dark)]">Utilities</span>
-                                <span class="budget-item-amount text-sm text-[var(--text-light)]">$150.00 / $150.00</span>
-                                <div class="budget-progress h-2 bg-gray-200 rounded-full mt-2">
-                                    <div class="budget-progress-bar h-full bg-[var(--danger)] rounded-full" style="width: 100%;"></div>
-                                </div>
-                            </div>
-                            <span class="budget-status over-budget text-sm font-semibold px-3 py-1 rounded-lg">Over Budget</span>
-                        </li>
-                    `;
-                }
-                // Hard-coded goals data
-                const goalsList = document.querySelector('.goals-list');
-                const noGoalsMessage = document.querySelector('.no-goals-message');
-                if (goalsList && noGoalsMessage) {
-                    noGoalsMessage.classList.add('hidden');
-                    goalsList.innerHTML = `
-                        <li class="goal-item flex justify-between items-center py-3 border-b border-gray-200 last:border-0">
-                            <div class="goal-item-details flex-1">
-                                <span class="goal-item-name font-semibold text-[var(--text-dark)]">Vacation Fund</span>
-                                <span class="goal-item-amount text-sm text-[var(--text-light)]">$1,200.00 / $2,000.00</span>
-                                <div class="goal-progress h-2 bg-gray-200 rounded-full mt-2">
-                                    <div class="goal-progress-bar h-full bg-[var(--main-green)] rounded-full" style="width: 60%;"></div>
-                                </div>
-                            </div>
-                            <span class="goal-status on-track text-sm font-semibold px-3 py-1 rounded-lg">On Track</span>
-                        </li>
-                        <li class="goal-item flex justify-between items-center py-3 border-b border-gray-200 last:border-0">
-                            <div class="goal-item-details flex-1">
-                                <span class="goal-item-name font-semibold text-[var(--text-dark)]">Emergency Savings</span>
-                                <span class="goal-item-amount text-sm text-[var(--text-light)]">$3,500.00 / $5,000.00</span>
-                                <div class="goal-progress h-2 bg-gray-200 rounded-full mt-2">
-                                    <div class="goal-progress-bar h-full bg-[var(--main-green)] rounded-full" style="width: 70%;"></div>
-                                </div>
-                            </div>
-                            <span class="goal-status on-track text-sm font-semibold px-3 py-1 rounded-lg">On Track</span>
-                        </li>
-                        <li class="goal-item flex justify-between items-center py-3 border-b border-gray-200 last:border-0">
-                            <div class="goal-item-details flex-1">
-                                <span class="goal-item-name font-semibold text-[var(--text-dark)]">New Laptop</span>
-                                <span class="goal-item-amount text-sm text-[var(--text-light)]">$900.00 / $1,200.00</span>
-                                <div class="goal-progress h-2 bg-gray-200 rounded-full mt-2">
-                                    <div class="goal-progress-bar h-full bg-[var(--warning)] rounded-full" style="width: 75%;"></div>
-                                </div>
-                            </div>
-                            <span class="goal-status near-limit text-sm font-semibold px-3 py-1 rounded-lg">Near Limit</span>
-                        </li>
-                    `;
-                }
-                // Hard-coded transactions data
-                const incomeAmount = document.getElementById('incomeAmount');
-                const expenseAmount = document.getElementById('expenseAmount');
-                const transactionList = document.getElementById('transactionList');
-                const noTransactionsMessage = document.querySelector('.no-transactions-message');
-                if (incomeAmount && expenseAmount && transactionList && noTransactionsMessage) {
-                    incomeAmount.textContent = '$2,500.00';
-                    expenseAmount.textContent = '$1,800.00';
-                    noTransactionsMessage.classList.add('hidden');
-                    transactionList.innerHTML = `
-                        <li class="transaction-item flex justify-between items-center py-3 border-b border-gray-200 last:border-0">
-                            <div class="transaction-item-details flex-1">
-                                <span class="transaction-item-name font-semibold text-[var(--text-dark)]">Salary</span>
-                                <span class="transaction-item-amount transaction-amount credit text-[var(--success)]">+$2,000.00</span>
-                                <span class="transaction-item-date text-xs text-[var(--text-light)]">2025-06-20</span>
-                            </div>
-                        </li>
-                        <li class="transaction-item flex justify-between items-center py-3 border-b border-gray-200 last:border-0">
-                            <div class="transaction-item-details flex-1">
-                                <span class="transaction-item-name font-semibold text-[var(--text-dark)]">Grocery Shopping</span>
-                                <span class="transaction-item-amount transaction-amount debit text-[var(--danger)]">-$150.00</span>
-                                <span class="transaction-item-date text-xs text-[var(--text-light)]">2025-06-19</span>
-                            </div>
-                        </li>
-                        <li class="transaction-item flex justify-between items-center py-3 border-b border-gray-200 last:border-0">
-                            <div class="transaction-item-details flex-1">
-                                <span class="transaction-item-name font-semibold text-[var(--text-dark)]">Freelance Work</span>
-                                <span class="transaction-item-amount transaction-amount credit text-[var(--success)]">+$500.00</span>
-                                <span class="transaction-item-date text-xs text-[var(--text-light)]">2025-06-18</span>
-                            </div>
-                        </li>
-                        <li class="transaction-item flex justify-between items-center py-3 border-b border-gray-200 last:border-0">
-                            <div class="transaction-item-details flex-1">
-                                <span class="transaction-item-name font-semibold text-[var(--text-dark)]">Internet Bill</span>
-                                <span class="transaction-item-amount transaction-amount debit text-[var(--danger)]">-$80.00</span>
-                                <span class="transaction-item-date text-xs text-[var(--text-light)]">2025-06-17</span>
-                            </div>
-                        </li>
-                    `;
-                }
-            }, 100);
-        });
-    </script>
 </head>
-<body class="font-sans text-[var(--text-dark)] bg-[var(--main-bg)]">
-    <div id="loadingSpinner" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-2 z-[1000] hidden">
-        <div class="w-12 h-2 border-4 border-[var(--main-green)] border-t-transparent rounded-full animate-spin"></div>
-    </div>
-    <div id="toastContainer" class="fixed top-4 right-4 z-[1000] space-y-2 w-[320px] max-w-full"></div>
-    <div class="app-container flex min-h-screen">
-        <div id="sidebar-container" class="w-64"></div>
-        <div class="main-content flex-1 md:ml-64 p-8 flex flex-col hidden" id="mainContent">
-            <header class="header bg-white border border-green-600 sticky top-0 z-10 rounded-lg p-6 shadow-[var(--header-shadow)] flex flex-col md:flex-row justify-between items-center mb-8">
-                <div class="flex items-center gap-4 mb-4 md:mb-0">
-                    <div class="greeting text-2xl font-bold text-[var(--main-green-dark)]">Hello <span id="userFullNameHeader">Loading...</span></div>
-                    <div class="date text-sm text-[var(--text-light)]"></div>
-                </div>
-                <div class="search-bar relative flex-1 max-w-md mx-4">
-                    <input type="text" placeholder="Search accounts, transactions, budgets..." class="w-full p-3 pl-12 rounded-2xl border border-[var(--main-green-light)] bg-gray-50 focus:border-[var(--main-green)] focus:ring-2 focus:ring-[var(--main-green-light)] transition">
-                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[var(--main-green-light)]"></i>
-                </div>
-                <div class="icons flex items-center gap-4">
-                    <i class="fas fa-bell text-xl text-[var(--main-green-light)] hover:text-[var(--main-green)] cursor-pointer transition"></i>
-                </div>
-            </header>
-            <div class="dashboard-layout flex flex-col gap-8">
-                <div class="card total-balance-card bg-white border-2 border-[var(--main-green)] rounded-2xl p-8 shadow-lg hover:scale-[1.02] hover:shadow-xl transition-all duration-300">
-                    <div class="card-header flex justify-between items-center mb-6">
-                        <h3 class="text-2xl font-bold text-[var(--main-green-dark)]">Total Balance</h3>
-                        <a href="../accounts" class="text-sm font-semibold text-[var(--main-green)] hover:text-[var(--main-green-dark)] transition">All Accounts</a>
-                    </div>
-                    <div class="card-body flex flex-col items-center">
-                        <span class="balance-amount text-4xl font-extrabold text-[var(--main-green-dark)] mb-6" id="totalBalance">$10.210.221</span>
-                        <div class="account-card bg-gradient-to-r from-[var(--main-green)] to-[var(--main-green-light)] text-white rounded-2xl p-6 w-full flex justify-between items-center">
-                            <div class="account-details">
-                                <span class="account-type text-lg font-semibold">Credit Card</span>
-                                <span class="text-sm">**** **** **** 2598</span>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen no-scroll-margin">
+    <!-- Include Header -->
+    <div id="header-container"></div>
+    
+    <!-- Include Sidebar -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="p-4 lg:p-8">
+            <!-- Dashboard Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+                <!-- Left Column (2/3 width) -->
+                <div class="lg:col-span-2 space-y-6 lg:space-y-8">
+                    <!-- Balance Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+                        <!-- Main Balance Card -->
+                        <div class="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 rounded-3xl p-6 lg:p-8 text-white shadow-2xl col-span-1 md:col-span-2">
+                            <div class="flex justify-between items-start mb-4 lg:mb-6">
+                                <div>
+                                    <p class="text-indigo-100 text-sm mb-2">Total Balance</p>
+                                    <h2 class="text-3xl lg:text-4xl font-bold mb-3 lg:mb-4" id="totalBalance">$25,480</h2>
+                                    <div class="flex items-center space-x-2 text-green-300">
+                                        <i class="fas fa-trending-up text-sm"></i>
+                                        <span class="text-sm">+12.5% from last month</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-3 lg:p-4">
+                                    <i class="fas fa-wallet text-xl lg:text-2xl text-indigo-200"></i>
+                                </div>
                             </div>
-                            <div class="card-logo"><i class="fas fa-credit-card text-2xl"></i></div>
+                            <div class="grid grid-cols-2 gap-3 lg:gap-4">
+                                <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-3 lg:p-4">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <i class="fas fa-trending-up text-green-300 text-sm"></i>
+                                        <span class="text-sm">Income</span>
+                                    </div>
+                                    <p class="font-semibold text-lg lg:text-xl" id="totalIncome">$7,300</p>
+                                </div>
+                                <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-3 lg:p-4">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <i class="fas fa-trending-down text-red-300 text-sm"></i>
+                                        <span class="text-sm">Expenses</span>
+                            </div>
+                                    <p class="font-semibold text-lg lg:text-xl" id="totalExpenses">$2,900</p>
+                                </div>
+                            </div>
+                                </div>
+                        
+                        <!-- Monthly Goal Card -->
+                        <div class="bg-white rounded-3xl p-4 lg:p-6 shadow-lg">
+                            <div class="text-center">
+                                <div class="bg-gradient-to-r from-green-100 to-green-200 rounded-full w-16 h-16 lg:w-20 lg:h-20 flex items-center justify-center mx-auto mb-3 lg:mb-4">
+                                    <i class="fas fa-bullseye text-2xl lg:text-3xl text-green-600"></i>
+                                </div>
+                                <h3 class="font-bold text-gray-800 mb-2 text-sm lg:text-base">Monthly Goal</h3>
+                                <p class="text-xl lg:text-2xl font-bold text-green-600">85%</p>
+                                <p class="text-xs lg:text-sm text-gray-500">Achieved</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="card goals-card bg-white rounded-2xl p-6 shadow-lg hover:scale-[1.02] hover:shadow-xl transition-all duration-300">
-                        <div class="card-header flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-semibold text-[var(--main-green-dark)]">Goals</h3>
-                            <a href="../goal" class="text-sm font-semibold text-[var(--main-green)] hover:text-[var(--main-green-dark)] transition">View All</a>
-                        </div>
-                        <div class="card-body scrollbar-custom max-h-64 overflow-y-auto">
-                            <ul class="goals-list space-y-4"></ul>
-                            <p class="no-goals-message text-[var(--text-light)] text-sm text-center" style="display: none;">No goals set yet.</p>
-                            <button id="addGoalBtn" class="bg-gradient-to-r from-[var(--main-green)] to-[var(--main-green-dark)] text-white px-4 py-2 rounded-xl font-semibold text-sm flex items-center gap-2 hover:scale-105 hover:shadow-lg transition-all duration-300 mt-4 w-full">
-                                <i class="fas fa-plus"></i> Add Goal
+
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-3xl p-6 lg:p-8 shadow-lg">
+                        <h3 class="text-xl lg:text-2xl font-bold text-gray-800 mb-4 lg:mb-6">Quick Actions</h3>
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+                            <button onclick="openAddIncomeModal()" class="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-2xl p-4 lg:p-6 flex flex-col items-center space-y-2 lg:space-y-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                                <i class="fas fa-plus-circle text-xl lg:text-2xl"></i>
+                                <span class="font-semibold text-sm lg:text-base">Add Income</span>
+                            </button>
+                            <button onclick="openAddExpenseModal()" class="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl p-4 lg:p-6 flex flex-col items-center space-y-2 lg:space-y-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                                <i class="fas fa-minus-circle text-xl lg:text-2xl"></i>
+                                <span class="font-semibold text-sm lg:text-base">Add Expense</span>
+                            </button>
+                            <button onclick="window.location.href='../goal'" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl p-4 lg:p-6 flex flex-col items-center space-y-2 lg:space-y-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                                <i class="fas fa-bullseye text-xl lg:text-2xl"></i>
+                                <span class="font-semibold text-sm lg:text-base">Set Goal</span>
+                            </button>
+                            <button onclick="exportReport()" class="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-2xl p-4 lg:p-6 flex flex-col items-center space-y-2 lg:space-y-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                                <i class="fas fa-download text-xl lg:text-2xl"></i>
+                                <span class="font-semibold text-sm lg:text-base">Export Report</span>
                             </button>
                         </div>
                     </div>
-                    <div class="card recent-transactions-card bg-white rounded-2xl p-6 shadow-lg hover:scale-[1.02] hover:shadow-xl transition-all duration-300">
-                        <div class="card-header flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-semibold text-[var(--main-green-dark)]">Recent Transactions</h3>
-                            <a href="../transaction" class="text-sm font-semibold text-[var(--main-green)] hover:text-[var(--main-green-dark)] transition">View All</a>
+
+                    <!-- Recent Transactions -->
+                    <div class="bg-white rounded-3xl p-6 lg:p-8 shadow-lg">
+                        <div class="flex justify-between items-center mb-4 lg:mb-6">
+                            <h3 class="text-xl lg:text-2xl font-bold text-gray-800">Recent Transactions</h3>
+                            <button onclick="window.location.href='../transaction'" class="text-indigo-600 font-semibold hover:text-indigo-800 transition-colors text-sm lg:text-base">
+                                View All →
+                            </button>
                         </div>
-                        <div class="card-body scrollbar-custom max-h-64 overflow-y-auto">
-                            <div class="transaction-summary grid grid-cols-2 gap-4 mb-4">
-                                <div class="summary-item">
-                                    <span class="summary-label text-sm text-[var(--text-light)]">Income</span>
-                                    <span class="summary-amount text-lg font-bold text-[var(--success)]" id="incomeAmount">$0.00</span>
+                        <div class="space-y-3 lg:space-y-4" id="recentTransactions">
+                            <!-- Transactions will be loaded here -->
+                            <div class="flex items-center space-x-3 lg:space-x-4 p-3 lg:p-4 rounded-2xl hover:bg-gray-50 transition-colors border border-gray-100">
+                                <div class="w-12 h-12 lg:w-14 lg:h-14 bg-gray-100 rounded-full flex items-center justify-center text-lg lg:text-xl">
+                                    💼
                                 </div>
-                                <div class="summary-item">
-                                    <span class="summary-label text-sm text-[var(--text-light)]">Expenses</span>
-                                    <span class="summary-amount text-lg font-bold text-[var(--danger)]" id="expenseAmount">$0.00</span>
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-800 text-base lg:text-lg">Monthly Salary</p>
+                                    <p class="text-gray-500 text-sm lg:text-base">Income</p>
+                                    <p class="text-xs lg:text-sm text-gray-400">2025-01-15</p>
                                 </div>
+                                <p class="font-bold text-lg lg:text-xl text-green-600">+$5,000</p>
                             </div>
-                            <div class="transaction-list-container">
-                                <ul class="transaction-list space-y-4" id="transactionList"></ul>
-                                <p class="no-transactions-message text-[var(--text-light)] text-sm text-center" style="display: none;">No recent transactions.</p>
-                                <button id="addTransactionBtn" class="bg-gradient-to-r from-[var(--main-green)] to-[var(--main-green-dark)] text-white px-4 py-2 rounded-xl font-semibold text-sm flex items-center gap-2 hover:scale-105 hover:shadow-lg transition-all duration-300 mt-4 w-full">
-                                    <i class="fas fa-plus"></i> Add Transaction
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card budgets-card bg-white rounded-2xl p-6 shadow-lg hover:scale-[1.02] hover:shadow-xl transition-all duration-300">
-                        <div class="card-header flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-semibold text-[var(--main-green-dark)]">Budgets</h3>
-                            <a href="../budget" class="text-sm font-semibold text-[var(--main-green)] hover:text-[var(--main-green-dark)] transition">View All</a>
-                        </div>
-                        <div class="card-body scrollbar-custom max-h-64 overflow-y-auto">
-                            <div class="budget-summary grid grid-cols-2 gap-4 mb-4">
-                                <div class="summary-item">
-                                    <span class="summary-label text-sm text-[var(--text-light)]">Total Budgeted</span>
-                                    <span class="summary-amount text-lg font-bold text-[var(--main-green)]" id="totalBudgeted">$0.00</span>
+                            <div class="flex items-center space-x-3 lg:space-x-4 p-3 lg:p-4 rounded-2xl hover:bg-gray-50 transition-colors border border-gray-100">
+                                <div class="w-12 h-12 lg:w-14 lg:h-14 bg-gray-100 rounded-full flex items-center justify-center text-lg lg:text-xl">
+                                    🍽️
                                 </div>
-                                <div class="summary-item">
-                                    <span class="summary-label text-sm text-[var(--text-light)]">Spent</span>
-                                    <span class="summary-amount text-lg font-bold text-[var(--danger)]" id="totalSpent">$0.00</span>
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-800 text-base lg:text-lg">Lunch with colleagues</p>
+                                    <p class="text-gray-500 text-sm lg:text-base">Food & Dining</p>
+                                    <p class="text-xs lg:text-sm text-gray-400">2025-01-14</p>
                                 </div>
+                                <p class="font-bold text-lg lg:text-xl text-red-600">-$45</p>
                             </div>
-                            <div class="budget-list-container">
-                                <ul class="budget-list space-y-4" id="budgetList"></ul>
-                                <p class="no-budgets-message text-[var(--text-light)] text-sm text-center" style="display: none;">No budgets set yet.</p>
-                                <button id="addBudgetBtn" class="bg-gradient-to-r from-[var(--main-green)] to-[var(--main-green-dark)] text-white px-4 py-2 rounded-xl font-semibold text-sm flex items-center gap-2 hover:scale-105 hover:shadow-lg transition-all duration-300 mt-4 w-full">
-                                    <i class="fas fa-plus"></i> Add Budget
-                                </button>
+                            <div class="flex items-center space-x-3 lg:space-x-4 p-3 lg:p-4 rounded-2xl hover:bg-gray-50 transition-colors border border-gray-100">
+                                <div class="w-12 h-12 lg:w-14 lg:h-14 bg-gray-100 rounded-full flex items-center justify-center text-lg lg:text-xl">
+                                    🛒
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-800 text-base lg:text-lg">Shopping</p>
+                                    <p class="text-gray-500 text-sm lg:text-base">Shopping</p>
+                                    <p class="text-xs lg:text-sm text-gray-400">2025-01-13</p>
+                                </div>
+                                <p class="font-bold text-lg lg:text-xl text-red-600">-$120</p>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div id="transactionModal" class="modal fixed inset-0 bg-black/60 hidden items-center justify-center z-[1000]">
-        <div class="modal-content bg-white rounded-2xl p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div class="modal-header flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold text-[var(--main-green-dark)]">Add/Edit Transaction</h3>
-                <button class="close-modal-btn text-2xl text-[var(--text-light)] hover:text-[var(--main-green-dark)] transition" id="closeModalBtn"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <form id="transactionForm" class="space-y-6">
-                    <div class="form-group">
-                        <label for="description" class="block text-sm font-medium text-[var(--main-green-dark)] mb-2">Description *</label>
-                        <input type="text" id="description" name="description" placeholder="e.g., Grocery Shopping" class="w-full p-3 rounded-2xl border border-[var(--main-green-light)] bg-gray-50 focus:border-[var(--main-green)] focus:ring-2 focus:ring-[var(--main-green-light)] transition" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="amount" class="block text-sm font-medium text-[var(--main-green-dark)] mb-2">Amount ($) *</label>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-light)] font-medium">$</span>
-                            <input type="number" id="amount" name="amount" step="0.01" placeholder="0.00" class="w-full p-3 pl-10 rounded-2xl border border-[var(--main-green-light)] bg-gray-50 focus:border-[var(--main-green)] focus:ring-2 focus:ring-[var(--main-green-light)] transition" required>
+
+                <!-- Right Column (1/3 width) -->
+                <div class="space-y-6 lg:space-y-8">
+                    <!-- Spending by Category -->
+                    <div class="bg-white rounded-3xl p-4 lg:p-6 shadow-lg">
+                        <div class="flex items-center justify-between mb-4 lg:mb-6">
+                            <h3 class="text-lg lg:text-xl font-bold text-gray-800">Spending by Category</h3>
+                            <i class="fas fa-chart-pie text-gray-400"></i>
+                        </div>
+                        <div class="space-y-3 lg:space-y-4" id="categoryBreakdown">
+                            <div class="space-y-2 lg:space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-2 lg:space-x-3">
+                                        <div class="w-3 h-3 lg:w-4 lg:h-4 rounded-full bg-orange-500"></div>
+                                        <span class="font-medium text-gray-700 text-sm lg:text-base">Food & Dining</span>
+                                    </div>
+                                    <span class="font-semibold text-gray-800 text-sm lg:text-base">$450</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="h-2 rounded-full bg-orange-500" style="width: 45%"></div>
+                                </div>
+                                <p class="text-xs lg:text-sm text-gray-500 text-right">15.5%</p>
+                            </div>
+                            <div class="space-y-2 lg:space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-2 lg:space-x-3">
+                                        <div class="w-3 h-3 lg:w-4 lg:h-4 rounded-full bg-purple-500"></div>
+                                        <span class="font-medium text-gray-700 text-sm lg:text-base">Shopping</span>
+                                    </div>
+                                    <span class="font-semibold text-gray-800 text-sm lg:text-base">$1,200</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="h-2 rounded-full bg-purple-500" style="width: 41%"></div>
+                                </div>
+                                <p class="text-xs lg:text-sm text-gray-500 text-right">41.4%</p>
+                            </div>
+                            <div class="space-y-2 lg:space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-2 lg:space-x-3">
+                                        <div class="w-3 h-3 lg:w-4 lg:h-4 rounded-full bg-blue-500"></div>
+                                        <span class="font-medium text-gray-700 text-sm lg:text-base">Transportation</span>
+                                    </div>
+                                    <span class="font-semibold text-gray-800 text-sm lg:text-base">$300</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="h-2 rounded-full bg-blue-500" style="width: 30%"></div>
+                                </div>
+                                <p class="text-xs lg:text-sm text-gray-500 text-right">10.3%</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="type" class="block text-sm font-medium text-[var(--main-green-dark)] mb-2">Type *</label>
-                        <select id="type" name="type" class="w-full p-3 rounded-2xl border border-[var(--main-green-light)] bg-gray-50 focus:border-[var(--main-green)] focus:ring-2 focus:ring-[var(--main-green-light)] transition" required>
-                            <option value="income">Income</option>
-                            <option value="expense">Expense</option>
-                        </select>
+
+                    <!-- Monthly Summary -->
+                    <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl p-4 lg:p-6 border border-emerald-200">
+                        <h3 class="text-lg lg:text-xl font-bold text-gray-800 mb-3 lg:mb-4">January Summary</h3>
+                        <div class="space-y-3 lg:space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 text-sm lg:text-base">Total Income:</span>
+                                <span class="font-bold text-green-600 text-sm lg:text-base" id="summaryIncome">$7,300</span>
+                </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 text-sm lg:text-base">Total Expenses:</span>
+                                <span class="font-bold text-red-600 text-sm lg:text-base" id="summaryExpenses">$2,900</span>
+            </div>
+                            <hr class="border-emerald-200">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold text-gray-800 text-sm lg:text-base">Savings:</span>
+                                <span class="font-bold text-lg lg:text-xl text-emerald-600" id="summarySavings">$4,400</span>
+        </div>
+    </div>
                     </div>
-                    <div class="form-group">
-                        <label for="category" class="block text-sm font-medium text-[var(--main-green-dark)] mb-2">Category *</label>
-                        <select id="category" name="category" class="categorySelect w-full p-3 rounded-2xl border border-[var(--main-green-light)] bg-gray-50 focus:border-[var(--main-green)] focus:ring-2 focus:ring-[var(--main-green-light)] transition" required>
-                            <option value="">Select Category</option>
-                        </select>
+
+                    <!-- Goal Progress -->
+                    <div class="bg-white rounded-3xl p-4 lg:p-6 shadow-lg">
+                        <h3 class="text-lg lg:text-xl font-bold text-gray-800 mb-3 lg:mb-4">Goal Progress</h3>
+                        <div class="space-y-3 lg:space-y-4">
+                            <div class="text-center p-3 lg:p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl">
+                                <p class="text-xs lg:text-sm text-gray-600 mb-1">Monthly Savings Goal</p>
+                                <p class="text-xl lg:text-2xl font-bold text-blue-600">$5,000</p>
+                                <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full" style="width: 88%"></div>
+                                </div>
+                                <p class="text-xs lg:text-sm text-gray-500 mt-1">88% completed</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="date" class="block text-sm font-medium text-[var(--main-green-dark)] mb-2">Date *</label>
-                        <input type="date" id="date" name="date" class="w-full p-3 rounded-2xl border border-[var(--main-green-light)] bg-gray-50 focus:border-[var(--main-green)] focus:ring-2 focus:ring-[var(--main-green-light)] transition" required>
+
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-2 gap-3 lg:gap-4">
+                        <div class="bg-white rounded-2xl p-3 lg:p-4 shadow-lg text-center">
+                            <i class="fas fa-calendar-day text-xl lg:text-2xl text-indigo-500 mb-2"></i>
+                            <p class="text-xs lg:text-sm text-gray-600">Today's Transactions</p>
+                            <p class="text-lg lg:text-xl font-bold text-gray-800">3</p>
                     </div>
-                    <div class="modal-footer flex justify-end gap-4">
-                        <button type="submit" class="save-btn bg-gradient-to-r from-[var(--main-green)] to-[var(--main-green-dark)] text-white px-6 py-3 rounded-2xl font-semibold hover:shadow-xl hover:scale-[1.02] transition-all duration-300">Save Transaction</button>
-                        <button type="button" class="cancel-btn bg-gray-100 text-[var(--main-green-dark)] px-6 py-3 rounded-2xl font-semibold hover:bg-gray-200 transition" id="cancelTransactionBtn">Cancel</button>
+                        <div class="bg-white rounded-2xl p-3 lg:p-4 shadow-lg text-center">
+                            <i class="fas fa-trending-up text-xl lg:text-2xl text-green-500 mb-2"></i>
+                            <p class="text-xs lg:text-sm text-gray-600">Growth</p>
+                            <p class="text-lg lg:text-xl font-bold text-green-600">+12%</p>
                     </div>
-                </form>
+                    </div>
+                    </div>
             </div>
         </div>
     </div>
-    <div id="createBudgetModal" class="modal fixed inset-0 bg-black/60 hidden items-center justify-center z-[1000]">
-        <div class="modal-content bg-white rounded-2xl p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div class="modal-header flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold text-[var(--main-green-dark)]">Create Budget</h3>
-                <button class="close-modal-btn text-2xl text-[var(--text-light)] hover:text-[var(--main-green-dark)] transition" id="closeBudgetModalBtn"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <form id="create-budget-form" class="space-y-6">
-                    <div class="form-group">
-                        <label for="periodType" class="block text-sm font-medium text-[var(--main-green-dark)] mb-2">Period</label>
-                        <select id="period-type" name="periodType" class="w-full p-3 rounded-2xl border border-[var(--main-green-light)] bg-gray-50 focus:border-[var(--main-green)] focus:ring-2 focus:ring-[var(--main-green-light)] transition" required>
-                            <option value="">Select Period</option>
-                            <option value="weekly">Weekly</option>
-                            <option value="monthly">Monthly</option>
+
+    <!-- Add Transaction Modal -->
+    <div id="transactionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-3xl p-6 lg:p-8 max-w-md w-full mx-4 shadow-2xl">
+            <h3 class="text-xl lg:text-2xl font-bold text-gray-800 mb-4 lg:mb-6">Add Transaction</h3>
+            <form id="transactionForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
+                    <select id="transactionType" class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-indigo-500 focus:outline-none">
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="startDate" class="block text-sm font-medium text-[var(--main-green-dark)] mb-2">Start Date</label>
-                        <input type="date" id="startDate" name="startDate" class="w-full p-3 rounded-2xl border border-[var(--main-green-light)] bg-gray-50 focus:border-[var(--main-green)] focus:ring-2 focus:ring-[var(--main-green-light)] transition" required>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+                    <input type="number" id="transactionAmount" class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-indigo-500 focus:outline-none" placeholder="0.00" required>
                     </div>
-                    <div class="form-group">
-                        <label for="threshold" class="block text-sm font-medium text-[var(--main-green-dark)] mb-2">Notification Threshold (%)</label>
-                        <input type="number" id="threshold" name="threshold" min="0" max="100" placeholder="e.g., 80" class="w-full p-3 rounded-2xl border border-[var(--main-green-light)] bg-gray-50 focus:border-[var(--main-green)] focus:ring-2 focus:ring-[var(--main-green-light)] transition" required>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                    <select id="transactionCategory" class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-indigo-500 focus:outline-none">
+                        <option value="food">Food & Dining</option>
+                        <option value="shopping">Shopping</option>
+                        <option value="transportation">Transportation</option>
+                        <option value="utilities">Utilities</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="salary">Salary</option>
+                        <option value="freelance">Freelance</option>
+                        <option value="investment">Investment</option>
+                    </select>
                     </div>
-                    <div class="form-group">
-                        <label class="block text-sm font-medium text-[var(--main-green-dark)] mb-2">Categories</label>
-                        <div id="category-list" class="space-y-4"></div>
-                        <button type="button" class="text-sm font-medium text-[var(--main-green)] hover:text-[var(--main-green-dark)] mt-4 transition" onclick="addBudgetCategory()">+ Add Category</button>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <input type="text" id="transactionDescription" class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-indigo-500 focus:outline-none" placeholder="Transaction description" required>
                     </div>
-                    <div class="modal-footer flex justify-end gap-4">
-                        <button type="submit" class="save-btn bg-gradient-to-r from-[var(--main-green)] to-[var(--main-green-dark)] text-white px-6 py-3 rounded-2xl font-semibold hover:shadow-xl hover:scale-[1.02] transition-all duration-300">Create Budget</button>
-                        <button type="button" class="cancel-btn bg-gray-100 text-[var(--main-green-dark)] px-6 py-3 rounded-2xl font-semibold hover:bg-gray-200 transition" id="cancelBudgetBtn">Cancel</button>
+                <div class="flex space-x-4 mt-6">
+                    <button type="button" onclick="closeTransactionModal()" class="flex-1 px-6 py-3 rounded-2xl border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 px-6 py-3 rounded-2xl bg-indigo-600 text-white hover:bg-indigo-700 transition-colors">
+                        Add Transaction
+                    </button>
                     </div>
                 </form>
-            </div>
         </div>
     </div>
+
+    <!-- Scripts -->
+    <script src="../../assets/js/page-loader.js"></script>
+    <script src="../../assets/js/header.js"></script>
+    <script src="../../assets/js/sidebar.js"></script>
+    <script src="../../assets/js/home.js"></script>
 </body>
 </html>

@@ -4,1575 +4,360 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Packages - Finmate</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src=" /assets/js/helper_functions.js"></script>
-    <script src=" /assets/js/autho_helper.js" defer></script>
-    <script src=" /assets/js/sidebar.js" defer></script>
+    <title>Subscription Manager - FinMate</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'indigo-50': '#eef2ff',
+                        'indigo-100': '#e0e7ff',
+                        'indigo-500': '#6366f1',
+                        'indigo-600': '#4f46e5',
+                        'purple-50': '#faf5ff',
+                        'purple-100': '#f3e8ff',
+                        'purple-500': '#a855f7',
+                        'purple-600': '#9333ea'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="/assets/css/global-layout.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
-            --main-green: #388e3c;
-            --main-green-dark: #2e7d32;
-            --main-green-light: #a3c9a8;
-            --main-bg: linear-gradient(135deg, #f0f4f3 0%, #e6f0ed 100%);
-            --card-bg: #fff;
-            --card-radius: 18px;
-            --card-shadow: 0 8px 32px rgba(56, 142, 60, 0.10);
-            --sidebar-bg: linear-gradient(135deg, #2d5a3d 0%, #1a3d2e 50%, #0f2922 100%);
-            --sidebar-color: #fff;
-            --sidebar-active: #a3c9a8;
-            --sidebar-hover: #388e3c;
-            --header-bg: #fff;
-            --header-radius: 16px;
-            --header-shadow: 0 4px 16px rgba(56, 142, 60, 0.08);
-            --primary: #388e3c;
-            --danger: #d32f2f;
-            --success: #388e3c;
-            --text-dark: #2d5a3d;
-            --text-light: #546e7a;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--main-bg);
-            color: var(--text-dark);
-            line-height: 1.5;
-        }
-
-        .layout {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .main-content {
-            flex: 1;
-            margin-left: 280px;
-            padding: 2rem;
-            display: flex;
-            gap: 2rem;
-        }
-
-        .content-column {
-            flex: 2;
-        }
-
-
-        .header {
-            background: var(--header-bg);
-            border-radius: var(--header-radius);
-            box-shadow: var(--header-shadow);
-            padding: 1.5rem 2rem;
-            margin-bottom: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .page-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .page-subtitle {
-            color: var(--text-light);
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .search-box {
-            position: relative;
-        }
-
-        .search-box input {
-            padding: 0.5rem 1rem 0.5rem 2.5rem;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            width: 300px;
-            font-size: 0.875rem;
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-light);
-        }
-
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--main-green-dark);
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #b71c1c;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: var(--card-bg);
-            border-radius: var(--card-radius);
-            box-shadow: var(--card-shadow);
-            padding: 1.5rem;
-            position: relative;
-        }
-
-        .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-        }
-
-        .stat-title {
-            font-size: 0.875rem;
-            color: var(--text-light);
-            font-weight: 500;
-        }
-
-        .stat-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-        }
-
-        .stat-icon.revenue {
-            background: rgba(56, 142, 60, 0.1);
-            color: var(--main-green);
-        }
-
-        .stat-icon.users {
-            background: rgba(33, 150, 243, 0.1);
-            color: #2196F3;
-        }
-
-        .stat-icon.conversion {
-            background: rgba(255, 152, 0, 0.1);
-            color: #FF9800;
-        }
-
-        .stat-icon.avg {
-            background: rgba(156, 39, 176, 0.1);
-            color: #9C27B0;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-change {
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .stat-change.positive {
-            color: var(--success);
-        }
-
-        .stat-change.negative {
-            color: var(--danger);
-        }
-
-        .content-card {
-            border-radius: var(--card-radius);
-            overflow: hidden;
-            display: flex;
-            justify-content: space-between;
-            align-items: stretch;
-            gap: 1rem;
-        }
-
-        .premium-package-container {
-            background-color: var(--card-bg);
-            border-radius: var(--card-radius);
-            flex: 0 0 68%;
-        }
-
-        .recent-subscription {
-            background-color: var(--card-bg);
-            border-radius: var(--card-radius);
-            flex: 0 0 30%;
-            height: 60%;
-        }
-
-        .card-header {
-            padding: 1.5rem 2rem;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .filter-tabs {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .tab-btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            background: transparent;
-            color: var(--text-light);
-            font-size: 0.875rem;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-        }
-
-        .tab-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .packages-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            padding: 2rem;
-        }
-
-        .package-card {
-            border: 1px solid #f0f0f0;
-            border-radius: 12px;
-            padding: 1.5rem;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .package-card:hover {
-            box-shadow: 0 4px 20px rgba(56, 142, 60, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .package-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-        }
-
-        .package-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            color: white;
-        }
-
-        .package-icon.basic {
-            background: linear-gradient(135deg, #64B5F6, #2196F3);
-        }
-
-        .package-icon.pro {
-            background: linear-gradient(135deg, #BA68C8, #9C27B0);
-        }
-
-        .package-icon.enterprise {
-            background: linear-gradient(135deg, #81C784, #4CAF50);
-        }
-
-        .package-icon.yearly {
-            background: linear-gradient(135deg, #FFB74D, #FF9800);
-        }
-
-        .package-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .action-btn {
-            width: 32px;
-            height: 32px;
-            border: none;
-            border-radius: 6px;
-            background: #f5f5f5;
-            color: var(--text-light);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .action-btn:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .package-name {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 0.25rem;
-        }
-
-        .package-type {
-            font-size: 0.75rem;
-            color: var(--text-light);
-            text-transform: uppercase;
-            font-weight: 500;
-        }
-
-        .package-price {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin: 1rem 0;
-        }
-
-        .package-period {
-            font-size: 0.875rem;
-            color: var(--text-light);
-        }
-
-        .package-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin: 1rem 0;
-        }
-
-        .package-stat {
-            text-align: center;
-        }
-
-        .package-stat-value {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .package-stat-label {
-            font-size: 0.75rem;
-            color: var(--text-light);
-            margin-top: 0.25rem;
-        }
-
-        .package-features {
-            margin: 1rem 0;
-        }
-
-        .features-title {
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .feature-list {
-            list-style: none;
-            padding: 2%;
-        }
-
-        .feature-item {
-            font-size: 0.875rem;
-            color: var(--text-light);
-            margin-bottom: 0.25rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .feature-item i {
-            color: var(--success);
-            font-size: 0.75rem;
-        }
-
-        .package-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            margin-top: 1rem;
-        }
-
-        .package-status.active {
-            background: rgba(76, 175, 80, 0.1);
-            color: #4CAF50;
-        }
-
-        .package-status.inactive {
-            background: rgba(158, 158, 158, 0.1);
-            color: #9E9E9E;
-        }
-
-        .subscription-item {
-            display: flex;
-            align-items: center;
-            padding: 1rem 2rem;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .subscription-item:last-child {
-            border-bottom: none;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--main-green-light);
-            color: var(--main-green-dark);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            margin-right: 1rem;
-            font-size: 1rem;
-        }
-
-        .user-avatar.j {
-            background: rgba(33, 150, 243, 0.1);
-            color: #2196F3;
-        }
-
-        .user-avatar.s {
-            background: rgba(76, 175, 80, 0.1);
-            color: #4CAF50;
-        }
-
-        .user-avatar.m {
-            background: rgba(0, 188, 212, 0.1);
-            color: #00BCD4;
-        }
-
-        .user-avatar.e {
-            background: rgba(156, 39, 176, 0.1);
-            color: #9C27B0;
-        }
-
-        .user-avatar.r {
-            background: rgba(255, 152, 0, 0.1);
-            color: #FF9800;
-        }
-
-        .subscription-info {
-            flex: 1;
-        }
-
-        .subscription-name {
-            font-weight: 600;
-            color: #2d5a3d;
-            font-size: 0.875rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .subscription-package {
-            font-size: 0.75rem;
-            color: #546e7a;
-        }
-
-        .subscription-details {
-            text-align: right;
-        }
-
-        .subscription-price {
-            font-weight: 600;
-            color: #2d5a3d;
-            font-size: 0.875rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .subscription-time {
-            font-size: 0.75rem;
-            color: #546e7a;
-            margin-bottom: 0.5rem;
-        }
-
-        .subscription-status {
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            text-align: center;
-            display: inline-block;
-        }
-
-        .subscription-status.active {
-            background: rgba(76, 175, 80, 0.1);
-            color: #4CAF50;
-        }
-
-        .subscription-status.pending {
-            background: rgba(255, 152, 0, 0.1);
-            color: #FF9800;
-        }
-
-        .subscription-status.expired {
-            background: rgba(244, 67, 54, 0.1);
-            color: #F44336;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            border-radius: var(--card-radius);
-            box-shadow: var(--card-shadow);
-            max-width: 500px;
-            width: 90%;
-            padding: 2rem;
-            position: relative;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .modal-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.25rem;
-            color: var(--text-light);
-            cursor: pointer;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text-dark);
-            margin-bottom: 0.25rem;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 0.875rem;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-            margin-top: 2rem;
-        }
-
-        .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 3rem;
-            color: var(--text-light);
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 1rem;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
+        /* Ensure consistent layout for main content */
+        @media (min-width: 1024px) {
+            .main-content-grid {
+                display: grid !important;
+                grid-template-columns: 2fr 1fr !important;
+                gap: 2rem !important;
             }
-
-            100% {
-                transform: rotate(360deg);
+            .packages-section {
+                min-width: 0 !important;
             }
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: var(--text-light);
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 1rem 2rem;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .pagination-btn {
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #e0e0e0;
-            background: white;
-            color: var(--text-light);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .pagination-btn:hover:not(:disabled) {
-            background: var(--primary);
-            color: white;
-        }
-
-        .pagination-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .pagination-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 0.5rem;
-            max-height: 150px;
-            overflow-y: auto;
-            padding: 0.5rem;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem;
-            border-radius: 6px;
-            background: #f5f5f5;
-            cursor: pointer;
-            font-size: 0.875rem;
-            color: var(--text-dark);
-        }
-
-        .feature-item:hover {
-            background: rgba(56, 142, 60, 0.1);
-        }
-
-        .feature-item i {
-            color: var(--success);
-            font-size: 0.75rem;
-        }
-
-        .feature-item.unselected i {
-            color: var(--text-light);
-        }
-
-        @media (max-width: 1200px) {
-            .main-content {
-                flex-direction: column;
-            }
-        }
-
-        @media (max-width: 1024px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            }
-
-            .packages-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                padding: 1rem;
-            }
-
-            .header {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: flex-start;
-            }
-
-            .search-box input {
-                width: 100%;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
+            .subscriptions-section {
+                min-width: 0 !important;
             }
         }
     </style>
+    <script src="/assets/js/page-loader.js" defer></script>
+    <script src="/assets/js/header.js" defer></script>
+    <script src="/assets/js/sidebar.js" defer></script>
+    <script src="/assets/js/helper_functions.js"></script>
+    <script src="/assets/js/autho_helper.js" defer></script>
 </head>
 
-<body>
-    <div class="layout">
-        <div id="sidebar-container"></div>
-        <main class="main-content">
-            <div class="content-column">
-                <header class="header">
-                    <div>
-                        <h1 class="page-title">Premium Packages</h1>
-                        <p class="page-subtitle">Manage subscription plans and pricing</p>
+<body class="bg-gradient-to-br from-indigo-50 via-white to-purple-50 min-h-screen">
+    <div id="header-container"></div>
+    <div id="sidebar-container"></div>
+    <div class="main-content" id="mainContent" style="display: none;">
+        <div class="container mx-auto px-6 py-8">
+            <!-- Header Section -->
+            <div class="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-indigo-100">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                    <div class="flex-1 mb-6 lg:mb-0">
+                        <h1 class="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                            Subscription Manager
+                        </h1>
+                        <p class="text-gray-600 text-lg">Manage subscription plans, pricing and analytics</p>
                     </div>
-                    <div class="header-actions">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search packages..." id="searchInput">
-                        </div>
-                        <button class="btn btn-primary" onclick="openNewPackageModal()">
-                            <i class="fas fa-plus"></i>
-                            New Package
-                        </button>
-                        <button class="btn" onclick="location.reload()">
-                            <i class="fas fa-bell"></i>
-                        </button>
-                    </div>
-                </header>
-
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-title">Revenue</div>
-                            <div class="stat-icon revenue">
-                                <i class="fas fa-dollar-sign"></i>
+                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                        <!-- Search Box -->
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
                             </div>
+                            <input type="text" id="searchInput" placeholder="Search packages..." 
+                                class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-2xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
                         </div>
-                        <div class="stat-value" id="totalRevenue">0đ</div>
-                        <div class="stat-change positive" id="revenueChange">+0%</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-title">Active Subscribers</div>
-                            <div class="stat-icon users">
-                                <i class="fas fa-users"></i>
-                            </div>
-                        </div>
-                        <div class="stat-value" id="totalSubscribers">0</div>
-                        <div class="stat-change positive" id="subscribersChange">+0%</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-title">Conversion Rate</div>
-                            <div class="stat-icon conversion">
-                                <i class="fas fa-percentage"></i>
-                            </div>
-                        </div>
-                        <div class="stat-value" id="conversionRate">0%</div>
-                        <div class="stat-change positive" id="conversionChange">+0.0%</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <div class="stat-title">Avg Revenue/User</div>
-                            <div class="stat-icon avg">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                        </div>
-                        <div class="stat-value" id="avgRevenue">0đ</div>
-                        <div class="stat-change negative" id="avgRevenueChange">-0%</div>
-                    </div>
-                </div>
-
-                <div class="content-card">
-                    <div class="premium-package-container">
-                        <div class="card-header">
-                            <h2 class="card-title">All Packages</h2>
-                            <div class="filter-tabs">
-                                <button class="tab-btn active" data-filter="all">All</button>
-                                <button class="tab-btn" data-filter="monthly">Monthly</button>
-                                <button class="tab-btn" data-filter="yearly">Yearly</button>
-                                <button class="tab-btn" data-filter="active">Active</button>
-                            </div>
-                        </div>
-                        <div id="packagesContainer">
-                            <div class="loading">
-                                <div class="spinner"></div>
-                                Loading packages...
-                            </div>
-                        </div>
-                        <div class="pagination" id="pagination" style="display: none;">
-                            <button class="pagination-btn" id="prevBtn" onclick="changePage(currentPage - 1)">
-                                <i class="fas fa-chevron-left"></i>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex space-x-3">
+                            <button class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-2xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2" onclick="openNewPackageModal()">
+                                <i class="fas fa-plus"></i>
+                                <span>New Package</span>
                             </button>
-                            <div id="pageNumbers"></div>
-                            <button class="pagination-btn" id="nextBtn" onclick="changePage(currentPage + 1)">
-                                <i class="fas fa-chevron-right"></i>
+                            <button class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-2xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2" onclick="refreshData()">
+                                <i class="fas fa-sync-alt"></i>
+                                <span>Refresh</span>
                             </button>
                         </div>
                     </div>
-                    <div class="recent-subscription">
-                        <div class="card-header">
-                            <h2 class="card-title">Recent Subscriptions</h2>
-                            <a href="#" class="btn">View All</a>
+                </div>
+            </div>
+
+            <!-- Statistics Overview -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Subscription Analytics</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Total Revenue -->
+                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-green-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-3xl font-bold text-gray-900" id="totalRevenue">0đ</h3>
+                                <p class="text-gray-600 mt-1">Total Revenue</p>
+                                <div class="text-sm font-medium text-green-600 mt-1" id="revenueChange">+0%</div>
+                            </div>
+                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                <i class="fas fa-dollar-sign text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                            </div>
                         </div>
-                        <div id="recentSubscriptions">
-                            <div class="loading">
-                                <div class="spinner"></div>
-                                Loading recent subscriptions...
+                    </div>
+
+                    <!-- Active Subscribers -->
+                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-blue-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-3xl font-bold text-gray-900" id="totalSubscribers">0</h3>
+                                <p class="text-gray-600 mt-1">Active Subscribers</p>
+                                <div class="text-sm font-medium text-blue-600 mt-1" id="subscribersChange">+0%</div>
+                            </div>
+                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+                                <i class="fas fa-users text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conversion Rate -->
+                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-amber-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-3xl font-bold text-gray-900" id="conversionRate">0%</h3>
+                                <p class="text-gray-600 mt-1">Conversion Rate</p>
+                                <div class="text-sm font-medium text-amber-600 mt-1" id="conversionChange">+0.0%</div>
+                            </div>
+                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                                <i class="fas fa-percentage text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Average Revenue Per User -->
+                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-purple-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-3xl font-bold text-gray-900" id="avgRevenue">0đ</h3>
+                                <p class="text-gray-600 mt-1">Avg Revenue/User</p>
+                                <div class="text-sm font-medium text-purple-600 mt-1" id="avgRevenueChange">-0%</div>
+                            </div>
+                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);">
+                                <i class="fas fa-chart-line text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
 
-    <div id="createPackageModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Create New Package</h2>
-                <button class="close-btn" onclick="closeNewPackageModal()">×</button>
-            </div>
-            <form id="createPackageForm">
-                <div class="form-group">
-                    <label for="createName">Package Name</label>
-                    <input type="text" id="createName" required>
-                </div>
-                <div class="form-group">
-                    <label for="createPrice">Price (VND)</label>
-                    <input type="number" id="createPrice" step="1000" required>
-                </div>
-                <div class="form-group">
-                    <label for="createDurationValue">Duration Value</label>
-                    <input type="number" id="createDurationValue" required>
-                </div>
-                <div class="form-group">
-                    <label for="createDurationType">Duration Type</label>
-                    <select id="createDurationType" required>
-                        <option value="MONTH">Month</option>
-                        <option value="YEAR">Year</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="createFeatures">Features</label>
-                    <div id="createFeatures" class="feature-grid"></div>
-                    <input type="hidden" id="createSelectedFeatures">
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn" onclick="closeNewPackageModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create Package</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="updatePackageModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Update Package</h2>
-                <button class="close-btn" onclick="closeUpdateModal()">×</button>
-            </div>
-            <form id="updatePackageForm">
-                <input type="hidden" id="updatePackageId">
-                <div class="form-group">
-                    <label for="updateName">Package Name</label>
-                    <input type="text" id="updateName" required>
-                </div>
-                <div class="form-group">
-                    <label for="updatePrice">Price (VND)</label>
-                    <input type="number" id="updatePrice" step="1000" required>
-                </div>
-                <div class="form-group">
-                    <label for="updateDurationValue">Duration Value</label>
-                    <input type="number" id="updateDurationValue" required>
-                </div>
-                <div class="form-group">
-                    <label for="updateDurationType">Duration Type</label>
-                    <select id="updateDurationType" required>
-                        <option value="DAY">Day</option>
-                        <option value="WEEK">Week</option>
-                        <option value="MONTH">Month</option>
-                        <option value="YEAR">Year</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="updateFeatures">Features</label>
-                    <div id="updateFeatures" class="feature-grid"></div>
-                    <input type="hidden" id="updateSelectedFeatures">
-                </div>
-                <div class="form-group">
-                    <label for="updateIsActive">Status</label>
-                    <select id="updateIsActive" required>
-                        <option value="true">Active</option>
-                        <option value="false">Inactive</option>
-                    </select>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn" onclick="closeUpdateModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Update Package</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        // API Configuration
-        const API_BASE_URL = 'http://localhost:8080/api/premium-package';
-        const SUBSCRIPTION_API_URL = 'http://localhost:8080/api/subscriptions';
-        const FEATURES_API_URL = 'http://localhost:8080/api/features';
-        let currentPage = 0;
-        let totalPages = 0;
-        let currentFilter = 'all';
-        let packages = [];
-        let allFeatures = [];
-
-
-        const getPackageIcon = (name) => {
-            const lowerName = name.toLowerCase();
-            if (lowerName.includes('basic')) return 'basic';
-            if (lowerName.includes('pro') || lowerName.includes('premium')) return 'pro';
-            if (lowerName.includes('enterprise')) return 'enterprise';
-            if (lowerName.includes('yearly') || lowerName.includes('annual')) return 'yearly';
-            return 'basic';
-        };
-
-        const getDurationText = (value, type) => {
-            const typeMap = {
-                'DAY': value === 1 ? 'day' : 'days',
-                'WEEK': value === 1 ? 'week' : 'weeks',
-                'MONTH': value === 1 ? 'month' : 'months',
-                'YEAR': value === 1 ? 'year' : 'years'
-            };
-            return `per ${value} ${typeMap[type] || 'month'}`;
-        };
-
-        const formatTimeAgo = (localDateTimeStr) => {
-            const now = new Date('2025-06-23T00:31:00+07:00'); // Updated to current date and time
-            const createdAt = new Date(localDateTimeStr);
-            const diffMs = now - createdAt;
-            const diffMinutes = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-
-            if (diffMinutes < 60) return `${diffMinutes} mins ago`;
-            if (diffHours < 24) return `${diffHours} hours ago`;
-            return `${diffDays} days ago`;
-        };
-
-        // API Functions
-        const fetchPackages = async (page = 0, size = 4, sortBy = 'price', sortDirection = 'DESC') => {
-            try {
-                const response = await apiRequest(
-                    `${API_BASE_URL}?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${sortDirection}`
-                );
-
-                if (!response) return null;
-
-                const data = await response.json();
-                return data.result;
-            } catch (error) {
-                console.error('Error fetching packages:', error);
-                return null;
-            }
-        };
-
-        const fetchPackageById = async (packageId) => {
-            try {
-                const response = await apiRequest(`${API_BASE_URL}/${packageId}`);
-                if (!response) return null;
-                const data = await response.json();
-                return data.result;
-            } catch (error) {
-                console.error('Error fetching package:', error);
-                return null;
-            }
-        };
-
-        const fetchFeatures = async () => {
-            try {
-                const response = await apiRequest(FEATURES_API_URL);
-                if (!response) return [];
-                const data = await response.json();
-                return data.result || [];
-            } catch (error) {
-                console.error('Error fetching features:', error);
-                return [];
-            }
-        };
-
-        const createPackage = async (packageData) => {
-            console.log("Xem cai pakge: ", packageData);
-            try {
-                const response = await apiRequest(API_BASE_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(packageData)
-                });
-                return response;
-            } catch (error) {
-                console.error('Error creating package:', error);
-                throw error;
-            }
-        };
-
-        const updatePackage = async (packageId, packageData) => {
-            try {
-                const response = await apiRequest(`${API_BASE_URL}/${packageId}`, {
-                    method: 'PUT',
-                    body: JSON.stringify(packageData)
-                });
-                return response;
-            } catch (error) {
-                console.error('Error updating package:', error);
-                throw error;
-            }
-        };
-
-        const fetchRevenueAndSubscribers = async () => {
-            try {
-                const response = await apiRequest(`${SUBSCRIPTION_API_URL}/revenue-subscribers`);
-                if (!response) return null;
-                const data = await response.json();
-                return data.result || { revenue: 0, subscribers: 0 };
-            } catch (error) {
-                console.error('Error fetching revenue and subscribers:', error);
-                return { revenue: 0, subscribers: 0 };
-            }
-        };
-
-        const fetchRecentSubscriptions = async () => {
-            try {
-                const response = await apiRequest(`${SUBSCRIPTION_API_URL}/recent?page=0&size=5&sortBy=createdAt&sortDirection=DESC`);
-                if (!response) return [];
-                const data = await response.json();
-                console.log("hahae: ", data);
-                return data.result.content || [];
-            } catch (error) {
-                console.error('Error fetching recent subscriptions:', error);
-                return [];
-            }
-        };
-
-        // Render Functions
-        const renderPackages = (packagesData) => {
-            const container = document.getElementById('packagesContainer');
-
-            if (!packagesData || !packagesData.content || packagesData.content.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-box-open"></i>
-                        <h3>No packages found</h3>
-                        <p>Create your first premium package to get started</p>
+            <!-- Main Content Area -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-3 gap-8 main-content-grid" style="min-height: auto;">
+                <!-- Package Management Section -->
+                <div class="lg:col-span-2 xl:col-span-2 packages-section">
+                    <div class="bg-white rounded-3xl shadow-lg border border-indigo-100">
+                        <!-- Section Header -->
+                        <div class="p-8 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-2xl font-bold text-gray-900 flex items-center space-x-3">
+                                    <span class="text-2xl">📦</span>
+                                    <span>All Packages</span>
+                                </h2>
+                                <div class="flex space-x-2">
+                                    <button class="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-colors filter-btn active" data-filter="all">All</button>
+                                    <button class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors filter-btn" data-filter="monthly">Monthly</button>
+                                    <button class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors filter-btn" data-filter="yearly">Yearly</button>
+                                    <button class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors filter-btn" data-filter="active">Active</button>
+                                </div>
+                            </div>
+                        </div>
+                            
+                            <!-- Packages Grid -->
+                            <div class="p-8">
+                                <div id="packagesContainer" class="grid grid-cols-1 2xl:grid-cols-2 gap-6">
+                                    <!-- Loading State -->
+                                    <div class="col-span-full flex items-center justify-center py-12">
+                                        <div class="text-center">
+                                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+                                            <p class="mt-4 text-gray-600">Loading packages...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Pagination -->
+                                <div class="mt-8 flex items-center justify-between" id="pagination" style="display: none;">
+                                    <div class="flex-1 flex justify-between sm:hidden">
+                                        <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" id="prevBtn">
+                                            Previous
+                                        </button>
+                                        <button class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" id="nextBtn">
+                                            Next
+                                        </button>
+                                    </div>
+                                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-center">
+                                        <div>
+                                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" id="pageNumbers">
+                                                <!-- Pagination buttons will be added here -->
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                `;
-                return;
-            }
+                </div>
 
-            packages = packagesData.content;
-            totalPages = packagesData.totalPages;
+                <!-- Recent Subscriptions Sidebar -->
+                <div class="lg:col-span-1 xl:col-span-1 subscriptions-section">
+                    <div class="bg-white rounded-3xl shadow-lg border border-indigo-100">
+                        <div class="p-6 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-xl font-bold text-gray-900 flex items-center space-x-2">
+                                    <span class="text-xl">👥</span>
+                                    <span>Recent Subscriptions</span>
+                                </h2>
+                                <a href="#" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">View All</a>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div id="recentSubscriptions">
+                                <div class="flex items-center justify-center py-8">
+                                    <div class="text-center">
+                                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
+                                        <p class="mt-2 text-gray-600 text-sm">Loading subscriptions...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            // Map feature codes to feature names for display
-            const getFeatureName = (featureCode) => {
-                const feature = allFeatures.find(f => f.featureCode === featureCode);
-                return feature ? feature.featureName : featureCode;
-            };
-
-            const packagesHTML = packages.map(pkg => `
-                <div class="package-card" data-type="${pkg.durationType?.toLowerCase() || 'monthly'}" data-active="${pkg.isActive}">
-                    <div class="package-header">
+    <!-- Create Package Modal -->
+    <div id="createPackageModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <div class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-6 pt-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center space-x-3">
+                            <span class="text-2xl">➕</span>
+                            <span>Create New Package</span>
+                        </h2>
+                        <button class="text-gray-400 hover:text-gray-600 transition-colors" onclick="closeNewPackageModal()">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <form id="createPackageForm" class="space-y-6">
                         <div>
-                            <div class="package-icon ${getPackageIcon(pkg.name)}">
-                                <i class="fas fa-crown"></i>
+                            <label for="createName" class="block text-sm font-medium text-gray-700 mb-2">Package Name</label>
+                            <input type="text" id="createName" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label for="createPrice" class="block text-sm font-medium text-gray-700 mb-2">Price (VND)</label>
+                            <input type="number" id="createPrice" step="1000" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="createDurationValue" class="block text-sm font-medium text-gray-700 mb-2">Duration Value</label>
+                                <input type="number" id="createDurationValue" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label for="createDurationType" class="block text-sm font-medium text-gray-700 mb-2">Duration Type</label>
+                                <select id="createDurationType" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option value="MONTH">Month</option>
+                                    <option value="YEAR">Year</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="package-actions">
-                            <button class="action-btn" onclick="openUpdateModal(${pkg.id})" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn" onclick="deletePackage(${pkg.id})" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                        <div>
+                            <label for="createFeatures" class="block text-sm font-medium text-gray-700 mb-2">Features</label>
+                            <div id="createFeatures" class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-3 border border-gray-300 rounded-2xl bg-gray-50">
+                                <!-- Features will be loaded here -->
+                            </div>
+                            <input type="hidden" id="createSelectedFeatures">
                         </div>
-                    </div>
-                    <div class="package-name">${pkg.name}</div>
-                    <div class="package-type">${pkg.durationType?.toLowerCase() || 'monthly'}</div>
-                    <div class="package-price">
-                        ${formatCurrency(pkg.price)}
-                        <span class="package-period">${getDurationText(pkg.durationValue, pkg.durationType)}</span>
-                    </div>
-                    <div class="package-stats">
-                        <div class="package-stat">
-                            <div class="package-stat-value">${formatNumber(pkg.subscribers || 0)}</div>
-                            <div class="package-stat-label">Subscribers</div>
+                        <div class="bg-gray-50 px-6 py-4 -mx-6 -mb-6 flex justify-end space-x-3">
+                            <button type="button" class="px-6 py-3 border border-gray-300 rounded-2xl text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors" onclick="closeNewPackageModal()">Cancel</button>
+                            <button type="submit" class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl hover:from-indigo-700 hover:to-purple-700 font-medium transition-all duration-300 hover:scale-105">Create Package</button>
                         </div>
-                        <div class="package-stat">
-                            <div class="package-stat-value">${formatCurrency(pkg.revenue || 0)}</div>
-                            <div class="package-stat-label">Revenue</div>
-                        </div>
-                    </div>
-                    <div class="package-features">
-                        <div class="features-title">Features</div>
-                        <ul class="feature-list">
-                            ${(pkg.features || ['Basic Features', 'Support']).slice(0, 3).map(feature => `
-                                <li class="feature-item">
-                                    <i class="fas fa-check"></i> ${getFeatureName(feature)}
-                                </li>
-                            `).join('')}
-                            ${pkg.features && pkg.features.length > 3 ? `
-                                <li class="feature-item">
-                                    <i class="fas fa-plus"></i>
-                                    +${pkg.features.length - 3} more
-                                </li>
-                            ` : ''}
-                        </ul>
-                    </div>
-                    <div class="package-status ${pkg.isActive ? 'active' : 'inactive'}">
-                        <i class="fas fa-circle"></i>
-                        ${pkg.isActive ? 'Active' : 'Inactive'}
-                    </div>
+                    </form>
                 </div>
-            `).join('');
+            </div>
+        </div>
+    </div>
 
-            container.innerHTML = `<div class="packages-grid">${packagesHTML}</div>`;
-            updatePagination();
-        };
-
-        const renderRecentSubscriptions = (subscriptions) => {
-            const container = document.getElementById('recentSubscriptions');
-
-            if (!subscriptions || subscriptions.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-users"></i>
-                        <h3>No recent subscriptions</h3>
-                        <p>Recent subscription activity will appear here</p>
+    <!-- Update Package Modal -->
+    <div id="updatePackageModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <div class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-6 pt-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center space-x-3">
+                            <span class="text-2xl">✏️</span>
+                            <span>Update Package</span>
+                        </h2>
+                        <button class="text-gray-400 hover:text-gray-600 transition-colors" onclick="closeUpdateModal()">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
                     </div>
-                `;
-                return;
-            }
-
-            const subscriptionsHTML = subscriptions.map(sub => `
-                <div class="subscription-item">
-                    <div class="user-avatar">${sub.userName?.charAt(0).toUpperCase() || 'U'}</div>
-                    <div class="subscription-info">
-                        <div class="subscription-name">${sub.userName || 'Unknown User'}</div>
-                        <div class="subscription-package">${sub.packageName || 'Premium Package'}</div>
-                    </div>
-                    <div class="subscription-details">
-                        <div class="subscription-price">${formatCurrency(sub.amount || 0)}</div>
-                        <div class="subscription-time">${formatTimeAgo(sub.createdAt)}</div>
-                        <div class="subscription-status ${sub.status?.toLowerCase() || 'completed'}">
-                            ${sub.status || 'Completed'}
+                    <form id="updatePackageForm" class="space-y-6">
+                        <input type="hidden" id="updatePackageId">
+                        <div>
+                            <label for="updateName" class="block text-sm font-medium text-gray-700 mb-2">Package Name</label>
+                            <input type="text" id="updateName" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
-                    </div>
+                        <div>
+                            <label for="updatePrice" class="block text-sm font-medium text-gray-700 mb-2">Price (VND)</label>
+                            <input type="number" id="updatePrice" step="1000" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="updateDurationValue" class="block text-sm font-medium text-gray-700 mb-2">Duration Value</label>
+                                <input type="number" id="updateDurationValue" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label for="updateDurationType" class="block text-sm font-medium text-gray-700 mb-2">Duration Type</label>
+                                <select id="updateDurationType" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option value="DAY">Day</option>
+                                    <option value="WEEK">Week</option>
+                                    <option value="MONTH">Month</option>
+                                    <option value="YEAR">Year</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="updateFeatures" class="block text-sm font-medium text-gray-700 mb-2">Features</label>
+                            <div id="updateFeatures" class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-3 border border-gray-300 rounded-2xl bg-gray-50">
+                                <!-- Features will be loaded here -->
+                            </div>
+                            <input type="hidden" id="updateSelectedFeatures">
+                        </div>
+                        <div>
+                            <label for="updateIsActive" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                            <select id="updateIsActive" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
+                            </select>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-4 -mx-6 -mb-6 flex justify-end space-x-3">
+                            <button type="button" class="px-6 py-3 border border-gray-300 rounded-2xl text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors" onclick="closeUpdateModal()">Cancel</button>
+                            <button type="submit" class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-2xl hover:from-green-700 hover:to-green-800 font-medium transition-all duration-300 hover:scale-105">Update Package</button>
+                        </div>
+                    </form>
                 </div>
-            `).join('');
+            </div>
+        </div>
+    </div>
 
-            container.innerHTML = subscriptionsHTML;
-        };
-
-        const renderFeatures = (containerId, selectedFeatures = []) => {
-            const container = document.getElementById(containerId);
-            if (!allFeatures || allFeatures.length === 0) {
-                container.innerHTML = '<p>No features available</p>';
-                return;
-            }
-
-            const featuresHTML = allFeatures.map(feature => `
-                <div class="feature-item ${selectedFeatures.includes(feature.featureCode) ? '' : 'unselected'}" 
-                     data-feature-code="${feature.featureCode}" 
-                     onclick="toggleFeature('${containerId}', '${feature.featureCode}')">
-                    <i class="fas ${selectedFeatures.includes(feature.featureCode) ? 'fa-check' : 'fa-plus'}"></i>
-                    ${feature.featureName}
-                </div>
-            `).join('');
-            container.innerHTML = featuresHTML;
-        };
-
-        const toggleFeature = (containerId, featureCode) => {
-            const container = document.getElementById(containerId);
-            const featureItem = container.querySelector(`[data-feature-code="${featureCode}"]`);
-            const input = document.getElementById(containerId === 'createFeatures' ? 'createSelectedFeatures' : 'updateSelectedFeatures');
-            let selectedFeatures = input.value ? input.value.split(',') : [];
-
-            if (selectedFeatures.includes(featureCode)) {
-                selectedFeatures = selectedFeatures.filter(code => code !== featureCode);
-                featureItem.classList.add('unselected');
-                featureItem.querySelector('i').classList.remove('fa-check');
-                featureItem.querySelector('i').classList.add('fa-plus');
-            } else {
-                selectedFeatures.push(featureCode);
-                featureItem.classList.remove('unselected');
-                featureItem.querySelector('i').classList.remove('fa-plus');
-                featureItem.querySelector('i').classList.add('fa-check');
-            }
-
-            input.value = selectedFeatures.join(',');
-        };
-
-        const updateStats = async () => {
-            const stats = await fetchRevenueAndSubscribers();
-
-            document.getElementById('totalRevenue').textContent = formatCurrency(stats.revenue || 0);
-            document.getElementById('totalSubscribers').textContent = formatNumber(stats.subscribers || 0);
-
-            const avgRevenue = stats.subscribers > 0 ? stats.revenue / stats.subscribers : 0;
-            document.getElementById('avgRevenue').textContent = formatCurrency(avgRevenue);
-            document.getElementById('conversionRate').textContent = '3.4%';
-        };
-
-        const updatePagination = () => {
-            const pagination = document.getElementById('pagination');
-            const pageNumbers = document.getElementById('pageNumbers');
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-
-            if (totalPages <= 1) {
-                pagination.style.display = 'none';
-                return;
-            }
-
-            pagination.style.display = 'flex';
-
-            prevBtn.disabled = currentPage === 0;
-            nextBtn.disabled = currentPage >= totalPages - 1;
-
-            let pageNumbersHTML = '';
-            const maxVisiblePages = 5;
-            let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
-            let endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1);
-
-            if (endPage - startPage < maxVisiblePages - 1) {
-                startPage = Math.max(0, endPage - maxVisiblePages + 1);
-            }
-
-            for (let i = startPage; i <= endPage; i++) {
-                pageNumbersHTML += `
-                    <button class="pagination-btn ${i === currentPage ? 'active' : ''}" 
-                            onclick="changePage(${i})">
-                        ${i + 1}
-                    </button>
-                `;
-            }
-
-            pageNumbers.innerHTML = pageNumbersHTML;
-        };
-
-        // Modal Functions
-        const openNewPackageModal = async () => {
-            const modal = document.getElementById('createPackageModal');
-            document.getElementById('createPackageForm').reset();
-            document.getElementById('createSelectedFeatures').value = '';
-            renderFeatures('createFeatures', []);
-            modal.style.display = 'flex';
-        };
-
-        const closeNewPackageModal = () => {
-            const modal = document.getElementById('createPackageModal');
-            modal.style.display = 'none';
-            document.getElementById('createPackageForm').reset();
-            document.getElementById('createSelectedFeatures').value = '';
-        };
-
-        const openUpdateModal = async (packageId) => {
-            const modal = document.getElementById('updatePackageModal');
-            const packageData = await fetchPackageById(packageId);
-
-            if (packageData) {
-                document.getElementById('updatePackageId').value = packageData.id;
-                document.getElementById('updateName').value = packageData.name;
-                document.getElementById('updatePrice').value = packageData.price;
-                document.getElementById('updateDurationValue').value = packageData.durationValue;
-                document.getElementById('updateDurationType').value = packageData.durationType;
-                // Map feature names to feature codes
-                const featureCodes = packageData.features
-                    ? packageData.features.map(name => {
-                        const feature = allFeatures.find(f => f.featureName === name);
-                        return feature ? feature.featureCode : null;
-                    }).filter(code => code !== null)
-                    : [];
-                document.getElementById('updateSelectedFeatures').value = featureCodes.join(',');
-                renderFeatures('updateFeatures', featureCodes);
-                document.getElementById('updateIsActive').value = packageData.isActive.toString();
-                modal.style.display = 'flex';
-            } else {
-                alert('Failed to load package data');
-            }
-        };
-
-        const closeUpdateModal = () => {
-            const modal = document.getElementById('updatePackageModal');
-            modal.style.display = 'none';
-            document.getElementById('updatePackageForm').reset();
-            document.getElementById('updateSelectedFeatures').value = '';
-        };
-
-        // Event Handlers
-        const changePage = async (page) => {
-            if (page < 0 || page >= totalPages || page === currentPage) return;
-
-            currentPage = page;
-            await loadPackages();
-        };
-
-        const filterPackages = (filter) => {
-            currentFilter = filter;
-
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.filter === filter) {
-                    btn.classList.add('active');
-                }
-            });
-
-            const packageCards = document.querySelectorAll('.package-card');
-            packageCards.forEach(card => {
-                const type = card.dataset.type;
-                const isActive = card.dataset.active === 'true';
-
-                let show = false;
-
-                switch (filter) {
-                    case 'all':
-                        show = true;
-                        break;
-                    case 'monthly':
-                        show = type === 'month';
-                        break;
-                    case 'yearly':
-                        show = type === 'year';
-                        break;
-                    case 'active':
-                        show = isActive;
-                        break;
-                }
-
-                card.style.display = show ? 'block' : 'none';
-            });
-        };
-
-        const handleCreatePackage = async (e) => {
-            e.preventDefault();
-
-            const packageData = {
-                name: document.getElementById('createName').value,
-                price: parseInt(document.getElementById('createPrice').value),
-                durationValue: parseInt(document.getElementById('createDurationValue').value),
-                durationType: document.getElementById('createDurationType').value,
-                features: document.getElementById('createSelectedFeatures').value ? document.getElementById('createSelectedFeatures').value.split(',').filter(f => f.trim()) : []
-            };
-
-            console.log(packageData);
-
-            try {
-                const response = await createPackage(packageData);
-
-                if (response && response.ok) {
-                    closeNewPackageModal();
-                    await loadPackages();
-                    alert('Package created successfully!');
-                } else {
-                    alert('Failed to create package');
-                }
-            } catch (error) {
-                alert('Error creating package');
-            }
-        };
-
-        const handleUpdatePackage = async (e) => {
-            e.preventDefault();
-
-            const packageId = document.getElementById('updatePackageId').value;
-            const packageData = {
-                name: document.getElementById('updateName').value,
-                price: parseInt(document.getElementById('updatePrice').value),
-                durationValue: parseInt(document.getElementById('updateDurationValue').value),
-                durationType: document.getElementById('updateDurationType').value,
-                features: document.getElementById('updateSelectedFeatures').value ? document.getElementById('updateSelectedFeatures').value.split(',').filter(f => f.trim()) : [],
-                isActive: document.getElementById('updateIsActive').value === 'true'
-            };
-
-            try {
-                const response = await updatePackage(packageId, packageData);
-
-                if (response && response.ok) {
-                    closeUpdateModal();
-                    await loadPackages();
-                    alert('Package updated successfully!');
-                } else {
-                    alert('Failed to update package');
-                }
-            } catch (error) {
-                alert('Error updating package');
-            }
-        };
-
-        const deletePackage = async (packageId) => {
-            if (!confirm('Are you sure you want to delete this package?')) return;
-
-            try {
-                const response = await apiRequest(`${API_BASE_URL}/${packageId}`, {
-                    method: 'DELETE',
-                });
-
-                if (response && response.ok) {
-                    await loadPackages();
-                    alert('Package deleted successfully!');
-                } else {
-                    alert('Failed to delete package');
-                }
-            } catch (error) {
-                alert('Error deleting package');
-            }
-        };
-
-        const searchPackages = (query) => {
-            const packageCards = document.querySelectorAll('.package-card');
-
-            packageCards.forEach(card => {
-                const packageName = card.querySelector('.package-name').textContent.toLowerCase();
-                const packageType = card.querySelector('.package-type').textContent.toLowerCase();
-
-                const matches = packageName.includes(query.toLowerCase()) ||
-                    packageType.includes(query.toLowerCase());
-
-                card.style.display = matches ? 'block' : 'none';
-            });
-        };
-
-        // Load Functions
-        const loadPackages = async () => {
-            const packagesData = await fetchPackages(currentPage, 2);
-            if (packagesData) {
-                renderPackages(packagesData);
-                await updateStats();
-            }
-        };
-
-        const loadRecentSubscriptions = async () => {
-            try {
-                const subscriptions = await fetchRecentSubscriptions();
-                renderRecentSubscriptions(subscriptions);
-            } catch (error) {
-                console.error('Error loading subscriptions:', error);
-                renderRecentSubscriptions([]);
-            }
-        };
-
-        const loadFeatures = async () => {
-            allFeatures = await fetchFeatures();
-            renderFeatures('createFeatures', []);
-        };
-
-        // Initialize
-        const init = async () => {
-            if (!checkAuth()) return;
-
-            document.getElementById('searchInput').addEventListener('input', (e) => {
-                searchPackages(e.target.value);
-            });
-
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    filterPackages(e.target.dataset.filter);
-                });
-            });
-
-            document.getElementById('createPackageForm').addEventListener('submit', handleCreatePackage);
-            document.getElementById('updatePackageForm').addEventListener('submit', handleUpdatePackage);
-
-            await Promise.all([
-                loadSideBar(getCurrentUser()),
-                loadPackages(),
-                loadRecentSubscriptions(),
-                loadFeatures()
-            ]);
-        };
-
-        document.addEventListener('DOMContentLoaded', init);
-
-        setInterval(() => {
-            loadPackages();
-            loadRecentSubscriptions();
-        }, 5 * 60 * 1000);
-    </script>
+    <!-- Include Subscription Manager JavaScript -->
+    <script src="/assets/js/subscription-manager.js" defer></script>
 </body>
-
 </html>

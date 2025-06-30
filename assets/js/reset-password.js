@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         try {
-            const response = await fetch('http://localhost:8080/api/auth/reset-password', {
+            const response = await fetch('http://localhost:8080/api/v1/auth/reset-password', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 form.reset();
                 // Redirect to login page after 3 seconds
                 setTimeout(() => {
-                    window.location.href = 'login.html';
+                    window.location.href = '../login/index.html';
                 }, 3000);
             } else {
                 showError(data.message || 'An error occurred. Please try again.');

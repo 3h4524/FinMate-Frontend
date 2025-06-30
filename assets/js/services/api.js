@@ -43,7 +43,7 @@ async function handleResponse(response) {
         console.log('Unauthorized response');
         localStorage.removeItem('token');
         localStorage.removeItem('userData');
-        window.location.href = '/login.html';
+        window.location.href = '/pages/login/index.html';
         return null;
     }
     
@@ -141,7 +141,7 @@ const apiService = {
         } finally {
             localStorage.removeItem('token');
             localStorage.removeItem('userData');
-            window.location.href = '/login.html';
+            window.location.href = '/pages/login/index.html';
         }
     },
 
@@ -252,6 +252,22 @@ const apiService = {
             credentials: 'include'
         });
         return handleResponse(response);
+    },
+
+    async changePassword(passwordData) {
+        const token = getValidToken();
+        if (!token) throw new Error('Unauthorized');
+
+        const response = await fetch(`${API_BASE_URL}/users/change-password`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(passwordData)
+        });
+        await handleResponse(response);
+        return true;
     },
 
     // Transaction endpoints

@@ -120,7 +120,7 @@ function renderGoals() {
                     
                     <div class="flex items-center space-x-4">
                         <div class="px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(goal.status)}">${goal.status}</div>
-                        <button onclick="window.location.href = '../goal/goal_detail/?goalId=${goal.goalId}';" class="flex items-center text-teal-600 hover:text-teal-700 font-medium">
+                        <button onclick="window.location.href = '../goal/goal_detail/?goalId=${goal.goalId}';" class="flex items-center text-blue-600 hover:text-blue-700 font-medium">
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                             View Details
                         </button>
@@ -344,9 +344,31 @@ currentAmountInput.addEventListener('input', validateAmounts);
 
 async function initializeUI() {
     try {
-        await fetchGoalProgress(); // Then fetch goals
-        await loadSideBar(user);
-        // await Promise.all([fetchGoalProgress(), fetchTransaction()]); // nếu muốn fetch 2 cái khác song song
+        console.log('Initializing goals page...');
+
+        // Load sidebar and header first
+        if (typeof loadSideBarSimple === 'function') {
+            loadSideBarSimple();
+        } else {
+            console.error('loadSideBarSimple function not found');
+        }
+
+        if (typeof loadHeaderSimple === 'function') {
+            loadHeaderSimple();
+        } else {
+            console.error('loadHeaderSimple function not found');
+        }
+
+        // Show main content after loading UI components
+        const mainContent = document.getElementById('mainContent');
+        if (mainContent) {
+            mainContent.style.display = 'block';
+        }
+
+        // Load data
+        await fetchGoalProgress();
+
+        console.log('Goals page initialized successfully');
     } catch (err) {
         error = 'Failed to initialize app: ' + err.message;
         console.error(error);

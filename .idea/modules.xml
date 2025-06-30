@@ -2,15 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-<<<<<<< HEAD
-<<<<<<< HEAD
       <module fileurl="file://$PROJECT_DIR$/.idea/Frontend.iml" filepath="$PROJECT_DIR$/.idea/Frontend.iml" />
-=======
-      <module fileurl="file://$PROJECT_DIR$/.idea/front-end.iml" filepath="$PROJECT_DIR$/.idea/front-end.iml" />
->>>>>>> a03c4ade6f9f5330b7b29351b9dcad10df647c8a
-=======
-      <module fileurl="file://$PROJECT_DIR$/.idea/FinMate-Frontend-releasev1.2.iml" filepath="$PROJECT_DIR$/.idea/FinMate-Frontend-releasev1.2.iml" />
->>>>>>> origin/authentication1
     </modules>
   </component>
 </project>

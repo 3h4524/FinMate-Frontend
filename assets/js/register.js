@@ -119,6 +119,26 @@ function initPasswordValidation() {
     });
 }
 
+function initPasswordToggle() {
+    document.querySelectorAll('.password-toggle').forEach(btn => {
+        const icon = btn;
+        const targetInput = btn.dataset.target ? document.getElementById(btn.dataset.target) : btn.previousElementSibling;
+        if (!targetInput) return;
+
+        btn.addEventListener('click', () => {
+            if (targetInput.type === 'password') {
+                targetInput.type = 'text';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            } else {
+                targetInput.type = 'password';
+                icon.classList.add('fa-eye-slash');
+                icon.classList.remove('fa-eye');
+            }
+        });
+    });
+}
+
 // Xử lý đăng ký
 document.getElementById('register-form').addEventListener('submit', async function (e) {
     console.log("XEM");
@@ -158,7 +178,7 @@ document.getElementById('register-form').addEventListener('submit', async functi
             showNotification('Registration successful! Please check your email to verify your account.', 'success');
             // Redirect to email verification page
             setTimeout(() => {
-                window.location.href = 'verify-email.html?email=' + encodeURIComponent(email);
+                window.location.href = '../verify-email/index.html?email=' + encodeURIComponent(email);
             }, 2000);
         } else {
             // Show error message
@@ -180,4 +200,5 @@ document.getElementById('register-form').addEventListener('submit', async functi
 // Initialize password validation on page load
 document.addEventListener('DOMContentLoaded', function () {
     initPasswordValidation();
+    initPasswordToggle();
 });

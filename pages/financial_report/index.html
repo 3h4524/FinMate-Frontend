@@ -5,90 +5,156 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Financial Reports</title>
+    <link href="../../assets/css/global-layout.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../../assets/js/page-loader.js"></script>
+    <script src="../../assets/js/header.js"></script>
+    <script src="../../assets/js/sidebar.js"></script>
     <script src="/assets/js/helper_functions.js"></script>
     <script src="/assets/js/financial_report.js" defer></script>
     <script src="/assets/js/autho_helper.js" defer></script>
-    <script src="/assets/js/sidebar.js" defer></script>
     <style>
-        html,
-        body {
-            width: 100%;
-            height: 100%;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        /* Add basic styles for app-container and main-content consistent with other pages */
-        .app-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
+        /* Layout fixes for header and sidebar integration */
         .main-content {
-            margin-left: 270px;
-            /* Adjust based on sidebar width */
-            flex-grow: 1;
-            /* padding: 40px 32px 32px 32px; */
-            display: flex;
-            flex-direction: column;
+            padding-top: 80px; /* Space for fixed header */
+            min-height: 100vh;
+            width: 100%;
+            max-width: 100%;
         }
 
-        @media (max-width: 900px) {
+        /* Responsive sidebar adjustments */
+        @media (max-width: 1023px) {
             .main-content {
+                margin-left: 0 !important;
+            }
+        }
+
+        /* When sidebar is collapsed */
+        body.sidebar-collapsed .main-content {
+            margin-left: 80px;
+        }
+
+        @media (max-width: 1023px) {
+            body.sidebar-collapsed .main-content {
                 margin-left: 0;
             }
+        }
+
+        /* Custom colors for Tailwind v2 compatibility and theme update */
+        .bg-indigo-500 { background-color: #6366f1; }
+        .bg-indigo-600 { background-color: #4f46e5; }
+        .bg-purple-600 { background-color: #9333ea; }
+        .text-indigo-600 { color: #4f46e5; }
+        .text-indigo-500 { color: #6366f1; }
+        .text-purple-600 { color: #9333ea; }
+        .text-purple-500 { color: #a855f7; }
+        .border-indigo-500 { border-color: #6366f1; }
+        .border-indigo-600 { border-color: #4f46e5; }
+        .border-indigo-100 { border-color: #e0e7ff; }
+        .border-purple-100 { border-color: #f3e8ff; }
+        .hover\:border-indigo-600:hover { border-color: #4f46e5; }
+        .hover\:bg-indigo-50:hover { background-color: #eef2ff; }
+        .hover\:text-indigo-600:hover { color: #4f46e5; }
+        .bg-indigo-50 { background-color: #eef2ff; }
+        .from-indigo-500 { --tw-gradient-from: #6366f1; }
+        .from-indigo-600 { --tw-gradient-from: #4f46e5; }
+        .to-purple-600 { --tw-gradient-to: #9333ea; }
+        .to-purple-700 { --tw-gradient-to: #7c3aed; }
+        .to-indigo-600 { --tw-gradient-to: #4f46e5; }
+        .to-indigo-700 { --tw-gradient-to: #3730a3; }
+        .hover\:from-indigo-600:hover { --tw-gradient-from: #4f46e5; }
+        .hover\:to-purple-700:hover { --tw-gradient-to: #7c3aed; }
+        .hover\:to-indigo-700:hover { --tw-gradient-to: #3730a3; }
+        
+        /* Update color scheme from teal to blue */
+        .bg-teal-600 { background-color: #3b82f6; }
+        .bg-teal-700 { background-color: #2563eb; }
+        .bg-teal-500 { background-color: #3b82f6; }
+        .text-teal-600 { color: #3b82f6; }
+        .hover\:bg-teal-700:hover { background-color: #2563eb; }
+        .hover\:bg-teal-600:hover { background-color: #2563eb; }
+        .focus\:ring-teal-500:focus { 
+            --tw-ring-color: rgba(59, 130, 246, 0.5); 
+            box-shadow: var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+        }
+        .focus\:border-teal-500:focus { border-color: #3b82f6; }
+
+        /* Rounded utilities */
+        .rounded-3xl { border-radius: 1.5rem; }
+
+        /* Shadow utilities */
+        .shadow-lg { 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .shadow-2xl { 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Transform utilities */
+        .hover\:scale-105:hover {
+            transform: scale(1.05);
+        }
+
+        /* Backdrop blur for older browsers */
+        .backdrop-blur-sm {
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
         }
     </style>
 </head>
 
-<body class="bg-gray-50 font-sans">
-    <div class="app-container">
-        <!-- Include sidebar component -->
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen overflow-x-hidden">
+    <div class="flex min-h-screen w-full">
+        <!-- Sidebar -->
         <div id="sidebar-container"></div>
-        <div class="main-content" id="mainContent">
-            <div class="w-full p-8">
-                <h1 class="text-2xl font-bold text-gray-900 mb-6">Financial Reports</h1>
+
+        <!-- Include Header -->
+        <div id="header-container"></div>
+        
+        <!-- Main Content -->
+        <main class="main-content flex-1 ml-0 transition-all duration-300 ease-in-out lg:ml-64 min-h-screen w-full">
+            <div class="p-6 lg:p-8 w-full max-w-none">
+                <!-- Page Header -->
+                <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">Financial Reports</h1>
+                </div>
 
                 <!-- Controls -->
-                <div class="bg-white p-6 rounded-lg shadow mb-6">
-                    <div class="flex flex-col md:flex-row md:items-center md:space-x-4">
-                        <div class="flex-1 mb-4 md:mb-0">
-                            <label for="timePeriod" class="block text-sm font-medium text-gray-700 mb-1">Time
-                                Period</label>
+                <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:space-x-4 gap-4">
+                        <div class="flex-1">
+                            <label for="timePeriod" class="block text-sm font-semibold text-gray-700 mb-2">Time Period</label>
                             <select id="timePeriod"
-                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500">
+                                class="w-full border-2 border-gray-200 rounded-2xl px-4 py-3 bg-white focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition">
                                 <option value="day">Daily</option>
                                 <option value="week">Weekly</option>
                                 <option value="month" selected>Monthly</option>
                                 <option value="year">Yearly</option>
                             </select>
                         </div>
-                        <div class="flex-1 mb-4 md:mb-0">
-                            <label for="filterType" class="block text-sm font-medium text-gray-700 mb-1">Filter</label>
+                        <div class="flex-1">
+                            <label for="filterType" class="block text-sm font-semibold text-gray-700 mb-2">Filter</label>
                             <select id="filterType"
-                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500">
+                                class="w-full border-2 border-gray-200 rounded-2xl px-4 py-3 bg-white focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition">
                                 <option value="all">All Transactions</option>
                                 <option value="income">Income</option>
                                 <option value="expense">Expense</option>
                             </select>
                         </div>
-                        <div class="flex items-end space-x-2">
+                        <div class="flex items-end gap-3">
                             <button id="exportBtn"
-                                class="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 flex items-center">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-2xl font-semibold flex items-center space-x-2 hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                                 </svg>
-                                Export CSV
+                                <span>Export CSV</span>
                             </button>
                             <button id="toggleChartBtn"
-                                class="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700">
+                                class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-2xl font-semibold hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
                                 Hide Chart
                             </button>
                         </div>
@@ -99,31 +165,31 @@
                 <div id="errorMessage" class="hidden bg-red-100 text-red-700 p-4 rounded-lg mb-6"></div>
 
                 <!-- Summary Stats -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="text-sm font-medium text-gray-500">Total Income</h3>
-                        <p id="totalIncome" class="text-2xl font-bold text-gray-900"></p>
-                        <p class="text-sm text-green-600"></p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-indigo-100">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Total Income</h3>
+                        <p id="totalIncome" class="text-3xl font-bold text-indigo-600"></p>
+                        <p class="text-sm text-indigo-500 mt-1"></p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="text-sm font-medium text-gray-500">Total Expenses</h3>
-                        <p id="totalExpense" class="text-2xl font-bold text-gray-900"></p>
-                        <p class="text-sm text-red-600"></p>
+                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-purple-100">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Total Expenses</h3>
+                        <p id="totalExpense" class="text-3xl font-bold text-purple-600"></p>
+                        <p class="text-sm text-purple-500 mt-1"></p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <h3 class="text-sm font-medium text-gray-500">Goal Progress</h3>
-                        <p id="goalProgressPercentage" class="text-2xl font-bold text-gray-900"></p>
-                        <p class="text-sm text-teal-600"></p>
+                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-blue-100">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Goal Progress</h3>
+                        <p id="goalProgressPercentage" class="text-3xl font-bold text-blue-600"></p>
+                        <p class="text-sm text-blue-500 mt-1"></p>
                     </div>
                 </div>
 
                 <!-- Chart Section -->
-                <div id="chartSection" class="bg-white p-6 rounded-lg shadow mb-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-lg font-semibold text-gray-900">Chart</h2>
+                <div id="chartSection" class="bg-white rounded-3xl shadow-lg mb-6">
+                    <div class="flex justify-between items-center p-6 border-b border-gray-100">
+                        <h2 class="text-xl font-bold text-gray-800">Chart</h2>
                         <div class="flex space-x-2">
                             <button id="lineChartButton"
-                                class="p-2 rounded-lg text-gray-400 hover:text-gray-600 bg-gray-100">
+                                class="p-3 rounded-2xl text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 bg-gray-100 transition-all">
                                 <svg fill="currentColor" class="w-5 h-5" viewBox="0 0 24 24"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -131,23 +197,23 @@
                                 </svg>
                             </button>
                             <button id="barChartButton"
-                                class="p-2 rounded-lg text-gray-400 hover:text-gray-600 bg-gray-100">
+                                class="p-3 rounded-2xl text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 bg-gray-100 transition-all">
                                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"
                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M2 22H22" stroke="#292D32" stroke-width="1.5" stroke-miterlimit="10"
+                                    <path d="M2 22H22" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10"
                                         stroke-linecap="round" stroke-linejoin="round" />
                                     <path d="M9.75 4V22H14.25V4C14.25 2.9 13.8 2 12.45 2H11.55C10.2 2 9.75 2.9 9.75 4Z"
-                                        stroke="#292D32" stroke-width="1.5" stroke-linecap="round"
+                                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                         stroke-linejoin="round" />
-                                    <path d="M3 10V22H7V10C7 8.9 6.6 8 5.4 8H4.6C3.4 8 3 8.9 3 10Z" stroke="#292D32"
+                                    <path d="M3 10V22H7V10C7 8.9 6.6 8 5.4 8H4.6C3.4 8 3 8.9 3 10Z" stroke="currentColor"
                                         stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                                     <path d="M17 15V22H21V15C21 13.9 20.6 13 19.4 13H18.6C17.4 13 17 13.9 17 15Z"
-                                        stroke="#292D32" stroke-width="1.5" stroke-linecap="round"
+                                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                                         stroke-linejoin="round" />
                                 </svg>
                             </button>
                             <button id="pieChartButton"
-                                class="p-2 rounded-lg text-gray-400 hover:text-gray-600 bg-gray-100">
+                                class="p-3 rounded-2xl text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 bg-gray-100 transition-all">
                                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -156,14 +222,17 @@
                             </button>
                         </div>
                     </div>
-                    <div id="chartContainer">
+                    <div id="chartContainer" class="p-6">
                         <canvas id="financialChart"></canvas>
                     </div>
                 </div>
 
                 <!-- Transaction Table Section -->
-                <div id="transactionSection" class="bg-white p-6 rounded-lg shadow mb-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Recent Transactions</h2>
+                <div id="transactionSection" class="bg-white rounded-3xl shadow-lg mb-6">
+                    <div class="p-6 border-b border-gray-100">
+                        <h2 class="text-xl font-bold text-gray-800">Recent Transactions</h2>
+                    </div>
+                    <div class="p-6">
 
                     <div id="noTransaction" class="hidden flex-1 flex items-center justify-center">
                         <div class="text-center">
@@ -247,7 +316,7 @@
                             <h3 class="text-lg font-medium text-gray-900 mb-2">No transaction found</h3>
                             <p class="text-gray-600 mb-6">Record your transaction to view detailed statistics.</p>
                             <button onclick="window.location.href = '../transaction';" id="goToTransactionPage"
-                                class="bg-teal-600 text-white px-6 py-3 rounded-lg hover:bg-teal-700 transition-colors flex items-center mx-auto">
+                                class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-8 py-4 rounded-2xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center mx-auto">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -272,17 +341,17 @@
                         </tbody>
                     </table>
 
-                    <div id="viewMoreContainer" class="mt-4 flex justify-center hidden">
-                        <button onclick="window.location.href = '../transaction';" id="viewMoreButton"
-                            class="bg-teal-500 text-white px-6 py-3 rounded-lg hover:bg-teal-600 transition-all duration-200 font-medium shadow-md">
-                            Show More Transactions
-                        </button>
+                        <div id="viewMoreContainer" class="mt-6 flex justify-center hidden">
+                            <button onclick="window.location.href = '../transaction';" id="viewMoreButton"
+                                class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-8 py-3 rounded-2xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                Show More Transactions
+                            </button>
+                        </div>
                     </div>
                 </div>
-
-
             </div>
-        </div>
+        </main>
+    </div>
 
 </body>
 

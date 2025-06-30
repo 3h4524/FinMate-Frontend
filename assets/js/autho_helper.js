@@ -57,6 +57,10 @@ const checkAuth = () => {
     return true;
 };
 
+const isLoggedIn = () => {
+    return getToken() !== null && !isTokenExpired();
+};
+
 const getAuthHeaders = () => {
     const token = getToken();
     return token ? { 'Authorization': `Bearer ${token}` } : {};

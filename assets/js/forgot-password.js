@@ -50,7 +50,7 @@ async function sendResetLink(email) {
         if (data.code === 1000) {
             showNotification('Liên kết đặt lại mật khẩu đã được gửi đến email của bạn.', 'success');
             setTimeout(() => {
-                window.location.href = 'login.html';
+                window.location.href = '../../pages/login/';
             }, 2000);
         } else {
             const errorMessage = data.message || 'Không thể gửi liên kết đặt lại mật khẩu.';

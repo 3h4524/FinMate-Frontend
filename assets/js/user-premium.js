@@ -1,3 +1,11 @@
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function () {
+    lucide.createIcons();
+
+    // Load header and sidebar
+    loadHeaderAndSidebar();
+});
+
 const API_BASE_URL = 'http://localhost:8080';
 let packages = [];
 let filteredPackages = [];
@@ -5,6 +13,18 @@ let billingCycle = 'monthly';
 let purchasedList;
 let selectedPackageId = null;
 const COUPON_CODE_MAX_LENGTH = 50;
+// Load header and sidebar
+async function loadHeaderAndSidebar() {
+    try {
+        await Promise.all([
+            loadHeader(),
+            loadSideBarSimple()
+        ]);
+    } catch (error) {
+        console.error('Error loading header/sidebar:', error);
+    }
+}
+
 
 const getPackageIcon = () => 'enterprise';
 
@@ -22,13 +42,13 @@ const renderPackages = (packagesData) => {
     const container = document.getElementById('packagesContainer');
     if (!packagesData || packagesData.length === 0) {
         container.innerHTML = `
-            <div class="relative bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 plan-card">
-                <div class="bg-gradient-to-r from-gray-500 to-gray-600 p-5 text-white">
-                    <div class="flex items-center justify-center mb-3">
-                        <i data-lucide="box" class="w-6 h-6"></i>
+            <div class="relative bg-white rounded-3xl shadow-2xl overflow-hidden transition-all duration-500 plan-card border border-indigo-100">
+                <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-8 text-white">
+                    <div class="flex items-center justify-center mb-4">
+                        <i data-lucide="package" class="w-8 h-8"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-center mb-1">No Plans Available</h3>
-                    <p class="text-center text-gray-200 text-sm">Check back later for new premium plans!</p>
+                    <h3 class="text-xl font-bold text-center mb-2">No Plans Available</h3>
+                    <p class="text-center text-indigo-100 text-sm">Please check back later for new premium plans!</p>
                 </div>
             </div>
         `;
@@ -42,51 +62,50 @@ const renderPackages = (packagesData) => {
         const durationText = billingCycle === 'monthly' ? getDurationText(pkg.durationValue, pkg.durationType) : 'per year';
 
         return `
-            <div class="relative bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 plan-card">
-                ${isPopular ? `<div class="popular-badge absolute top-0 left-0 text-white text-xs font-semibold px-3 py-0.5">Most Popular</div>` : ''}
-                <div class="bg-gradient-to-r from-green-700 to-green-800 p-5 text-white">
-                    <div class="flex items-center justify-center mb-3">
-                        <i data-lucide="crown" class="w-6 h-6"></i>
+            <div class="relative bg-white rounded-3xl shadow-2xl overflow-hidden transition-all duration-500 plan-card border border-indigo-100 hover:shadow-indigo-200">
+                ${isPopular ? `<div class="popular-badge absolute top-0 left-0 text-white text-xs font-semibold px-4 py-1 z-10">Most Popular</div>` : ''}
+                <div class="bg-gradient-to-r from-indigo-600 to-purple-700 p-8 text-white">
+                    <div class="flex items-center justify-center mb-4">
+                        <i data-lucide="crown" class="w-8 h-8"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-center mb-1">${pkg.name}</h3>
+                    <h3 class="text-xl font-bold text-center mb-3">${pkg.name}</h3>
                     <div class="text-center">
-                        <div class="package-price">
+                        <div class="package-price text-3xl font-bold mb-2">
                             ${formatCurrency(priceToShow)}
-                            <span class="package-period text-gray-100 text-sm">${durationText}</span>
+                            <div class="package-period text-indigo-100 text-sm font-normal mt-1">${durationText}</div>
                         </div>
                         <div class="yearly-info ${billingCycle === 'monthly' ? 'hidden' : ''}">
-                            <span class="text-gray-100 line-through text-xs">${formatCurrency(pkg.price * 12)}₫</span>
-                            <span class="text-green-300 font-semibold ml-1 text-xs">Save 17%</span>
+                            <span class="text-indigo-200 line-through text-sm">${formatCurrency(pkg.price * 12)}</span>
+                            <span class="text-green-300 font-semibold ml-2 text-sm bg-green-500 bg-opacity-20 px-2 py-1 rounded-full">Save 17%</span>
                         </div>
                     </div>
                 </div>
-                <div class="p-5 plan-card-content">
-                    <ul class="space-y-2 mb-5">
-                        ${(pkg.features || ['Basic Features', 'Support']).slice(0, 3).map(feature => `
-                            <li class="flex items-start space-x-2">
-                                <div class="flex-shrink-0 w-4 h-4 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
-                                    <i data-lucide="check" class="w-2.5 h-2.5 text-green-600"></i>
+                <div class="p-8 plan-card-content">
+                    <ul class="space-y-4 mb-8">
+                        ${(pkg.features || ['Basic Features', 'Customer Support']).slice(0, 3).map(feature => `
+                            <li class="flex items-start space-x-3">
+                                <div class="flex-shrink-0 w-5 h-5 bg-indigo-100 rounded-full flex items-center justify-center mt-0.5">
+                                    <i data-lucide="check" class="w-3 h-3 text-indigo-600"></i>
                                 </div>
-                                <span class="text-gray-700 text-sm leading-relaxed">${feature}</span>
+                                <span class="text-gray-700 leading-relaxed">${feature}</span>
                             </li>
                         `).join('')}
                         ${pkg.features && pkg.features.length > 3 ? `
-                            <li class="flex items-start space-x-2">
-                                <div class="flex-shrink-0 w-4 h-4 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
-                                    <i data-lucide="plus" class="w-2.5 h-2.5 text-green-600"></i>
+                            <li class="flex items-start space-x-3">
+                                <div class="flex-shrink-0 w-5 h-5 bg-indigo-100 rounded-full flex items-center justify-center mt-0.5">
+                                    <i data-lucide="plus" class="w-3 h-3 text-indigo-600"></i>
                                 </div>
-                                <span class="text-gray-700 text-sm leading-relaxed">+${pkg.features.length - 3} more</span>
+                                <span class="text-gray-700 leading-relaxed">+${pkg.features.length - 3} more features</span>
                             </li>
                         ` : ''}
                     </ul>
                     <div class="plan-card-footer">
                         <button 
                             ${isPurchased(pkg.id) ? `disabled` : ''} 
-                            class="buy-now-btn w-full py-2.5 px-4 rounded-lg font-semibold text-sm bg-gray-800 text-white hover:bg-gray-900 focus:ring-gray-500 shadow-md focus:outline-none focus:ring-2 transition-all duration-300 transform hover:scale-105 disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed disabled:hover:bg-gray-400 disabled:hover:scale-100 disabled:shadow-none" 
+                            class="buy-now-btn w-full py-4 px-6 rounded-xl font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-lg focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-all duration-300 transform hover:scale-105 hover:shadow-xl disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-lg" 
                             data-package-id="${pkg.id}"
-                            onclick="showCouponModal(${pkg.id})"
-                        >
-                            <i data-lucide="credit-card" class="w-4 h-4 inline mr-1"></i>
+                            onclick="showCouponModal(${pkg.id})">
+                            <i data-lucide="credit-card" class="w-5 h-5 inline mr-2"></i>
                             ${isPurchased(pkg.id) ? 'Purchased' : 'Buy Now'}
                         </button>
                     </div>
@@ -112,16 +131,12 @@ const toggleBilling = (cycle) => {
     const yearlyBtn = document.getElementById('yearly-btn');
 
     if (cycle === 'monthly') {
-        monthlyBtn.classList.add('bg-teal-500', 'text-white', 'shadow-sm');
-        monthlyBtn.classList.remove('text-gray-600', 'hover:text-teal-500');
-        yearlyBtn.classList.remove('bg-teal-500', 'text-white', 'shadow-sm');
-        yearlyBtn.classList.add('text-gray-600', 'hover:text-teal-500');
+        monthlyBtn.className = 'px-6 py-3 rounded-xl font-semibold transition-all duration-300 bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg hover:from-indigo-600 hover:to-purple-700 transform hover:scale-105';
+        yearlyBtn.className = 'px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 relative';
         filteredPackages = packages.filter(pkg => pkg.durationType === 'MONTH');
     } else {
-        yearlyBtn.classList.add('bg-teal-500', 'text-white', 'shadow-sm');
-        yearlyBtn.classList.remove('text-gray-600', 'hover:text-teal-500');
-        monthlyBtn.classList.remove('bg-teal-500', 'text-white', 'shadow-sm');
-        monthlyBtn.classList.add('text-gray-600', 'hover:text-teal-500');
+        yearlyBtn.className = 'px-6 py-3 rounded-xl font-semibold transition-all duration-300 bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg hover:from-indigo-600 hover:to-purple-700 transform hover:scale-105 relative';
+        monthlyBtn.className = 'px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50';
         filteredPackages = packages.filter(pkg => pkg.durationType === 'YEAR');
     }
 
@@ -137,14 +152,20 @@ const loadPackages = async () => {
 };
 
 const init = async () => {
-    if (!checkAuth()) return;
-    loadSideBar(getCurrentUser());
-    await fetchPurchasedPremiumPlans();
-    await loadPackages();
-    toggleBilling('monthly');
-    setupCouponModal();
-};
+    try {
+        if (!checkAuth()) return;
 
+        // Load purchased plans and packages
+        await fetchPurchasedPremiumPlans();
+        await loadPackages();
+        toggleBilling('monthly');
+        setupCouponModal();
+
+        console.log('Premium page initialized successfully');
+    } catch (error) {
+        console.error('Error initializing premium page:', error);
+    }
+};
 const fetchPackages = async (page = 0, size = 6, sortBy = 'price', sortDirection = 'DESC') => {
     try {
         const response = await apiRequest(
@@ -164,20 +185,29 @@ async function fetchPurchasedPremiumPlans() {
         const response = await apiRequest(
             `${API_BASE_URL}/api/premium-package/purchasedList`
         );
+
+
         if (!response) return null;
         const data = await response.json();
+
         purchasedList = data.result;
     } catch (error) {
         console.error('Error fetching packages:', error);
     }
 };
-
+// Updated DOMContentLoaded to integrate properly
+document.addEventListener('DOMContentLoaded', async function () {
+    // Initialize the page after header and sidebar are loaded
+    await init();
+});
 // Thêm function để disable/enable tất cả nút Buy Now
 function setAllBuyButtonsState(disabled) {
     const buyButtons = document.querySelectorAll('button[onclick^="showCouponModal"]');
     buyButtons.forEach(button => {
         button.disabled = disabled;
         if (disabled) {
+
+
             button.innerHTML = `
                 <i data-lucide="loader-2" class="w-4 h-4 inline mr-1 animate-spin"></i>
                 Processing...
@@ -191,6 +221,8 @@ function setAllBuyButtonsState(disabled) {
             button.classList.remove('opacity-50', 'cursor-not-allowed');
         }
     });
+
+    // Recreate icons sau khi thay đổi HTML
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }

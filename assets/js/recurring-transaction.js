@@ -61,6 +61,10 @@ const formatLabel = (iconName, categoryName) => {
 const fetchTransactions = async (page = 0, size = 4, sortBy = 'nextDate', sortDirection = 'DESC') => {
     try {
         const user = getCurrentUser();
+        if (!user) {
+            console.error('User not found');
+            return null;
+        }
         const response = await apiRequest(
             `${API_BASE_URL}?userId=${user.userId}&page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${sortDirection}`
         );
@@ -221,16 +225,20 @@ const createIconGrid = () => {
     iconOptions.forEach(icon => {
         const iconButton = document.createElement('button');
         iconButton.type = 'button';
-        iconButton.className = 'icon-option';
+        iconButton.className = 'flex flex-col items-center justify-center p-3 rounded-xl border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-300 icon-option';
         iconButton.dataset.icon = icon.src.split('/').pop().replace('.svg', '');
         iconButton.title = icon.name;
         iconButton.innerHTML = `
-            <img src="${icon.src}" alt="${icon.name}" class="icon-image" style="width: 24px; height: 24px;">
-            <span class="icon-name">${icon.name}</span>
+            <img src="${icon.src}" alt="${icon.name}" class="w-6 h-6 mb-1">
+            <span class="text-xs text-gray-600 text-center">${icon.name}</span>
         `;
         iconButton.addEventListener('click', () => {
-            document.querySelectorAll('.icon-option').forEach(btn => btn.classList.remove('active'));
-            iconButton.classList.add('active');
+            document.querySelectorAll('.icon-option').forEach(btn => {
+                btn.classList.remove('border-indigo-500', 'bg-indigo-100');
+                btn.classList.add('border-gray-200');
+            });
+            iconButton.classList.add('border-indigo-500', 'bg-indigo-100');
+            iconButton.classList.remove('border-gray-200');
             document.getElementById('categoryIcon').value = iconButton.dataset.icon;
         });
         iconGrid.appendChild(iconButton);
@@ -281,10 +289,15 @@ const renderTransactions = (transactionsData) => {
     const container = document.getElementById('transactionsContainer');
     if (!transactionsData || !transactionsData.content || transactionsData.content.length === 0) {
         container.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-redo"></i>
-                <h3>No transactions found</h3>
-                <p>Create your first recurring transaction to get started</p>
+            <div class="col-span-full flex flex-col items-center justify-center py-12 text-center">
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-calendar-times text-gray-400 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">No recurring transactions found</h3>
+                <p class="text-gray-600">Start by creating your first recurring transaction</p>
+                <button onclick="openNewTransactionModal()" class="mt-4 px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300">
+                    <i class="fas fa-plus mr-2"></i>Create Transaction
+                </button>
             </div>
         `;
         return;
@@ -293,54 +306,73 @@ const renderTransactions = (transactionsData) => {
     totalPages = transactionsData.totalPages;
     const transactionsHTML = transactions.map(t => {
         const categoryName = t.categoryName || t.userCategoryName || 'No Category';
-        const iconHtml = t.icon ? `<img src="${iconMapping[t.icon]}" class="category-icon-small" style="width: 16px; height: 16px; vertical-align: middle; margin-right: 6px;">` : '<i class="fas fa-question"></i>';
+        const iconHtml = t.icon ? `<img src="${iconMapping[t.icon]}" class="w-4 h-4 inline-block mr-2">` : '<i class="fas fa-question mr-2"></i>';
+        const isIncome = t.type.toLowerCase() === 'income';
+        const bgColor = isIncome ? 'from-green-50 to-green-100 border-green-200' : 'from-red-50 to-red-100 border-red-200';
+        const iconBg = isIncome ? 'from-green-500 to-green-600' : 'from-red-500 to-red-600';
+        const statusColor = t.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
+        
         return `
-            <div class="transaction-card" data-type="${t.type.toLowerCase()}" data-active="${t.isActive}">
-                <div class="transaction-header">
-                    <div>
-                        <div class="transaction-icon ${getTransactionIcon(t.type)}">
-                            <i class="fas fa-${t.type.toLowerCase() === 'income' ? 'plus' : 'minus'}"></i>
-                        </div>
+            <div class="bg-gradient-to-br ${bgColor} border rounded-3xl p-6 hover:shadow-xl transition-all duration-300 hover:scale-105" data-type="${t.type.toLowerCase()}" data-active="${t.isActive}">
+                <!-- Header -->
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-r ${iconBg} rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-${isIncome ? 'arrow-up' : 'arrow-down'} text-white text-lg"></i>
                     </div>
-                    <div class="transaction-actions">
-                        <button class="action-btn" onclick="openUpdateModal(${t.recurringId})" title="Edit">
-                            <i class="fas fa-edit"></i>
+                    <div class="flex space-x-2">
+                        <button onclick="openUpdateModal(${t.recurringId})" class="w-8 h-8 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-xl flex items-center justify-center text-gray-600 hover:text-indigo-600 transition-all duration-300">
+                            <i class="fas fa-edit text-sm"></i>
                         </button>
-                        <button class="action-btn" onclick="handleDeleteTransaction(${t.recurringId})" title="Delete">
-                            <i class="fas fa-trash"></i>
+                        <button onclick="handleDeleteTransaction(${t.recurringId})" class="w-8 h-8 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-xl flex items-center justify-center text-gray-600 hover:text-red-600 transition-all duration-300">
+                            <i class="fas fa-trash text-sm"></i>
                         </button>
                     </div>
                 </div>
-                <div class="transaction-type"><b>${iconHtml} ${categoryName}</b></div>
-                <div class="transaction-name">${t.note || 'No note'}</div>
-                <div class="transaction-amount">
-                    ${formatCurrency(t.amount)}
-                    <span class="transaction-period">${getFrequencyText(t.frequency)}</span>
+                
+                <!-- Category -->
+                <div class="flex items-center mb-2">
+                    ${iconHtml}
+                    <span class="font-semibold text-gray-800">${categoryName}</span>
                 </div>
-                <div class="transaction-details">
-                    <div class="detail-item">
-                        <i class="fas fa-calendar"></i>
-                        Next: ${formatDate_ddMMyyyy(t.nextDate)}
+                
+                <!-- Note -->
+                <div class="text-gray-600 text-sm mb-4">${t.note || 'No note'}</div>
+                
+                <!-- Amount -->
+                <div class="mb-4">
+                    <div class="text-2xl font-bold text-gray-900">${formatCurrency(t.amount)}</div>
+                    <div class="text-sm text-gray-600">${getFrequencyText(t.frequency)}</div>
+                </div>
+                
+                <!-- Dates -->
+                <div class="space-y-2 mb-4">
+                    <div class="flex items-center text-sm text-gray-600">
+                        <i class="fas fa-calendar w-4 mr-2"></i>
+                        <span>Next: ${formatDate_ddMMyyyy(t.nextDate)}</span>
                     </div>
-                    <div class="detail-item">
-                        <i class="fas fa-play"></i>
-                        Start: ${formatDate_ddMMyyyy(t.startDate)}
+                    <div class="flex items-center text-sm text-gray-600">
+                        <i class="fas fa-play w-4 mr-2"></i>
+                        <span>Start: ${formatDate_ddMMyyyy(t.startDate)}</span>
                     </div>
                     ${t.endDate ? `
-                        <div class="detail-item">
-                            <i class="fas fa-stop"></i>
-                            End: ${formatDate_ddMMyyyy(t.endDate)}
+                        <div class="flex items-center text-sm text-gray-600">
+                            <i class="fas fa-stop w-4 mr-2"></i>
+                            <span>End: ${formatDate_ddMMyyyy(t.endDate)}</span>
                         </div>
                     ` : ''}
                 </div>
-                <div class="transaction-status ${t.isActive ? 'active' : 'inactive'}">
-                    <i class="fas fa-circle"></i>
-                    ${t.isActive ? 'Active' : 'Inactive'}
+                
+                <!-- Status -->
+                <div class="flex items-center">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusColor}">
+                        <i class="fas fa-circle text-xs mr-1"></i>
+                        ${t.isActive ? 'Active' : 'Inactive'}
+                    </span>
                 </div>
             </div>
         `;
     }).join('');
-    container.innerHTML = `<div class="transactions-grid">${transactionsHTML}</div>`;
+    container.innerHTML = transactionsHTML;
     updatePagination();
 };
 
@@ -368,28 +400,64 @@ const updatePagination = () => {
     const pageNumbers = document.getElementById('pageNumbers');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
+    
     if (totalPages <= 1) {
         pagination.style.display = 'none';
         return;
     }
+    
     pagination.style.display = 'flex';
+    
+    // Update mobile buttons
     prevBtn.disabled = currentPage === 0;
     nextBtn.disabled = currentPage >= totalPages - 1;
+    prevBtn.onclick = () => changePage(currentPage - 1);
+    nextBtn.onclick = () => changePage(currentPage + 1);
+    
+    // Update desktop pagination
     let pageNumbersHTML = '';
     const maxVisiblePages = 5;
     let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
     let endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1);
+    
     if (endPage - startPage < maxVisiblePages - 1) {
         startPage = Math.max(0, endPage - maxVisiblePages + 1);
     }
-    for (let i = startPage; i <= endPage; i++) {
+    
+    // Previous button for desktop
+    if (currentPage > 0) {
         pageNumbersHTML += `
-            <button class="pagination-btn ${i === currentPage ? 'active' : ''}" 
-                    onclick="changePage(${i})">
+            <button onclick="changePage(${currentPage - 1})" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                <span class="sr-only">Previous</span>
+                <i class="fas fa-chevron-left h-5 w-5"></i>
+            </button>
+        `;
+    }
+    
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
+        const isActive = i === currentPage;
+        pageNumbersHTML += `
+            <button onclick="changePage(${i})" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                isActive 
+                    ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600' 
+                    : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+            }">
                 ${i + 1}
             </button>
         `;
     }
+    
+    // Next button for desktop
+    if (currentPage < totalPages - 1) {
+        pageNumbersHTML += `
+            <button onclick="changePage(${currentPage + 1})" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                <span class="sr-only">Next</span>
+                <i class="fas fa-chevron-right h-5 w-5"></i>
+            </button>
+        `;
+    }
+    
     pageNumbers.innerHTML = pageNumbersHTML;
 };
 
@@ -401,16 +469,16 @@ const openNewTransactionModal = async () => {
     const choices = state.choicesInstances.get('newCategory');
     if (choices) choices.setChoiceByValue('');
     // Set default start date to today
-    const today = new Date().toISOString().split('T')[0]; // e.g., "2025-06-22"
+    const today = new Date().toISOString().split('T')[0];
     document.getElementById('newStartDate').value = today;
     await loadCategories();
-    modal.style.display = 'flex';
+    modal.classList.remove('hidden');
 };
 
 const closeNewModal = () => {
     const modal = document.getElementById('newTransactionModal');
     const form = document.getElementById('newTransactionForm');
-    modal.style.display = 'none';
+    modal.classList.add('hidden');
     form.reset();
     const choices = state.choicesInstances.get('newCategory');
     if (choices) choices.setChoiceByValue('');
@@ -435,7 +503,7 @@ const openUpdateModal = async (recurringId) => {
         await loadCategories();
         const choices = state.choicesInstances.get('updateCategory');
         if (choices) choices.setChoiceByValue(categoryValue);
-        modal.style.display = 'flex';
+        modal.classList.remove('hidden');
     } else {
         alert('Failed to load transaction data');
     }
@@ -444,7 +512,7 @@ const openUpdateModal = async (recurringId) => {
 const closeUpdateModal = () => {
     const modal = document.getElementById('updateTransactionModal');
     const form = document.getElementById('updateTransactionForm');
-    modal.style.display = 'none';
+    modal.classList.add('hidden');
     form.reset();
     const choices = state.choicesInstances.get('updateCategory');
     if (choices) choices.setChoiceByValue('');
@@ -457,11 +525,11 @@ const openCreateCategoryModal = (triggerSelectId) => {
     document.getElementById('categoryIcon').value = '';
     document.querySelectorAll('.icon-option').forEach(btn => btn.classList.remove('active'));
     createIconGrid();
-    document.getElementById('createCategoryModal').style.display = 'flex';
+    document.getElementById('createCategoryModal').classList.remove('hidden');
 };
 
 const closeCreateCategoryModal = () => {
-    document.getElementById('createCategoryModal').style.display = 'none';
+    document.getElementById('createCategoryModal').classList.add('hidden');
     const form = document.getElementById('createCategoryForm');
     form.reset();
     if (state.lastCategorySelectId) {
@@ -484,9 +552,11 @@ const changePage = async (page) => {
 const filterTransactions = (filter) => {
     currentFilter = filter;
     document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
+        btn.classList.remove('active', 'text-indigo-600', 'bg-indigo-50');
+        btn.classList.add('text-gray-600', 'bg-gray-50');
         if (btn.dataset.filter === filter) {
-            btn.classList.add('active');
+            btn.classList.add('active', 'text-indigo-600', 'bg-indigo-50');
+            btn.classList.remove('text-gray-600', 'bg-gray-50');
         }
     });
     const transactionCards = document.querySelectorAll('.transaction-card');
@@ -661,15 +731,15 @@ const loadTransactions = async () => {
     }
 };
 
-// Initialize
-const init = async () => {
-    if (!checkAuth()) return;
+// Initialize Event Listeners
+const initEventListeners = () => {
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             searchTransactions(e.target.value);
         });
     }
+    
     const tabBtns = document.querySelectorAll('.tab-btn');
     if (tabBtns.length > 0) {
         tabBtns.forEach(btn => {
@@ -678,14 +748,17 @@ const init = async () => {
             });
         });
     }
+    
     const newTransactionForm = document.getElementById('newTransactionForm');
     if (newTransactionForm) {
         newTransactionForm.addEventListener('submit', handleNewTransaction);
     }
+    
     const updateTransactionForm = document.getElementById('updateTransactionForm');
     if (updateTransactionForm) {
         updateTransactionForm.addEventListener('submit', handleUpdateTransaction);
     }
+    
     const createCategoryForm = document.getElementById('createCategoryForm');
     if (createCategoryForm) {
         createCategoryForm.addEventListener('submit', async (e) => {
@@ -720,20 +793,24 @@ const init = async () => {
             }
         });
     }
+    
     const closeCreateCategoryModalBtn = document.getElementById('closeCreateCategoryModalBtn');
     if (closeCreateCategoryModalBtn) {
         closeCreateCategoryModalBtn.addEventListener('click', closeCreateCategoryModal);
     }
+    
     const cancelCategoryBtn = document.getElementById('cancelCategoryBtn');
     if (cancelCategoryBtn) {
         cancelCategoryBtn.addEventListener('click', closeCreateCategoryModal);
     }
+    
     const createCategoryModal = document.getElementById('createCategoryModal');
     if (createCategoryModal) {
         createCategoryModal.addEventListener('click', (e) => {
             if (e.target === createCategoryModal) closeCreateCategoryModal();
         });
     }
+    
     document.addEventListener('change', (e) => {
         if (e.target.classList.contains('categorySelect') && e.target.value === 'create-new') {
             openCreateCategoryModal(e.target.id);
@@ -741,9 +818,37 @@ const init = async () => {
             if (choices) choices.setChoiceByValue('');
         }
     });
-    await loadCategories();
-    await loadTransactions();
-    await loadSideBar(getCurrentUser());
+};
+
+// Initialize
+const init = async () => {
+    try {
+        console.log('Initializing recurring transaction page...');
+        
+        // Load sidebar and header first
+        if (typeof loadSideBarSimple === 'function') {
+            loadSideBarSimple();
+        } else {
+            console.error('loadSideBarSimple function not found');
+        }
+        
+        if (typeof loadHeaderSimple === 'function') {
+            loadHeaderSimple();
+        } else {
+            console.error('loadHeaderSimple function not found');
+        }
+        
+        // Initialize event listeners
+        initEventListeners();
+        
+        // Load page data
+        await loadCategories();
+        await loadTransactions();
+        
+        console.log('Recurring transaction page initialized successfully');
+    } catch (error) {
+        console.error('Error initializing recurring transaction page:', error);
+    }
 };
 
 document.addEventListener('DOMContentLoaded', init);

@@ -66,8 +66,8 @@ function renderChart(type) {
         datasets: [{
             label: 'Amount ($)',
             data: filteredData.map(t => t.amount),
-            backgroundColor: type === 'pie' ? backgroundColors : '#14B8A6',
-            borderColor: '#14B8A6',
+            backgroundColor: type === 'pie' ? backgroundColors : '#6366F1',
+            borderColor: '#6366F1',
             borderWidth: 1
         }]
     };
@@ -185,10 +185,14 @@ function updateChartTypeButtons(selectedType) {
         pie: document.getElementById('pieChartButton')
     };
     Object.keys(buttons).forEach(type => {
-        buttons[type].classList.toggle('bg-teal-600', type === selectedType);
-        buttons[type].classList.toggle('text-white', type === selectedType);
-        buttons[type].classList.toggle('bg-gray-100', type !== selectedType);
-        buttons[type].classList.toggle('text-gray-400', type !== selectedType);
+        const button = buttons[type];
+        if (type === selectedType) {
+            button.classList.remove('text-gray-500', 'hover:text-blue-600', 'hover:bg-blue-50', 'bg-gray-100');
+            button.classList.add('bg-indigo-600', 'text-white');
+        } else {
+            button.classList.remove('bg-indigo-600', 'text-white');
+            button.classList.add('text-gray-500', 'hover:text-indigo-600', 'hover:bg-indigo-50', 'bg-gray-100');
+        }
     });
 }
 
@@ -286,21 +290,64 @@ function initPercenGoalProgress() {
 
 async function initializeUI() {
     try {
-        loadSideBar(user);
-        await Promise.all([fetchTransactions(), fetchGoalProgress()]); 
+        console.log('Initializing financial report page...');
+
+        // Load sidebar and header first
+        if (typeof loadSideBarSimple === 'function') {
+            loadSideBarSimple();
+        } else {
+            console.error('loadSideBarSimple function not found');
+        }
+
+        if (typeof loadHeaderSimple === 'function') {
+            loadHeaderSimple();
+        } else {
+            console.error('loadHeaderSimple function not found');
+        }
+
+        // Get user information
+        user = getCurrentUser();
+        console.log("Current user: ", user);
+
+        // Fetch data and initialize UI
+        await Promise.all([fetchTransactions(), fetchGoalProgress()]);
         initPercenGoalProgress();
         updateChartTypeButtons('bar');
         updateReport();
+
+        console.log('Financial report page initialized successfully');
     } catch (err) {
-        error = 'Failed to initialize app: ' + err.message;
+        const error = 'Failed to initialize app: ' + err.message;
         console.error(error);
     }
 }
 
-window.addEventListener('load', () => {
-    if (checkAuth()) {
-        user = getCurrentUser();
-        console.log("xem: ", user);
-        initializeUI();
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        console.log('DOM loaded, starting financial report page initialization...');
+
+        // Check authentication
+        if (typeof checkAuth !== 'undefined' && !checkAuth()) {
+            console.log('Authentication check failed');
+            return;
+        }
+
+        await initializeUI();
+    } catch (error) {
+        console.error('Error during financial report page initialization:', error);
+    }
+});
+
+// Fallback for window load
+window.addEventListener('load', async () => {
+    try {
+        // Only run if not already initialized
+        if (!document.querySelector('#sidebar-container').hasChildNodes()) {
+            console.log('Window loaded, initializing financial report page...');
+            await initializeUI();
+        }
+    } catch (error) {
+        console.error('Error during window load initialization:', error);
     }
 });

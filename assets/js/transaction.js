@@ -1,6 +1,51 @@
 const API_BASE_URL = 'http://localhost:8080/api/transactions';
 const RECURRING_API_BASE_URL = 'http://localhost:8080/api/recurringTransactions';
 
+// Fallback functions if helper files are not loaded
+if (typeof apiRequest === 'undefined') {
+  window.apiRequest = async (url, options = {}) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const defaultOptions = {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+      };
+      
+      const response = await fetch(url, { ...defaultOptions, ...options });
+      return response;
+    } catch (error) {
+      console.error('API request failed:', error);
+      return null;
+    }
+  };
+}
+
+if (typeof getCurrentUser === 'undefined') {
+  window.getCurrentUser = () => {
+    try {
+      const user = localStorage.getItem('currentUser');
+      return user ? JSON.parse(user) : { userId: 1 }; // fallback user
+    } catch (error) {
+      console.error('Error getting current user:', error);
+      return { userId: 1 };
+    }
+  };
+}
+
+if (typeof loadSideBarSimple === 'undefined') {
+  window.loadSideBarSimple = () => {
+    console.log('Sidebar loading function not available');
+  };
+}
+
+if (typeof loadHeaderSimple === 'undefined') {
+  window.loadHeaderSimple = () => {
+    console.log('Header loading function not available');
+  };
+}
+
 const state = {
   choicesInstances: new Map(),
   currentWallet: null,
@@ -885,12 +930,18 @@ const openTransactionModal = async (transaction = null) => {
 };
 
 const initEventListeners = () => {
+  console.log('Initializing event listeners...');
+  
   // Wallet Modal
-  DOM.editWalletBtn.addEventListener('click', () => {
-    showModal(DOM.walletModal);
-    DOM.newBalanceInput.value = state.currentWallet ? state.currentWallet.balance : '';
-    DOM.currencySelect.value = state.currentWallet ? state.currentWallet.currency : 'VND';
-  });
+  if (DOM.editWalletBtn) {
+    DOM.editWalletBtn.addEventListener('click', () => {
+      showModal(DOM.walletModal);
+      if (DOM.newBalanceInput) DOM.newBalanceInput.value = state.currentWallet ? state.currentWallet.balance : '';
+      if (DOM.currencySelect) DOM.currencySelect.value = state.currentWallet ? state.currentWallet.currency : 'VND';
+    });
+  } else {
+    console.error('editWalletBtn not found');
+  }
 
   DOM.closeWalletModalBtn.addEventListener('click', () => hideModal(DOM.walletModal));
   DOM.cancelWalletBtn.addEventListener('click', () => hideModal(DOM.walletModal));
@@ -902,9 +953,19 @@ const initEventListeners = () => {
   });
 
   // Transaction Modal
-  DOM.createBtn.addEventListener('click', () => openTransactionModal());
-  DOM.closeModalBtn.addEventListener('click', () => hideModal(DOM.transactionModal));
-  DOM.cancelBtn.addEventListener('click', () => hideModal(DOM.transactionModal));
+  if (DOM.createBtn) {
+    DOM.createBtn.addEventListener('click', () => openTransactionModal());
+  } else {
+    console.error('createBtn not found');
+  }
+  
+  if (DOM.closeModalBtn) {
+    DOM.closeModalBtn.addEventListener('click', () => hideModal(DOM.transactionModal));
+  }
+  
+  if (DOM.cancelBtn) {
+    DOM.cancelBtn.addEventListener('click', () => hideModal(DOM.transactionModal));
+  }
   DOM.transactionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!validateTransactionForm()) return;
@@ -941,10 +1002,14 @@ const initEventListeners = () => {
   });
 
   // Search Modal
-  DOM.searchBtn.addEventListener('click', () => {
-    showModal(DOM.searchModal);
-    loadCategories();
-  });
+  if (DOM.searchBtn) {
+    DOM.searchBtn.addEventListener('click', () => {
+      showModal(DOM.searchModal);
+      loadCategories();
+    });
+  } else {
+    console.error('searchBtn not found');
+  }
   DOM.closeSearchModalBtn.addEventListener('click', () => hideModal(DOM.searchModal));
   DOM.cancelSearchBtn.addEventListener('click', () => hideModal(DOM.searchModal));
   DOM.searchForm.addEventListener('submit', async (e) => {
@@ -1015,9 +1080,44 @@ const initEventListeners = () => {
 };
 
 const init = async () => {
-  initEventListeners();
-  await loadTransactions();
-  await loadCategories();
+  try {
+    console.log('Initializing transaction page...');
+    
+    // Debug: Check if DOM elements exist
+    console.log('DOM Elements check:');
+    console.log('createBtn:', DOM.createBtn);
+    console.log('searchBtn:', DOM.searchBtn);
+    console.log('editWalletBtn:', DOM.editWalletBtn);
+    console.log('transactionTableBody:', DOM.transactionTableBody);
+    
+    // Load sidebar and header first
+    if (typeof loadSideBarSimple === 'function') {
+      loadSideBarSimple();
+    } else {
+      console.error('loadSideBarSimple function not found');
+    }
+    
+    if (typeof loadHeaderSimple === 'function') {
+      loadHeaderSimple();
+    } else {
+      console.error('loadHeaderSimple function not found');
+    }
+    
+    // Initialize event listeners
+    initEventListeners();
+    
+    // Load wallet first
+    await loadWalletBalance();
+    
+    // Load data
+    await loadCategories();
+    await loadTransactions();
+    await updateStats();
+    
+    console.log('Transaction page initialized successfully');
+  } catch (error) {
+    console.error('Error initializing transaction page:', error);
+  }
 };
 
 document.addEventListener('DOMContentLoaded', init);

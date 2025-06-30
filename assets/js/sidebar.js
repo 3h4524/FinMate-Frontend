@@ -1,9 +1,149 @@
+// Sidebar Management Functions
+
+// Load sidebar HTML content
+async function loadSidebarHTML() {
+    try {
+        const response = await fetch('../sidebar.html');
+        if (!response.ok) {
+            throw new Error('Failed to load sidebar.html');
+        }
+        let html = await response.text();
+        
+        // Apply saved state to HTML before rendering to prevent flash
+        if (window.innerWidth > 1024) {
+            const savedState = getSidebarState();
+            if (savedState) {
+                // If collapsed, modify the HTML to include collapsed classes immediately
+                html = html.replace(
+                    'id="sidebar" class="fixed h-screen bg-white shadow-xl transition-all duration-300 flex flex-col z-40 top-16" style="width: 256px;"',
+                    'id="sidebar" class="fixed h-screen bg-white shadow-xl transition-all duration-300 flex flex-col z-40 top-16 sidebar-collapsed" style="width: 80px;"'
+                );
+            }
+        }
+        
+        return html;
+    } catch (error) {
+        console.error('Error loading sidebar HTML:', error);
+        return null;
+    }
+}
+
+// Sidebar state management
+function getSidebarState() {
+    const saved = localStorage.getItem('sidebarCollapsed');
+    return saved === null ? false : saved === 'true'; // Default to expanded (false) if no saved state
+}
+
+// Apply body class immediately for CSS pre-loading
+function applyBodySidebarClass() {
+    if (window.innerWidth > 1024) {
+        const savedState = getSidebarState();
+        if (savedState) {
+            document.body.classList.add('sidebar-state-collapsed');
+        } else {
+            document.body.classList.remove('sidebar-state-collapsed');
+        }
+    }
+}
+
+function setSidebarState(isCollapsed) {
+    localStorage.setItem('sidebarCollapsed', isCollapsed.toString());
+    // Update body class immediately
+    applyBodySidebarClass();
+}
+
+function applySidebarState(isCollapsed) {
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.querySelector('.main-content');
+    
+    if (!sidebar) return;
+    
+    if (window.innerWidth <= 1024) {
+        // Mobile: Always reset to default mobile state
+        sidebar.classList.remove('sidebar-collapsed', 'sidebar-open');
+        sidebar.style.width = '';
+        if (mainContent) {
+            mainContent.classList.remove('sidebar-collapsed');
+            mainContent.style.marginLeft = '0px';
+            mainContent.style.width = '100%';
+        }
+        return;
+    }
+    
+    // Desktop only: Apply collapsed/expanded state
+    if (isCollapsed) {
+        // Apply collapsed state
+        sidebar.classList.add('sidebar-collapsed');
+        sidebar.style.width = '80px';
+        if (mainContent) {
+            mainContent.classList.add('sidebar-collapsed');
+            mainContent.style.marginLeft = '80px';
+            mainContent.style.width = 'calc(100% - 80px)';
+        }
+    } else {
+        // Apply expanded state
+        sidebar.classList.remove('sidebar-collapsed');
+        sidebar.style.width = '256px';
+        if (mainContent) {
+            mainContent.classList.remove('sidebar-collapsed');
+            mainContent.style.marginLeft = '256px';
+            mainContent.style.width = 'calc(100% - 256px)';
+        }
+    }
+}
+
+// Global toggle sidebar function for header integration
+window.toggleSidebar = function() {
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const mainContent = document.querySelector('.main-content');
+
+    if (!sidebar || !mainContent) {
+        console.error('Sidebar or main content element not found!');
+        return;
+    }
+
+    if (window.innerWidth <= 1024) {
+        // Mobile: Toggle overlay sidebar
+        sidebar.classList.toggle('sidebar-open');
+        if (sidebarOverlay) {
+            sidebarOverlay.classList.toggle('overlay-visible');
+        }
+        
+        // Reset main content styles for mobile
+        mainContent.style.marginLeft = '0px';
+        mainContent.style.width = '100%';
+    } else {
+        // Desktop: Toggle collapsed sidebar and save state
+        const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
+        const newState = !isCollapsed;
+        
+        // Save new state to localStorage
+        setSidebarState(newState);
+        
+        // Apply new state
+        applySidebarState(newState);
+    }
+};
+
+// Global logout function for sidebar integration
+window.handleLogout = function() {
+    if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('userData');
+        localStorage.removeItem('user');
+        window.location.href = '../login/index.html';
+    }
+};
+
+// Set active sidebar link based on current page
 function setActiveSidebarLink() {
     const currentPage = window.location.pathname.split('/').pop();
-    const links = document.querySelectorAll('.sidebar nav ul li a');
+    const links = document.querySelectorAll('.sidebar-item');
 
     links.forEach(link => {
-        if (link.getAttribute('href') === currentPage) {
+        if (link.getAttribute('data-page') === currentPage) {
             link.classList.add('active');
         } else {
             link.classList.remove('active');
@@ -17,589 +157,356 @@ function checkUserRoleAndShowAdminFeatures() {
         const token = localStorage.getItem('token');
         if (token) {
             const payload = JSON.parse(atob(token.split('.')[1]));
-            // Role được lưu trong trường 'scope' của JWT token
             const userRole = payload.scope;
             console.log('User role from token:', userRole);
 
             if (userRole === 'ADMIN') {
-                // Show admin menu items and divider
-                const adminDivider = document.getElementById('adminDivider');
-                const adminDashboardLink = document.getElementById('adminDashboardLink');
-                const userManagementLink = document.getElementById('userManagementLink');
-                const systemLogLink = document.getElementById('systemLogLink');
-                const premiumAdminLink = document.getElementById('premiumAdminLink');
+                // Show admin menu items only
+                const adminMenus = document.querySelectorAll('.admin-menu');
+                adminMenus.forEach(menu => {
+                    menu.classList.remove('hidden');
+                    menu.style.display = 'block';
+                });
 
-                if (adminDivider) {
-                    adminDivider.style.display = 'block';
-                    console.log('Admin role detected - showing Admin divider');
-                }
-
-                if (adminDashboardLink) {
-                    adminDashboardLink.style.display = 'block';
-                    console.log('Admin role detected - showing Admin Dashboard link');
-                }
-
-                if (userManagementLink) {
-                    userManagementLink.style.display = 'block';
-                    console.log('Admin role detected - showing User Management link');
-                }
-
-                if (systemLogLink) {
-                    systemLogLink.style.display = 'block';
-                    console.log('Admin role detected - showing System Log link');
-                }
-
-                if (premiumAdminLink) {
-                    premiumAdminLink.style.display = 'block';
-                    console.log('Admin role detected - showing Premium Manager link');
+                // Hide all user menu items for admin (including container)
+                const userMenuSection = document.querySelector('.user-menu-section');
+                if (userMenuSection) {
+                    userMenuSection.style.display = 'none';
                 }
 
                 const userMenuItems = document.querySelectorAll('.user-menu');
                 userMenuItems.forEach(item => {
                     item.style.display = 'none';
                 });
+
+                console.log('Admin sidebar loaded - showing only admin features');
             } else {
-                // Hide admin menu items for regular users
-                const adminMenuItems = document.querySelectorAll('.admin-menu');
-                adminMenuItems.forEach(item => {
-                    item.style.display = 'none';
+                // Show user menu items only
+                const userMenuSection = document.querySelector('.user-menu-section');
+                if (userMenuSection) {
+                    userMenuSection.style.display = 'block';
+                }
+                
+                const userMenuItems = document.querySelectorAll('.user-menu');
+                userMenuItems.forEach(item => {
+                    item.style.display = 'flex';
                 });
+
+                // Hide admin menu items for regular users
+                const adminMenus = document.querySelectorAll('.admin-menu');
+                adminMenus.forEach(menu => {
+                    menu.classList.add('hidden');
+                    menu.style.display = 'none';
+                });
+
+                console.log('User sidebar loaded - showing only user features');
             }
         }
     } catch (error) {
         console.error('Error checking user role:', error);
+        // Fallback: hide admin menus if error
+        const adminMenus = document.querySelectorAll('.admin-menu');
+        adminMenus.forEach(menu => {
+            menu.classList.add('hidden');
+        });
     }
 }
 
-// Handle logout
-async function handleLogout() {
-    console.log('[LOGOUT] Logout triggered');
-    try {
-        const token = localStorage.getItem('token');
-        if (token) {
-            const response = await fetch('http://localhost:8080/api/v1/auth/logout', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+// Set active tab based on current page
+function setActiveTab() {
+    const currentPage = window.location.pathname;
+    const sidebarItems = document.querySelectorAll('.sidebar-item');
+    
+    // Remove active class from all items
+    sidebarItems.forEach(item => {
+        item.classList.remove('active');
+        item.classList.add('text-gray-600', 'hover:bg-gray-100', 'hover:text-gray-800');
+        item.classList.remove('bg-gradient-to-r', 'from-blue-500', 'to-purple-600', 'text-white', 'shadow-lg');
+    });
 
-            if (!response.ok) {
-                console.error('[LOGOUT] Logout failed on server');
+    // Determine active item based on current page
+    let activeItem;
+    if (currentPage.includes('home')) {
+        activeItem = document.querySelector('[data-page="dashboard"]');
+    } else if (currentPage.includes('recurring-transaction')) {
+        activeItem = document.querySelector('[data-page="recurring-transaction"]');
+    } else if (currentPage.includes('transaction')) {
+        activeItem = document.querySelector('[data-page="transactions"]');
+    } else if (currentPage.includes('goal')) {
+        activeItem = document.querySelector('[data-page="goals"]');
+    } else if (currentPage.includes('budget')) {
+        activeItem = document.querySelector('[data-page="budget"]');
+    } else if (currentPage.includes('financial_report')) {
+        activeItem = document.querySelector('[data-page="reports"]');
+    } else if (currentPage.includes('user_premium')) {
+        activeItem = document.querySelector('[data-page="premium"]');
+    } else if (currentPage.includes('admin-dashboard')) {
+        activeItem = document.querySelector('[data-page="admin-dashboard"]');
+    } else if (currentPage.includes('user-management')) {
+        activeItem = document.querySelector('[data-page="user-management"]');
+    } else if (currentPage.includes('system-log')) {
+        activeItem = document.querySelector('[data-page="system-log"]');
+    } else if (currentPage.includes('subscription-manager')) {
+        activeItem = document.querySelector('[data-page="subscription-manager"]');
+    }
+
+    // Add active class to current item
+    if (activeItem) {
+        activeItem.classList.add('active');
+        activeItem.classList.remove('text-gray-600', 'hover:bg-gray-100', 'hover:text-gray-800');
+        activeItem.classList.add('bg-gradient-to-r', 'from-blue-500', 'to-purple-600', 'text-white', 'shadow-lg');
+    }
+}
+
+// Initialize sidebar functionality
+function initSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    
+    // Apply saved sidebar state IMMEDIATELY for desktop
+    if (window.innerWidth > 1024) {
+        const savedState = getSidebarState();
+        applySidebarState(savedState);
+    }
+    
+    // Handle responsive behavior
+    handleResponsiveBehavior();
+    
+    // Set initial active state
+    setActiveTab();
+    
+    // Check user role and adjust menu
+    checkUserRoleAndShowAdminFeatures();
+    
+    // Load user info
+    loadUserInfo();
+    
+    // Mark content as ready and enable transitions
+    setTimeout(() => {
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+            mainContent.classList.add('content-ready');
+        }
+        document.body.classList.add('page-loaded');
+    }, 50);
+    
+    console.log('Sidebar initialized successfully');
+}
+
+// Handle responsive behavior
+function handleResponsiveBehavior() {
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.querySelector('.main-content');
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth <= 1024) {
+            // Mobile: Reset sidebar state and close if open
+            if (sidebar) {
+                sidebar.classList.remove('sidebar-collapsed', 'sidebar-open');
+                sidebar.style.width = '';
+            }
+            if (mainContent) {
+                mainContent.classList.remove('sidebar-collapsed');
+                mainContent.style.marginLeft = '0px';
+                mainContent.style.width = '100%';
+            }
+            // Hide overlay if visible
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            if (sidebarOverlay) {
+                sidebarOverlay.classList.remove('overlay-visible');
+            }
+        } else {
+            // Desktop: Apply saved state when resizing to desktop
+            const savedState = getSidebarState();
+            applySidebarState(savedState);
+        }
+    });
+    
+    // Handle overlay click on mobile
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', function() {
+            if (sidebar) {
+                sidebar.classList.remove('sidebar-open');
+            }
+            sidebarOverlay.classList.remove('overlay-visible');
+        });
+    }
+}
+
+// Load user information
+function loadUserInfo() {
+    const token = localStorage.getItem('token');
+    if (token) {
+        const usernameElement = document.querySelector('.user-name');
+        if (usernameElement) {
+            // Try to get user data from localStorage first
+            const userData = localStorage.getItem('userData');
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    usernameElement.textContent = user.name || user.username || 'User';
+                } catch (error) {
+                    console.error('Error parsing user data:', error);
+                    usernameElement.textContent = 'User';
+                }
+            } else {
+                usernameElement.textContent = 'Loading...';
+            }
+        }
+    }
+}
+
+// Load sidebar for simple use case
+async function loadSideBarSimple(userName) {
+    try {
+        // Apply main content state immediately before loading sidebar
+        if (window.innerWidth > 1024) {
+            const savedState = getSidebarState();
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) {
+                if (savedState) {
+                    // Collapsed state
+                    mainContent.classList.add('sidebar-collapsed');
+                    mainContent.style.marginLeft = '80px';
+                    mainContent.style.width = 'calc(100% - 80px)';
+                } else {
+                    // Expanded state
+                    mainContent.classList.remove('sidebar-collapsed');
+                    mainContent.style.marginLeft = '256px';
+                    mainContent.style.width = 'calc(100% - 256px)';
+                }
+            }
+        }
+        
+        const sidebarHtml = await loadSidebarHTML();
+        if (sidebarHtml) {
+            const container = document.getElementById('sidebar-container');
+            if (container) {
+                container.innerHTML = sidebarHtml;
+                
+                // Update username if provided
+                if (userName) {
+                    const usernameElement = document.querySelector('.user-name');
+                    if (usernameElement) {
+                        usernameElement.textContent = userName;
+                    }
+                }
+                
+                // Initialize sidebar - state will be applied immediately in initSidebar
+                initSidebar();
             }
         }
     } catch (error) {
-        console.error('[LOGOUT] Error during logout:', error);
-    } finally {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userData');
-        window.location.href = '../login';
+        console.error('Error loading sidebar:', error);
     }
 }
 
-// Load sidebar với username (for backward compatibility)
+// Load sidebar with user data
 async function loadSideBar(user) {
-    console.log("loadSideBar ne: ", user.username);
-    console.log("loadSideBar ne: ", user);
-
-    const userName = user.username || user.name;
-    loadSideBarSimple(userName);
+    try {
+        // Apply main content state immediately before loading sidebar
+        if (window.innerWidth > 1024) {
+            const savedState = getSidebarState();
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) {
+                if (savedState) {
+                    // Collapsed state
+                    mainContent.classList.add('sidebar-collapsed');
+                    mainContent.style.marginLeft = '80px';
+                    mainContent.style.width = 'calc(100% - 80px)';
+                } else {
+                    // Expanded state
+                    mainContent.classList.remove('sidebar-collapsed');
+                    mainContent.style.marginLeft = '256px';
+                    mainContent.style.width = 'calc(100% - 256px)';
+                }
+            }
+        }
+        
+        const sidebarHtml = await loadSidebarHTML();
+        if (sidebarHtml) {
+            const container = document.getElementById('sidebar-container');
+            if (container) {
+                container.innerHTML = sidebarHtml;
+                
+                // Update user information
+                if (user) {
+                    const usernameElement = document.querySelector('.user-name');
+                    if (usernameElement) {
+                        usernameElement.textContent = user.name || user.username || 'User';
+                    }
+                }
+                
+                // Initialize sidebar - state will be applied immediately in initSidebar
+                initSidebar();
+            }
+        }
+    } catch (error) {
+        console.error('Error loading sidebar:', error);
+    }
 }
 
-// Modern Sidebar HTML template
-const sidebarTemplate = `
-<!-- Modern Sidebar Component -->
-<div class="sidebar">
-    <div class="sidebar-header">
-        <div class="logo">
-            <div class="logo-icon">
-                <i class="fas fa-chart-line"></i>
-            </div>
-            <span class="logo-text">FINMATE</span>
-        </div>
-    </div>
-    
-    <div class="sidebar-content">
-        <nav>
-            <ul class="nav-list">
-                <!-- Regular User Menu -->
-                <li class="nav-item user-menu">
-                    <a href="../home" class="nav-link">
-                        <div class="nav-icon">
-                            <i class="fas fa-home"></i>
-                        </div>
-                        <span class="nav-text">Home</span>
-                        <div class="nav-indicator"></div>
-                    </a>
-                </li>
-                <li class="nav-item user-menu">
-                    <a href="../transaction" class="nav-link">
-                        <div class="nav-icon">
-                            <i class="fas fa-exchange-alt"></i>
-                        </div>
-                        <span class="nav-text">Transactions</span>
-                        <div class="nav-indicator"></div>
-                    </a>
-                </li>
-                <li class="nav-item user-menu">
-                    <a href="../goal" class="nav-link">
-                        <div class="nav-icon">
-                            <i class="fas fa-bullseye"></i>
-                        </div>
-                        <span class="nav-text">Goals</span>
-                        <div class="nav-indicator"></div>
-                    </a>
-                </li>
-                <li class="nav-item user-menu">
-                    <a href="../budget" class="nav-link">
-                        <div class="nav-icon">
-                            <i class="fas fa-calculator"></i>
-                        </div>
-                        <span class="nav-text">Budget</span>
-                        <div class="nav-indicator"></div>
-                    </a>
-                </li>
-                <li class="nav-item user-menu">
-                    <a href="../financial_report" class="nav-link">
-                        <div class="nav-icon">
-                            <i class="fas fa-chart-pie"></i>
-                        </div>
-                        <span class="nav-text">Reports</span>
-                        <div class="nav-indicator"></div>
-                    </a>
-                </li>
-
-                <li class="nav-item user-menu">
-                    <a href="../user_premium" class="nav-link">
-                        <div class="nav-icon">
-                            <i class="fas fa-chart-pie"></i>
-                        </div>
-                        <span class="nav-text">Premium Plan</span>
-                        <div class="nav-indicator"></div>
-                    </a>
-                </li>
-                
-                <!-- Admin Menu -->
-                <li class="nav-divider admin-menu" id="adminDivider" style="display: none;">
-                    <span>Admin</span>
-                </li>
-                <li class="nav-item admin-menu" id="adminDashboardLink" style="display: none;">
-                    <a href="../admin-dashboard" class="nav-link">
-                        <div class="nav-icon">
-                            <i class="fas fa-tachometer-alt"></i>
-                        </div>
-                        <span class="nav-text">Dashboard</span>
-                        <div class="nav-indicator"></div>
-                    </a>
-                </li>
-                <li class="nav-item admin-menu" id="userManagementLink" style="display: none;">
-                    <a href="../user-management" class="nav-link">
-                        <div class="nav-icon">
-                            <i class="fas fa-users-cog"></i>
-                        </div>
-                        <span class="nav-text">User Management</span>
-                        <div class="nav-indicator"></div>
-                    </a>
-                </li>
-                   <li class="nav-item admin-menu" id="systemLogLink" style="display: none;">
-                    <a href="../system-log" class="nav-link">
-                        <div class="nav-icon">
-                            <i class="fas fa-users-cog"></i>
-                        </div>
-                        <span class="nav-text">System Log</span>
-                        <div class="nav-indicator"></div>
-                    </a>
-                </li>
-
-                </li>
-                   <li class="nav-item admin-menu" id="premiumAdminLink" style="display: none;">
-                    <a href="../subscription-manager" class="nav-link">
-                        <div class="nav-icon">
-                            <i class="fas fa-users-cog"></i>
-                        </div>
-                        <span class="nav-text">Premium Manager</span>
-                        <div class="nav-indicator"></div>
-                    </a>
-                </li>
-
-            </ul>
-        </nav>
-    </div>
-    
-    <div class="sidebar-footer">
-        <button class="logout-btn" onclick="handleLogout()">
-            <div class="logout-icon">
-                <i class="fas fa-sign-out-alt"></i>
-            </div>
-            <span>Logout</span>
-        </button>
-        
-        <div class="user-profile" id="viewProfileBtn">
-            <div class="user-avatar">
-                <img id="sidebarAvatar" src="https://via.placeholder.com/40" alt="User Avatar">
-                <div class="user-status"></div>
-            </div>
-            <div class="user-details">
-                <span class="user-name">Loading...</span>
-                <span class="user-role">View profile</span>
-            </div>
-            <div class="profile-menu">
-                <i class="fas fa-chevron-right"></i>
-            </div>
-        </div>
-    </div>
-</div>
-
-<style>
-    .sidebar {
-        width: 270px;
-        background: #1a3d2e;
-        border-right: 1px solid rgba(255, 255, 255, 0.08);
-        color: #fff;
-        display: flex;
-        flex-direction: column;
-        position: fixed;
-        height: 100vh;
-        z-index: 10;
-        overflow: hidden;
-        box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
-        left: 0;
-        top: 0;
-    }
-
-    /* Header Section */
-    .sidebar-header {
-        padding: 24px 20px 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    .logo {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .logo-icon {
-        width: 36px;
-        height: 36px;
-        background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.25);
-    }
-
-    .logo-icon i {
-        font-size: 18px;
-        color: #fff;
-    }
-
-    .logo-text {
-        font-size: 20px;
-        font-weight: 700;
-        color: #fff;
-        letter-spacing: -0.3px;
-    }
-
-    /* Content Section */
-    .sidebar-content {
-        flex: 1;
-        padding: 16px 0;
-        overflow-y: auto;
-    }
-
-    .nav-list {
-        list-style: none;
-        padding: 0 16px;
-        margin: 0;
-    }
-
-    .nav-divider {
-        margin: 20px 0 8px;
-        padding: 0 12px;
-        font-size: 11px;
-        font-weight: 600;
-        color: rgba(255, 255, 255, 0.4);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .nav-item {
-        margin-bottom: 2px;
-    }
-
-    .nav-link {
-        display: flex;
-        align-items: center;
-        padding: 10px 12px;
-        border-radius: 10px;
-        text-decoration: none;
-        color: rgba(255, 255, 255, 0.7);
-        transition: all 0.2s ease;
-        position: relative;
-    }
-
-    .nav-link:hover {
-        background: rgba(255, 255, 255, 0.06);
-        color: rgba(255, 255, 255, 0.9);
-    }
-
-    .nav-link.active {
-        background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(56, 142, 60, 0.15) 100%);
-        color: #fff;
-        border: 1px solid rgba(76, 175, 80, 0.2);
-    }
-
-    .nav-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255, 255, 255, 0.08);
-        transition: all 0.2s ease;
-        flex-shrink: 0;
-    }
-
-    .nav-link:hover .nav-icon {
-        background: rgba(255, 255, 255, 0.12);
-    }
-
-    .nav-link.active .nav-icon {
-        background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
-        box-shadow: 0 2px 6px rgba(76, 175, 80, 0.3);
-    }
-
-    .nav-icon i {
-        font-size: 16px;
-        color: inherit;
-    }
-
-    .nav-text {
-        margin-left: 12px;
-        font-size: 14px;
-        font-weight: 500;
-        color: inherit;
-    }
-
-    .nav-link.active .nav-text {
-        font-weight: 600;
-    }
-
-    .nav-indicator {
-        position: absolute;
-        right: 8px;
-        width: 4px;
-        height: 4px;
-        border-radius: 50%;
-        background: #4caf50;
-        opacity: 0;
-        transition: all 0.2s ease;
-    }
-
-    .nav-link.active .nav-indicator {
-        opacity: 1;
-    }
-
-    /* Footer Section */
-    .sidebar-footer {
-        padding: 16px 20px 20px;
-        border-top: 1px solid rgba(255, 255, 255, 0.06);
-        margin-top: auto;
-    }
-
-    .logout-btn {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        padding: 10px 12px;
-        background: rgba(220, 38, 38, 0.08);
-        border: 1px solid rgba(220, 38, 38, 0.15);
-        border-radius: 10px;
-        color: rgba(255, 255, 255, 0.8);
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        margin-bottom: 12px;
-    }
-
-    .logout-btn:hover {
-        background: rgba(220, 38, 38, 0.12);
-        border-color: rgba(220, 38, 38, 0.25);
-        color: #fff;
-    }
-
-    .logout-icon {
-        width: 28px;
-        height: 28px;
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(220, 38, 38, 0.15);
-        margin-right: 10px;
-        flex-shrink: 0;
-    }
-
-    .logout-icon i {
-        font-size: 14px;
-        color: #ff6b6b;
-    }
-
-    .user-profile {
-        display: flex;
-        align-items: center;
-        padding: 12px;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-    .user-profile:hover {
-        background: rgba(255, 255, 255, 0.06);
-        border-color: rgba(76, 175, 80, 0.2);
-    }
-
-    .user-avatar {
-        position: relative;
-        margin-right: 10px;
-        flex-shrink: 0;
-    }
-
-    .user-avatar img {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid rgba(255, 255, 255, 0.15);
-    }
-
-    .user-status {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        width: 6px;
-        height: 6px;
-        background: #4caf50;
-        border: 1px solid #1a3d2e;
-        border-radius: 50%;
-    }
-
-    .user-details {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .user-name {
-        font-size: 14px;
-        font-weight: 600;
-        color: #fff;
-        line-height: 1.2;
-        margin-bottom: 2px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .user-role {
-        font-size: 11px;
-        color: rgba(255, 255, 255, 0.5);
-        font-weight: 400;
-    }
-
-    .profile-menu {
-        width: 24px;
-        height: 24px;
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255, 255, 255, 0.08);
-        transition: all 0.2s ease;
-        flex-shrink: 0;
-    }
-
-    .profile-menu i {
-        font-size: 10px;
-        color: rgba(255, 255, 255, 0.6);
-    }
-
-    .user-profile:hover .profile-menu {
-        background: rgba(76, 175, 80, 0.15);
-    }
-
-    .user-profile:hover .profile-menu i {
-        color: #4caf50;
-    }
-
-    /* Scrollbar */
-    .sidebar-content::-webkit-scrollbar {
-        width: 3px;
-    }
-
-    .sidebar-content::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .sidebar-content::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.15);
-        border-radius: 2px;
-    }
-
-    .sidebar-content::-webkit-scrollbar-thumb:hover {
-        background: rgba(255, 255, 255, 0.25);
-    }
-
-    /* Responsive */
-    @media (max-width: 900px) {
-        .sidebar {
-            display: none;
+// Apply body class as early as possible to prevent flash
+(function() {
+    // Apply body class immediately when script loads
+    if (window.innerWidth > 1024) {
+        const saved = localStorage.getItem('sidebarCollapsed');
+        const isCollapsed = saved === 'true';
+        if (isCollapsed) {
+            document.body.classList.add('sidebar-state-collapsed');
         }
     }
+    
+    // Disable transitions during initial load
+    document.body.classList.add('no-transition-on-load');
+})();
 
-    /* Ensure no overflow */
-    #sidebar-container {
-        width: 270px;
-        height: 100vh;
-        position: fixed;
-        left: 0;
-        top: 0;
-        z-index: 10;
-        overflow: hidden;
+// Initialize on DOM ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Apply body sidebar class immediately
+    applyBodySidebarClass();
+    
+    // Apply main content state immediately if sidebar already exists
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar && window.innerWidth > 1024) {
+        const savedState = getSidebarState();
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+            if (savedState) {
+                // Collapsed state
+                sidebar.classList.add('sidebar-collapsed');
+                sidebar.style.width = '80px';
+                mainContent.classList.add('sidebar-collapsed');
+                mainContent.style.marginLeft = '80px';
+                mainContent.style.width = 'calc(100% - 80px)';
+            } else {
+                // Expanded state
+                sidebar.classList.remove('sidebar-collapsed');
+                sidebar.style.width = '256px';
+                mainContent.classList.remove('sidebar-collapsed');
+                mainContent.style.marginLeft = '256px';
+                mainContent.style.width = 'calc(100% - 256px)';
+            }
+        }
     }
-
-    body {
-        margin: 0;
-        padding: 0;
-    }
-</style>
-`;
-
-// Load sidebar đơn giản chỉ cần username - Không cần fetch nữa
-function loadSideBarSimple(userName) {
+    
+    // Only initialize if sidebar container exists but sidebar doesn't exist yet
     const sidebarContainer = document.getElementById('sidebar-container');
 
-    // Load sidebar template instantly
-    sidebarContainer.innerHTML = sidebarTemplate;
-
-    // Update user info immediately
-    const sidebarUserNameSpan = document.querySelector('.sidebar .user-details .user-name');
-    if (sidebarUserNameSpan) {
-        sidebarUserNameSpan.textContent = userName;
+    if (sidebarContainer && !sidebar) {
+        // Load sidebar HTML and initialize
+        loadSideBarSimple('Loading...');
+    } else if (sidebar) {
+        // Sidebar already exists, just initialize
+        initSidebar();
+        loadUserInfo();
+        checkUserRoleAndShowAdminFeatures();
     }
-    const sidebarAvatar = document.querySelector('.sidebar .user-avatar img');
-    if (sidebarAvatar) {
-        sidebarAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=388e3c&color=fff`;
-    }
-
-    // Set active class for current page in sidebar
-    setActiveSidebarLink();
-
-    // Show admin features for admin users
-    checkUserRoleAndShowAdminFeatures();
-}
+    
+    // Remove no-transition class after a brief delay
+    setTimeout(() => {
+        document.body.classList.remove('no-transition-on-load');
+    }, 100);
+});
