@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
     <title>Subscription Manager - FinMate</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -69,10 +70,51 @@
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-search text-gray-400"></i>
+=======
+    <title>Premium Packages - Finmate</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="/assets/js/helper_functions.js"></script>
+    <script src="/assets/js/autho_helper.js" defer></script>
+    <script src="/assets/js/sidebar.js" defer></script>
+</head>
+
+<body class="font-sans bg-gradient-to-br from-gray-100 to-gray-200 text-green-900 leading-normal">
+    <div class="flex min-h-screen">
+        <div id="sidebar-container"></div>
+        <main class="flex-1 ml-0 lg:ml-72 p-4 lg:p-8 flex gap-8 flex-col lg:flex-row">
+            <div class="flex-1">
+                <header class="bg-white rounded-2xl shadow-md p-6 mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center">
+                    <div>
+                        <h1 class="text-2xl font-semibold text-green-900">Premium Packages</h1>
+                        <p class="text-gray-600 text-sm mt-1">Manage subscription plans and pricing</p>
+                    </div>
+                    <div class="flex gap-4 items-center mt-4 lg:mt-0">
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+                            <input type="text" placeholder="Search packages..." id="searchInput" class="pl-10 p-2 border border-gray-300 rounded-lg w-full lg:w-72 text-sm">
+                        </div>
+                        <button class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-green-800 transition" onclick="openNewPackageModal()">
+                            <i class="fas fa-plus"></i> New Package
+                        </button>
+                        <button class="bg-gray-100 text-gray-600 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-green-700 hover:text-white transition" onclick="location.reload()">
+                            <i class="fas fa-bell"></i>
+                        </button>
+                    </div>
+                </header>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-2xl shadow-md p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="text-gray-600 text-sm font-medium">Revenue</div>
+                            <div class="w-10 h-10 rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-lg">
+                                <i class="fas fa-dollar-sign"></i>
+>>>>>>> origin/coupon-page
                             </div>
                             <input type="text" id="searchInput" placeholder="Search packages..." 
                                 class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-2xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
                         </div>
+<<<<<<< HEAD
                         
                         <!-- Action Buttons -->
                         <div class="flex space-x-3">
@@ -145,12 +187,86 @@
                             </div>
                             <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);">
                                 <i class="fas fa-chart-line text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+=======
+                        <div class="text-3xl font-bold text-green-900" id="totalRevenue">0đ</div>
+                        <div class="text-green-700 text-xs font-medium mt-2" id="revenueChange">+0%</div>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-md p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="text-gray-600 text-sm font-medium">Active Subscribers</div>
+                            <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-lg">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        <div class="text-3xl font-bold text-green-900" id="totalSubscribers">0</div>
+                        <div class="text-green-700 text-xs font-medium mt-2" id="subscribersChange">+0%</div>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-md p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="text-gray-600 text-sm font-medium">Conversion Rate</div>
+                            <div class="w-10 h-10 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center text-lg">
+                                <i class="fas fa-percentage"></i>
+                            </div>
+                        </div>
+                        <div class="text-3xl font-bold text-green-900" id="conversionRate">0%</div>
+                        <div class="text-green-700 text-xs font-medium mt-2" id="conversionChange">+0.0%</div>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-md p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="text-gray-600 text-sm font-medium">Avg Revenue/User</div>
+                            <div class="w-10 h-10 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center text-lg">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                        <div class="text-3xl font-bold text-green-900" id="avgRevenue">0đ</div>
+                        <div class="text-red-700 text-xs font-medium mt-2" id="avgRevenueChange">-0%</div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col lg:flex-row gap-4">
+                    <div class="bg-white rounded-2xl flex-1">
+                        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                            <h2 class="text-lg font-semibold text-green-900">All Packages</h2>
+                            <div class="flex gap-2">
+                                <button class="tab-btn px-4 py-2 text-sm text-gray-600 rounded-md hover:bg-green-700 hover:text-white transition bg-green-700 text-white" data-filter="all">All</button>
+                                <button class="tab-btn px-4 py-2 text-sm text-gray-600 rounded-md hover:bg-green-700 hover:text-white transition" data-filter="monthly">Monthly</button>
+                                <button class="tab-btn px-4 py-2 text-sm text-gray-600 rounded-md hover:bg-green-700 hover:text-white transition" data-filter="yearly">Yearly</button>
+                                <button class="tab-btn px-4 py-2 text-sm text-gray-600 rounded-md hover:bg-green-700 hover:text-white transition" data-filter="active">Active</button>
+                            </div>
+                        </div>
+                        <div id="packagesContainer" class="p-6">
+                            <div class="flex justify-center items-center p-12 text-gray-600">
+                                <div class="w-10 h-10 border-4 border-gray-200 border-t-green-700 rounded-full animate-spin mr-4"></div>
+                                Loading packages...
+                            </div>
+                        </div>
+                        <div class="pagination border-t border-gray-200 p-4 flex justify-center items-center gap-2 hidden" id="pagination">
+                            <button class="pagination-btn px-3 py-2 border border-gray-300 rounded-md text-gray-600 hover:bg-green-700 hover:text-white transition" id="prevBtn" onclick="changePage(currentPage - 1)">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div id="pageNumbers"></div>
+                            <button class="pagination-btn px-3 py-2 border border-gray-300 rounded-md text-gray-600 hover:bg-green-700 hover:text-white transition" id="nextBtn" onclick="changePage(currentPage + 1)">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl w-full lg:w-1/3">
+                        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                            <h2 class="text-lg font-semibold text-green-900">Recent Subscriptions</h2>
+                            <a href="#" class="text-sm text-gray-600 hover:text-green-700">View All</a>
+                        </div>
+                        <div id="recentSubscriptions" class="p-6">
+                            <div class="flex justify-center items-center p-12 text-gray-600">
+                                <div class="w-10 h-10 border-4 border-gray-200 border-t-green-700 rounded-full animate-spin mr-4"></div>
+                                Loading recent subscriptions...
+>>>>>>> origin/coupon-page
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
+<<<<<<< HEAD
             <!-- Main Content Area -->
             <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-3 gap-8 main-content-grid" style="min-height: auto;">
                 <!-- Package Management Section -->
@@ -204,6 +320,240 @@
                                 </div>
                             </div>
                         </div>
+=======
+    <div id="createPackageModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-md w-11/12 max-w-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-semibold text-green-900">Create New Package</h2>
+                <button class="text-gray-600 text-xl hover:text-green-900" onclick="closeNewPackageModal()">×</button>
+            </div>
+            <form id="createPackageForm">
+                <div class="mb-4">
+                    <label for="createName" class="block text-sm font-medium text-green-900 mb-1">Package Name</label>
+                    <input type="text" id="createName" class="w-full p-2 border border-gray-300 rounded-md text-sm" required>
+                </div>
+                <div class="mb-4">
+                    <label for="createPrice" class="block text-sm font-medium text-green-900 mb-1">Price (VND)</label>
+                    <input type="number" id="createPrice" step="1000" class="w-full p-2 border border-gray-300 rounded-md text-sm" required>
+                </div>
+                <div class="mb-4">
+                    <label for="createDurationValue" class="block text-sm font-medium text-green-900 mb-1">Duration Value</label>
+                    <input type="number" id="createDurationValue" class="w-full p-2 border border-gray-300 rounded-md text-sm" required>
+                </div>
+                <div class="mb-4">
+                    <label for="createDurationType" class="block text-sm font-medium text-green-900 mb-1">Duration Type</label>
+                    <select id="createDurationType" class="w-full p-2 border border-gray-300 rounded-md text-sm" required>
+                        <option value="MONTH">Month</option>
+                        <option value="YEAR">Year</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="createFeatures" class="block text-sm font-medium text-green-900 mb-1">Features</label>
+                    <div id="createFeatures" class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 border border-gray-300 rounded-md"></div>
+                    <input type="hidden" id="createSelectedFeatures">
+                </div>
+                <div class="flex justify-end gap-4 mt-6">
+                    <button type="button" class="px-4 py-2 text-sm text-gray-600 rounded-md hover:bg-gray-100" onclick="closeNewPackageModal()">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-sm text-white bg-green-700 rounded-md hover:bg-green-800">Create Package</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="updatePackageModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-md w-11/12 max-w-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-semibold text-green-900">Update Package</h2>
+                <button class="text-gray-600 text-xl hover:text-green-900" onclick="closeUpdateModal()">×</button>
+            </div>
+            <form id="updatePackageForm">
+                <input type="hidden" id="updatePackageId">
+                <div class="mb-4">
+                    <label for="updateName" class="block text-sm font-medium text-green-900 mb-1">Package Name</label>
+                    <input type="text" id="updateName" class="w-full p-2 border border-gray-300 rounded-md text-sm" required>
+                </div>
+                <div class="mb-4">
+                    <label for="updatePrice" class="block text-sm font-medium text-green-900 mb-1">Price (VND)</label>
+                    <input type="number" id="updatePrice" step="1000" class="w-full p-2 border border-gray-300 rounded-md text-sm" required>
+                </div>
+                <div class="mb-4">
+                    <label for="updateDurationValue" class="block text-sm font-medium text-green-900 mb-1">Duration Value</label>
+                    <input type="number" id="updateDurationValue" class="w-full p-2 border border-gray-300 rounded-md text-sm" required>
+                </div>
+                <div class="mb-4">
+                    <label for="updateDurationType" class="block text-sm font-medium text-green-900 mb-1">Duration Type</label>
+                    <select id="updateDurationType" class="w-full p-2 border border-gray-300 rounded-md text-sm" required>
+                        <option value="DAY">Day</option>
+                        <option value="WEEK">Week</option>
+                        <option value="MONTH">Month</option>
+                        <option value="YEAR">Year</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="updateFeatures" class="block text-sm font-medium text-green-900 mb-1">Features</label>
+                    <div id="updateFeatures" class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 border border-gray-300 rounded-md"></div>
+                    <input type="hidden" id="updateSelectedFeatures">
+                </div>
+                <div class="mb-4">
+                    <label for="updateIsActive" class="block text-sm font-medium text-green-900 mb-1">Status</label>
+                    <select id="updateIsActive" class="w-full p-2 border border-gray-300 rounded-md text-sm" required>
+                        <option value="true">Active</option>
+                        <option value="false">Inactive</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-4 mt-6">
+                    <button type="button" class="px-4 py-2 text-sm text-gray-600 rounded-md hover:bg-gray-100" onclick="closeUpdateModal()">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-sm text-white bg-green-700 rounded-md hover:bg-green-800">Update Package</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'http://localhost:8080/api/premium-package';
+        const SUBSCRIPTION_API_URL = 'http://localhost:8080/api/subscriptions';
+        const FEATURES_API_URL = 'http://localhost:8080/api/features';
+        let currentPage = 0;
+        let totalPages = 0;
+        let currentFilter = 'all';
+        let packages = [];
+        let allFeatures = [];
+
+        const getPackageIcon = (name) => {
+            const lowerName = name.toLowerCase();
+            if (lowerName.includes('basic')) return 'bg-gradient-to-br from-blue-300 to-blue-600';
+            if (lowerName.includes('pro') || lowerName.includes('premium')) return 'bg-gradient-to-br from-purple-300 to-purple-600';
+            if (lowerName.includes('enterprise')) return 'bg-gradient-to-br from-green-300 to-green-600';
+            if (lowerName.includes('yearly') || lowerName.includes('annual')) return 'bg-gradient-to-br from-yellow-300 to-yellow-600';
+            return 'bg-gradient-to-br from-blue-300 to-blue-600';
+        };
+
+        const getDurationText = (value, type) => {
+            const typeMap = {
+                'DAY': value === 1 ? 'day' : 'days',
+                'WEEK': value === 1 ? 'week' : 'weeks',
+                'MONTH': value === 1 ? 'month' : 'months',
+                'YEAR': value === 1 ? 'year' : 'years'
+            };
+            return `per ${value} ${typeMap[type] || 'month'}`;
+        };
+
+        const formatTimeAgo = (localDateTimeStr) => {
+            const now = new Date('2025-06-27T10:32:00+07:00');
+            const createdAt = new Date(localDateTimeStr);
+            const diffMs = now - createdAt;
+            const diffMinutes = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMinutes < 60) return `${diffMinutes} mins ago`;
+            if (diffHours < 24) return `${diffHours} hours ago`;
+            return `${diffDays} days ago`;
+        };
+
+        // API Functions
+        const fetchPackages = async (page = 0, size = 4, sortBy = 'price', sortDirection = 'DESC') => {
+            try {
+                const response = await apiRequest(
+                    `${API_BASE_URL}?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${sortDirection}`
+                );
+
+                if (!response) return null;
+
+                const data = await response.json();
+                return data.result;
+            } catch (error) {
+                console.error('Error fetching packages:', error);
+                return null;
+            }
+        };
+
+        const fetchPackageById = async (packageId) => {
+            try {
+                const response = await apiRequest(`${API_BASE_URL}/${packageId}`);
+                if (!response) return null;
+                const data = await response.json();
+                return data.result;
+            } catch (error) {
+                console.error('Error fetching package:', error);
+                return null;
+            }
+        };
+
+        const fetchFeatures = async () => {
+            try {
+                const response = await apiRequest(FEATURES_API_URL);
+                if (!response) return [];
+                const data = await response.json();
+                return data.result || [];
+            } catch (error) {
+                console.error('Error fetching features:', error);
+                return [];
+            }
+        };
+
+        const createPackage = async (packageData) => {
+            try {
+                const response = await apiRequest(API_BASE_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(packageData)
+                });
+                return response;
+            } catch (error) {
+                console.error('Error creating package:', error);
+                throw error;
+            }
+        };
+
+        const updatePackage = async (packageId, packageData) => {
+            try {
+                const response = await apiRequest(`${API_BASE_URL}/${packageId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(packageData)
+                });
+                return response;
+            } catch (error) {
+                console.error('Error updating package:', error);
+                throw error;
+            }
+        };
+
+        const fetchRevenueAndSubscribers = async () => {
+            try {
+                const response = await apiRequest(`${SUBSCRIPTION_API_URL}/revenue-subscribers`);
+                if (!response) return null;
+                const data = await response.json();
+                return data.result || { revenue: 0, subscribers: 0 };
+            } catch (error) {
+                console.error('Error fetching revenue and subscribers:', error);
+                return { revenue: 0, subscribers: 0 };
+            }
+        };
+
+        const fetchRecentSubscriptions = async () => {
+            try {
+                const response = await apiRequest(`${SUBSCRIPTION_API_URL}/recent?page=0&size=5&sortBy=createdAt&sortDirection=DESC`);
+                if (!response) return [];
+                const data = await response.json();
+                return data.result.content || [];
+            } catch (error) {
+                console.error('Error fetching recent subscriptions:', error);
+                return [];
+            }
+        };
+
+        // Render Functions
+        const renderPackages = (packagesData) => {
+            const container = document.getElementById('packagesContainer');
+
+            if (!packagesData || !packagesData.content || packagesData.content.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center p-12 text-gray-600">
+                        <i class="fas fa-box-open text-5xl mb-4"></i>
+                        <h3 class="text-lg font-semibold">No packages found</h3>
+                        <p>Create your first premium package to get started</p>
+>>>>>>> origin/coupon-page
                     </div>
                 </div>
 
@@ -235,6 +585,7 @@
         </div>
     </div>
 
+<<<<<<< HEAD
     <!-- Create Package Modal -->
     <div id="createPackageModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -286,11 +637,73 @@
                             <button type="submit" class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl hover:from-indigo-700 hover:to-purple-700 font-medium transition-all duration-300 hover:scale-105">Create Package</button>
                         </div>
                     </form>
+=======
+            // Map feature codes to feature names for display
+            const getFeatureName = (featureCode) => {
+                const feature = allFeatures.find(f => f.featureCode === featureCode);
+                return feature ? feature.featureName : featureCode;
+            };
+
+            const packagesHTML = packages.map(pkg => `
+                <div class="package-card border border-gray-200 rounded-lg p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300" data-type="${pkg.durationType?.toLowerCase() || 'monthly'}" data-active="${pkg.isActive}">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <div class="w-10 h-10 rounded-lg ${getPackageIcon(pkg.name)} flex items-center justify-center text-white text-lg">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="w-8 h-8 bg-gray-100 text-gray-600 rounded-md flex items-center justify-center hover:bg-green-700 hover:text-white transition" onclick="openUpdateModal(${pkg.id})" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="w-8 h-8 bg-gray-100 text-gray-600 rounded-md flex items-center justify-center hover:bg-green-700 hover:text-white transition" onclick="deletePackage(${pkg.id})" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-lg font-semibold text-green-900 mb-1">${pkg.name}</div>
+                    <div class="text-xs text-gray-600 uppercase font-medium">${pkg.durationType?.toLowerCase() || 'monthly'}</div>
+                    <div class="text-2xl font-bold text-green-900 my-4">
+                        ${formatCurrency(pkg.price)}
+                        <span class="text-sm text-gray-600">${getDurationText(pkg.durationValue, pkg.durationType)}</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 my-4">
+                        <div class="text-center">
+                            <div class="text-lg font-semibold text-green-900">${formatNumber(pkg.subscribers || 0)}</div>
+                            <div class="text-xs text-gray-600 mt-1">Subscribers</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-lg font-semibold text-green-900">${formatCurrency(pkg.revenue || 0)}</div>
+                            <div class="text-xs text-gray-600 mt-1">Revenue</div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="text-sm font-medium text-green-900 mb-2">Features</div>
+                        <ul class="list-none p-0">
+                            ${(pkg.features || ['Basic Features', 'Support']).slice(0, 3).map(feature => `
+                                <li class="text-sm text-gray-600 mb-1 flex items-center gap-2">
+                                    <i class="fas fa-check text-green-700 text-xs"></i> ${getFeatureName(feature)}
+                                </li>
+                            `).join('')}
+                            ${pkg.features && pkg.features.length > 3 ? `
+                                <li class="text-sm text-gray-600 mb-1 flex items-center gap-2">
+                                    <i class="fas fa-plus text-green-700 text-xs"></i>
+                                    +${pkg.features.length - 3} more
+                                </li>
+                            ` : ''}
+                        </ul>
+                    </div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${pkg.isActive ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'}">
+                        <i class="fas fa-circle text-xs"></i>
+                        ${pkg.isActive ? 'Active' : 'Inactive'}
+                    </div>
+>>>>>>> origin/coupon-page
                 </div>
             </div>
         </div>
     </div>
 
+<<<<<<< HEAD
     <!-- Update Package Modal -->
     <div id="updatePackageModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -313,6 +726,40 @@
                         <div>
                             <label for="updateName" class="block text-sm font-medium text-gray-700 mb-2">Package Name</label>
                             <input type="text" id="updateName" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+=======
+            container.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">${packagesHTML}</div>`;
+            updatePagination();
+        };
+
+        const renderRecentSubscriptions = (subscriptions) => {
+            const container = document.getElementById('recentSubscriptions');
+
+            if (!subscriptions || subscriptions.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center p-12 text-gray-600">
+                        <i class="fas fa-users text-5xl mb-4"></i>
+                        <h3 class="text-lg font-semibold">No recent subscriptions</h3>
+                        <p>Recent subscription activity will appear here</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const subscriptionsHTML = subscriptions.map(sub => `
+                <div class="flex items-center p-4 border-b border-gray-200 last:border-b-0">
+                    <div class="w-10 h-10 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-semibold text-lg">
+                        ${sub.userName?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+                    <div class="flex-1 ml-4">
+                        <div class="font-semibold text-sm text-green-900">${sub.userName || 'Unknown User'}</div>
+                        <div class="text-xs text-gray-600">${sub.packageName || 'Premium Package'}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-semibold text-sm text-green-900">${formatCurrency(sub.amount || 0)}</div>
+                        <div class="text-xs text-gray-600 mb-2">${formatTimeAgo(sub.createdAt)}</div>
+                        <div class="inline-block px-3 py-1 rounded-full text-xs font-medium ${sub.status?.toLowerCase() === 'active' ? 'bg-green-100 text-green-600' : sub.status?.toLowerCase() === 'pending' ? 'bg-orange-100 text-orange-600' : 'bg-red-100 text-red-600'}">
+                            ${sub.status || 'Completed'}
+>>>>>>> origin/coupon-page
                         </div>
                         <div>
                             <label for="updatePrice" class="block text-sm font-medium text-gray-700 mb-2">Price (VND)</label>
@@ -357,7 +804,335 @@
         </div>
     </div>
 
+<<<<<<< HEAD
     <!-- Include Subscription Manager JavaScript -->
     <script src="/assets/js/subscription-manager.js" defer></script>
+=======
+            container.innerHTML = subscriptionsHTML;
+        };
+
+        const renderFeatures = (containerId, selectedFeatures = []) => {
+            const container = document.getElementById(containerId);
+            if (!allFeatures || allFeatures.length === 0) {
+                container.innerHTML = '<p class="text-gray-600">No features available</p>';
+                return;
+            }
+
+            const featuresHTML = allFeatures.map(feature => `
+                <div class="feature-item flex items-center gap-2 p-2 rounded-md bg-gray-100 cursor-pointer text-sm text-green-900 ${selectedFeatures.includes(feature.featureCode) ? '' : 'opacity-75'}" 
+                     data-feature-code="${feature.featureCode}" 
+                     onclick="toggleFeature('${containerId}', '${feature.featureCode}')">
+                    <i class="fas ${selectedFeatures.includes(feature.featureCode) ? 'fa-check text-green-700' : 'fa-plus text-gray-600'} text-xs"></i>
+                    ${feature.featureName}
+                </div>
+            `).join('');
+            container.innerHTML = featuresHTML;
+        };
+
+        const toggleFeature = (containerId, featureCode) => {
+            const container = document.getElementById(containerId);
+            const featureItem = container.querySelector(`[data-feature-code="${featureCode}"]`);
+            const input = document.getElementById(containerId === 'createFeatures' ? 'createSelectedFeatures' : 'updateSelectedFeatures');
+            let selectedFeatures = input.value ? input.value.split(',') : [];
+
+            if (selectedFeatures.includes(featureCode)) {
+                selectedFeatures = selectedFeatures.filter(code => code !== featureCode);
+                featureItem.classList.add('opacity-75');
+                featureItem.querySelector('i').classList.remove('fa-check', 'text-green-700');
+                featureItem.querySelector('i').classList.add('fa-plus', 'text-gray-600');
+            } else {
+                selectedFeatures.push(featureCode);
+                featureItem.classList.remove('opacity-75');
+                featureItem.querySelector('i').classList.remove('fa-plus', 'text-gray-600');
+                featureItem.querySelector('i').classList.add('fa-check', 'text-green-700');
+            }
+
+            input.value = selectedFeatures.join(',');
+        };
+
+        const updateStats = async () => {
+            const stats = await fetchRevenueAndSubscribers();
+
+            document.getElementById('totalRevenue').textContent = formatCurrency(stats.revenue || 0);
+            document.getElementById('totalSubscribers').textContent = formatNumber(stats.subscribers || 0);
+
+            const avgRevenue = stats.subscribers > 0 ? stats.revenue / stats.subscribers : 0;
+            document.getElementById('avgRevenue').textContent = formatCurrency(avgRevenue);
+            document.getElementById('conversionRate').textContent = '3.4%';
+        };
+
+        const updatePagination = () => {
+            const pagination = document.getElementById('pagination');
+            const pageNumbers = document.getElementById('pageNumbers');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            if (totalPages <= 1) {
+                pagination.classList.add('hidden');
+                return;
+            }
+
+            pagination.classList.remove('hidden');
+
+            prevBtn.disabled = currentPage === 0;
+            nextBtn.disabled = currentPage >= totalPages - 1;
+
+            let pageNumbersHTML = '';
+            const maxVisiblePages = 5;
+            let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1);
+
+            if (endPage - startPage < maxVisiblePages - 1) {
+                startPage = Math.max(0, endPage - maxVisiblePages + 1);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                pageNumbersHTML += `
+                    <button class="pagination-btn px-3 py-2 border border-gray-300 rounded-md text-gray-600 hover:bg-green-700 hover:text-white transition ${i === currentPage ? 'bg-green-700 text-white' : ''}" 
+                            onclick="changePage(${i})">
+                        ${i + 1}
+                    </button>
+                `;
+            }
+
+            pageNumbers.innerHTML = pageNumbersHTML;
+        };
+
+        // Modal Functions
+        const openNewPackageModal = async () => {
+            const modal = document.getElementById('createPackageModal');
+            document.getElementById('createPackageForm').reset();
+            document.getElementById('createSelectedFeatures').value = '';
+            renderFeatures('createFeatures', []);
+            modal.classList.remove('hidden');
+        };
+
+        const closeNewPackageModal = () => {
+            const modal = document.getElementById('createPackageModal');
+            modal.classList.add('hidden');
+            document.getElementById('createPackageForm').reset();
+            document.getElementById('createSelectedFeatures').value = '';
+        };
+
+        const openUpdateModal = async (packageId) => {
+            const modal = document.getElementById('updatePackageModal');
+            const packageData = await fetchPackageById(packageId);
+
+            if (packageData) {
+                document.getElementById('updatePackageId').value = packageData.id;
+                document.getElementById('updateName').value = packageData.name;
+                document.getElementById('updatePrice').value = packageData.price;
+                document.getElementById('updateDurationValue').value = packageData.durationValue;
+                document.getElementById('updateDurationType').value = packageData.durationType;
+                const featureCodes = packageData.features
+                    ? packageData.features.map(name => {
+                        const feature = allFeatures.find(f => f.featureName === name);
+                        return feature ? feature.featureCode : null;
+                    }).filter(code => code !== null)
+                    : [];
+                document.getElementById('updateSelectedFeatures').value = featureCodes.join(',');
+                renderFeatures('updateFeatures', featureCodes);
+                document.getElementById('updateIsActive').value = packageData.isActive.toString();
+                modal.classList.remove('hidden');
+            } else {
+                alert('Failed to load package data');
+            }
+        };
+
+        const closeUpdateModal = () => {
+            const modal = document.getElementById('updatePackageModal');
+            modal.classList.add('hidden');
+            document.getElementById('updatePackageForm').reset();
+            document.getElementById('updateSelectedFeatures').value = '';
+        };
+
+        // Event Handlers
+        const changePage = async (page) => {
+            if (page < 0 || page >= totalPages || page === currentPage) return;
+
+            currentPage = page;
+            await loadPackages();
+        };
+
+        const filterPackages = (filter) => {
+            currentFilter = filter;
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-green-700', 'text-white');
+                if (btn.dataset.filter === filter) {
+                    btn.classList.add('bg-green-700', 'text-white');
+                }
+            });
+
+            const packageCards = document.querySelectorAll('.package-card');
+            packageCards.forEach(card => {
+                const type = card.dataset.type;
+                const isActive = card.dataset.active === 'true';
+
+                let show = false;
+
+                switch (filter) {
+                    case 'all':
+                        show = true;
+                        break;
+                    case 'monthly':
+                        show = type === 'month';
+                        break;
+                    case 'yearly':
+                        show = type === 'year';
+                        break;
+                    case 'active':
+                        show = isActive;
+                        break;
+                }
+
+                card.style.display = show ? 'block' : 'none';
+            });
+        };
+
+        const handleCreatePackage = async (e) => {
+            e.preventDefault();
+
+            const packageData = {
+                name: document.getElementById('createName').value,
+                price: parseInt(document.getElementById('createPrice').value),
+                durationValue: parseInt(document.getElementById('createDurationValue').value),
+                durationType: document.getElementById('createDurationType').value,
+                features: document.getElementById('createSelectedFeatures').value ? document.getElementById('createSelectedFeatures').value.split(',').filter(f => f.trim()) : []
+            };
+
+            try {
+                const response = await createPackage(packageData);
+
+                if (response && response.ok) {
+                    closeNewPackageModal();
+                    await loadPackages();
+                    alert('Package created successfully!');
+                } else {
+                    alert('Failed to create package');
+                }
+            } catch (error) {
+                alert('Error creating package');
+            }
+        };
+
+        const handleUpdatePackage = async (e) => {
+            e.preventDefault();
+
+            const packageId = document.getElementById('updatePackageId').value;
+            const packageData = {
+                name: document.getElementById('updateName').value,
+                price: parseInt(document.getElementById('updatePrice').value),
+                durationValue: parseInt(document.getElementById('updateDurationValue').value),
+                durationType: document.getElementById('updateDurationType').value,
+                features: document.getElementById('updateSelectedFeatures').value ? document.getElementById('updateSelectedFeatures').value.split(',').filter(f => f.trim()) : [],
+                isActive: document.getElementById('updateIsActive').value === 'true'
+            };
+
+            try {
+                const response = await updatePackage(packageId, packageData);
+
+                if (response && response.ok) {
+                    closeUpdateModal();
+                    await loadPackages();
+                    alert('Package updated successfully!');
+                } else {
+                    alert('Failed to update package');
+                }
+            } catch (error) {
+                alert('Error updating package');
+            }
+        };
+
+        const deletePackage = async (packageId) => {
+            if (!confirm('Are you sure you want to delete this package?')) return;
+
+            try {
+                const response = await apiRequest(`${API_BASE_URL}/${packageId}`, {
+                    method: 'DELETE',
+                });
+
+                if (response && response.ok) {
+                    await loadPackages();
+                    alert('Package deleted successfully!');
+                } else {
+                    alert('Failed to delete package');
+                }
+            } catch (error) {
+                alert('Error deleting package');
+            }
+        };
+
+        const searchPackages = (query) => {
+            const packageCards = document.querySelectorAll('.package-card');
+
+            packageCards.forEach(card => {
+                const packageName = card.querySelector('.package-name').textContent.toLowerCase();
+                const packageType = card.querySelector('.package-type').textContent.toLowerCase();
+
+                const matches = packageName.includes(query.toLowerCase()) ||
+                    packageType.includes(query.toLowerCase());
+
+                card.style.display = matches ? 'block' : 'none';
+            });
+        };
+
+        // Load Functions
+        const loadPackages = async () => {
+            const packagesData = await fetchPackages(currentPage, 2);
+            if (packagesData) {
+                renderPackages(packagesData);
+                await updateStats();
+            }
+        };
+
+        const loadRecentSubscriptions = async () => {
+            try {
+                const subscriptions = await fetchRecentSubscriptions();
+                renderRecentSubscriptions(subscriptions);
+            } catch (error) {
+                console.error('Error loading subscriptions:', error);
+                renderRecentSubscriptions([]);
+            }
+        };
+
+        const loadFeatures = async () => {
+            allFeatures = await fetchFeatures();
+            renderFeatures('createFeatures', []);
+        };
+
+        // Initialize
+        const init = async () => {
+            if (!checkAuth()) return;
+
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                searchPackages(e.target.value);
+            });
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    filterPackages(e.target.dataset.filter);
+                });
+            });
+
+            document.getElementById('createPackageForm').addEventListener('submit', handleCreatePackage);
+            document.getElementById('updatePackageForm').addEventListener('submit', handleUpdatePackage);
+
+            await Promise.all([
+                loadSideBar(getCurrentUser()),
+                loadPackages(),
+                loadRecentSubscriptions(),
+                loadFeatures()
+            ]);
+        };
+
+        document.addEventListener('DOMContentLoaded', init);
+
+        setInterval(() => {
+            loadPackages();
+            loadRecentSubscriptions();
+        }, 5 * 60 * 1000);
+    </script>
+>>>>>>> origin/coupon-page
 </body>
 </html>

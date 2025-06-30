@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<<<<<<< HEAD
     <script src="../../assets/js/page-loader.js"></script>
     <script src="../../assets/js/header.js"></script>
     <script src="../../assets/js/sidebar.js"></script>
@@ -18,6 +19,11 @@
     <script src="/assets/js/user_auth.js" defer></script>
     <script src="/assets/js/transaction.js" defer></script>
 
+=======
+    <script src="../../assets/js/sidebar.js" defer></script>
+    <script src="../../assets/js/user_auth.js" defer></script>
+    <script src="../../assets/js/autho_helper.js" defer></script>
+>>>>>>> origin/coupon-page
     <style>
         /* Layout fixes for header and sidebar integration */
         .main-content {
@@ -238,7 +244,13 @@
                             <button class="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-3 rounded-2xl font-semibold flex items-center space-x-2 hover:from-green-600 hover:to-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg" id="createBtn">
                                 <i class="fas fa-plus"></i><span>Add Transaction</span>
                             </button>
+<<<<<<< HEAD
                             <a href="../recurring-transaction" class="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-3 rounded-2xl font-semibold flex items-center space-x-2 hover:from-purple-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg" id="recurringBtn">
+=======
+                            <a href="recurring-transaction"
+                                class="bg-purple-600 text-white px-4 py-3 rounded-lg font-semibold flex items-center space-x-2 hover:bg-purple-700 transition"
+                                id="recurringBtn">
+>>>>>>> origin/coupon-page
                                 <i class="fas fa-redo"></i><span>Recurring Transactions</span>
                             </a>
                         </div>
@@ -588,6 +600,54 @@
             </form>
         </div>
     </div>
+
+    <script src="../../assets/js/transaction.js"></script>
+    <script>
+        // Set active sidebar link after auth
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(() => {
+                if (typeof setActiveSidebarLink === 'function') {
+                    setActiveSidebarLink();
+                }
+            }, 200);
+        });
+
+        // Helper function to set active class on sidebar links
+        function setActiveSidebarLink() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const links = document.querySelectorAll('.sidebar nav ul li a');
+            links.forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        // Handle logout
+        async function handleLogout() {
+            console.log('[LOGOUT] Logout triggered');
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    const response = await fetch('http://localhost:8080/api/v1/auth/logout', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!response.ok) {
+                        console.error('[LOGOUT] Logout failed on server');
+                    }
+                }
+            } catch (error) {
+                console.error('[LOGOUT] Error during logout:', error);
+            } finally {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
 </body>
 
 </html>
