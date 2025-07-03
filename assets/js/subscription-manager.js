@@ -12,10 +12,10 @@ let packages = [];
 let allFeatures = [];
 
 // Initialize page when DOM is loaded
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', async function () {
     try {
         console.log('Initializing subscription manager page...');
-        
+
         // Check authentication first
         if (!isLoggedIn()) {
             redirectToLogin();
@@ -28,19 +28,19 @@ document.addEventListener('DOMContentLoaded', async function() {
         } else {
             console.error('loadSideBarSimple function not found');
         }
-        
+
         if (typeof loadHeader === 'function') {
             await loadHeader();
         } else {
             console.error('loadHeader function not found');
         }
-        
+
         // Show main content after loading sidebar/header
         const mainApp = document.getElementById('main-app');
         if (mainApp) {
             mainApp.style.display = 'flex';
         }
-        
+
         // Hide page loader if exists
         const pageLoader = document.getElementById('page-loader');
         if (pageLoader) {
@@ -49,10 +49,10 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         // Setup functionality
         setupEventListeners();
-        
+
         // Load data
         await initializeSubscriptionManager();
-        
+
         // Setup datetime updates
         updateDateTime();
         setInterval(updateDateTime, 60000);
@@ -85,7 +85,7 @@ function setupEventListeners() {
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         let searchTimeout;
-        searchInput.addEventListener('input', function(e) {
+        searchInput.addEventListener('input', function (e) {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 searchPackages(e.target.value);
@@ -95,16 +95,16 @@ function setupEventListeners() {
 
     // Filter buttons
     document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             // Update active state
             document.querySelectorAll('.filter-btn').forEach(b => {
                 b.classList.remove('active', 'text-indigo-600', 'bg-indigo-50');
                 b.classList.add('text-gray-600', 'bg-gray-50');
             });
-            
+
             this.classList.add('active', 'text-indigo-600', 'bg-indigo-50');
             this.classList.remove('text-gray-600', 'bg-gray-50');
-            
+
             // Apply filter
             currentFilter = this.dataset.filter;
             currentPage = 0;
@@ -127,7 +127,7 @@ function setupEventListeners() {
     // Pagination mobile buttons
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
-    
+
     if (prevBtn) {
         prevBtn.addEventListener('click', () => {
             if (currentPage > 0) {
@@ -164,7 +164,7 @@ async function loadPackages(page = 0, size = 4) {
             packages = data.result.content || [];
             currentPage = data.result.number || 0;
             totalPages = data.result.totalPages || 0;
-            
+
             // Apply current filter to packages
             applyCurrentFilter();
         }
@@ -180,7 +180,7 @@ async function loadPackages(page = 0, size = 4) {
 // Apply current filter to packages
 function applyCurrentFilter() {
     let filteredPackages = packages;
-    
+
     // Apply filter based on currentFilter
     if (currentFilter !== 'all') {
         filteredPackages = packages.filter(pkg => {
@@ -196,7 +196,7 @@ function applyCurrentFilter() {
             }
         });
     }
-    
+
     renderPackages(filteredPackages);
     renderPagination();
 }
@@ -253,7 +253,7 @@ function renderPackages(packagesData) {
                 <h4 class="text-sm font-medium text-gray-700">Features:</h4>
                 <div class="flex flex-wrap gap-1">
                     ${(pkg.features || []).slice(0, 3).map(feature => `
-                        <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-lg">${feature.name}</span>
+                        <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-lg">${getFeatureName(feature)}</span>
                     `).join('')}
                     ${pkg.features && pkg.features.length > 3 ? `
                         <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-lg">+${pkg.features.length - 3} more</span>
@@ -263,6 +263,12 @@ function renderPackages(packagesData) {
         </div>
     `).join('');
 }
+
+// Map feature codes to feature names for display
+const getFeatureName = (featureCode) => {
+    const feature = allFeatures.find(f => f.featureCode === featureCode);
+    return feature ? feature.featureName : featureCode;
+};
 
 // Render empty state
 function renderEmptyPackages() {
@@ -288,7 +294,7 @@ async function loadRecentSubscriptions() {
     hideMainContent();
     try {
         const response = await apiRequest(`${SUBSCRIPTION_API_URL}/recent?page=0&size=5&sortBy=createdAt&sortDirection=DESC`);
-        
+
         if (!response || !response.ok) {
             throw new Error('Failed to fetch recent subscriptions');
         }
@@ -375,11 +381,11 @@ async function loadFeatures() {
 function renderFeaturesInModals() {
     const createContainer = document.getElementById('createFeatures');
     const updateContainer = document.getElementById('updateFeatures');
-    
+
     const featuresHTML = allFeatures.map(feature => `
-        <div class="feature-item flex items-center space-x-2 p-2 bg-white rounded-xl hover:bg-indigo-50 cursor-pointer transition-colors" data-feature-id="${feature.id}">
-            <input type="checkbox" id="feature-${feature.id}" class="rounded text-indigo-600 focus:ring-indigo-500">
-            <label for="feature-${feature.id}" class="text-sm text-gray-700 cursor-pointer">${feature.name}</label>
+        <div class="feature-item flex items-center space-x-2 p-2 bg-white rounded-xl hover:bg-indigo-50 cursor-pointer transition-colors" data-feature-id="${feature.featureCode}">
+            <input type="checkbox" id="feature-${feature.featureCode}" class="rounded text-indigo-600 focus:ring-indigo-500">
+            <label for="feature-${feature.featureCode}" class="text-sm text-gray-700 cursor-pointer">${feature.featureName}</label>
         </div>
     `).join('');
 
@@ -395,16 +401,16 @@ function renderFeaturesInModals() {
 }
 
 // Setup feature selection
-function setupFeatureSelection(container, hiddenInputId) {
+function setupFeatureSelection(container, hiddenInputString) {
     const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-    const hiddenInput = document.getElementById(hiddenInputId);
+    const hiddenInput = document.getElementById(hiddenInputString);
 
     checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
+        checkbox.addEventListener('change', function () {
             const selectedFeatures = Array.from(checkboxes)
                 .filter(cb => cb.checked)
                 .map(cb => cb.id.split('-').pop());
-            
+
             if (hiddenInput) {
                 hiddenInput.value = selectedFeatures.join(',');
             }
@@ -444,10 +450,9 @@ function renderPagination() {
         const pages = [];
         for (let i = 0; i < totalPages; i++) {
             pages.push(`
-                <button onclick="changePage(${i})" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                    i === currentPage 
-                        ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600' 
-                        : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                <button onclick="changePage(${i})" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium ${i === currentPage
+                    ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
+                    : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
                 }">
                     ${i + 1}
                 </button>
@@ -475,11 +480,9 @@ function openNewPackageModal() {
         // Reset form
         const form = document.getElementById('createPackageForm');
         if (form) form.reset();
-        
-        // Clear selected features
-        const hiddenInput = document.getElementById('createSelectedFeatures');
-        if (hiddenInput) hiddenInput.value = '';
-        
+
+
+
         // Uncheck all features
         const checkboxes = modal.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(cb => cb.checked = false);
@@ -497,7 +500,7 @@ function openUpdateModal(packageId) {
     const modal = document.getElementById('updatePackageModal');
     if (modal) {
         modal.classList.remove('hidden');
-        
+
         // Find package data
         const pkg = packages.find(p => p.id === packageId);
         if (pkg) {
@@ -508,18 +511,20 @@ function openUpdateModal(packageId) {
             document.getElementById('updateDurationValue').value = pkg.durationValue;
             document.getElementById('updateDurationType').value = pkg.durationType;
             document.getElementById('updateIsActive').value = pkg.isActive.toString();
-            
+
             // Set selected features
-            const featureIds = (pkg.features || []).map(f => f.id);
+            const featureCodes = (pkg.features || []);
+
             const hiddenInput = document.getElementById('updateSelectedFeatures');
-            if (hiddenInput) hiddenInput.value = featureIds.join(',');
-            
+            if (hiddenInput) hiddenInput.value = featureCodes.join(',');
+
             // Check corresponding checkboxes
             const checkboxes = modal.querySelectorAll('input[type="checkbox"]');
             checkboxes.forEach(cb => {
-                const featureId = parseInt(cb.id.split('-').pop());
-                cb.checked = featureIds.includes(featureId);
+                const featureCode = cb.id.split('-').pop();
+                cb.checked = featureCodes.includes(featureCode);
             });
+
         }
     }
 }
@@ -534,25 +539,27 @@ function closeUpdateModal() {
 // Form handlers
 async function handleCreatePackage(e) {
     e.preventDefault();
-    
+
     // Validate form data
     const name = document.getElementById('createName').value.trim();
     const price = parseFloat(document.getElementById('createPrice').value);
     const durationValue = parseInt(document.getElementById('createDurationValue').value);
     const durationType = document.getElementById('createDurationType').value;
-    const featureIds = document.getElementById('createSelectedFeatures').value.split(',').filter(id => id).map(id => parseInt(id));
-    
+    const features = document.getElementById('createSelectedFeatures').value
+        ? document.getElementById('createSelectedFeatures').value.split(',').filter(f => f.trim())
+        : [];
+
     // Basic validation
     if (!name) {
         showErrorMessage('Package name is required');
         return;
     }
-    
+
     if (!price || price <= 0) {
         showErrorMessage('Valid price is required');
         return;
     }
-    
+
     if (!durationValue || durationValue <= 0) {
         showErrorMessage('Valid duration value is required');
         return;
@@ -563,8 +570,10 @@ async function handleCreatePackage(e) {
         price,
         durationValue,
         durationType,
-        featureIds
+        features
     };
+
+    console.log("form: ", formData);
 
     try {
         // Show loading state
@@ -575,9 +584,6 @@ async function handleCreatePackage(e) {
 
         const response = await apiRequest(API_BASE_URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify(formData)
         });
 
@@ -605,28 +611,30 @@ async function handleCreatePackage(e) {
 
 async function handleUpdatePackage(e) {
     e.preventDefault();
-    
+
     const packageId = document.getElementById('updatePackageId').value;
-    
+
     // Validate form data
     const name = document.getElementById('updateName').value.trim();
     const price = parseFloat(document.getElementById('updatePrice').value);
     const durationValue = parseInt(document.getElementById('updateDurationValue').value);
     const durationType = document.getElementById('updateDurationType').value;
     const isActive = document.getElementById('updateIsActive').value === 'true';
-    const featureIds = document.getElementById('updateSelectedFeatures').value.split(',').filter(id => id).map(id => parseInt(id));
-    
+    const features = document.getElementById('updateSelectedFeatures').value
+        ? document.getElementById('updateSelectedFeatures').value.split(',').filter(f => f.trim())
+        : [];
+
     // Basic validation
     if (!name) {
         showErrorMessage('Package name is required');
         return;
     }
-    
+
     if (!price || price <= 0) {
         showErrorMessage('Valid price is required');
         return;
     }
-    
+
     if (!durationValue || durationValue <= 0) {
         showErrorMessage('Valid duration value is required');
         return;
@@ -638,8 +646,10 @@ async function handleUpdatePackage(e) {
         durationValue,
         durationType,
         isActive,
-        featureIds
+        features
     };
+
+    console.log("fe:,", formData);
 
     try {
         // Show loading state
@@ -650,9 +660,6 @@ async function handleUpdatePackage(e) {
 
         const response = await apiRequest(`${API_BASE_URL}/${packageId}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify(formData)
         });
 
@@ -683,7 +690,7 @@ async function deletePackage(packageId) {
     // Find package name for better confirmation message
     const pkg = packages.find(p => p.id === packageId);
     const packageName = pkg ? pkg.name : 'this package';
-    
+
     if (!confirm(`Are you sure you want to delete "${packageName}"? This action cannot be undone.`)) {
         return;
     }
@@ -729,7 +736,7 @@ function getPackageIconBackground(name) {
 function getDurationText(value, type) {
     const typeMap = {
         'DAY': value === 1 ? 'day' : 'days',
-        'WEEK': value === 1 ? 'week' : 'weeks', 
+        'WEEK': value === 1 ? 'week' : 'weeks',
         'MONTH': value === 1 ? 'month' : 'months',
         'YEAR': value === 1 ? 'year' : 'years'
     };
@@ -775,7 +782,7 @@ async function loadSidebar() {
         if (response.ok) {
             const sidebarHTML = await response.text();
             sidebarContainer.innerHTML = sidebarHTML;
-            
+
             // Initialize sidebar functionality if needed
             if (window.initializeSidebar && typeof window.initializeSidebar === 'function') {
                 window.initializeSidebar();
@@ -799,15 +806,15 @@ function searchPackages(query) {
     const filteredPackages = packages.filter(pkg => {
         const matchesSearch = pkg.name.toLowerCase().includes(query.toLowerCase()) ||
             (pkg.features && pkg.features.some(f => f.name.toLowerCase().includes(query.toLowerCase())));
-        
-        const matchesFilter = currentFilter === 'all' || 
+
+        const matchesFilter = currentFilter === 'all' ||
             (currentFilter === 'monthly' && pkg.durationType === 'MONTH') ||
             (currentFilter === 'yearly' && pkg.durationType === 'YEAR') ||
             (currentFilter === 'active' && pkg.isActive);
-        
+
         return matchesSearch && matchesFilter;
     });
-    
+
     renderPackages(filteredPackages);
     renderPagination();
 }
@@ -888,19 +895,19 @@ async function loadStats() {
 
 // Enhanced modal close with escape key support
 function setupModalKeyboardSupport() {
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             closeNewPackageModal();
             closeUpdateModal();
         }
     });
-    
+
     // Close modal when clicking outside
     const modals = ['createPackageModal', 'updatePackageModal'];
     modals.forEach(modalId => {
         const modal = document.getElementById(modalId);
         if (modal) {
-            modal.addEventListener('click', function(e) {
+            modal.addEventListener('click', function (e) {
                 if (e.target === modal) {
                     if (modalId === 'createPackageModal') {
                         closeNewPackageModal();
@@ -916,7 +923,7 @@ function setupModalKeyboardSupport() {
 // Enhanced error and success messaging
 function showErrorMessage(message) {
     console.error(message);
-    
+
     // Create toast notification
     const toast = document.createElement('div');
     toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
@@ -926,14 +933,14 @@ function showErrorMessage(message) {
             <span>${message}</span>
         </div>
     `;
-    
+
     document.body.appendChild(toast);
-    
+
     // Animate in
     setTimeout(() => {
         toast.classList.remove('translate-x-full');
     }, 100);
-    
+
     // Remove after 5 seconds
     setTimeout(() => {
         toast.classList.add('translate-x-full');
@@ -947,7 +954,7 @@ function showErrorMessage(message) {
 
 function showSuccessMessage(message) {
     console.log(message);
-    
+
     // Create toast notification
     const toast = document.createElement('div');
     toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
@@ -957,14 +964,14 @@ function showSuccessMessage(message) {
             <span>${message}</span>
         </div>
     `;
-    
+
     document.body.appendChild(toast);
-    
+
     // Animate in
     setTimeout(() => {
         toast.classList.remove('translate-x-full');
     }, 100);
-    
+
     // Remove after 3 seconds
     setTimeout(() => {
         toast.classList.add('translate-x-full');
@@ -983,11 +990,11 @@ async function refreshData() {
         // Reset search and filters
         const searchInput = document.getElementById('searchInput');
         if (searchInput) searchInput.value = '';
-        
+
         // Reset filter to 'all'
         currentFilter = 'all';
         currentPage = 0;
-        
+
         // Update filter button states
         document.querySelectorAll('.filter-btn').forEach(btn => {
             if (btn.dataset.filter === 'all') {
@@ -998,7 +1005,7 @@ async function refreshData() {
                 btn.classList.add('text-gray-600', 'bg-gray-50');
             }
         });
-        
+
         // Reload all data
         await Promise.all([
             loadStats(),
@@ -1006,9 +1013,9 @@ async function refreshData() {
             loadRecentSubscriptions(),
             loadFeatures()
         ]);
-        
+
         showSuccessMessage('Data refreshed successfully');
-        
+
     } catch (error) {
         console.error('Error refreshing data:', error);
         showErrorMessage('Failed to refresh data');
@@ -1058,14 +1065,14 @@ function handleResize() {
 }
 
 // Initialize modal keyboard support and other event handlers when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     setupModalKeyboardSupport();
-    
+
     // Add resize handler for responsive behavior
     window.addEventListener('resize', debounce(handleResize, 250));
-    
+
     // Add click outside handlers for modals
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (e.target.classList.contains('fixed') && e.target.classList.contains('inset-0')) {
             // Clicked on modal backdrop
             if (e.target.id === 'createPackageModal') {

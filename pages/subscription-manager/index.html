@@ -35,9 +35,11 @@
                 grid-template-columns: 2fr 1fr !important;
                 gap: 2rem !important;
             }
+
             .packages-section {
                 min-width: 0 !important;
             }
+
             .subscriptions-section {
                 min-width: 0 !important;
             }
@@ -59,7 +61,8 @@
             <div class="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-indigo-100">
                 <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                     <div class="flex-1 mb-6 lg:mb-0">
-                        <h1 class="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                        <h1
+                            class="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
                             Subscription Manager
                         </h1>
                         <p class="text-gray-600 text-lg">Manage subscription plans, pricing and analytics</p>
@@ -70,17 +73,21 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-search text-gray-400"></i>
                             </div>
-                            <input type="text" id="searchInput" placeholder="Search packages..." 
+                            <input type="text" id="searchInput" placeholder="Search packages..."
                                 class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-2xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
                         </div>
-                        
+
                         <!-- Action Buttons -->
                         <div class="flex space-x-3">
-                            <button class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-2xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2" onclick="openNewPackageModal()">
+                            <button
+                                class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-2xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
+                                onclick="openNewPackageModal()">
                                 <i class="fas fa-plus"></i>
                                 <span>New Package</span>
                             </button>
-                            <button class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-2xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2" onclick="refreshData()">
+                            <button
+                                class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-2xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
+                                onclick="refreshData()">
                                 <i class="fas fa-sync-alt"></i>
                                 <span>Refresh</span>
                             </button>
@@ -94,57 +101,69 @@
                 <h2 class="text-2xl font-bold text-gray-900 mb-6">Subscription Analytics</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <!-- Total Revenue -->
-                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-green-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <div
+                        class="bg-white rounded-3xl shadow-lg p-6 border border-green-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
                         <div class="flex items-center justify-between">
                             <div>
                                 <h3 class="text-3xl font-bold text-gray-900" id="totalRevenue">0đ</h3>
                                 <p class="text-gray-600 mt-1">Total Revenue</p>
                                 <div class="text-sm font-medium text-green-600 mt-1" id="revenueChange">+0%</div>
                             </div>
-                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                                <i class="fas fa-dollar-sign text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                            <div class="relative"
+                                style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                <i class="fas fa-dollar-sign text-white"
+                                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
                             </div>
                         </div>
                     </div>
 
                     <!-- Active Subscribers -->
-                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-blue-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <div
+                        class="bg-white rounded-3xl shadow-lg p-6 border border-blue-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
                         <div class="flex items-center justify-between">
                             <div>
                                 <h3 class="text-3xl font-bold text-gray-900" id="totalSubscribers">0</h3>
                                 <p class="text-gray-600 mt-1">Active Subscribers</p>
                                 <div class="text-sm font-medium text-blue-600 mt-1" id="subscribersChange">+0%</div>
                             </div>
-                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
-                                <i class="fas fa-users text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                            <div class="relative"
+                                style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+                                <i class="fas fa-users text-white"
+                                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
                             </div>
                         </div>
                     </div>
 
                     <!-- Conversion Rate -->
-                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-amber-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <div
+                        class="bg-white rounded-3xl shadow-lg p-6 border border-amber-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
                         <div class="flex items-center justify-between">
                             <div>
                                 <h3 class="text-3xl font-bold text-gray-900" id="conversionRate">0%</h3>
                                 <p class="text-gray-600 mt-1">Conversion Rate</p>
                                 <div class="text-sm font-medium text-amber-600 mt-1" id="conversionChange">+0.0%</div>
                             </div>
-                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
-                                <i class="fas fa-percentage text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                            <div class="relative"
+                                style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                                <i class="fas fa-percentage text-white"
+                                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
                             </div>
                         </div>
                     </div>
 
                     <!-- Average Revenue Per User -->
-                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-purple-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <div
+                        class="bg-white rounded-3xl shadow-lg p-6 border border-purple-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
                         <div class="flex items-center justify-between">
                             <div>
                                 <h3 class="text-3xl font-bold text-gray-900" id="avgRevenue">0đ</h3>
                                 <p class="text-gray-600 mt-1">Avg Revenue/User</p>
                                 <div class="text-sm font-medium text-purple-600 mt-1" id="avgRevenueChange">-0%</div>
                             </div>
-                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);">
-                                <i class="fas fa-chart-line text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                            <div class="relative"
+                                style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);">
+                                <i class="fas fa-chart-line text-white"
+                                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
                             </div>
                         </div>
                     </div>
@@ -152,7 +171,8 @@
             </div>
 
             <!-- Main Content Area -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-3 gap-8 main-content-grid" style="min-height: auto;">
+            <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-3 gap-8 main-content-grid"
+                style="min-height: auto;">
                 <!-- Package Management Section -->
                 <div class="lg:col-span-2 xl:col-span-2 packages-section">
                     <div class="bg-white rounded-3xl shadow-lg border border-indigo-100">
@@ -164,68 +184,83 @@
                                     <span>All Packages</span>
                                 </h2>
                                 <div class="flex space-x-2">
-                                    <button class="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-colors filter-btn active" data-filter="all">All</button>
-                                    <button class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors filter-btn" data-filter="monthly">Monthly</button>
-                                    <button class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors filter-btn" data-filter="yearly">Yearly</button>
-                                    <button class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors filter-btn" data-filter="active">Active</button>
+                                    <button
+                                        class="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-colors filter-btn active"
+                                        data-filter="all">All</button>
+                                    <button
+                                        class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors filter-btn"
+                                        data-filter="monthly">Monthly</button>
+                                    <button
+                                        class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors filter-btn"
+                                        data-filter="yearly">Yearly</button>
+                                    <button
+                                        class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors filter-btn"
+                                        data-filter="active">Active</button>
                                 </div>
                             </div>
                         </div>
-                            
-                            <!-- Packages Grid -->
-                            <div class="p-8">
-                                <div id="packagesContainer" class="grid grid-cols-1 2xl:grid-cols-2 gap-6">
-                                    <!-- Loading State -->
-                                    <div class="col-span-full flex items-center justify-center py-12">
-                                        <div class="text-center">
-                                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-                                            <p class="mt-4 text-gray-600">Loading packages...</p>
+
+                        <!-- Packages Grid -->
+                        <div class="p-8">
+                            <div id="packagesContainer" class="grid grid-cols-1 2xl:grid-cols-2 gap-6">
+                                <!-- Loading State -->
+                                <div class="col-span-full flex items-center justify-center py-12">
+                                    <div class="text-center">
+                                        <div
+                                            class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto">
                                         </div>
+                                        <p class="mt-4 text-gray-600">Loading packages...</p>
                                     </div>
                                 </div>
-                                
-                                <!-- Pagination -->
-                                <div class="mt-8 flex items-center justify-between" id="pagination" style="display: none;">
-                                    <div class="flex-1 flex justify-between sm:hidden">
-                                        <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" id="prevBtn">
-                                            Previous
-                                        </button>
-                                        <button class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" id="nextBtn">
-                                            Next
-                                        </button>
-                                    </div>
-                                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-center">
-                                        <div>
-                                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" id="pageNumbers">
-                                                <!-- Pagination buttons will be added here -->
-                                            </nav>
-                                        </div>
+                            </div>
+
+                            <!-- Pagination -->
+                            <div class="mt-8 flex items-center justify-between" id="pagination" style="display: none;">
+                                <div class="flex-1 flex justify-between sm:hidden">
+                                    <button
+                                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                                        id="prevBtn">
+                                        Previous
+                                    </button>
+                                    <button
+                                        class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                                        id="nextBtn">
+                                        Next
+                                    </button>
+                                </div>
+                                <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-center">
+                                    <div>
+                                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                                            id="pageNumbers">
+                                            <!-- Pagination buttons will be added here -->
+                                        </nav>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Recent Subscriptions Sidebar -->
-                <div class="lg:col-span-1 xl:col-span-1 subscriptions-section">
-                    <div class="bg-white rounded-3xl shadow-lg border border-indigo-100">
-                        <div class="p-6 border-b border-gray-200">
-                            <div class="flex items-center justify-between">
-                                <h2 class="text-xl font-bold text-gray-900 flex items-center space-x-2">
-                                    <span class="text-xl">👥</span>
-                                    <span>Recent Subscriptions</span>
-                                </h2>
-                                <a href="#" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">View All</a>
-                            </div>
+            <!-- Recent Subscriptions Sidebar -->
+            <div class="lg:col-span-1 xl:col-span-1 subscriptions-section">
+                <div class="bg-white rounded-3xl shadow-lg border border-indigo-100">
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-xl font-bold text-gray-900 flex items-center space-x-2">
+                                <span class="text-xl">👥</span>
+                                <span>Recent Subscriptions</span>
+                            </h2>
+                            <a href="#" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">View All</a>
                         </div>
-                        <div class="p-6">
-                            <div id="recentSubscriptions">
-                                <div class="flex items-center justify-center py-8">
-                                    <div class="text-center">
-                                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
-                                        <p class="mt-2 text-gray-600 text-sm">Loading subscriptions...</p>
+                    </div>
+                    <div class="p-6">
+                        <div id="recentSubscriptions">
+                            <div class="flex items-center justify-center py-8">
+                                <div class="text-center">
+                                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto">
                                     </div>
+                                    <p class="mt-2 text-gray-600 text-sm">Loading subscriptions...</p>
                                 </div>
                             </div>
                         </div>
@@ -234,56 +269,74 @@
             </div>
         </div>
     </div>
+    </div>
 
     <!-- Create Package Modal -->
-    <div id="createPackageModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div id="createPackageModal"
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 transition-opacity" aria-hidden="true">
                 <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
-            <div class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div
+                class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                 <div class="bg-white px-6 pt-6">
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="text-2xl font-bold text-gray-900 flex items-center space-x-3">
                             <span class="text-2xl">➕</span>
                             <span>Create New Package</span>
                         </h2>
-                        <button class="text-gray-400 hover:text-gray-600 transition-colors" onclick="closeNewPackageModal()">
+                        <button class="text-gray-400 hover:text-gray-600 transition-colors"
+                            onclick="closeNewPackageModal()">
                             <i class="fas fa-times text-xl"></i>
                         </button>
                     </div>
                     <form id="createPackageForm" class="space-y-6">
                         <div>
-                            <label for="createName" class="block text-sm font-medium text-gray-700 mb-2">Package Name</label>
-                            <input type="text" id="createName" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <label for="createName" class="block text-sm font-medium text-gray-700 mb-2">Package
+                                Name</label>
+                            <input type="text" id="createName" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <div>
-                            <label for="createPrice" class="block text-sm font-medium text-gray-700 mb-2">Price (VND)</label>
-                            <input type="number" id="createPrice" step="1000" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <label for="createPrice" class="block text-sm font-medium text-gray-700 mb-2">Price
+                                (VND)</label>
+                            <input type="number" id="createPrice" step="1000" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label for="createDurationValue" class="block text-sm font-medium text-gray-700 mb-2">Duration Value</label>
-                                <input type="number" id="createDurationValue" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                <label for="createDurationValue"
+                                    class="block text-sm font-medium text-gray-700 mb-2">Duration Value</label>
+                                <input type="number" id="createDurationValue" value="1" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                             <div>
-                                <label for="createDurationType" class="block text-sm font-medium text-gray-700 mb-2">Duration Type</label>
-                                <select id="createDurationType" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                <label for="createDurationType"
+                                    class="block text-sm font-medium text-gray-700 mb-2">Duration Type</label>
+                                <select id="createDurationType" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                     <option value="MONTH">Month</option>
                                     <option value="YEAR">Year</option>
                                 </select>
                             </div>
                         </div>
                         <div>
-                            <label for="createFeatures" class="block text-sm font-medium text-gray-700 mb-2">Features</label>
-                            <div id="createFeatures" class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-3 border border-gray-300 rounded-2xl bg-gray-50">
+                            <label for="createFeatures"
+                                class="block text-sm font-medium text-gray-700 mb-2">Features</label>
+                            <div id="createFeatures"
+                                class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-3 border border-gray-300 rounded-2xl bg-gray-50">
                                 <!-- Features will be loaded here -->
                             </div>
                             <input type="hidden" id="createSelectedFeatures">
                         </div>
                         <div class="bg-gray-50 px-6 py-4 -mx-6 -mb-6 flex justify-end space-x-3">
-                            <button type="button" class="px-6 py-3 border border-gray-300 rounded-2xl text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors" onclick="closeNewPackageModal()">Cancel</button>
-                            <button type="submit" class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl hover:from-indigo-700 hover:to-purple-700 font-medium transition-all duration-300 hover:scale-105">Create Package</button>
+                            <button type="button"
+                                class="px-6 py-3 border border-gray-300 rounded-2xl text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors"
+                                onclick="closeNewPackageModal()">Cancel</button>
+                            <button type="submit"
+                                class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl hover:from-indigo-700 hover:to-purple-700 font-medium transition-all duration-300 hover:scale-105">Create
+                                Package</button>
                         </div>
                     </form>
                 </div>
@@ -292,40 +345,51 @@
     </div>
 
     <!-- Update Package Modal -->
-    <div id="updatePackageModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div id="updatePackageModal"
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 transition-opacity" aria-hidden="true">
                 <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
-            <div class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div
+                class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                 <div class="bg-white px-6 pt-6">
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="text-2xl font-bold text-gray-900 flex items-center space-x-3">
                             <span class="text-2xl">✏️</span>
                             <span>Update Package</span>
                         </h2>
-                        <button class="text-gray-400 hover:text-gray-600 transition-colors" onclick="closeUpdateModal()">
+                        <button class="text-gray-400 hover:text-gray-600 transition-colors"
+                            onclick="closeUpdateModal()">
                             <i class="fas fa-times text-xl"></i>
                         </button>
                     </div>
                     <form id="updatePackageForm" class="space-y-6">
                         <input type="hidden" id="updatePackageId">
                         <div>
-                            <label for="updateName" class="block text-sm font-medium text-gray-700 mb-2">Package Name</label>
-                            <input type="text" id="updateName" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <label for="updateName" class="block text-sm font-medium text-gray-700 mb-2">Package
+                                Name</label>
+                            <input type="text" id="updateName" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <div>
-                            <label for="updatePrice" class="block text-sm font-medium text-gray-700 mb-2">Price (VND)</label>
-                            <input type="number" id="updatePrice" step="1000" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <label for="updatePrice" class="block text-sm font-medium text-gray-700 mb-2">Price
+                                (VND)</label>
+                            <input type="number" id="updatePrice" step="1000" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label for="updateDurationValue" class="block text-sm font-medium text-gray-700 mb-2">Duration Value</label>
-                                <input type="number" id="updateDurationValue" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                <label for="updateDurationValue"
+                                    class="block text-sm font-medium text-gray-700 mb-2">Duration Value</label>
+                                <input type="number" id="updateDurationValue" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                             <div>
-                                <label for="updateDurationType" class="block text-sm font-medium text-gray-700 mb-2">Duration Type</label>
-                                <select id="updateDurationType" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                <label for="updateDurationType"
+                                    class="block text-sm font-medium text-gray-700 mb-2">Duration Type</label>
+                                <select id="updateDurationType" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                     <option value="DAY">Day</option>
                                     <option value="WEEK">Week</option>
                                     <option value="MONTH">Month</option>
@@ -334,22 +398,30 @@
                             </div>
                         </div>
                         <div>
-                            <label for="updateFeatures" class="block text-sm font-medium text-gray-700 mb-2">Features</label>
-                            <div id="updateFeatures" class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-3 border border-gray-300 rounded-2xl bg-gray-50">
+                            <label for="updateFeatures"
+                                class="block text-sm font-medium text-gray-700 mb-2">Features</label>
+                            <div id="updateFeatures"
+                                class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-3 border border-gray-300 rounded-2xl bg-gray-50">
                                 <!-- Features will be loaded here -->
                             </div>
                             <input type="hidden" id="updateSelectedFeatures">
                         </div>
                         <div>
-                            <label for="updateIsActive" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                            <select id="updateIsActive" required class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <label for="updateIsActive"
+                                class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                            <select id="updateIsActive" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                 <option value="true">Active</option>
                                 <option value="false">Inactive</option>
                             </select>
                         </div>
                         <div class="bg-gray-50 px-6 py-4 -mx-6 -mb-6 flex justify-end space-x-3">
-                            <button type="button" class="px-6 py-3 border border-gray-300 rounded-2xl text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors" onclick="closeUpdateModal()">Cancel</button>
-                            <button type="submit" class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-2xl hover:from-green-700 hover:to-green-800 font-medium transition-all duration-300 hover:scale-105">Update Package</button>
+                            <button type="button"
+                                class="px-6 py-3 border border-gray-300 rounded-2xl text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors"
+                                onclick="closeUpdateModal()">Cancel</button>
+                            <button type="submit"
+                                class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-2xl hover:from-green-700 hover:to-green-800 font-medium transition-all duration-300 hover:scale-105">Update
+                                Package</button>
                         </div>
                     </form>
                 </div>
@@ -360,4 +432,5 @@
     <!-- Include Subscription Manager JavaScript -->
     <script src="/assets/js/subscription-manager.js" defer></script>
 </body>
+
 </html>
