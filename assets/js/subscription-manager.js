@@ -81,17 +81,6 @@ async function initializeSubscriptionManager() {
 
 // Setup event listeners
 function setupEventListeners() {
-    // Search functionality
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        let searchTimeout;
-        searchInput.addEventListener('input', function (e) {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                searchPackages(e.target.value);
-            }, 500);
-        });
-    }
 
     // Filter buttons
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -149,7 +138,6 @@ function setupEventListeners() {
 
 // Load packages
 async function loadPackages(page = 0, size = 4) {
-    hideMainContent();
     try {
         const response = await apiRequest(
             `${API_BASE_URL}?page=${page}&size=${size}&sortBy=price&sortDirection=DESC`
@@ -168,12 +156,10 @@ async function loadPackages(page = 0, size = 4) {
             // Apply current filter to packages
             applyCurrentFilter();
         }
-        showMainContent();
     } catch (error) {
         console.error('Error loading packages:', error);
         showErrorMessage('Failed to load packages');
         renderEmptyPackages();
-        showMainContent();
     }
 }
 
@@ -240,7 +226,7 @@ function renderPackages(packagesData) {
             
             <div class="grid grid-cols-2 gap-4 mb-4 text-center">
                 <div>
-                    <div class="text-xl font-bold text-gray-900">12</div>
+                    <div class="text-xl font-bold text-gray-900">${pkg.subscribers || 0}</div>
                     <div class="text-xs text-gray-500 uppercase">Subscribers</div>
                 </div>
                 <div>
@@ -291,7 +277,6 @@ function renderEmptyPackages() {
 
 // Load recent subscriptions
 async function loadRecentSubscriptions() {
-    hideMainContent();
     try {
         const response = await apiRequest(`${SUBSCRIPTION_API_URL}/recent?page=0&size=5&sortBy=createdAt&sortDirection=DESC`);
 
@@ -305,11 +290,9 @@ async function loadRecentSubscriptions() {
         } else {
             renderEmptySubscriptions();
         }
-        showMainContent();
     } catch (error) {
         console.error('Error loading recent subscriptions:', error);
         renderEmptySubscriptions();
-        showMainContent();
     }
 }
 
@@ -361,7 +344,6 @@ function renderEmptySubscriptions() {
 
 // Load features for modals
 async function loadFeatures() {
-    hideMainContent();
     try {
         const response = await apiRequest(FEATURES_API_URL);
         if (response && response.ok) {
@@ -369,11 +351,9 @@ async function loadFeatures() {
             allFeatures = data.result || [];
             renderFeaturesInModals();
         }
-        showMainContent();
     } catch (error) {
         console.error('Error loading features:', error);
         allFeatures = [];
-        showMainContent();
     }
 }
 
@@ -578,7 +558,6 @@ async function handleCreatePackage(e) {
     try {
         // Show loading state
         const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating...';
         submitBtn.disabled = true;
 
@@ -794,34 +773,9 @@ async function loadSidebar() {
     }
 }
 
-// Enhanced search with filter support
-function searchPackages(query) {
-    // If no query, apply current filter only
-    if (!query || query.trim() === '') {
-        applyCurrentFilter();
-        return;
-    }
-
-    // Apply both search and filter
-    const filteredPackages = packages.filter(pkg => {
-        const matchesSearch = pkg.name.toLowerCase().includes(query.toLowerCase()) ||
-            (pkg.features && pkg.features.some(f => f.name.toLowerCase().includes(query.toLowerCase())));
-
-        const matchesFilter = currentFilter === 'all' ||
-            (currentFilter === 'monthly' && pkg.durationType === 'MONTH') ||
-            (currentFilter === 'yearly' && pkg.durationType === 'YEAR') ||
-            (currentFilter === 'active' && pkg.isActive);
-
-        return matchesSearch && matchesFilter;
-    });
-
-    renderPackages(filteredPackages);
-    renderPagination();
-}
 
 // Enhanced stats loading with actual API integration
 async function loadStats() {
-    hideMainContent();
     try {
         // Try to load actual stats first
         const [revenueResponse] = await Promise.allSettled([
@@ -888,8 +842,6 @@ async function loadStats() {
             const element = document.getElementById(id);
             if (element) element.textContent = id.includes('Revenue') ? '0đ' : '0';
         });
-    } finally {
-        showMainContent();
     }
 }
 
@@ -985,43 +937,7 @@ function showSuccessMessage(message) {
 
 // Refresh all data
 async function refreshData() {
-    hideMainContent();
-    try {
-        // Reset search and filters
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) searchInput.value = '';
 
-        // Reset filter to 'all'
-        currentFilter = 'all';
-        currentPage = 0;
-
-        // Update filter button states
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            if (btn.dataset.filter === 'all') {
-                btn.classList.add('text-indigo-600', 'bg-indigo-50');
-                btn.classList.remove('text-gray-600', 'bg-gray-50');
-            } else {
-                btn.classList.remove('text-indigo-600', 'bg-indigo-50');
-                btn.classList.add('text-gray-600', 'bg-gray-50');
-            }
-        });
-
-        // Reload all data
-        await Promise.all([
-            loadStats(),
-            loadPackages(),
-            loadRecentSubscriptions(),
-            loadFeatures()
-        ]);
-
-        showSuccessMessage('Data refreshed successfully');
-
-    } catch (error) {
-        console.error('Error refreshing data:', error);
-        showErrorMessage('Failed to refresh data');
-    } finally {
-        showMainContent();
-    }
 }
 
 // Global exports for HTML onclick handlers
@@ -1083,11 +999,3 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
-
-// Thêm hàm show/hide mainContent
-function showMainContent() {
-    document.getElementById('mainContent').style.display = '';
-}
-function hideMainContent() {
-    document.getElementById('mainContent').style.display = 'none';
-} 
