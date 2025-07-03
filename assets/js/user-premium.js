@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     lucide.createIcons();
 
     // Load header and sidebar
+    loadFeatures();
     loadHeaderAndSidebar();
 });
 
@@ -12,6 +13,7 @@ let filteredPackages = [];
 let billingCycle = 'monthly';
 let purchasedList;
 let selectedPackageId = null;
+let allFeatures = [];
 const COUPON_CODE_MAX_LENGTH = 50;
 // Load header and sidebar
 async function loadHeaderAndSidebar() {
@@ -25,6 +27,26 @@ async function loadHeaderAndSidebar() {
     }
 }
 
+// Load features for modals
+async function loadFeatures() {
+    try {
+        const response = await apiRequest(`${API_BASE_URL}/api/features`);
+        if (response && response.ok) {
+            const data = await response.json();
+            allFeatures = data.result || [];
+        }
+    } catch (error) {
+        console.error('Error loading features:', error);
+        allFeatures = [];
+    }
+}
+
+
+// Map feature codes to feature names for display
+const getFeatureName = (featureCode) => {
+    const feature = allFeatures.find(f => f.featureCode === featureCode);
+    return feature ? feature.featureName : featureCode;
+};
 
 const getPackageIcon = () => 'enterprise';
 
@@ -87,7 +109,7 @@ const renderPackages = (packagesData) => {
                                 <div class="flex-shrink-0 w-5 h-5 bg-indigo-100 rounded-full flex items-center justify-center mt-0.5">
                                     <i data-lucide="check" class="w-3 h-3 text-indigo-600"></i>
                                 </div>
-                                <span class="text-gray-700 leading-relaxed">${feature}</span>
+                                <span class="text-gray-700 leading-relaxed">${getFeatureName(feature)}</span>
                             </li>
                         `).join('')}
                         ${pkg.features && pkg.features.length > 3 ? `
