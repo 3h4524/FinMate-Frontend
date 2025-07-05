@@ -3,6 +3,7 @@
 const API_BASE_URL = 'http://localhost:8080/api/premium-package';
 const SUBSCRIPTION_API_URL = 'http://localhost:8080/api/subscriptions';
 const FEATURES_API_URL = 'http://localhost:8080/api/features';
+const OFFER_API_URL = 'http://localhost:8080/api/promotional-offer';
 
 // Global variables
 let currentPage = 0;
@@ -10,6 +11,9 @@ let totalPages = 0;
 let currentFilter = 'all';
 let packages = [];
 let allFeatures = [];
+let selectedList = []; // Global array to store selected package IDs
+
+const buttonCreatePromotional = document.getElementById("buttonCreatePromotional");
 
 // Initialize page when DOM is loaded
 document.addEventListener('DOMContentLoaded', async function () {
@@ -113,6 +117,11 @@ function setupEventListeners() {
         updateForm.addEventListener('submit', handleUpdatePackage);
     }
 
+    const createOfferForm = document.getElementById('createOfferForm');
+    if (createOfferForm) {
+        createOfferForm.addEventListener('submit', handleCreateOffer);
+    }
+
     // Pagination mobile buttons
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
@@ -132,12 +141,16 @@ function setupEventListeners() {
             }
         });
     }
+    setupCheckBoxCreateOffer();
 }
 
 // This function will be replaced by the enhanced version below
 
 // Load packages
 async function loadPackages(page = 0, size = 4) {
+    if (buttonCreatePromotional) {
+        if (selectedList.length === 0) buttonCreatePromotional.classList.add("hidden");
+    }
     try {
         const response = await apiRequest(
             `${API_BASE_URL}?page=${page}&size=${size}&sortBy=price&sortDirection=DESC`
@@ -155,6 +168,7 @@ async function loadPackages(page = 0, size = 4) {
 
             // Apply current filter to packages
             applyCurrentFilter();
+            setupCheckBoxCreateOffer();
         }
     } catch (error) {
         console.error('Error loading packages:', error);
@@ -210,10 +224,11 @@ function renderPackages(packagesData) {
                     </div>
                 </div>
                 <div class="flex space-x-2">
-                    <button onclick="openUpdateModal(${pkg.id})" class="w-8 h-8 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg flex items-center justify-center transition-colors">
+                    <input type="checkbox" id="checkbox-premium-${pkg.id}">
+                    <button id="button-edit-premium-${pkg.id}" onclick="openUpdateModal(${pkg.id})" class="w-8 h-8 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg flex items-center justify-center transition-colors">
                         <i class="fas fa-edit text-sm"></i>
                     </button>
-                    <button onclick="deletePackage(${pkg.id})" class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-colors">
+                    <button id="button-delete-premium-${pkg.id}" onclick="deletePackage(${pkg.id})" class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-colors">
                         <i class="fas fa-trash text-sm"></i>
                     </button>
                 </div>
@@ -248,7 +263,22 @@ function renderPackages(packagesData) {
             </div>
         </div>
     `).join('');
+
+
+    selectedList.forEach(item => {
+        const checkbox = document.getElementById(`checkbox-premium-${item.id}`);
+        if (checkbox) {
+            checkbox.checked = true;
+            // Hide edit and delete buttons for checked packages
+            const editButton = document.getElementById(`button-edit-premium-${item.id}`);
+            const deleteButton = document.getElementById(`button-delete-premium-${item.id}`);
+            if (editButton) editButton.classList.add('hidden');
+            if (deleteButton) deleteButton.classList.add('hidden');
+        }
+    });
 }
+
+
 
 // Map feature codes to feature names for display
 const getFeatureName = (featureCode) => {
@@ -450,8 +480,6 @@ function changePage(page) {
     }
 }
 
-// This function will be replaced by the enhanced version below
-
 // Modal functions
 function openNewPackageModal() {
     const modal = document.getElementById('createPackageModal');
@@ -460,8 +488,6 @@ function openNewPackageModal() {
         // Reset form
         const form = document.getElementById('createPackageForm');
         if (form) form.reset();
-
-
 
         // Uncheck all features
         const checkboxes = modal.querySelectorAll('input[type="checkbox"]');
@@ -516,6 +542,75 @@ function closeUpdateModal() {
     }
 }
 
+function setupCheckBoxCreateOffer() {
+    const checkboxes = document.querySelectorAll('[id^="checkbox-premium-"]');
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            const packageId = this.id.split('-').pop(); // Extract package ID from checkbox ID
+            const pkg = packages.find(p => String(p.id) === packageId); // Find package by ID
+            const editButton = document.getElementById(`button-edit-premium-${packageId}`);
+            const deleteButton = document.getElementById(`button-delete-premium-${packageId}`);
+
+            if (this.checked) {
+                if (!selectedList.some(item => item.id === packageId)) {
+                    selectedList.push({ id: packageId, name: pkg ? pkg.name : 'Unknown' });
+                    if (selectedList.length != 0) buttonCreatePromotional.classList.remove("hidden");
+                }
+                // Hide edit and delete buttons
+                if (editButton) editButton.classList.add('hidden');
+                if (deleteButton) deleteButton.classList.add('hidden');
+            } else {
+                selectedList = selectedList.filter(item => item.id !== packageId);
+                if (selectedList.length === 0) buttonCreatePromotional.classList.add("hidden");
+                // Show edit and delete buttons
+                if (editButton) editButton.classList.remove('hidden');
+                if (deleteButton) deleteButton.classList.remove('hidden');
+            }
+        });
+    });
+}
+
+// Open modal create offer
+function openCreateOfferModal() {
+    const modal = document.getElementById('createOfferModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        // Reset form
+        const form = document.getElementById('createOfferForm');
+        if (form) form.reset();
+        // Set default values
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        document.getElementById('startDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('expiryDate').value = tomorrow.toISOString().split('T')[0];
+
+
+        // Render selected packages
+        const selectedPackagesContainer = document.getElementById('selectedPackages');
+        if (selectedPackagesContainer) {
+            if (selectedList.length === 0) {
+                selectedPackagesContainer.innerHTML = '<span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-lg">No packages selected</span>';
+            } else {
+                selectedPackagesContainer.innerHTML = selectedList.slice(0, 3).map(item => `
+                    <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-lg">${item.name}</span>
+                `).join('') + (selectedList.length > 3 ? `
+                    <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-lg">+${selectedList.length - 3} more</span>
+                ` : '');
+            }
+        }
+    }
+}
+
+function closeCreateOfferModal() {
+    const modal = document.getElementById('createOfferModal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+
 // Form handlers
 async function handleCreatePackage(e) {
     e.preventDefault();
@@ -553,7 +648,6 @@ async function handleCreatePackage(e) {
         features
     };
 
-    console.log("form: ", formData);
 
     try {
         // Show loading state
@@ -569,6 +663,7 @@ async function handleCreatePackage(e) {
         if (response && response.ok) {
             showSuccessMessage('Package created successfully');
             closeNewPackageModal();
+            selectedList = [];
             loadPackages();
             loadStats(); // Refresh stats
         } else {
@@ -628,7 +723,6 @@ async function handleUpdatePackage(e) {
         features
     };
 
-    console.log("fe:,", formData);
 
     try {
         // Show loading state
@@ -645,6 +739,7 @@ async function handleUpdatePackage(e) {
         if (response && response.ok) {
             showSuccessMessage('Package updated successfully');
             closeUpdateModal();
+            selectedList = [];
             loadPackages();
             loadStats(); // Refresh stats
         } else {
@@ -661,6 +756,84 @@ async function handleUpdatePackage(e) {
             submitBtn.innerHTML = 'Update Package';
             submitBtn.disabled = false;
         }
+    }
+}
+
+// Offer
+async function handleCreateOffer(e) {
+    e.preventDefault();
+
+    // Get form values
+    const discountEvent = document.getElementById('discountEvent').value.trim();
+    const discountPercentage = parseFloat(document.getElementById('discountPercentage').value);
+    const startDate = document.getElementById('startDate').value;
+    const expiryDate = document.getElementById('expiryDate').value;
+
+    // Validation
+    if (!discountEvent) {
+        showErrorMessage('Discount Event is required');
+        return;
+    }
+
+    if (isNaN(discountPercentage) || discountPercentage <= 0) {
+        showErrorMessage('Discount Percentage must be greater than 0');
+        return;
+    }
+
+    const now = new Date();
+    now.setHours(0, 0, 0, 0); // Normalize to start of day
+    const start = new Date(startDate);
+    const expiry = new Date(expiryDate);
+
+    if (isNaN(start.getTime()) || isNaN(expiry.getTime())) {
+        showErrorMessage('Invalid date format');
+        return;
+    }
+
+    if (start < now) {
+        showErrorMessage('Start Date must be today or in the future');
+        return;
+    }
+
+    if (expiry <= now) {
+        showErrorMessage('Expiry Date must be in the future');
+        return;
+    }
+
+    if (start >= expiry) {
+        showErrorMessage('Expiry Date must be on or after Start Date');
+        return;
+    }
+
+
+    // Prepare form data with package IDs from selectedList
+    const formData = {
+        discountEvent: discountEvent,
+        discountPercentage: discountPercentage,
+        startDate: startDate,
+        expiryDate: expiryDate,
+        packageIds: selectedList.map(item => item.id)
+    };
+
+    try {
+        const response = await apiRequest(`${OFFER_API_URL}`, {
+            method: 'POST',
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        if (data.code === 1000) {
+            showSuccessMessage(data.message);
+            closeCreateOfferModal();
+            selectedList = [];
+            loadPackages();
+            loadStats();
+        } else {
+            throw new Error(data.message || "Fail to create an offer.");
+        }
+    } catch (err) {
+        showErrorMessage(err.message);
     }
 }
 
@@ -851,11 +1024,11 @@ function setupModalKeyboardSupport() {
         if (e.key === 'Escape') {
             closeNewPackageModal();
             closeUpdateModal();
+            closeCreateOfferModal();
         }
     });
 
-    // Close modal when clicking outside
-    const modals = ['createPackageModal', 'updatePackageModal'];
+    const modals = ['createPackageModal', 'updatePackageModal', 'createOfferModal'];
     modals.forEach(modalId => {
         const modal = document.getElementById(modalId);
         if (modal) {
@@ -863,8 +1036,10 @@ function setupModalKeyboardSupport() {
                 if (e.target === modal) {
                     if (modalId === 'createPackageModal') {
                         closeNewPackageModal();
-                    } else {
+                    } else if (modalId === 'updatePackageModal') {
                         closeUpdateModal();
+                    } else if (modalId === 'createOfferModal') {
+                        closeCreateOfferModal();
                     }
                 }
             });
@@ -905,7 +1080,6 @@ function showErrorMessage(message) {
 }
 
 function showSuccessMessage(message) {
-    console.log(message);
 
     // Create toast notification
     const toast = document.createElement('div');
@@ -935,10 +1109,7 @@ function showSuccessMessage(message) {
     }, 3000);
 }
 
-// Refresh all data
-async function refreshData() {
 
-}
 
 // Global exports for HTML onclick handlers
 window.openNewPackageModal = openNewPackageModal;
@@ -948,7 +1119,6 @@ window.closeUpdateModal = closeUpdateModal;
 window.deletePackage = deletePackage;
 window.changePage = changePage;
 window.loadSidebar = loadSidebar;
-window.refreshData = refreshData;
 
 // Additional utility functions
 function formatCurrency(amount) {
@@ -983,7 +1153,6 @@ function handleResize() {
 // Initialize modal keyboard support and other event handlers when DOM is ready
 document.addEventListener('DOMContentLoaded', function () {
     setupModalKeyboardSupport();
-
     // Add resize handler for responsive behavior
     window.addEventListener('resize', debounce(handleResize, 250));
 

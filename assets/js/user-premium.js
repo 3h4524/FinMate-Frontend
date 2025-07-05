@@ -13,7 +13,10 @@ let filteredPackages = [];
 let billingCycle = 'monthly';
 let purchasedList;
 let selectedPackageId = null;
+let amoutPayment = null;
 let allFeatures = [];
+let promotionalOffers = [];
+
 const COUPON_CODE_MAX_LENGTH = 50;
 // Load header and sidebar
 async function loadHeaderAndSidebar() {
@@ -36,7 +39,7 @@ async function loadFeatures() {
             allFeatures = data.result || [];
         }
     } catch (error) {
-        console.error('Error loading features:', error);
+        showErrorMessage('Error loading features:', error);
         allFeatures = [];
     }
 }
@@ -78,66 +81,96 @@ const renderPackages = (packagesData) => {
     }
 
     const packagesHTML = packagesData.map(pkg => {
-        const isPopular = pkg.name.toLowerCase().includes('pro') || pkg.name.toLowerCase().includes('premium');
-        const yearlyPrice = pkg.price * 12 * 0.83;
-        const priceToShow = billingCycle === 'monthly' ? pkg.price : yearlyPrice;
-        const durationText = billingCycle === 'monthly' ? getDurationText(pkg.durationValue, pkg.durationType) : 'per year';
+        const isPopular = false;
+        // const isPopular = pkg.name.toLowerCase().includes('pro') || pkg.name.toLowerCase().includes('premium');
+
+        const durationText = getDurationText(pkg.durationValue, pkg.durationType);
+
+        // Check for promotional offer
+        const offer = promotionalOffers.find(offer => offer.packageIds.includes(pkg.id));
+        let priceToShow = pkg.price;
+        let originalPrice = pkg.price;
+        let daysRemainingText = '';
+        if (offer) {
+            // Calculate discounted price
+            priceToShow = pkg.price * (1 - offer.discountPercentage / 100);
+            // Calculate days remaining
+            const today = new Date('2025-07-05');
+            const expiry = new Date(offer.expiryDate);
+            const diffTime = expiry - today;
+            const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            daysRemainingText = daysRemaining > 0 ? `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} left` : 'Expires today';
+        }
 
         return `
-            <div class="relative bg-white rounded-3xl shadow-2xl overflow-hidden transition-all duration-500 plan-card border border-indigo-100 hover:shadow-indigo-200">
-                ${isPopular ? `<div class="popular-badge absolute top-0 left-0 text-white text-xs font-semibold px-4 py-1 z-10">Most Popular</div>` : ''}
-                <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-8 text-white">
-                    <div class="flex items-center justify-center mb-4">
-                        <i data-lucide="crown" class="w-8 h-8"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-center mb-3">${pkg.name}</h3>
-                    <div class="text-center">
-                        <div class="package-price text-3xl font-bold mb-2">
-                            ${formatCurrency(priceToShow)}
-                            <div class="package-period text-indigo-100 text-sm font-normal mt-1">${durationText}</div>
-                        </div>
-                        <div class="yearly-info ${billingCycle === 'monthly' ? 'hidden' : ''}">
-                            <span class="text-indigo-200 line-through text-sm">${formatCurrency(pkg.price * 12)}</span>
-                            <span class="text-green-300 font-semibold ml-2 text-sm bg-green-500 bg-opacity-20 px-2 py-1 rounded-full">Save 17%</span>
-                        </div>
-                    </div>
+        <div class="relative bg-white rounded-3xl shadow-2xl overflow-hidden transition-all duration-500 plan-card border border-purple-100 hover:shadow-purple-200">
+            ${isPopular ? `<div class="popular-badge absolute top-0 left-0 text-white text-xs font-semibold px-4 py-1 z-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-br-2xl">Most Popular</div>` : ''}
+            ${offer ? `<div class="event-badge absolute top-0 right-0 text-white text-xs font-semibold px-3 py-2 z-10 bg-gradient-to-r from-red-500 to-pink-500 rounded-bl-2xl whitespace-nowrap">
+                <div class="flex items-center space-x-2">
+                    <i data-lucide="clock" class="w-3 h-3"></i>
+                    <span>${offer.discountEvent}</span>
+                    <span class="text-yellow-100 font-bold">• ${daysRemainingText}</span>
                 </div>
-                <div class="p-8 plan-card-content">
-                    <ul class="space-y-4 mb-8">
-                        ${(pkg.features || ['Basic Features', 'Customer Support']).slice(0, 3).map(feature => `
-                            <li class="flex items-start space-x-3">
-                                <div class="flex-shrink-0 w-5 h-5 bg-indigo-100 rounded-full flex items-center justify-center mt-0.5">
-                                    <i data-lucide="check" class="w-3 h-3 text-indigo-600"></i>
-                                </div>
-                                <span class="text-gray-700 leading-relaxed">${getFeatureName(feature)}</span>
-                            </li>
-                        `).join('')}
-                        ${pkg.features && pkg.features.length > 3 ? `
-                            <li class="flex items-start space-x-3">
-                                <div class="flex-shrink-0 w-5 h-5 bg-indigo-100 rounded-full flex items-center justify-center mt-0.5">
-                                    <i data-lucide="plus" class="w-3 h-3 text-indigo-600"></i>
-                                </div>
-                                <span class="text-gray-700 leading-relaxed">+${pkg.features.length - 3} more features</span>
-                            </li>
-                        ` : ''}
-                    </ul>
-                    <div class="plan-card-footer">
-                        <button 
-                            ${isPurchased(pkg.id) ? `disabled` : ''} 
-                            class="buy-now-btn w-full py-4 px-6 rounded-xl font-semibold 
-                            bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-lg 
-                            focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-all duration-300 transform 
-                            hover:scale-105 hover:shadow-xl 
-                            disabled:bg-none disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed disabled:hover:bg-gray-400 disabled:hover:scale-100 disabled:shadow-none" 
-                            data-package-id="${pkg.id}"
-                            onclick="showCouponModal(${pkg.id})">
-                            <i data-lucide="credit-card" class="w-5 h-5 inline mr-2"></i>
-                            ${isPurchased(pkg.id) ? 'Purchased' : 'Buy Now'}
-                        </button>
+            </div>` : ''}
+            <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-8 text-white">
+                <div class="flex items-center justify-center mb-4">
+                    <i data-lucide="crown" class="w-8 h-8"></i>
+                </div>
+                <div class="flex items-center justify-center mb-3">
+                    <h3 class="text-xl font-bold text-center">${pkg.name}</h3>
+                    ${offer ? `
+                        <div class="inline-flex bg-gradient-to-r from-green-400 to-green-500 text-white text-xs px-2 py-1 rounded-full items-center shadow-md ml-3">
+                            <i data-lucide="gift" class="w-3 h-3 inline mr-1"></i>
+                             ${offer.discountPercentage}%
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="text-center">
+                    <div class="package-price text-3xl font-bold mb-2">
+                        <div>
+                            ${formatCurrency(priceToShow)}
+                            ${offer ? `<span class="line-through text-purple-200 text-lg ml-2">${formatCurrency(originalPrice)}</span>` : ''}
+                        </div>
+                        <div class="package-period text-purple-100 text-sm font-normal mt-1">${durationText}</div>
                     </div>
                 </div>
             </div>
-        `;
+            <div class="p-8 plan-card-content">
+                <ul class="space-y-4 mb-8">
+                    ${(pkg.features).slice(0, 3).map(feature => `
+                        <li class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center mt-0.5">
+                                <i data-lucide="check" class="w-3 h-3 text-purple-600"></i>
+                            </div>
+                            <span class="text-gray-700 leading-relaxed">${getFeatureName(feature)}</span>
+                        </li>
+                    `).join('')}
+                    ${pkg.features && pkg.features.length > 3 ? `
+                        <li class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center mt-0.5">
+                                <i data-lucide="plus" class="w-3 h-3 text-purple-600"></i>
+                            </div>
+                            <span class="text-gray-700 leading-relaxed">+${pkg.features.length - 3} more features</span>
+                        </li>
+                    ` : ''}
+                </ul>
+                <div class="plan-card-footer">
+                    <button 
+                        ${isPurchased(pkg.id) ? `disabled` : ''} 
+                        class="buy-now-btn w-full py-4 px-6 rounded-xl font-semibold 
+                        bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 shadow-lg 
+                        focus:outline-none focus:ring-4 focus:ring-purple-300 transition-all duration-300 transform 
+                        hover:scale-105 hover:shadow-xl 
+                        disabled:bg-none disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed disabled:hover:bg-gray-400 disabled:hover:scale-100 disabled:shadow-none" 
+                        data-package-id="${pkg.id}"
+                        onclick="showCouponModal(${pkg.id}, ${priceToShow})">
+                        <i data-lucide="credit-card" class="w-5 h-3 inline mr-2"></i>
+                        ${isPurchased(pkg.id) ? 'Purchased' : 'Buy Now'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
     }).join('');
 
     container.innerHTML = packagesHTML;
@@ -183,16 +216,17 @@ const init = async () => {
 
         // Load purchased plans and packages
         await fetchPurchasedPremiumPlans();
+        await fetchPromotionalOffers();
         await loadPackages();
         toggleBilling('monthly');
         setupCouponModal();
 
         console.log('Premium page initialized successfully');
     } catch (error) {
-        console.error('Error initializing premium page:', error);
+        showErrorMessage('Error initializing premium page:', error);
     }
 };
-const fetchPackages = async (page = 0, size = 6, sortBy = 'price', sortDirection = 'DESC') => {
+const fetchPackages = async (page = 0, size = 3, sortBy = 'price', sortDirection = 'DESC') => {
     try {
         const response = await apiRequest(
             `${API_BASE_URL}/api/premium-package?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${sortDirection}`
@@ -201,10 +235,28 @@ const fetchPackages = async (page = 0, size = 6, sortBy = 'price', sortDirection
         const data = await response.json();
         return data.result;
     } catch (error) {
-        console.error('Error fetching packages:', error);
+        showErrorMessage('Error fetching packages:', error);
         return null;
     }
 };
+
+async function fetchPromotionalOffers() {
+    try {
+        const response = await apiRequest(`${API_BASE_URL}/api/promotional-offer`);
+
+        const data = await response.json();
+
+        if (data.code === 1000) {
+            promotionalOffers = data.result;
+            console.log("of: ", promotionalOffers);
+        } else {
+            throw new Error(response.message);
+        }
+    } catch (error) {
+        showErrorMessage(error.message);
+    }
+};
+
 
 async function fetchPurchasedPremiumPlans() {
     try {
@@ -218,14 +270,10 @@ async function fetchPurchasedPremiumPlans() {
 
         purchasedList = data.result;
     } catch (error) {
-        console.error('Error fetching packages:', error);
+        showErrorMessage('Error fetching packages:', error);
     }
 };
-// Updated DOMContentLoaded to integrate properly
-document.addEventListener('DOMContentLoaded', async function () {
-    // Initialize the page after header and sidebar are loaded
-    await init();
-});
+
 // Thêm function để disable/enable tất cả nút Buy Now
 function setAllBuyButtonsState(disabled) {
     const buyButtons = document.querySelectorAll('button[onclick^="showCouponModal"]');
@@ -255,8 +303,9 @@ function setAllBuyButtonsState(disabled) {
 }
 
 // Show coupon modal and store package ID
-function showCouponModal(packageId) {
+function showCouponModal(packageId, amount) {
     selectedPackageId = packageId;
+    amoutPayment = amount;
     const couponModal = document.getElementById('couponModal');
     const couponInput = document.getElementById('couponCode');
     const couponError = document.getElementById('couponError');
@@ -279,6 +328,7 @@ function setupCouponModal() {
     const closeModal = () => {
         couponModal.classList.add('hidden');
         selectedPackageId = null;
+        amoutPayment = null;
         couponInput.value = '';
         couponError.classList.add('hidden');
     };
@@ -334,7 +384,8 @@ function setupCouponModal() {
 
                 const paymentRequest = {
                     packageId: selectedPackageId,
-                    code: couponCode
+                    code: couponCode,
+                    amount: amoutPayment
                 };
 
                 const response = await apiRequest(`${API_BASE_URL}/api/payment/create`, {
@@ -351,7 +402,7 @@ function setupCouponModal() {
                     throw new Error(data.message || 'payment failed');
                 }
             } catch (error) {
-                console.error('Error initiating payment:', error);
+                showErrorMessage('Error initiating payment:', error);
                 setAllBuyButtonsState(false);
                 alert('An error occurred while processing your payment. Please try again.');
             }
@@ -359,9 +410,66 @@ function setupCouponModal() {
     });
 }
 
-// Updated initiatePayment to integrate with modal
-async function initiatePayment(packageId) {
-    showCouponModal(packageId);
+document.addEventListener('DOMContentLoaded', init);
+
+
+function showErrorMessage(message) {
+    console.error(message);
+
+    // Create toast notification
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+    toast.innerHTML = `
+        <div class="flex items-center space-x-2">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>${message}</span>
+        </div>
+    `;
+
+    document.body.appendChild(toast);
+
+    // Animate in
+    setTimeout(() => {
+        toast.classList.remove('translate-x-full');
+    }, 100);
+
+    // Remove after 5 seconds
+    setTimeout(() => {
+        toast.classList.add('translate-x-full');
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    }, 5000);
 }
 
-document.addEventListener('DOMContentLoaded', init);
+function showSuccessMessage(message) {
+
+    // Create toast notification
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+    toast.innerHTML = `
+        <div class="flex items-center space-x-2">
+            <i class="fas fa-check-circle"></i>
+            <span>${message}</span>
+        </div>
+    `;
+
+    document.body.appendChild(toast);
+
+    // Animate in
+    setTimeout(() => {
+        toast.classList.remove('translate-x-full');
+    }, 100);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.classList.add('translate-x-full');
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    }, 3000);
+}

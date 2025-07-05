@@ -74,7 +74,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
 
                 }
                 setTimeout(() => {
-                    window.location.href = `../verify-email/index.html?email=${email}`;
+                    window.location.href = `../verify-email/?email=${email}`;
                 }, 1000);
                 return;
             }
@@ -97,9 +97,9 @@ document.getElementById('loginForm').addEventListener('submit', async function (
                 // Check user role and redirect accordingly
                 const userRole = data.result.role;
                 if (userRole === 'ADMIN') {
-                    window.location.href = '../admin-dashboard/index.html';
+                    window.location.href = '../admin-dashboard/';
                 } else {
-                    window.location.href = '../home/index.html';
+                    window.location.href = '../home/';
                 }
             }, 1000);
         } else {
