@@ -17,6 +17,48 @@ let amoutPayment = null;
 let allFeatures = [];
 let promotionalOffers = [];
 
+
+
+async function handlePaymentResult(urlParams, orderCode) {
+    const couponId = urlParams.get('couponId') || null;
+    const statusPayment = urlParams.get('status') || null;
+    // const paymentId = urlParams.get('id') || null;
+    try {
+        const paymentResponse = {
+            couponId: couponId,
+            orderCode: orderCode,
+            status: statusPayment
+        };
+        console.log("Sending payment status update:", paymentResponse);
+
+        // Assuming apiRequest is defined in autho_helper.js and handles token/auth
+        const response = await apiRequest(`${API_BASE_URL}/api/payment/return`, {
+            method: 'POST',
+            body: JSON.stringify(paymentResponse)
+        });
+        const data = await response.json();
+
+        console.log("API response data:", data);
+
+        if (data.code === 1000) {
+            if (statusPayment === 'PAID') {
+                showSuccessMessage('Thank you for your purchase, the corresponding advanced features have been activated.');
+            } else if (statusPayment === 'CANCELLED') {
+                showErrorMessage('Your payment transaction was cancelled. No charges were made.');
+            } else if (statusPayment === 'PENDING') {
+                showErrorMessage('Your payment is still pending. Please complete the payment to finalize your order.');
+            }
+        } else {
+            throw new Error(response.nessage);
+        }
+    } catch (error) {
+        showErrorMessage(error.message);
+    } finally {
+        const newUrl = window.location.origin + window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+    }
+}
+
 const COUPON_CODE_MAX_LENGTH = 50;
 // Load header and sidebar
 async function loadHeaderAndSidebar() {
@@ -203,7 +245,7 @@ const toggleBilling = (cycle) => {
 };
 
 const loadPackages = async () => {
-    const packagesData = await fetchPackages(0, 6);
+    const packagesData = await fetchPackages(0, 10);
     if (packagesData) {
         packages = packagesData.content;
         filteredPackages = packages.filter(pkg => pkg.durationType === 'MONTH');
@@ -213,6 +255,14 @@ const loadPackages = async () => {
 const init = async () => {
     try {
         if (!checkAuth()) return;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderCode = urlParams.get('orderCode') || null;
+
+        if (orderCode != null) {
+            console.log("Entering fetchPaymentStatus...");
+            await handlePaymentResult(urlParams, orderCode);
+        }
 
         // Load purchased plans and packages
         await fetchPurchasedPremiumPlans();
