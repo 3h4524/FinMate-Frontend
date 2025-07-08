@@ -97,7 +97,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 form.reset();
                 // Redirect to login page after 3 seconds
                 setTimeout(() => {
+<<<<<<< HEAD
                     window.location.href = '../login/index.html';
+=======
+                    window.location.href = '../login/';
+>>>>>>> origin/update_profile
                 }, 3000);
             } else {
                 showError(data.message || 'An error occurred. Please try again.');

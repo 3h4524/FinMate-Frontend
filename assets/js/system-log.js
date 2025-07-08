@@ -25,11 +25,19 @@ function updateDateTime() {
 }
 
 function saveFilters(startDate, endDate, entityType, adminId, keyword) {
+<<<<<<< HEAD
     localStorage.setItem('logFilters', JSON.stringify({ startDate, endDate, entityType, adminId, keyword }));
 }
 
 function loadFilters() {
     const filters = JSON.parse(localStorage.getItem('logFilters') || '{}');
+=======
+    sessionStorage.setItem('logFilters', JSON.stringify({ startDate, endDate, entityType, adminId, keyword }));
+}
+
+function loadFilters() {
+    const filters = JSON.parse(sessionStorage.getItem('logFilters') || '{}');
+>>>>>>> origin/update_profile
     document.getElementById('startDate').value = filters.startDate || '';
     document.getElementById('endDate').value = filters.endDate || '';
     document.getElementById('entityType').value = filters.entityType || '';
@@ -46,7 +54,10 @@ async function loadStats(startDate = '', endDate = '') {
         if (endDate) params.append('endDate', endDate);
         
         const response = await apiRequest(`http://localhost:8080/api/admin/logs/stats?${params.toString()}`);
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/update_profile
         if (!response.ok) throw new Error('Failed to load stats');
         
         const stats = await response.json();
@@ -614,4 +625,8 @@ function showMainContent() {
 }
 function hideMainContent() {
     document.getElementById('mainContent').style.display = 'none';
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/update_profile

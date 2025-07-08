@@ -347,6 +347,17 @@
     </div>
 
     <script>
+<<<<<<< HEAD
+=======
+        // Check login status as early as possible
+        (function() {
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/pages/login/';
+            }
+        })();
+
+>>>>>>> origin/update_profile
         let currentPage = 0;
         const pageSize = 10;
         let user;
@@ -360,7 +371,11 @@
                 if (user.role !== 'ADMIN') {
                     console.log('[AUTH] Access denied: User does not have ADMIN role');
                     alert('Access denied. This page is only available for administrators.');
+<<<<<<< HEAD
                     window.location.href = '../home';
+=======
+                    window.location.href = '/pages/login/';
+>>>>>>> origin/update_profile
                     return;
                 }
                 // Load sidebar and header first to avoid flash
@@ -393,9 +408,15 @@
 
         async function loadUsers(page = 0) {
             try {
+<<<<<<< HEAD
                 const token = localStorage.getItem('token');
                 if (!token) {
                     window.location.href = 'login.html';
+=======
+                const token = sessionStorage.getItem('token');
+                if (!token) {
+                    window.location.href = '/pages/login/';
+>>>>>>> origin/update_profile
                     return;
                 }
 
@@ -557,7 +578,11 @@
 
         async function loadUserStats() {
             try {
+<<<<<<< HEAD
                 const token = localStorage.getItem('token');
+=======
+                const token = sessionStorage.getItem('token');
+>>>>>>> origin/update_profile
                 if (!token) return;
 
                 // Load all users to calculate stats
@@ -756,7 +781,11 @@
             const statusFilter = document.getElementById('statusFilter').value;
 
             try {
+<<<<<<< HEAD
                 const token = localStorage.getItem('token');
+=======
+                const token = sessionStorage.getItem('token');
+>>>>>>> origin/update_profile
 
                 // If no search keyword and no filter, load all users
                 if (!keyword && !statusFilter) {
@@ -810,7 +839,11 @@
 
         async function loadAllUsersAndFilter(keyword, statusFilter) {
             try {
+<<<<<<< HEAD
                 const token = localStorage.getItem('token');
+=======
+                const token = sessionStorage.getItem('token');
+>>>>>>> origin/update_profile
                 const response = await fetch('http://localhost:8080/api/admin/users?page=0&size=1000', {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -893,7 +926,11 @@
 
         async function openEditModal(userId) {
             try {
+<<<<<<< HEAD
                 const token = localStorage.getItem('token');
+=======
+                const token = sessionStorage.getItem('token');
+>>>>>>> origin/update_profile
                 const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -955,7 +992,11 @@
             }
 
             try {
+<<<<<<< HEAD
                 const token = localStorage.getItem('token');
+=======
+                const token = sessionStorage.getItem('token');
+>>>>>>> origin/update_profile
                 let url, method;
 
                 if (isNewUser) {
@@ -1007,7 +1048,11 @@
             }
 
             try {
+<<<<<<< HEAD
                 const token = localStorage.getItem('token');
+=======
+                const token = sessionStorage.getItem('token');
+>>>>>>> origin/update_profile
                 const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
                     method: 'DELETE',
                     headers: {
@@ -1030,7 +1075,11 @@
 
         async function restoreUser(userId) {
             try {
+<<<<<<< HEAD
                 const token = localStorage.getItem('token');
+=======
+                const token = sessionStorage.getItem('token');
+>>>>>>> origin/update_profile
                 const response = await fetch(`http://localhost:8080/api/admin/users/${userId}/restore`, {
                     method: 'POST',
                     headers: {
@@ -1054,7 +1103,11 @@
 
         async function openDetailModal(userId) {
             try {
+<<<<<<< HEAD
                 const token = localStorage.getItem('token');
+=======
+                const token = sessionStorage.getItem('token');
+>>>>>>> origin/update_profile
                 const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`

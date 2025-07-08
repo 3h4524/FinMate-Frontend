@@ -1,11 +1,20 @@
 // Authentication logic for user pages
 document.addEventListener('DOMContentLoaded', async function() {
+<<<<<<< HEAD
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('userData');
     
     if (!token || !userData) {
         console.log('[AUTH] No token or user data found, redirecting to login');
         window.location.href = 'login.html';
+=======
+    const token = sessionStorage.getItem('token');
+    const userData = sessionStorage.getItem('userData');
+    
+    if (!token || !userData) {
+        console.log('[AUTH] No token or user data found, redirecting to login');
+        window.location.href = '../login/';
+>>>>>>> origin/update_profile
         return;
     }
 
@@ -45,9 +54,15 @@ document.addEventListener('DOMContentLoaded', async function() {
             console.log('[AUTH] Response not OK, status:', response.status);
             if (response.status === 401 || response.status === 403) {
                 console.log('[AUTH] Unauthorized, redirecting to login');
+<<<<<<< HEAD
                 localStorage.removeItem('token');
                 localStorage.removeItem('userData');
                 window.location.href = 'login.html';
+=======
+                sessionStorage.removeItem('token');
+                sessionStorage.removeItem('userData');
+                window.location.href = '../login/';
+>>>>>>> origin/update_profile
                 return;
             }
         }
@@ -62,9 +77,15 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         if (data.code !== 1000) {
             console.log('[AUTH] Token verification failed:', data.message);
+<<<<<<< HEAD
             localStorage.removeItem('token');
             localStorage.removeItem('userData');
             window.location.href = 'login.html';
+=======
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('userData');
+            window.location.href = '../login/';
+>>>>>>> origin/update_profile
             return;
         }
 

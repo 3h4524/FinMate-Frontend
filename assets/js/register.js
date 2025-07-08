@@ -139,9 +139,14 @@ function initPasswordToggle() {
     });
 }
 
+<<<<<<< HEAD
 // Xử lý đăng ký
 document.getElementById('register-form').addEventListener('submit', async function (e) {
     console.log("XEM");
+=======
+// Handle registration
+document.getElementById('register-form').addEventListener('submit', async function (e) {
+>>>>>>> origin/update_profile
     e.preventDefault();
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
@@ -197,8 +202,22 @@ document.getElementById('register-form').addEventListener('submit', async functi
     }
 });
 
+<<<<<<< HEAD
 // Initialize password validation on page load
 document.addEventListener('DOMContentLoaded', function () {
     initPasswordValidation();
     initPasswordToggle();
+=======
+// Initialize everything when page loads
+document.addEventListener('DOMContentLoaded', function () {
+    initPasswordValidation();
+    initPasswordToggle();
+    
+    // Initialize Google Sign-In
+    import('./googleAuth.js').then(module => {
+        module.initGoogleSignIn('signup_with');
+    }).catch(error => {
+        console.error('Failed to load Google Auth:', error);
+    });
+>>>>>>> origin/update_profile
 });

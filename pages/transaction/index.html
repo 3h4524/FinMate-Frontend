@@ -21,8 +21,12 @@
     <style>
         /* Layout fixes for header and sidebar integration */
         .main-content {
+<<<<<<< HEAD
             padding-top: 80px;
             /* Space for fixed header */
+=======
+            padding-top: 80px; /* Space for fixed header */
+>>>>>>> origin/update_profile
             min-height: 100vh;
             width: 100%;
             max-width: 100%;
@@ -39,6 +43,7 @@
         body.sidebar-collapsed .main-content {
             margin-left: 80px;
         }
+<<<<<<< HEAD
 
         /* Custom colors for Tailwind v2 compatibility */
         .bg-indigo-500 {
@@ -142,17 +147,68 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
 
+=======
+        
+        /* Custom colors for Tailwind v2 compatibility */
+        .bg-indigo-500 { background-color: #6366f1; }
+        .bg-purple-600 { background-color: #9333ea; }
+        .text-indigo-600 { color: #4f46e5; }
+        .border-indigo-500 { border-color: #6366f1; }
+        .border-indigo-600 { border-color: #4f46e5; }
+        .hover\:border-indigo-600:hover { border-color: #4f46e5; }
+        .hover\:bg-indigo-50:hover { background-color: #eef2ff; }
+        .from-indigo-500 { --tw-gradient-from: #6366f1; }
+        .to-purple-600 { --tw-gradient-to: #9333ea; }
+        
+        /* Additional gradient colors */
+        .from-blue-500 { --tw-gradient-from: #3b82f6; }
+        .to-blue-600 { --tw-gradient-to: #2563eb; }
+        .from-green-500 { --tw-gradient-from: #10b981; }
+        .to-green-600 { --tw-gradient-to: #059669; }
+        .from-purple-500 { --tw-gradient-from: #8b5cf6; }
+        .hover\:from-blue-600:hover { --tw-gradient-from: #2563eb; }
+        .hover\:to-blue-700:hover { --tw-gradient-to: #1d4ed8; }
+        .hover\:from-green-600:hover { --tw-gradient-from: #059669; }
+        .hover\:to-green-700:hover { --tw-gradient-to: #047857; }
+        .hover\:from-purple-600:hover { --tw-gradient-from: #9333ea; }
+        .hover\:to-purple-700:hover { --tw-gradient-to: #7c3aed; }
+        
+        /* Ring utilities for focus states */
+        .focus\:ring-indigo-200:focus { 
+            --tw-ring-color: rgba(199, 210, 254, 0.5); 
+            box-shadow: var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+        }
+        
+        /* Rounded utilities */
+        .rounded-3xl { border-radius: 1.5rem; }
+        
+        /* Shadow utilities */
+        .shadow-lg { 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .shadow-2xl { 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+>>>>>>> origin/update_profile
         /* Backdrop blur for older browsers */
         .backdrop-blur-sm {
             backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
         }
+<<<<<<< HEAD
 
         /* Additional responsive utilities if needed */
         @media (min-width: 1024px) {
             .lg\:ml-64 {
                 margin-left: 16rem;
             }
+=======
+        
+        /* Additional responsive utilities if needed */
+        @media (min-width: 1024px) {
+            .lg\:ml-64 { margin-left: 16rem; }
+>>>>>>> origin/update_profile
         }
 
         @media (max-width: 1023px) {
@@ -234,13 +290,18 @@
 
         <!-- Include Header -->
         <div id="header-container"></div>
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin/update_profile
         <!-- Main Content -->
         <div class="main-content flex-1 ml-0 transition-all duration-300 ease-in-out lg:ml-64 min-h-screen w-full">
             <div class="p-6 lg:p-8 w-full max-w-none">
 
                 <!-- Stats Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-6 lg:mb-8">
+<<<<<<< HEAD
                     <div class="bg-white rounded-3xl shadow-lg p-6">
                         <div class="flex justify-between items-start mb-4">
                             <span class="text-sm font-medium text-gray-500">Total Income</span>
@@ -362,6 +423,107 @@
                     </div>
                 </div>
 
+=======
+                <div class="bg-white rounded-3xl shadow-lg p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-sm font-medium text-gray-500">Total Income</span>
+                        <div class="w-10 h-10 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-trending-up text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-800" id="totalIncome">$0</div>
+                </div>
+                <div class="bg-white rounded-3xl shadow-lg p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-sm font-medium text-gray-500">Total Spending</span>
+                        <div class="w-10 h-10 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-trending-down text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-800" id="totalSpending">$0</div>
+                </div>
+                <div class="bg-white rounded-3xl shadow-lg p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-sm font-medium text-gray-500">Balance Ratio</span>
+                        <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-chart-pie text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-800" id="incomeExpenseRatio">0%</div>
+                </div>
+            </div>
+
+                <!-- Transactions Content -->
+                <div id="transactions-content">
+                <div class="wallet-card rounded-3xl p-6 text-white mb-6 shadow-2xl">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="text-lg font-medium opacity-90">💳 My Wallet</div>
+                        <button class="bg-white bg-opacity-20 text-white px-3 py-2 rounded-2xl flex items-center space-x-2 hover:bg-opacity-30 transition" id="editWalletBtn">
+                            <i class="fas fa-edit"></i><span>Edit</span>
+                        </button>
+                    </div>
+                    <div id="walletContent">
+                        <div id="walletLoading" class="flex items-center space-x-2 text-white">
+                            <div class="wallet-spinner"></div>
+                            <span>Loading wallet...</span>
+                        </div>
+                        <div id="walletBalance" class="hidden">
+                            <div class="text-3xl font-bold" id="balanceAmount">0.00</div>
+                            <div class="text-sm opacity-80" id="balanceCurrency">VND</div>
+                        </div>
+                        <div id="walletError" class="hidden text-white opacity-80">Error loading wallet</div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Transaction Management</h2>
+                        <div class="flex space-x-4">
+                            <button class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-3 rounded-2xl font-semibold flex items-center space-x-2 hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg" id="searchBtn">
+                                <i class="fas fa-search"></i><span>Search</span>
+                            </button>
+                            <button class="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-3 rounded-2xl font-semibold flex items-center space-x-2 hover:from-green-600 hover:to-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg" id="createBtn">
+                                <i class="fas fa-plus"></i><span>Add Transaction</span>
+                            </button>
+                            <a href="../recurring-transaction" class="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-3 rounded-2xl font-semibold flex items-center space-x-2 hover:from-purple-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg" id="recurringBtn">
+                                <i class="fas fa-redo"></i><span>Recurring Transactions</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="loadingDiv" class="hidden text-center py-12">
+                    <div class="inline-block w-10 h-10 border-4 border-gray-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                    <p class="mt-2 text-gray-500">Loading...</p>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-800 uppercase">Date</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-800 uppercase">Category</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-800 uppercase">Amount</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-800 uppercase">Note</th>
+                                <th class="px-6 py-4 text-right text-xs font-semibold text-gray-800 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionTableBody">
+                            <tr>
+                                <td colspan="5" class="text-center py-12 text-gray-500">No transactions</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="paginationDiv" class="hidden flex justify-center items-center space-x-4 mt-8 p-6 bg-white rounded-3xl shadow-lg">
+                    <button class="px-4 py-3 bg-white border-2 border-gray-200 rounded-2xl font-semibold hover:bg-indigo-50 hover:border-indigo-600 transition disabled:opacity-50" id="prevBtn" disabled>Previous</button>
+                    <div class="flex space-x-2" id="pageNumbers"></div>
+                    <button class="px-4 py-3 bg-white border-2 border-gray-200 rounded-2xl font-semibold hover:bg-indigo-50 hover:border-indigo-600 transition disabled:opacity-50" id="nextBtn" disabled>Next</button>
+                </div>
+            </div>
+
+>>>>>>> origin/update_profile
                 <!-- Other Content Areas (Bills, Expenses, Goals, Settings) -->
                 <div id="bills-content" class="content-area hidden text-center py-12">
                     <div class="bg-white rounded-3xl p-8 shadow-lg">
@@ -387,10 +549,17 @@
                         <p class="text-gray-500">This feature is under development...</p>
                     </div>
                 </div>
+<<<<<<< HEAD
             </div>
         </div>
     </div>
     </div>
+=======
+                </div>
+            </div>
+        </div>
+    </div>
+>>>>>>> origin/update_profile
 
     <!-- Wallet Modal -->
     <div id="walletModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
@@ -416,20 +585,31 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Currency</label>
+<<<<<<< HEAD
                     <select id="currency"
                         class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-indigo-500 focus:outline-none">
+=======
+                    <select id="currency" class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-indigo-500 focus:outline-none">
+>>>>>>> origin/update_profile
                         <option value="VND">VND - Vietnamese Dong</option>
                         <option value="USD">USD - US Dollar</option>
                         <option value="EUR">EUR - Euro</option>
                     </select>
                 </div>
                 <div class="flex space-x-4 mt-6">
+<<<<<<< HEAD
                     <button type="button" id="cancelWalletBtn"
                         class="flex-1 px-6 py-3 rounded-2xl border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors">
                         Cancel
                     </button>
                     <button type="submit" id="updateWalletBtn"
                         class="flex-1 px-6 py-3 rounded-2xl bg-indigo-600 text-white hover:bg-indigo-700 transition-colors">
+=======
+                    <button type="button" id="cancelWalletBtn" class="flex-1 px-6 py-3 rounded-2xl border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" id="updateWalletBtn" class="flex-1 px-6 py-3 rounded-2xl bg-indigo-600 text-white hover:bg-indigo-700 transition-colors">
+>>>>>>> origin/update_profile
                         Update Balance
                     </button>
                 </div>
@@ -677,6 +857,7 @@
             </form>
         </div>
     </div>
+<<<<<<< HEAD
 
     <script src="../../assets/js/transaction.js"></script>
     <script>
@@ -725,6 +906,8 @@
             }
         }
     </script>
+=======
+>>>>>>> origin/update_profile
 </body>
 
 </html>

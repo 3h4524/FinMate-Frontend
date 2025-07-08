@@ -132,6 +132,7 @@ document.getElementById('verificationForm').addEventListener('submit', async (e)
         }
 
         const serverMessage = data.message ? data.message.trim().toLowerCase() : '';
+<<<<<<< HEAD
         const isVerifiedCodefully = (data.code === 1000 && serverMessage === 'Email verified successfully');
 
         if (response.ok || isVerifiedCodefully) {
@@ -150,6 +151,47 @@ document.getElementById('verificationForm').addEventListener('submit', async (e)
                     showNotification('Could not redirect. Please go to the login page manually.', 'error');
                 }
             }, 1500);
+=======
+        const isVerifiedCodefully = (data.code === 1000 && serverMessage.includes('verified'));
+
+        if (response.ok || isVerifiedCodefully) {
+            console.log('Verification successful, response data:', data);
+            console.log('User role from response:', data.result?.role);
+            
+            // Store user data
+            sessionStorage.setItem('token', data.result.token);
+            sessionStorage.setItem('loginTimestamp', Date.now().toString());
+
+            // Store user data from response
+            const userData = {
+                email: data.result.email,
+                name: data.result.name,
+                role: data.result.role
+            };
+
+            sessionStorage.setItem('userData', JSON.stringify(userData));
+            console.log('Stored user data:', userData);
+
+            // Clear cache để các trang khác nhận được token mới
+            clearCache();
+
+            showNotification('Verification successful! Redirecting to the system...', 'success');
+            if (timerInterval) clearInterval(timerInterval);
+
+            setTimeout(() => {
+                // Check user role and redirect accordingly
+                const userRole = data.result.role;
+                console.log('Redirecting based on role:', userRole);
+                
+                if (userRole === 'ADMIN' || userRole === 'admin') {
+                    console.log('Redirecting to admin dashboard');
+                    window.location.href = '../admin-dashboard/index.html';
+                } else {
+                    console.log('Redirecting to home page');
+                    window.location.href = '../home/index.html';
+                }
+            }, 1000);
+>>>>>>> origin/update_profile
         } else {
             console.error('Verification failed:', data.message, 'Status:', response.status);
             showNotification(data.message || 'Invalid verification code.', 'error');

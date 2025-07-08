@@ -60,7 +60,11 @@ function loadDashboardData() {
 
 async function loadWalletData() {
     try {
+<<<<<<< HEAD
         const token = localStorage.getItem('token');
+=======
+        const token = sessionStorage.getItem('token');
+>>>>>>> origin/update_profile
         if (!token) {
             console.error('No token found');
             return;
@@ -88,7 +92,11 @@ async function loadWalletData() {
 
 async function loadRecentTransactions() {
     try {
+<<<<<<< HEAD
         const token = localStorage.getItem('token');
+=======
+        const token = sessionStorage.getItem('token');
+>>>>>>> origin/update_profile
         if (!token) {
             console.error('No token found');
             return;
@@ -228,7 +236,11 @@ async function handleTransactionSubmit(e) {
     }
 
     try {
+<<<<<<< HEAD
         const token = localStorage.getItem('token');
+=======
+        const token = sessionStorage.getItem('token');
+>>>>>>> origin/update_profile
         if (!token) {
             alert('Please login first');
             return;
@@ -293,6 +305,7 @@ function formatDate(dateString) {
     });
 }
 
+<<<<<<< HEAD
 // Show loading state
 function showLoading(element) {
     element.innerHTML = `
@@ -614,3 +627,21 @@ function showNotification(message, type = 'info') {
         notification.classList.remove('show');
     }, 5000);
 } 
+=======
+// Modal Event Handlers
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('transactionModal');
+    if (e.target === modal) {
+        closeTransactionModal();
+    }
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('transactionModal');
+        if (modal && !modal.classList.contains('hidden')) {
+            closeTransactionModal();
+        }
+    }
+}); 
+>>>>>>> origin/update_profile

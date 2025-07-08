@@ -19,7 +19,11 @@ const categoryMap = {
 if (typeof apiRequest === 'undefined') {
   window.apiRequest = async (url, options = {}) => {
     try {
+<<<<<<< HEAD
       const token = localStorage.getItem('authToken');
+=======
+      const token = sessionStorage.getItem('authToken');
+>>>>>>> origin/update_profile
       const defaultOptions = {
         headers: {
           'Content-Type': 'application/json',
@@ -376,7 +380,11 @@ async function fetchUser() {
     } catch (error) {
         console.error('Error fetching user:', error);
         showNotification('Error', 'Please log in to continue.', 'error');
+<<<<<<< HEAD
         window.location.href = '/login';
+=======
+        window.location.href = '/pages/login/';
+>>>>>>> origin/update_profile
     }
 }
 

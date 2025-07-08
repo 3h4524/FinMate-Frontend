@@ -8,7 +8,43 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://accounts.google.com/gsi/client?hl=en" async defer></script>
     <script type="module" src="/assets/js/auth.js" defer></script>
+<<<<<<< HEAD
     <script src="/assets/js/login.js" defer></script>
+=======
+    <script type="module" src="/assets/js/login.js" defer></script>
+    <script type="module" src="/assets/js/googleAuth.js" defer></script>
+
+    <script>
+        // Clear any existing session data when login page loads
+        // This ensures that when user closes browser and reopens, they must login again
+        window.addEventListener('load', function() {
+            // Clear any existing session data - CHỈ CLEAR KHI CẦN THIẾT
+            if (window.location.search.includes('logout=true')) {
+                sessionStorage.clear();
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                localStorage.removeItem('loginTimestamp');
+                console.log('Session cleared on login page load');
+            }
+        });
+
+        // Function to check if Google Sign-In script is loaded
+        function waitForGoogleSignIn() {
+            if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+                // Google Sign-In is loaded, initialize the button
+                import('/assets/js/googleAuth.js').then(module => {
+                    module.initGoogleSignIn('signin_with');
+                });
+            } else {
+                // Check again in 100ms
+                setTimeout(waitForGoogleSignIn, 100);
+            }
+        }
+
+        // Start checking when the page loads
+        window.addEventListener('load', waitForGoogleSignIn);
+    </script>
+>>>>>>> origin/update_profile
 
     <style>
         * {
@@ -19,7 +55,11 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+<<<<<<< HEAD
             background: linear-gradient(135deg, #f0f4f3 0%, #e6f0ed 100%);
+=======
+            background: linear-gradient(135deg, #eef2ff 0%, #f3f4f6 100%);
+>>>>>>> origin/update_profile
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -31,17 +71,29 @@
             display: flex;
             background: white;
             border-radius: 24px;
+<<<<<<< HEAD
             box-shadow: 0 32px 64px -12px rgba(52, 73, 67, 0.25);
+=======
+            box-shadow: 0 32px 64px -12px rgba(99, 102, 241, 0.25);
+>>>>>>> origin/update_profile
             overflow: hidden;
             max-width: 900px;
             width: 100%;
             min-height: 600px;
+<<<<<<< HEAD
             border: 1px solid #d1e7dd;
+=======
+            border: 1px solid #e0e7ff;
+>>>>>>> origin/update_profile
         }
 
         .left-panel {
             flex: 1;
+<<<<<<< HEAD
             background: linear-gradient(135deg, #2d5a3d 0%, #1a3d2e 50%, #0f2922 100%);
+=======
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%);
+>>>>>>> origin/update_profile
             padding: 40px;
             display: flex;
             flex-direction: column;
@@ -75,11 +127,19 @@
 
         .logo i {
             font-size: 28px;
+<<<<<<< HEAD
             color: #a3c9a8;
             background: rgba(163, 201, 168, 0.15);
             padding: 12px;
             border-radius: 12px;
             border: 1px solid rgba(163, 201, 168, 0.25);
+=======
+            color: #c4b5fd;
+            background: rgba(196, 181, 253, 0.15);
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(196, 181, 253, 0.25);
+>>>>>>> origin/update_profile
         }
 
         .logo span {
@@ -99,7 +159,11 @@
             font-size: 56px;
             font-weight: 800;
             margin-bottom: 12px;
+<<<<<<< HEAD
             background: linear-gradient(135deg, #a3c9a8, #c8e6c9);
+=======
+            background: linear-gradient(135deg, #c4b5fd, #ddd6fe);
+>>>>>>> origin/update_profile
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -110,16 +174,26 @@
             opacity: 0.85;
             margin-bottom: 30px;
             line-height: 1.6;
+<<<<<<< HEAD
             color: #c8e6c9;
+=======
+            color: #ddd6fe;
+>>>>>>> origin/update_profile
         }
 
         .progress-circle {
             width: 90px;
             height: 90px;
             border-radius: 50%;
+<<<<<<< HEAD
             background: conic-gradient(#388e3c 0deg 120deg,
                     #66bb6a 120deg 240deg,
                     #a5d6a7 240deg 360deg);
+=======
+            background: conic-gradient(#6366f1 0deg 120deg,
+                    #8b5cf6 120deg 240deg,
+                    #a78bfa 240deg 360deg);
+>>>>>>> origin/update_profile
             display: flex;
             align-items: center;
             justify-content: center;
@@ -140,7 +214,11 @@
         .progress-circle span {
             position: relative;
             z-index: 1;
+<<<<<<< HEAD
             color: #2d5a3d;
+=======
+            color: #4f46e5;
+>>>>>>> origin/update_profile
             font-weight: 800;
             font-size: 20px;
         }
@@ -161,7 +239,11 @@
             opacity: 0.9;
             line-height: 1.6;
             font-size: 16px;
+<<<<<<< HEAD
             color: #c8e6c9;
+=======
+            color: #ddd6fe;
+>>>>>>> origin/update_profile
         }
 
         .right-panel {
@@ -179,13 +261,21 @@
 
         .login-header h2 {
             font-size: 32px;
+<<<<<<< HEAD
             color: #2d5a3d;
+=======
+            color: #4f46e5;
+>>>>>>> origin/update_profile
             margin-bottom: 12px;
             font-weight: 700;
         }
 
         .login-header p {
+<<<<<<< HEAD
             color: #546e7a;
+=======
+            color: #6b7280;
+>>>>>>> origin/update_profile
             font-size: 16px;
             line-height: 1.5;
         }
@@ -197,7 +287,11 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
+<<<<<<< HEAD
             color: #2d5a3d;
+=======
+            color: #4f46e5;
+>>>>>>> origin/update_profile
             font-weight: 600;
             font-size: 15px;
         }
@@ -209,16 +303,25 @@
         .form-group input {
             width: 100%;
             padding: 16px 18px;
+<<<<<<< HEAD
             border: 2px solid #d1e7dd;
+=======
+            border: 2px solid #e0e7ff;
+>>>>>>> origin/update_profile
             border-radius: 12px;
             font-size: 16px;
             transition: all 0.3s ease;
             background: white;
+<<<<<<< HEAD
             color: #2d5a3d;
+=======
+            color: #4f46e5;
+>>>>>>> origin/update_profile
         }
 
         .form-group input:focus {
             outline: none;
+<<<<<<< HEAD
             border-color: #388e3c;
             background: white;
             box-shadow: 0 0 0 3px rgba(56, 142, 60, 0.1);
@@ -226,6 +329,15 @@
 
         .form-group input::placeholder {
             color: #81c784;
+=======
+            border-color: #6366f1;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #a78bfa;
+>>>>>>> origin/update_profile
         }
 
         .password-toggle {
@@ -234,12 +346,20 @@
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
+<<<<<<< HEAD
             color: #66bb6a;
+=======
+            color: #a78bfa;
+>>>>>>> origin/update_profile
             transition: color 0.2s ease;
         }
 
         .password-toggle:hover {
+<<<<<<< HEAD
             color: #388e3c;
+=======
+            color: #6366f1;
+>>>>>>> origin/update_profile
         }
 
         .forgot-password {
@@ -248,7 +368,11 @@
         }
 
         .forgot-password a {
+<<<<<<< HEAD
             color: #388e3c;
+=======
+            color: #6366f1;
+>>>>>>> origin/update_profile
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
@@ -256,14 +380,22 @@
         }
 
         .forgot-password a:hover {
+<<<<<<< HEAD
             color: #2e7d32;
+=======
+            color: #4f46e5;
+>>>>>>> origin/update_profile
             text-decoration: underline;
         }
 
         .login-btn {
             width: 100%;
             padding: 16px;
+<<<<<<< HEAD
             background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
+=======
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+>>>>>>> origin/update_profile
             color: white;
             border: none;
             border-radius: 12px;
@@ -272,13 +404,22 @@
             cursor: pointer;
             transition: all 0.3s ease;
             margin-bottom: 30px;
+<<<<<<< HEAD
             box-shadow: 0 4px 12px rgba(56, 142, 60, 0.3);
+=======
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+>>>>>>> origin/update_profile
         }
 
         .login-btn:hover {
             transform: translateY(-2px);
+<<<<<<< HEAD
             box-shadow: 0 8px 24px rgba(56, 142, 60, 0.4);
             background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+=======
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+>>>>>>> origin/update_profile
         }
 
         .login-btn:active {
@@ -289,7 +430,11 @@
             text-align: center;
             margin: 30px 0;
             position: relative;
+<<<<<<< HEAD
             color: #546e7a;
+=======
+            color: #6b7280;
+>>>>>>> origin/update_profile
             font-size: 14px;
             font-weight: 500;
         }
@@ -301,7 +446,11 @@
             left: 0;
             right: 0;
             height: 1px;
+<<<<<<< HEAD
             background: #d1e7dd;
+=======
+            background: #e0e7ff;
+>>>>>>> origin/update_profile
             z-index: 1;
         }
 
@@ -321,7 +470,11 @@
 
         .social-btn {
             padding: 14px 32px;
+<<<<<<< HEAD
             border: 2px solid #d1e7dd;
+=======
+            border: 2px solid #e0e7ff;
+>>>>>>> origin/update_profile
             border-radius: 12px;
             background: white;
             cursor: pointer;
@@ -332,34 +485,59 @@
             gap: 10px;
             font-size: 14px;
             font-weight: 600;
+<<<<<<< HEAD
             color: #2d5a3d;
         }
 
         .social-btn:hover {
             border-color: #a5d6a7;
             background: #f1f8e9;
+=======
+            color: #4f46e5;
+        }
+
+        .social-btn:hover {
+            border-color: #c4b5fd;
+            background: #f3f4f6;
+>>>>>>> origin/update_profile
             transform: translateY(-1px);
         }
 
         .social-btn.google {
+<<<<<<< HEAD
             color: #2d5a3d;
+=======
+            color: #4f46e5;
+>>>>>>> origin/update_profile
         }
 
         .signup-link {
             text-align: center;
+<<<<<<< HEAD
             color: #546e7a;
+=======
+            color: #6b7280;
+>>>>>>> origin/update_profile
             font-size: 15px;
         }
 
         .signup-link a {
+<<<<<<< HEAD
             color: #388e3c;
+=======
+            color: #6366f1;
+>>>>>>> origin/update_profile
             text-decoration: none;
             font-weight: 700;
             transition: color 0.2s ease;
         }
 
         .signup-link a:hover {
+<<<<<<< HEAD
             color: #2e7d32;
+=======
+            color: #4f46e5;
+>>>>>>> origin/update_profile
             text-decoration: underline;
         }
 
@@ -428,6 +606,7 @@
         }
 
         .notification.success {
+<<<<<<< HEAD
             background: linear-gradient(135deg, #388e3c, #66bb6a);
         }
 
@@ -437,6 +616,17 @@
 
         .notification.info {
             background: linear-gradient(135deg, #388e3c, #4caf50);
+=======
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+>>>>>>> origin/update_profile
         }
 
         .notification i {

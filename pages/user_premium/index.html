@@ -6,9 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Plans - Finmate</title>
     <link href="../../assets/css/global-layout.css" rel="stylesheet">
+<<<<<<< HEAD
 
     <script src="https://cdn.tailwindcss.com"></script>
 
+=======
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+>>>>>>> origin/update_profile
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js"></script>
     <script src="../../assets/js/page-loader.js"></script>
@@ -20,8 +24,12 @@
     <style>
         /* Layout fixes for header and sidebar integration */
         .main-content {
+<<<<<<< HEAD
             padding-top: 80px;
             /* Space for fixed header */
+=======
+            padding-top: 80px; /* Space for fixed header */
+>>>>>>> origin/update_profile
             min-height: 100vh;
             width: 100%;
             max-width: 100%;
@@ -46,6 +54,7 @@
         }
 
         /* Custom colors for Tailwind v2 compatibility and theme update */
+<<<<<<< HEAD
         .bg-indigo-500 {
             background-color: #6366f1;
         }
@@ -166,6 +175,46 @@
         }
 
         .shadow-2xl {
+=======
+        .bg-indigo-500 { background-color: #6366f1; }
+        .bg-indigo-600 { background-color: #4f46e5; }
+        .bg-purple-600 { background-color: #9333ea; }
+        .text-indigo-600 { color: #4f46e5; }
+        .text-indigo-500 { color: #6366f1; }
+        .text-purple-600 { color: #9333ea; }
+        .text-purple-500 { color: #a855f7; }
+        .border-indigo-500 { border-color: #6366f1; }
+        .border-indigo-600 { border-color: #4f46e5; }
+        .border-indigo-100 { border-color: #e0e7ff; }
+        .border-purple-100 { border-color: #f3e8ff; }
+        .from-indigo-500 { --tw-gradient-from: #6366f1; }
+        .from-indigo-600 { --tw-gradient-from: #4f46e5; }
+        .to-purple-600 { --tw-gradient-to: #9333ea; }
+        .to-purple-700 { --tw-gradient-to: #7c3aed; }
+        .to-indigo-600 { --tw-gradient-to: #4f46e5; }
+        .to-indigo-700 { --tw-gradient-to: #3730a3; }
+        .hover\:from-indigo-600:hover { --tw-gradient-from: #4f46e5; }
+        .hover\:to-purple-700:hover { --tw-gradient-to: #7c3aed; }
+        .hover\:to-indigo-700:hover { --tw-gradient-to: #3730a3; }
+
+        /* Update color scheme from teal to indigo-purple */
+        .bg-teal-500 { background-color: #6366f1; }
+        .bg-teal-600 { background-color: #4f46e5; }
+        .text-teal-500 { color: #6366f1; }
+        .text-teal-600 { color: #4f46e5; }
+        .from-teal-500 { --tw-gradient-from: #6366f1; }
+        .to-teal-600 { --tw-gradient-to: #4f46e5; }
+        .hover\:text-teal-500:hover { color: #6366f1; }
+
+        /* Rounded utilities */
+        .rounded-3xl { border-radius: 1.5rem; }
+
+        /* Shadow utilities */
+        .shadow-lg { 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .shadow-2xl { 
+>>>>>>> origin/update_profile
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
 
@@ -232,12 +281,18 @@
         }
 
         @keyframes float {
+<<<<<<< HEAD
 
             0%,
             100% {
                 transform: translateY(0px);
             }
 
+=======
+            0%, 100% {
+                transform: translateY(0px);
+            }
+>>>>>>> origin/update_profile
             50% {
                 transform: translateY(-10px);
             }
@@ -248,7 +303,11 @@
                 padding: 24px 16px;
                 border-radius: 16px;
             }
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> origin/update_profile
             .plan-card:hover {
                 transform: translateY(-4px);
             }
@@ -277,6 +336,7 @@
 <body class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
     <div id="header-container"></div>
     <div id="sidebar-container"></div>
+<<<<<<< HEAD
 
     <div class="main-content" id="mainContent">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -367,6 +427,67 @@
                     class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-300">
                     Proceed to Payment
                 </button>
+=======
+    
+    <div class="main-content" id="mainContent">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Header -->
+                <div class="header-section text-center mb-8">
+                    <div class="header-content">
+                        <div class="flex justify-center mb-4">
+                            <div class="p-4 rounded-2xl rocket-icon-container shadow-lg">
+                                <i data-lucide="crown" class="w-10 h-10 text-white"></i>
+                            </div>
+                        </div>
+                        <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+                            Choose Your <span
+                                class="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Premium</span>
+                            Plan
+                        </h1>
+                        <p class="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                            Unlock premium features and elevate your financial experience today.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Billing Toggle -->
+                <div class="flex justify-center mb-8">
+                    <div class="bg-white p-2 rounded-2xl shadow-lg border border-indigo-100">
+                        <div class="flex items-center space-x-2">
+                            <button id="monthly-btn"
+                                class="px-6 py-3 rounded-xl font-semibold transition-all duration-300 bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg hover:from-indigo-600 hover:to-purple-700 transform hover:scale-105"
+                                onclick="toggleBilling('monthly')">
+                                Monthly
+                            </button>
+                            <button id="yearly-btn"
+                                class="px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 relative"
+                                onclick="toggleBilling('yearly')">
+                                Yearly
+                                <div
+                                    class="absolute -top-2 -right-2 bg-gradient-to-r from-green-400 to-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center shadow-md">
+                                    <i data-lucide="gift" class="w-3 h-3 inline mr-1"></i>
+                                    -17%
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plans Grid -->
+                <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 plans-grid"
+                    id="packagesContainer">
+                    <div
+                        class="relative bg-white rounded-3xl shadow-2xl overflow-hidden transition-all duration-500 plan-card border border-indigo-100">
+                        <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-8 text-white">
+                            <div class="flex items-center justify-center mb-4">
+                                <i data-lucide="loader" class="w-8 h-8 animate-spin"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-center mb-2">Loading...</h3>
+                            <p class="text-center text-indigo-100 text-sm">Fetching premium plans...</p>
+                        </div>
+                    </div>
+                </div>
+>>>>>>> origin/update_profile
             </div>
         </div>
     </div>
