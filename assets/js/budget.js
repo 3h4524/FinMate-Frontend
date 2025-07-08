@@ -38,11 +38,14 @@ function openModal(modalId) {
 function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     const content = modal.querySelector('.modal-content');
+
     if (content) {
         content.classList.remove('show');
     }
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
+
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 200); 
 
     const modalConfig = {
         createBudgetModal: { formId: 'create-budget-form', listId: 'category-list', callback: addBudgetCategory },
@@ -51,8 +54,10 @@ function closeModal(modalId) {
 
     if (modalConfig[modalId]) {
         const { formId, listId, callback } = modalConfig[modalId];
-        document.getElementById(formId)?.reset();
-        document.getElementById(listId).innerHTML = '';
+        const form = document.getElementById(formId);
+        const list = document.getElementById(listId);
+        if (form) form.reset();
+        if (list) list.innerHTML = '';
         if (callback) callback();
     }
 }
@@ -268,7 +273,6 @@ async function loadBudgetOverview() {
             }
             
         } else {
-            // Reset to default values if no budgets
             document.getElementById('activeBudgets').textContent = '0';
             document.getElementById('totalBudgetAmount').textContent = '$0';
             document.getElementById('totalSpentAmount').textContent = '$0';
@@ -281,7 +285,6 @@ async function loadBudgetOverview() {
         }
     } catch (error) {
         console.error("Error loading budget overview:", error);
-        showNotification('Error', 'Failed to load budget overview.', 'error');
     }
 }
 
@@ -506,7 +509,15 @@ async function openUpdateModal(budgetId, periodType, startDate, threshold, categ
 }
 
 async function deleteBudget(budgetId) {
-    if (confirm('Are you sure you want to delete this budget?')) {
+    const modal = document.getElementById('deleteConfirmModal');
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        modal.querySelector('.modal-content').classList.add('show');
+    }, 10);
+
+    const deleteHandler = async () => {
         try {
             const response = await apiRequest(`http://localhost:8080/budget/${budgetId}`, {
                 method: "DELETE",
@@ -524,8 +535,13 @@ async function deleteBudget(budgetId) {
         } catch (error) {
             console.error("Error:", error);
             showNotification('Error', 'Network error. Please check your connection.', 'error');
+        } finally {
+            closeModal('deleteConfirmModal');
+            confirmBtn.removeEventListener('click', deleteHandler);
         }
-    }
+    };
+
+    confirmBtn.addEventListener('click', deleteHandler);
 }
 
 async function loadAnalysis(page) {
@@ -593,11 +609,9 @@ async function loadAnalysis(page) {
             if (budgetChart) budgetChart.destroy();
             const ctx = document.getElementById('budgetChart').getContext('2d');
             
-            // Tạo chart configuration dựa trên chart type
             let chartConfig;
             
             if (chartType === 'pie') {
-                // Pie chart - hiển thị tổng budget vs actual cho tất cả categories
                 chartConfig = {
                     type: 'pie',
                     data: {
@@ -647,7 +661,6 @@ async function loadAnalysis(page) {
                     }
                 };
             } else {
-                // Bar hoặc Line chart - hiển thị từng category
                 chartConfig = {
                     type: chartType === 'bar' ? 'bar' : 'line',
                     data: {
@@ -786,7 +799,6 @@ function toggleChartType() {
     const chartIcon = document.getElementById('chartIcon');
     const chartTypeLabel = document.getElementById('chartTypeLabel');
 
-    // Toggle qua 3 loại biểu đồ: bar -> line -> pie -> bar
     if (chartType === 'bar') {
         chartType = 'line';
         chartIcon.className = 'fas fa-chart-line';
@@ -878,16 +890,12 @@ function setupEventListeners() {
     document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
     document.getElementById('searchInput').addEventListener('input', searchBudgets);
     
-    // Event listener cho analysis period với reset chart type
     document.getElementById('analysisPeriod').addEventListener('change', () => {
-        // Reset chart type về bar chart khi thay đổi period
         chartType = 'bar';
         const chartIcon = document.getElementById('chartIcon');
         const chartTypeLabel = document.getElementById('chartTypeLabel');
         chartIcon.className = 'fas fa-chart-bar';
         chartTypeLabel.textContent = 'Bar Chart';
-        
-        // Load analysis với period mới
         loadAnalysis(0);
     });
     
