@@ -624,44 +624,43 @@
             </form>
         </div>
     </div>
-
     <!-- Create Category Modal -->
     <div id="createCategoryModal"
         class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center hidden z-50">
         <div class="bg-white rounded-xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
             <div class="flex justify-between items-center mb-6 border-b-2 border-gray-100 pb-4">
-                <h2 class="text-2xl font-bold text-gray-800">Tạo Danh Mục Mới</h2>
+                <h2 class="text-2xl font-bold text-gray-800">Create New Category</h2>
                 <button
                     class="bg-gray-100 text-gray-500 w-10 h-10 rounded-lg flex items-center justify-center hover:bg-gray-200 transition"
                     id="closeCreateCategoryModalBtn">×</button>
             </div>
             <form id="createCategoryForm" class="space-y-6">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-800 mb-2">📋 Tên Danh Mục *</label>
+                    <label class="block text-sm font-semibold text-gray-800 mb-2">📋 Category Name *</label>
                     <input type="text"
                         class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
-                        id="categoryName" required maxlength="50" placeholder="Nhập tên danh mục">
+                        id="categoryName" required maxlength="50" placeholder="Enter category name">
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-semibold text-gray-800 mb-2">🎨 Loại Danh Mục *</label>
+                        <label class="block text-sm font-semibold text-gray-800 mb-2">🎨 Category Type *</label>
                         <select
                             class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
                             id="categoryType" required>
-                            <option value="">Chọn loại</option>
-                            <option value="INCOME">Thu nhập</option>
-                            <option value="EXPENSE">Chi tiêu</option>
+                            <option value="">Select type</option>
+                            <option value="INCOME">Income</option>
+                            <option value="EXPENSE">Expense</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-800 mb-2">🎨 Màu Sắc</label>
+                        <label class="block text-sm font-semibold text-gray-800 mb-2">🎨 Color</label>
                         <input type="color"
                             class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
                             id="categoryColor" value="#4CAF50">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-800 mb-2">🖼️ Chọn Biểu Tượng *</label>
+                    <label class="block text-sm font-semibold text-gray-800 mb-2">🖼️ Choose Icon *</label>
                     <div class="icon-grid grid grid-cols-4 sm:grid-cols-6 gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg max-h-52 overflow-y-auto"
                         id="iconGrid"></div>
                     <input type="hidden" id="categoryIcon" required>
@@ -669,10 +668,10 @@
                 <div class="flex space-x-4 pt-6 border-t-2 border-gray-100">
                     <button type="submit"
                         class="flex-1 bg-green-600 text-white p-4 rounded-lg font-semibold hover:bg-green-700 transition"
-                        id="submitCategoryBtn">Lưu Danh Mục</button>
+                        id="submitCategoryBtn">Save Category</button>
                     <button type="button"
                         class="flex-1 bg-white text-gray-800 p-4 border-2 border-gray-200 rounded-lg font-semibold hover:bg-gray-50 transition"
-                        id="cancelCategoryBtn">Hủy</button>
+                        id="cancelCategoryBtn">Cancel</button>
                 </div>
             </form>
         </div>
