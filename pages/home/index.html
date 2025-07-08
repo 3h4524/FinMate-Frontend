@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +7,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="../../assets/css/global-layout.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../assets/js/tab-logout.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -27,27 +27,25 @@
             position: relative !important;
             min-height: 100vh !important;
         }
-
+        
         /* Force exact values with highest specificity */
         @media (min-width: 1025px) {
-
             /* Default expanded state */
             body .main-content {
                 margin-left: 256px !important;
                 padding-top: 64px !important;
                 width: calc(100% - 256px) !important;
             }
-
+            
             /* Collapsed state - MUST override default */
             body .main-content.sidebar-collapsed {
                 margin-left: 80px !important;
                 width: calc(100% - 80px) !important;
             }
         }
-
+        
         /* Mobile: No margin, full width */
         @media (max-width: 1024px) {
-
             body .main-content,
             body .main-content.sidebar-collapsed {
                 margin-left: 0 !important;
@@ -61,18 +59,17 @@
             margin: 0;
             padding: 0;
         }
-
+        
         /* Override any Tailwind or other CSS conflicts */
         .main-content * {
             box-sizing: border-box !important;
         }
     </style>
 </head>
-
 <body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen no-scroll-margin">
     <!-- Include Header -->
     <div id="header-container"></div>
-
+    
     <!-- Include Sidebar -->
     <div id="sidebar-container"></div>
 
@@ -86,13 +83,11 @@
                     <!-- Balance Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
                         <!-- Main Balance Card -->
-                        <div
-                            class="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 rounded-3xl p-6 lg:p-8 text-white shadow-2xl col-span-1 md:col-span-2">
+                        <div class="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 rounded-3xl p-6 lg:p-8 text-white shadow-2xl col-span-1 md:col-span-2">
                             <div class="flex justify-between items-start mb-4 lg:mb-6">
                                 <div>
                                     <p class="text-indigo-100 text-sm mb-2">Total Balance</p>
-                                    <h2 class="text-3xl lg:text-4xl font-bold mb-3 lg:mb-4" id="totalBalance">$25,480
-                                    </h2>
+                                    <h2 class="text-3xl lg:text-4xl font-bold mb-3 lg:mb-4" id="totalBalance">$25,480</h2>
                                     <div class="flex items-center space-x-2 text-green-300">
                                         <i class="fas fa-trending-up text-sm"></i>
                                         <span class="text-sm">+12.5% from last month</span>
@@ -114,17 +109,16 @@
                                     <div class="flex items-center space-x-2 mb-2">
                                         <i class="fas fa-trending-down text-red-300 text-sm"></i>
                                         <span class="text-sm">Expenses</span>
-                                    </div>
+                            </div>
                                     <p class="font-semibold text-lg lg:text-xl" id="totalExpenses">$2,900</p>
                                 </div>
                             </div>
-                        </div>
-
+                                </div>
+                        
                         <!-- Monthly Goal Card -->
                         <div class="bg-white rounded-3xl p-4 lg:p-6 shadow-lg">
                             <div class="text-center">
-                                <div
-                                    class="bg-gradient-to-r from-green-100 to-green-200 rounded-full w-16 h-16 lg:w-20 lg:h-20 flex items-center justify-center mx-auto mb-3 lg:mb-4">
+                                <div class="bg-gradient-to-r from-green-100 to-green-200 rounded-full w-16 h-16 lg:w-20 lg:h-20 flex items-center justify-center mx-auto mb-3 lg:mb-4">
                                     <i class="fas fa-bullseye text-2xl lg:text-3xl text-green-600"></i>
                                 </div>
                                 <h3 class="font-bold text-gray-800 mb-2 text-sm lg:text-base">Monthly Goal</h3>
@@ -138,23 +132,19 @@
                     <div class="bg-white rounded-3xl p-6 lg:p-8 shadow-lg">
                         <h3 class="text-xl lg:text-2xl font-bold text-gray-800 mb-4 lg:mb-6">Quick Actions</h3>
                         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
-                            <button onclick="openAddIncomeModal()"
-                                class="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-2xl p-4 lg:p-6 flex flex-col items-center space-y-2 lg:space-y-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                            <button onclick="openAddIncomeModal()" class="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-2xl p-4 lg:p-6 flex flex-col items-center space-y-2 lg:space-y-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                                 <i class="fas fa-plus-circle text-xl lg:text-2xl"></i>
                                 <span class="font-semibold text-sm lg:text-base">Add Income</span>
                             </button>
-                            <button onclick="openAddExpenseModal()"
-                                class="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl p-4 lg:p-6 flex flex-col items-center space-y-2 lg:space-y-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                            <button onclick="openAddExpenseModal()" class="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl p-4 lg:p-6 flex flex-col items-center space-y-2 lg:space-y-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                                 <i class="fas fa-minus-circle text-xl lg:text-2xl"></i>
                                 <span class="font-semibold text-sm lg:text-base">Add Expense</span>
                             </button>
-                            <button onclick="window.location.href='../goal'"
-                                class="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl p-4 lg:p-6 flex flex-col items-center space-y-2 lg:space-y-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                            <button onclick="window.location.href='../goal'" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl p-4 lg:p-6 flex flex-col items-center space-y-2 lg:space-y-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                                 <i class="fas fa-bullseye text-xl lg:text-2xl"></i>
                                 <span class="font-semibold text-sm lg:text-base">Set Goal</span>
                             </button>
-                            <button onclick="exportReport()"
-                                class="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-2xl p-4 lg:p-6 flex flex-col items-center space-y-2 lg:space-y-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                            <button onclick="exportReport()" class="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-2xl p-4 lg:p-6 flex flex-col items-center space-y-2 lg:space-y-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                                 <i class="fas fa-download text-xl lg:text-2xl"></i>
                                 <span class="font-semibold text-sm lg:text-base">Export Report</span>
                             </button>
@@ -165,17 +155,14 @@
                     <div class="bg-white rounded-3xl p-6 lg:p-8 shadow-lg">
                         <div class="flex justify-between items-center mb-4 lg:mb-6">
                             <h3 class="text-xl lg:text-2xl font-bold text-gray-800">Recent Transactions</h3>
-                            <button onclick="window.location.href='../transaction'"
-                                class="text-indigo-600 font-semibold hover:text-indigo-800 transition-colors text-sm lg:text-base">
+                            <button onclick="window.location.href='../transaction'" class="text-indigo-600 font-semibold hover:text-indigo-800 transition-colors text-sm lg:text-base">
                                 View All →
                             </button>
                         </div>
                         <div class="space-y-3 lg:space-y-4" id="recentTransactions">
                             <!-- Transactions will be loaded here -->
-                            <div
-                                class="flex items-center space-x-3 lg:space-x-4 p-3 lg:p-4 rounded-2xl hover:bg-gray-50 transition-colors border border-gray-100">
-                                <div
-                                    class="w-12 h-12 lg:w-14 lg:h-14 bg-gray-100 rounded-full flex items-center justify-center text-lg lg:text-xl">
+                            <div class="flex items-center space-x-3 lg:space-x-4 p-3 lg:p-4 rounded-2xl hover:bg-gray-50 transition-colors border border-gray-100">
+                                <div class="w-12 h-12 lg:w-14 lg:h-14 bg-gray-100 rounded-full flex items-center justify-center text-lg lg:text-xl">
                                     💼
                                 </div>
                                 <div class="flex-1">
@@ -185,24 +172,19 @@
                                 </div>
                                 <p class="font-bold text-lg lg:text-xl text-green-600">+$5,000</p>
                             </div>
-                            <div
-                                class="flex items-center space-x-3 lg:space-x-4 p-3 lg:p-4 rounded-2xl hover:bg-gray-50 transition-colors border border-gray-100">
-                                <div
-                                    class="w-12 h-12 lg:w-14 lg:h-14 bg-gray-100 rounded-full flex items-center justify-center text-lg lg:text-xl">
+                            <div class="flex items-center space-x-3 lg:space-x-4 p-3 lg:p-4 rounded-2xl hover:bg-gray-50 transition-colors border border-gray-100">
+                                <div class="w-12 h-12 lg:w-14 lg:h-14 bg-gray-100 rounded-full flex items-center justify-center text-lg lg:text-xl">
                                     🍽️
                                 </div>
                                 <div class="flex-1">
-                                    <p class="font-semibold text-gray-800 text-base lg:text-lg">Lunch with colleagues
-                                    </p>
+                                    <p class="font-semibold text-gray-800 text-base lg:text-lg">Lunch with colleagues</p>
                                     <p class="text-gray-500 text-sm lg:text-base">Food & Dining</p>
                                     <p class="text-xs lg:text-sm text-gray-400">2025-01-14</p>
                                 </div>
                                 <p class="font-bold text-lg lg:text-xl text-red-600">-$45</p>
                             </div>
-                            <div
-                                class="flex items-center space-x-3 lg:space-x-4 p-3 lg:p-4 rounded-2xl hover:bg-gray-50 transition-colors border border-gray-100">
-                                <div
-                                    class="w-12 h-12 lg:w-14 lg:h-14 bg-gray-100 rounded-full flex items-center justify-center text-lg lg:text-xl">
+                            <div class="flex items-center space-x-3 lg:space-x-4 p-3 lg:p-4 rounded-2xl hover:bg-gray-50 transition-colors border border-gray-100">
+                                <div class="w-12 h-12 lg:w-14 lg:h-14 bg-gray-100 rounded-full flex items-center justify-center text-lg lg:text-xl">
                                     🛒
                                 </div>
                                 <div class="flex-1">
@@ -229,8 +211,7 @@
                                 <div class="flex justify-between items-center">
                                     <div class="flex items-center space-x-2 lg:space-x-3">
                                         <div class="w-3 h-3 lg:w-4 lg:h-4 rounded-full bg-orange-500"></div>
-                                        <span class="font-medium text-gray-700 text-sm lg:text-base">Food &
-                                            Dining</span>
+                                        <span class="font-medium text-gray-700 text-sm lg:text-base">Food & Dining</span>
                                     </div>
                                     <span class="font-semibold text-gray-800 text-sm lg:text-base">$450</span>
                                 </div>
@@ -256,8 +237,7 @@
                                 <div class="flex justify-between items-center">
                                     <div class="flex items-center space-x-2 lg:space-x-3">
                                         <div class="w-3 h-3 lg:w-4 lg:h-4 rounded-full bg-blue-500"></div>
-                                        <span
-                                            class="font-medium text-gray-700 text-sm lg:text-base">Transportation</span>
+                                        <span class="font-medium text-gray-700 text-sm lg:text-base">Transportation</span>
                                     </div>
                                     <span class="font-semibold text-gray-800 text-sm lg:text-base">$300</span>
                                 </div>
@@ -270,27 +250,23 @@
                     </div>
 
                     <!-- Monthly Summary -->
-                    <div
-                        class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl p-4 lg:p-6 border border-emerald-200">
+                    <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl p-4 lg:p-6 border border-emerald-200">
                         <h3 class="text-lg lg:text-xl font-bold text-gray-800 mb-3 lg:mb-4">January Summary</h3>
                         <div class="space-y-3 lg:space-y-4">
                             <div class="flex justify-between items-center">
                                 <span class="text-gray-600 text-sm lg:text-base">Total Income:</span>
-                                <span class="font-bold text-green-600 text-sm lg:text-base"
-                                    id="summaryIncome">$7,300</span>
-                            </div>
+                                <span class="font-bold text-green-600 text-sm lg:text-base" id="summaryIncome">$7,300</span>
+                </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-gray-600 text-sm lg:text-base">Total Expenses:</span>
-                                <span class="font-bold text-red-600 text-sm lg:text-base"
-                                    id="summaryExpenses">$2,900</span>
-                            </div>
+                                <span class="font-bold text-red-600 text-sm lg:text-base" id="summaryExpenses">$2,900</span>
+            </div>
                             <hr class="border-emerald-200">
                             <div class="flex justify-between items-center">
                                 <span class="font-semibold text-gray-800 text-sm lg:text-base">Savings:</span>
-                                <span class="font-bold text-lg lg:text-xl text-emerald-600"
-                                    id="summarySavings">$4,400</span>
-                            </div>
-                        </div>
+                                <span class="font-bold text-lg lg:text-xl text-emerald-600" id="summarySavings">$4,400</span>
+        </div>
+    </div>
                     </div>
 
                     <!-- Goal Progress -->
@@ -301,8 +277,7 @@
                                 <p class="text-xs lg:text-sm text-gray-600 mb-1">Monthly Savings Goal</p>
                                 <p class="text-xl lg:text-2xl font-bold text-blue-600">$5,000</p>
                                 <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-                                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full"
-                                        style="width: 88%"></div>
+                                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full" style="width: 88%"></div>
                                 </div>
                                 <p class="text-xs lg:text-sm text-gray-500 mt-1">88% completed</p>
                             </div>
@@ -315,42 +290,37 @@
                             <i class="fas fa-calendar-day text-xl lg:text-2xl text-indigo-500 mb-2"></i>
                             <p class="text-xs lg:text-sm text-gray-600">Today's Transactions</p>
                             <p class="text-lg lg:text-xl font-bold text-gray-800">3</p>
-                        </div>
+                    </div>
                         <div class="bg-white rounded-2xl p-3 lg:p-4 shadow-lg text-center">
                             <i class="fas fa-trending-up text-xl lg:text-2xl text-green-500 mb-2"></i>
                             <p class="text-xs lg:text-sm text-gray-600">Growth</p>
                             <p class="text-lg lg:text-xl font-bold text-green-600">+12%</p>
-                        </div>
                     </div>
-                </div>
+                    </div>
+                    </div>
             </div>
         </div>
     </div>
 
     <!-- Add Transaction Modal -->
-    <div id="transactionModal"
-        class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div id="transactionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
         <div class="bg-white rounded-3xl p-6 lg:p-8 max-w-md w-full mx-4 shadow-2xl">
             <h3 class="text-xl lg:text-2xl font-bold text-gray-800 mb-4 lg:mb-6">Add Transaction</h3>
             <form id="transactionForm" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
-                    <select id="transactionType"
-                        class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-indigo-500 focus:outline-none">
+                    <select id="transactionType" class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-indigo-500 focus:outline-none">
                         <option value="income">Income</option>
                         <option value="expense">Expense</option>
-                    </select>
-                </div>
+                        </select>
+                    </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
-                    <input type="number" id="transactionAmount"
-                        class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-indigo-500 focus:outline-none"
-                        placeholder="0.00" required>
-                </div>
+                    <input type="number" id="transactionAmount" class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-indigo-500 focus:outline-none" placeholder="0.00" required>
+                    </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                    <select id="transactionCategory"
-                        class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-indigo-500 focus:outline-none">
+                    <select id="transactionCategory" class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-indigo-500 focus:outline-none">
                         <option value="food">Food & Dining</option>
                         <option value="shopping">Shopping</option>
                         <option value="transportation">Transportation</option>
@@ -360,32 +330,74 @@
                         <option value="freelance">Freelance</option>
                         <option value="investment">Investment</option>
                     </select>
-                </div>
+                    </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                    <input type="text" id="transactionDescription"
-                        class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-indigo-500 focus:outline-none"
-                        placeholder="Transaction description" required>
-                </div>
+                    <input type="text" id="transactionDescription" class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-indigo-500 focus:outline-none" placeholder="Transaction description" required>
+                    </div>
                 <div class="flex space-x-4 mt-6">
-                    <button type="button" onclick="closeTransactionModal()"
-                        class="flex-1 px-6 py-3 rounded-2xl border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors">
+                    <button type="button" onclick="closeTransactionModal()" class="flex-1 px-6 py-3 rounded-2xl border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors">
                         Cancel
                     </button>
-                    <button type="submit"
-                        class="flex-1 px-6 py-3 rounded-2xl bg-indigo-600 text-white hover:bg-indigo-700 transition-colors">
+                    <button type="submit" class="flex-1 px-6 py-3 rounded-2xl bg-indigo-600 text-white hover:bg-indigo-700 transition-colors">
                         Add Transaction
                     </button>
-                </div>
-            </form>
+                    </div>
+                </form>
         </div>
     </div>
 
     <!-- Scripts -->
+    <script src="../../assets/js/autho_helper.js"></script>
+    <script>
+        // Kiểm tra đăng nhập ngay khi load page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Kiểm tra session validity
+            const loginTimestamp = sessionStorage.getItem('loginTimestamp');
+            const token = sessionStorage.getItem('token');
+            const userData = sessionStorage.getItem('userData');
+            
+            if (!token || !userData || !loginTimestamp) {
+                console.log('No valid session found, redirecting to login');
+                window.location.href = '../login/';
+                return;
+            }
+            
+            // Check if session has expired (24 hours)
+            const loginTime = parseInt(loginTimestamp);
+            const currentTime = Date.now();
+            const sessionTimeout = 24 * 60 * 60 * 1000; // 24 hours
+            
+            if (currentTime - loginTime > sessionTimeout) {
+                console.log('Session expired, redirecting to login');
+                sessionStorage.clear();
+                window.location.href = '../login/';
+                return;
+            }
+            
+            try {
+                const user = JSON.parse(userData);
+                console.log('User data:', user);
+                
+                // Kiểm tra role - chỉ cho phép USER vào trang home
+                if (user.role === 'ADMIN' || user.role === 'admin') {
+                    console.log('Admin detected, redirecting to admin dashboard');
+                    window.location.href = '../admin-dashboard/index.html';
+                    return;
+                }
+                
+                console.log('User authorized to access home page');
+                
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+                sessionStorage.clear();
+                window.location.href = '../login/';
+            }
+        });
+    </script>
     <script src="../../assets/js/page-loader.js"></script>
     <script src="../../assets/js/header.js"></script>
     <script src="../../assets/js/sidebar.js"></script>
     <script src="../../assets/js/home.js"></script>
 </body>
-
 </html>

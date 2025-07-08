@@ -6,7 +6,7 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #f0f4f3 0%, #e6f0ed 100%);
+    background: linear-gradient(135deg, #eef2ff 0%, #f3f4f6 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -18,17 +18,17 @@ body {
     display: flex;
     background: white;
     border-radius: 24px;
-    box-shadow: 0 32px 64px -12px rgba(52, 73, 67, 0.25);
+    box-shadow: 0 32px 64px -12px rgba(99, 102, 241, 0.25);
     overflow: hidden;
     max-width: 900px;
     width: 100%;
     min-height: 600px;
-    border: 1px solid #d1e7dd;
+    border: 1px solid #e0e7ff;
 }
 
 .left-panel {
     flex: 1;
-    background: linear-gradient(135deg, #2d5a3d 0%, #1a3d2e 50%, #0f2922 100%);
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%);
     padding: 40px;
     display: flex;
     flex-direction: column;
@@ -62,11 +62,11 @@ body {
 
 .logo i {
     font-size: 28px;
-    color: #a3c9a8;
-    background: rgba(163, 201, 168, 0.15);
+    color: #c4b5fd;
+    background: rgba(196, 181, 253, 0.15);
     padding: 12px;
     border-radius: 12px;
-    border: 1px solid rgba(163, 201, 168, 0.25);
+    border: 1px solid rgba(196, 181, 253, 0.25);
 }
 
 .logo span {
@@ -86,7 +86,7 @@ body {
     font-size: 56px;
     font-weight: 800;
     margin-bottom: 12px;
-    background: linear-gradient(135deg, #a3c9a8, #c8e6c9);
+    background: linear-gradient(135deg, #c4b5fd, #ddd6fe);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -97,7 +97,7 @@ body {
     opacity: 0.85;
     margin-bottom: 30px;
     line-height: 1.6;
-    color: #c8e6c9;
+    color: #ddd6fe;
 }
 
 .progress-circle {
@@ -105,9 +105,9 @@ body {
     height: 90px;
     border-radius: 50%;
     background: conic-gradient(
-        #388e3c 0deg 120deg,
-        #66bb6a 120deg 240deg,
-        #a5d6a7 240deg 360deg
+        #6366f1 0deg 120deg,
+        #8b5cf6 120deg 240deg,
+        #a78bfa 240deg 360deg
     );
     display: flex;
     align-items: center;
@@ -129,7 +129,7 @@ body {
 .progress-circle span {
     position: relative;
     z-index: 1;
-    color: #2d5a3d;
+    color: #4f46e5;
     font-weight: 800;
     font-size: 20px;
 }
@@ -150,7 +150,7 @@ body {
     opacity: 0.9;
     line-height: 1.6;
     font-size: 16px;
-    color: #c8e6c9;
+    color: #ddd6fe;
 }
 
 .right-panel {
@@ -168,13 +168,13 @@ body {
 
 .login-header h2 {
     font-size: 32px;
-    color: #2d5a3d;
+    color: #4f46e5;
     margin-bottom: 12px;
     font-weight: 700;
 }
 
 .login-header p {
-    color: #546e7a;
+    color: #6b7280;
     font-size: 16px;
     line-height: 1.5;
 }
@@ -186,7 +186,7 @@ body {
 .form-group label {
     display: block;
     margin-bottom: 8px;
-    color: #2d5a3d;
+    color: #4f46e5;
     font-weight: 600;
     font-size: 15px;
 }
@@ -194,16 +194,16 @@ body {
 .form-group input {
     width: 100%;
     padding: 12px 16px;
-    border: 2px solid #e0e0e0;
+    border: 2px solid #e0e7ff;
     border-radius: 12px;
     font-size: 15px;
     transition: all 0.3s ease;
 }
 
 .form-group input:focus {
-    border-color: #2d5a3d;
+    border-color: #6366f1;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(45, 90, 61, 0.1);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 .input-wrapper {
@@ -215,13 +215,13 @@ body {
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
-    color: #546e7a;
+    color: #9ca3af;
     cursor: pointer;
     transition: color 0.2s ease;
 }
 
 .password-toggle:hover {
-    color: #2d5a3d;
+    color: #6366f1;
 }
 
 .forgot-password {
@@ -230,7 +230,7 @@ body {
 }
 
 .forgot-password a {
-    color: #388e3c;
+    color: #6366f1;
     text-decoration: none;
     font-size: 14px;
     font-weight: 500;
@@ -238,25 +238,28 @@ body {
 }
 
 .forgot-password a:hover {
-    color: #2e7d32;
+    color: #4f46e5;
     text-decoration: underline;
 }
 
 .login-btn {
     width: 100%;
     padding: 14px;
-    background: #2d5a3d;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     color: white;
     border: none;
     border-radius: 12px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
 .login-btn:hover {
-    background: #1a3d2e;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
 }
 
 .divider {
@@ -272,7 +275,7 @@ body {
     top: 50%;
     width: calc(50% - 60px);
     height: 1px;
-    background: #e0e0e0;
+    background: #e5e7eb;
 }
 
 .divider::before {
@@ -286,7 +289,7 @@ body {
 .divider span {
     background: #fafafa;
     padding: 0 16px;
-    color: #546e7a;
+    color: #6b7280;
     font-size: 14px;
 }
 
@@ -299,24 +302,24 @@ body {
 
 .signup-link {
     text-align: center;
-    color: #546e7a;
+    color: #6b7280;
     font-size: 15px;
 }
 
 .signup-link a {
-    color: #388e3c;
+    color: #6366f1;
     text-decoration: none;
     font-weight: 700;
     transition: color 0.2s ease;
 }
 
 .signup-link a:hover {
-    color: #2e7d32;
+    color: #4f46e5;
     text-decoration: underline;
 }
 
 .error-message {
-    color: #dc3545;
+    color: #dc2626;
     font-size: 13px;
     margin-top: 4px;
     display: none;

@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js"></script>
+    <script src="../../assets/js/tab-logout.js"></script>
     <script src="../../assets/js/page-loader.js"></script>
     <script src="../../assets/js/header.js"></script>
     <script src="../../assets/js/sidebar.js"></script>
@@ -318,11 +319,25 @@
             } catch (error) {
                 console.error('Error loading header/sidebar:', error);
             }
-            const token = localStorage.getItem('token');
-            const userData = localStorage.getItem('userData');
+            // Check session validity
+            const loginTimestamp = sessionStorage.getItem('loginTimestamp');
+            const token = sessionStorage.getItem('token');
+            const userData = sessionStorage.getItem('userData');
             
-            if (!token || !userData) {
-                console.log('[AUTH] No token or user data found, redirecting to login');
+            if (!token || !userData || !loginTimestamp) {
+                console.log('[AUTH] No valid session found, redirecting to login');
+                window.location.href = '../login';
+                return;
+            }
+            
+            // Check if session has expired (24 hours)
+            const loginTime = parseInt(loginTimestamp);
+            const currentTime = Date.now();
+            const sessionTimeout = 24 * 60 * 60 * 1000; // 24 hours
+            
+            if (currentTime - loginTime > sessionTimeout) {
+                console.log('[AUTH] Session expired, redirecting to login');
+                sessionStorage.clear();
                 window.location.href = '../login';
                 return;
             }
@@ -394,8 +409,7 @@
         });
 
         function redirectToLogin() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('userData');
+            sessionStorage.clear();
             window.location.href = '../login';
         }
 
@@ -412,7 +426,7 @@
 
         async function loadSystemStats() {
             try {
-                const token = localStorage.getItem('token');
+                const token = sessionStorage.getItem('token');
                 
                 // Load users data
                 const usersResponse = await fetch('http://localhost:8080/api/admin/users?page=0&size=1000', {

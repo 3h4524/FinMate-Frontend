@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 form.reset();
                 // Redirect to login page after 3 seconds
                 setTimeout(() => {
-                    window.location.href = '../login/index.html';
+                    window.location.href = '../login/';
                 }, 3000);
             } else {
                 showError(data.message || 'An error occurred. Please try again.');

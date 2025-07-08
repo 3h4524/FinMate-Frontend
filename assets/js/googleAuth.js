@@ -57,9 +57,12 @@ async function handleGoogleSignIn(response) {
             throw new Error('Invalid token received from server');
         }
 
-        // Store authentication state and user data in localStorage
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('userData', JSON.stringify({
+        // Store token
+        sessionStorage.setItem('token', data.token);
+        sessionStorage.setItem('loginTimestamp', Date.now().toString());
+
+        // Store authentication state and user data in sessionStorage
+        sessionStorage.setItem('userData', JSON.stringify({
             email: data.email,
             name: data.name,
             role: data.role,
@@ -68,8 +71,8 @@ async function handleGoogleSignIn(response) {
         }));
 
         // Verify token is stored correctly
-        const storedToken = localStorage.getItem('token');
-        const storedUserData = localStorage.getItem('userData');
+        const storedToken = sessionStorage.getItem('token');
+        const storedUserData = sessionStorage.getItem('userData');
         if (!storedToken || !storedUserData) {
             throw new Error('Failed to store authentication data');
         }
@@ -82,20 +85,27 @@ async function handleGoogleSignIn(response) {
             }
         } catch (error) {
             console.error('Token validation error:', error);
-            localStorage.removeItem('token');
-            localStorage.removeItem('userData');
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('userData');
             throw new Error('Invalid token format');
         }
         
         setTimeout(() => {
             // Verify token one last time before redirect
-            const finalToken = localStorage.getItem('token');
-            const finalUserData = localStorage.getItem('userData');
+            const finalToken = sessionStorage.getItem('token');
+            const finalUserData = sessionStorage.getItem('userData');
             if (!finalToken || !finalUserData) {
                 showNotification('Authentication failed. Please try again.', 'error');
                 return;
             }   
-            window.location.href = '../home';
+            
+            // Redirect based on user role, not current page
+            const userData = JSON.parse(finalUserData);
+            if (userData.role === 'ADMIN') {
+                window.location.href = '../admin-dashboard';
+            } else {
+                window.location.href = '../home';
+            }
         }, 1000);
     } catch (error) {
         console.error('Google login error:', error);
@@ -106,31 +116,58 @@ async function handleGoogleSignIn(response) {
 // Initialize Google Sign-In with custom button text
 function initGoogleSignIn(buttonText = 'signin_with') {
     console.log('Initializing Google Sign-In...');
+    
+    // Make sure Google Sign-In script is loaded
+    if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
+        console.log('Google Sign-In script not loaded yet, waiting...');
+        setTimeout(() => initGoogleSignIn(buttonText), 100);
+        return;
+    }
+    
     const currentOrigin = window.location.origin;
     console.log('Current origin:', currentOrigin);
     
-    google.accounts.id.initialize({
-        client_id: googleAuthConfig.clientId,
-        callback: handleGoogleSignIn,
-        auto_select: false,
-        cancel_on_tap_outside: true,
-        context: 'signin',
-        ux_mode: 'popup',
-        origin: currentOrigin,
-        locale: 'en' // Force English language
-    });
-
-    const buttonElement = document.getElementById('google-button');
-    if (buttonElement) {
-        google.accounts.id.renderButton(
-            buttonElement,
-            {   
-                ...googleAuthConfig.buttonConfig,
-                text: buttonText
-            }
-        );
+    // Detect context based on current page
+    const isRegisterPage = window.location.pathname.includes('register');
+    const context = isRegisterPage ? 'signup' : 'signin';
+    
+    try {
+        const buttonElement = document.getElementById('google-button');
+        if (buttonElement) {
+            buttonElement.setAttribute('data-locale', 'en'); // Force English for Google button
+        }
+        google.accounts.id.initialize({
+            client_id: googleAuthConfig.clientId,
+            callback: handleGoogleSignIn,
+            auto_select: false,
+            cancel_on_tap_outside: true,
+            context: context,
+            ux_mode: 'popup',
+            origin: currentOrigin,
+            locale: 'en' // Force English language
+        });
+        if (buttonElement) {
+            google.accounts.id.renderButton(
+                buttonElement,
+                {   
+                    ...googleAuthConfig.buttonConfig,
+                    text: buttonText
+                }
+            );
+            console.log('Google Sign-In button rendered successfully');
+        } else {
+            console.error('Google button element not found');
+        }
+    } catch (error) {
+        console.error('Error initializing Google Sign-In:', error);
     }
 }
 
 // Export functions for use in other files
-export { initGoogleSignIn, handleGoogleSignIn }; 
+export { initGoogleSignIn, handleGoogleSignIn };
+
+document.addEventListener('DOMContentLoaded', function() {
+    let text = 'signin_with';
+    if (window.location.pathname.includes('register')) text = 'signup_with';
+    initGoogleSignIn(text);
+}); 

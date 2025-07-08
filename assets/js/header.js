@@ -134,8 +134,8 @@ function initHeader() {
 
 // Load user information into header
 async function loadHeaderUserInfo() {
-    // First, load from localStorage for immediate display
-    const userData = localStorage.getItem('userData');
+    // First, load from sessionStorage for immediate display
+    const userData = sessionStorage.getItem('userData');
     let fallbackName = 'User';
     
     if (userData) {
@@ -154,7 +154,7 @@ async function loadHeaderUserInfo() {
     
     // Then fetch fresh data from API
     try {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         if (!token) {
             updateHeaderDisplay(fallbackName, null, null, null);
             return;
@@ -178,8 +178,8 @@ async function loadHeaderUserInfo() {
         if (data.code === 1000 && data.result) {
             const userName = data.result.name || data.result.email?.split('@')[0] || 'User';
             
-            // Update localStorage with fresh data
-            localStorage.setItem('userData', JSON.stringify(data.result));
+            // Update sessionStorage with fresh data
+            sessionStorage.setItem('userData', JSON.stringify(data.result));
             
             const premiumFlag2 = data.result.isPremium !== undefined ? data.result.isPremium : data.result.premium;
             updateHeaderDisplay(userName, data.result.email, data.result.role, premiumFlag2);

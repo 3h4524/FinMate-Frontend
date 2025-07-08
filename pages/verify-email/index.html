@@ -6,6 +6,7 @@
     <title>Verify Email - FinMate</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="/assets/js/verify-email.js" defer></script>
+    <script src="/assets/js/autho_helper.js" defer></script>
     <style>
         * {
             margin: 0;
@@ -15,7 +16,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #f0f4f3 0%, #e6f0ed 100%);
+            background: linear-gradient(135deg, #eef2ff 0%, #f3f4f6 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -27,17 +28,17 @@
             display: flex;
             background: white;
             border-radius: 24px;
-            box-shadow: 0 32px 64px -12px rgba(52, 73, 67, 0.25);
+            box-shadow: 0 32px 64px -12px rgba(99, 102, 241, 0.25);
             overflow: hidden;
             max-width: 900px;
             width: 100%;
             min-height: 600px;
-            border: 1px solid #d1e7dd;
+            border: 1px solid #e0e7ff;
         }
 
         .left-panel {
             flex: 1;
-            background: linear-gradient(135deg, #2d5a3d 0%, #1a3d2e 50%, #0f2922 100%);
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%);
             padding: 40px;
             display: flex;
             flex-direction: column;
@@ -71,11 +72,11 @@
 
         .logo i {
             font-size: 28px;
-            color: #a3c9a8;
-            background: rgba(163, 201, 168, 0.15);
+            color: #c4b5fd;
+            background: rgba(196, 181, 253, 0.15);
             padding: 12px;
             border-radius: 12px;
-            border: 1px solid rgba(163, 201, 168, 0.25);
+            border: 1px solid rgba(196, 181, 253, 0.25);
         }
 
         .logo span {
@@ -95,7 +96,7 @@
             font-size: 56px;
             font-weight: 800;
             margin-bottom: 12px;
-            background: linear-gradient(135deg, #a3c9a8, #c8e6c9);
+            background: linear-gradient(135deg, #c4b5fd, #ddd6fe);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -106,7 +107,7 @@
             opacity: 0.85;
             margin-bottom: 30px;
             line-height: 1.6;
-            color: #c8e6c9;
+            color: #ddd6fe;
         }
 
         .progress-circle {
@@ -114,9 +115,9 @@
             height: 90px;
             border-radius: 50%;
             background: conic-gradient(
-                #388e3c 0deg 120deg,
-                #66bb6a 120deg 240deg,
-                #a5d6a7 240deg 360deg
+                #6366f1 0deg 120deg,
+                #8b5cf6 120deg 240deg,
+                #a78bfa 240deg 360deg
             );
             display: flex;
             align-items: center;
@@ -138,7 +139,7 @@
         .progress-circle span {
             position: relative;
             z-index: 1;
-            color: #2d5a3d;
+            color: #4f46e5;
             font-weight: 800;
             font-size: 20px;
         }
@@ -159,7 +160,7 @@
             opacity: 0.9;
             line-height: 1.6;
             font-size: 16px;
-            color: #c8e6c9;
+            color: #ddd6fe;
         }
 
         .right-panel {
@@ -177,13 +178,13 @@
 
         .verification-header h2 {
             font-size: 32px;
-            color: #2d5a3d;
+            color: #4f46e5;
             margin-bottom: 12px;
             font-weight: 700;
         }
 
         .verification-header p {
-            color: #546e7a;
+            color: #6b7280;
             font-size: 16px;
             line-height: 1.5;
         }
@@ -195,7 +196,7 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #2d5a3d;
+            color: #4f46e5;
             font-weight: 600;
             font-size: 15px;
         }
@@ -203,19 +204,19 @@
         .form-group input {
             width: 100%;
             padding: 16px 18px;
-            border: 2px solid #d1e7dd;
+            border: 2px solid #e0e7ff;
             border-radius: 12px;
             font-size: 16px;
             transition: all 0.3s ease;
             background: white;
-            color: #2d5a3d;
+            color: #4f46e5;
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: #388e3c;
+            border-color: #6366f1;
             background: white;
-            box-shadow: 0 0 0 3px rgba(56, 142, 60, 0.1);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
         .verification-code-input input {
@@ -234,16 +235,16 @@
             text-align: center;
             margin-bottom: 20px;
             font-size: 14px;
-            color: #546e7a;
+            color: #6b7280;
             background: #f8f9fa;
             padding: 12px;
             border-radius: 12px;
-            border: 1px solid #d1e7dd;
+            border: 1px solid #e0e7ff;
             display: block !important;
         }
 
         .timer {
-            color: #2d5a3d;
+            color: #4f46e5;
             font-weight: bold;
             font-size: 16px;
             display: inline-block;
@@ -253,7 +254,7 @@
         .verify-btn {
             width: 100%;
             padding: 16px;
-            background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             color: white;
             border: none;
             border-radius: 12px;
@@ -262,7 +263,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(56, 142, 60, 0.3);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -271,8 +272,8 @@
 
         .verify-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(56, 142, 60, 0.4);
-            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
         }
 
         .verify-btn:active {
@@ -282,7 +283,7 @@
         .send-code-btn {
             width: 100%;
             padding: 14px;
-            border: 2px solid #d1e7dd;
+            border: 2px solid #e0e7ff;
             border-radius: 12px;
             background: white;
             cursor: pointer;
@@ -293,12 +294,12 @@
             gap: 10px;
             font-size: 14px;
             font-weight: 600;
-            color: #2d5a3d;
+            color: #4f46e5;
         }
 
         .send-code-btn:hover {
-            border-color: #a5d6a7;
-            background: #f1f8e9;
+            border-color: #8b5cf6;
+            background: #eef2ff;
             transform: translateY(-1px);
         }
 
@@ -310,20 +311,20 @@
 
         .login-link {
             text-align: center;
-            color: #546e7a;
+            color: #6b7280;
             font-size: 15px;
             margin-top: 20px;
         }
 
         .login-link a {
-            color: #388e3c;
+            color: #6366f1;
             text-decoration: none;
             font-weight: 700;
             transition: color 0.2s ease;
         }
 
         .login-link a:hover {
-            color: #2e7d32;
+            color: #4f46e5;
             text-decoration: underline;
         }
 
@@ -374,7 +375,7 @@
         }
 
         .notification.success {
-            background: linear-gradient(135deg, #388e3c, #66bb6a);
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
         }
 
         .notification.error {
@@ -382,7 +383,7 @@
         }
 
         .notification.info {
-            background: linear-gradient(135deg, #388e3c, #4caf50);
+            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
         }
 
         .notification i {
@@ -444,8 +445,8 @@
 
         <div class="right-panel">
             <div class="verification-header">
-                <h2>Verify Your Email</h2>
-                <p>Enter the verification code sent to your email address</p>
+                <h2>Verify your Email to access the system</h2>
+                <p>Enter the verification code sent to your email to complete registration and access the system.</p>
             </div>
 
             <form id="verificationForm">
@@ -475,9 +476,23 @@
             </button>
 
             <div class="login-link">
-                Remembered your password? <a href="../login/">Back to Login</a>
+                <a href="../home/index.html">Back to Home</a>
             </div>
         </div>
     </div>
+
+    <script src="../../assets/js/verify-email.js"></script>
+
+    <script>
+        // Clear any existing session data when verify email page loads
+        window.addEventListener('load', function() {
+            // Clear any existing session data
+            sessionStorage.clear();
+            localStorage.removeItem('token');
+            localStorage.removeItem('userData');
+            localStorage.removeItem('loginTimestamp');
+            console.log('Session cleared on verify email page load');
+        });
+    </script>
 </body>
 </html>

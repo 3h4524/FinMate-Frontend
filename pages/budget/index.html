@@ -18,8 +18,7 @@
     <style>
         /* Layout fixes for header and sidebar integration */
         .main-content {
-            padding-top: 80px;
-            /* Space for fixed header */
+            padding-top: 80px; /* Space for fixed header */
             min-height: 100vh;
             width: 100%;
             max-width: 100%;
@@ -44,96 +43,42 @@
         }
 
         /* Custom colors for Tailwind v2 compatibility and theme update */
-        .bg-indigo-500 {
-            background-color: #6366f1;
-        }
-
-        .bg-purple-600 {
-            background-color: #9333ea;
-        }
-
-        .text-indigo-600 {
-            color: #4f46e5;
-        }
-
-        .border-indigo-500 {
-            border-color: #6366f1;
-        }
-
-        .border-indigo-600 {
-            border-color: #4f46e5;
-        }
-
-        .hover\:border-indigo-600:hover {
-            border-color: #4f46e5;
-        }
-
-        .hover\:bg-indigo-50:hover {
-            background-color: #eef2ff;
-        }
-
-        .from-indigo-500 {
-            --tw-gradient-from: #6366f1;
-        }
-
-        .to-purple-600 {
-            --tw-gradient-to: #9333ea;
-        }
-
+        .bg-indigo-500 { background-color: #6366f1; }
+        .bg-purple-600 { background-color: #9333ea; }
+        .text-indigo-600 { color: #4f46e5; }
+        .border-indigo-500 { border-color: #6366f1; }
+        .border-indigo-600 { border-color: #4f46e5; }
+        .hover\:border-indigo-600:hover { border-color: #4f46e5; }
+        .hover\:bg-indigo-50:hover { background-color: #eef2ff; }
+        .from-indigo-500 { --tw-gradient-from: #6366f1; }
+        .to-purple-600 { --tw-gradient-to: #9333ea; }
+        
         /* Update color scheme from teal to blue-indigo */
-        .bg-teal-600 {
-            background-color: #3b82f6;
-        }
-
-        .bg-teal-800 {
-            background-color: #1e40af;
-        }
-
-        .text-teal-600 {
-            color: #3b82f6;
-        }
-
-        .text-teal-800 {
-            color: #1e40af;
-        }
-
-        .bg-teal-50 {
-            background-color: #eff6ff;
-        }
-
-        .from-teal-600 {
-            --tw-gradient-from: #3b82f6;
-        }
-
-        .to-lime-400 {
-            --tw-gradient-to: #8b5cf6;
-        }
-
-        .focus\:ring-teal-300:focus {
-            --tw-ring-color: rgba(59, 130, 246, 0.3);
+        .bg-teal-600 { background-color: #3b82f6; }
+        .bg-teal-800 { background-color: #1e40af; }
+        .text-teal-600 { color: #3b82f6; }
+        .text-teal-800 { color: #1e40af; }
+        .bg-teal-50 { background-color: #eff6ff; }
+        .from-teal-600 { --tw-gradient-from: #3b82f6; }
+        .to-lime-400 { --tw-gradient-to: #8b5cf6; }
+        .focus\:ring-teal-300:focus { 
+            --tw-ring-color: rgba(59, 130, 246, 0.3); 
             box-shadow: var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);
         }
-
-        .focus\:border-teal-600:focus {
-            border-color: #3b82f6;
-        }
-
-        .focus\:ring-teal-500:focus {
-            --tw-ring-color: rgba(59, 130, 246, 0.5);
+        .focus\:border-teal-600:focus { border-color: #3b82f6; }
+        .focus\:ring-teal-500:focus { 
+            --tw-ring-color: rgba(59, 130, 246, 0.5); 
             box-shadow: var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);
         }
 
         /* Rounded utilities */
-        .rounded-3xl {
-            border-radius: 1.5rem;
-        }
+        .rounded-3xl { border-radius: 1.5rem; }
 
         /* Shadow utilities */
-        .shadow-lg {
+        .shadow-lg { 
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
-
-        .shadow-2xl {
+        .shadow-2xl { 
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
 
@@ -143,7 +88,6 @@
                 transform: translateY(-100%);
                 opacity: 0;
             }
-
             to {
                 transform: translateY(0);
                 opacity: 1;
@@ -155,29 +99,21 @@
                 transform: translateY(0);
                 opacity: 1;
             }
-
             to {
                 transform: translateY(-100%);
                 opacity: 0;
             }
         }
 
-        .notification-slide-in {
-            animation: notificationSlideIn 0.3s ease-out;
-        }
-
-        .notification-slide-out {
-            animation: notificationSlideOut 0.3s ease-in;
-        }
+        .notification-slide-in { animation: notificationSlideIn 0.3s ease-out; }
+        .notification-slide-out { animation: notificationSlideOut 0.3s ease-in; }
 
         .modal-content {
             transform: scale(0.95);
             transition: transform 0.2s ease-in-out;
         }
 
-        .modal-content.show {
-            transform: scale(1);
-        }
+        .modal-content.show { transform: scale(1); }
 
         /* Backdrop blur for older browsers */
         .backdrop-blur-sm {
@@ -194,7 +130,7 @@
 
         <!-- Include Header -->
         <div id="header-container"></div>
-
+        
         <!-- Main Content -->
         <main class="main-content flex-1 ml-0 transition-all duration-300 ease-in-out lg:ml-64 min-h-screen w-full">
             <div class="p-6 lg:p-8 w-full max-w-none">
@@ -207,8 +143,7 @@
                         </div>
                         <div class="flex items-center gap-3 w-full lg:w-auto">
                             <div class="relative flex-1 lg:flex-none lg:w-64">
-                                <input type="text" id="searchInput" placeholder="Search budgets..."
-                                    aria-label="Search budgets"
+                                <input type="text" id="searchInput" placeholder="Search budgets..." aria-label="Search budgets"
                                     class="w-full p-3 pl-4 pr-10 border-2 border-gray-200 rounded-2xl bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition">
                                 <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                             </div>
@@ -227,7 +162,7 @@
                     <div class="bg-white rounded-3xl shadow-lg">
                         <div class="flex justify-between items-center p-6 border-b border-gray-100">
                             <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-                                <i class="fas fa-chart-line text-blue-600"></i>
+                                <i class="fas fa-chart-line text-blue-600"></i> 
                                 Budget Monitoring
                             </h2>
                             <button
@@ -238,60 +173,58 @@
                             </button>
                         </div>
                         <div class="p-6">
-                            <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2 w-[320px] max-w-full">
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-center">
-                                    <thead>
-                                        <tr class="bg-gray-100">
-                                            <th class="p-3 font-semibold">Category</th>
-                                            <th class="p-3 font-semibold">Period</th>
-                                            <th class="p-3 font-semibold">Usage</th>
-                                            <th class="p-3 font-semibold">Progress</th>
-                                            <th class="p-3 font-semibold">Remaining</th>
-                                            <th class="p-3 font-semibold">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="monitor-table-body"></tbody>
-                                </table>
-                            </div>
+                    <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2 w-[320px] max-w-full"></div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-center">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="p-3 font-semibold">Category</th>
+                                    <th class="p-3 font-semibold">Period</th>
+                                    <th class="p-3 font-semibold">Usage</th>
+                                    <th class="p-3 font-semibold">Progress</th>
+                                    <th class="p-3 font-semibold">Remaining</th>
+                                    <th class="p-3 font-semibold">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monitor-table-body"></tbody>
+                        </table>
+                    </div>
                             <div id="monitor-pagination" class="flex justify-center mt-4 gap-2"></div>
                         </div>
                     </div>
 
                     <!-- Budget vs Actual Analysis -->
                     <div class="bg-white rounded-3xl shadow-lg">
-                        <div
-                            class="flex flex-col lg:flex-row justify-between items-center gap-4 p-6 border-b border-gray-100">
+                        <div class="flex flex-col lg:flex-row justify-between items-center gap-4 p-6 border-b border-gray-100">
                             <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-                                <i class="fas fa-chart-bar text-blue-600"></i>
+                                <i class="fas fa-chart-bar text-blue-600"></i> 
                                 Budget vs Actual Analysis
                             </h2>
                             <div class="flex flex-wrap gap-3">
                                 <select id="analysisPeriod"
                                     class="border-2 border-gray-200 rounded-2xl px-4 py-2 focus:ring-4 focus:ring-blue-100 focus:border-blue-500 bg-white transition">
                                     <option value="all" selected>All</option>
-                                    <option value="WEEKLY">Weekly</option>
+                                    <option value="WEEKLY" >Weekly</option>
                                     <option value="MONTHLY">Monthly</option>
                                 </select>
                                 <button
                                     class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-2xl font-semibold flex items-center space-x-2 hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
                                     onclick="toggleChartType()">
-                                    <i id="chartIcon" class="fas fa-chart-bar"></i>
+                                    <i id="chartIcon" class="fas fa-chart-bar"></i> 
                                     <span id="chartTypeLabel">Bar Chart</span>
                                 </button>
                                 <button
                                     class="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-2xl font-semibold flex items-center space-x-2 hover:from-green-600 hover:to-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
                                     onclick="exportToCSV()">
-                                    <i class="fas fa-download"></i>
+                                    <i class="fas fa-download"></i> 
                                     <span>Export CSV</span>
                                 </button>
                             </div>
                         </div>
                         <div class="p-6">
-                            <div class="h-80 mb-6">
-                                <canvas id="budgetChart"></canvas>
-                            </div>
+                    <div class="h-80 mb-6">
+                        <canvas id="budgetChart"></canvas>
+                    </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                                 <div class="bg-blue-50 p-4 rounded-2xl text-center border border-blue-100">
                                     <p class="text-gray-600 text-sm font-medium">Total Budgeted</p>
@@ -310,20 +243,20 @@
                                     <p id="spendingRate" class="font-bold text-lg text-green-800">0%</p>
                                 </div>
                             </div>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-center">
-                                    <thead>
-                                        <tr class="bg-gray-100">
-                                            <th class="p-3 font-semibold">Category</th>
-                                            <th class="p-3 font-semibold">Planned Amount</th>
-                                            <th class="p-3 font-semibold">Actual Spending</th>
-                                            <th class="p-3 font-semibold">Variance</th>
-                                            <th class="p-3 font-semibold">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="analysis-table"></tbody>
-                                </table>
-                            </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-center">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="p-3 font-semibold">Category</th>
+                                    <th class="p-3 font-semibold">Planned Amount</th>
+                                    <th class="p-3 font-semibold">Actual Spending</th>
+                                    <th class="p-3 font-semibold">Variance</th>
+                                    <th class="p-3 font-semibold">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="analysis-table"></tbody>
+                        </table>
+                    </div>
                             <div id="analysis-pagination" class="flex justify-center mt-4 gap-2"></div>
                         </div>
                     </div>
@@ -465,7 +398,6 @@
             </div>
         </div>
     </div>
-
 </body>
 
 </html>

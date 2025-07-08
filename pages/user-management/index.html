@@ -347,6 +347,14 @@
     </div>
 
     <script>
+        // Check login status as early as possible
+        (function() {
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/pages/login/';
+            }
+        })();
+
         let currentPage = 0;
         const pageSize = 10;
         let user;
@@ -360,7 +368,7 @@
                 if (user.role !== 'ADMIN') {
                     console.log('[AUTH] Access denied: User does not have ADMIN role');
                     alert('Access denied. This page is only available for administrators.');
-                    window.location.href = '../home';
+                    window.location.href = '/pages/login/';
                     return;
                 }
                 // Load sidebar and header first to avoid flash
@@ -393,9 +401,9 @@
 
         async function loadUsers(page = 0) {
             try {
-                const token = localStorage.getItem('token');
+                const token = sessionStorage.getItem('token');
                 if (!token) {
-                    window.location.href = 'login.html';
+                    window.location.href = '/pages/login/';
                     return;
                 }
 
@@ -557,7 +565,7 @@
 
         async function loadUserStats() {
             try {
-                const token = localStorage.getItem('token');
+                const token = sessionStorage.getItem('token');
                 if (!token) return;
 
                 // Load all users to calculate stats
@@ -756,7 +764,7 @@
             const statusFilter = document.getElementById('statusFilter').value;
 
             try {
-                const token = localStorage.getItem('token');
+                const token = sessionStorage.getItem('token');
 
                 // If no search keyword and no filter, load all users
                 if (!keyword && !statusFilter) {
@@ -810,7 +818,7 @@
 
         async function loadAllUsersAndFilter(keyword, statusFilter) {
             try {
-                const token = localStorage.getItem('token');
+                const token = sessionStorage.getItem('token');
                 const response = await fetch('http://localhost:8080/api/admin/users?page=0&size=1000', {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -893,7 +901,7 @@
 
         async function openEditModal(userId) {
             try {
-                const token = localStorage.getItem('token');
+                const token = sessionStorage.getItem('token');
                 const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -955,7 +963,7 @@
             }
 
             try {
-                const token = localStorage.getItem('token');
+                const token = sessionStorage.getItem('token');
                 let url, method;
 
                 if (isNewUser) {
@@ -1007,7 +1015,7 @@
             }
 
             try {
-                const token = localStorage.getItem('token');
+                const token = sessionStorage.getItem('token');
                 const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
                     method: 'DELETE',
                     headers: {
@@ -1030,7 +1038,7 @@
 
         async function restoreUser(userId) {
             try {
-                const token = localStorage.getItem('token');
+                const token = sessionStorage.getItem('token');
                 const response = await fetch(`http://localhost:8080/api/admin/users/${userId}/restore`, {
                     method: 'POST',
                     headers: {
@@ -1054,7 +1062,7 @@
 
         async function openDetailModal(userId) {
             try {
-                const token = localStorage.getItem('token');
+                const token = sessionStorage.getItem('token');
                 const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`

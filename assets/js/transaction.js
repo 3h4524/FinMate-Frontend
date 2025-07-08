@@ -1,11 +1,13 @@
 const API_BASE_URL = 'http://localhost:8080/api/transactions';
 const RECURRING_API_BASE_URL = 'http://localhost:8080/api/recurringTransactions';
 
+const token = sessionStorage.getItem('authToken');
+
 // Fallback functions if helper files are not loaded
 if (typeof apiRequest === 'undefined') {
   window.apiRequest = async (url, options = {}) => {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = sessionStorage.getItem('authToken');
       const defaultOptions = {
         headers: {
           'Content-Type': 'application/json',
@@ -25,7 +27,7 @@ if (typeof apiRequest === 'undefined') {
 if (typeof getCurrentUser === 'undefined') {
   window.getCurrentUser = () => {
     try {
-      const user = localStorage.getItem('currentUser');
+      const user = sessionStorage.getItem('currentUser');
       return user ? JSON.parse(user) : { userId: 1 }; // fallback user
     } catch (error) {
       console.error('Error getting current user:', error);

@@ -30,7 +30,7 @@ async function loadSidebarHTML() {
 
 // Sidebar state management
 function getSidebarState() {
-    const saved = localStorage.getItem('sidebarCollapsed');
+    const saved = sessionStorage.getItem('sidebarCollapsed');
     return saved === null ? false : saved === 'true'; // Default to expanded (false) if no saved state
 }
 
@@ -47,7 +47,7 @@ function applyBodySidebarClass() {
 }
 
 function setSidebarState(isCollapsed) {
-    localStorage.setItem('sidebarCollapsed', isCollapsed.toString());
+    sessionStorage.setItem('sidebarCollapsed', isCollapsed.toString());
     // Update body class immediately
     applyBodySidebarClass();
 }
@@ -118,7 +118,7 @@ window.toggleSidebar = function() {
         const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
         const newState = !isCollapsed;
         
-        // Save new state to localStorage
+        // Save new state to sessionStorage
         setSidebarState(newState);
         
         // Apply new state
@@ -129,11 +129,30 @@ window.toggleSidebar = function() {
 // Global logout function for sidebar integration
 window.handleLogout = function() {
     if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('userData');
-        localStorage.removeItem('user');
-        window.location.href = '../login/';
+        const token = sessionStorage.getItem('token');
+        if (token) {
+            fetch('http://localhost:8080/api/v1/auth/logout', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                }
+            }).finally(() => {
+                // Clear all session data
+                sessionStorage.clear();
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                localStorage.removeItem('loginTimestamp');
+                window.location.href = '/pages/login/';
+            });
+        } else {
+            // Clear all session data even if no token
+            sessionStorage.clear();
+            localStorage.removeItem('token');
+            localStorage.removeItem('userData');
+            localStorage.removeItem('loginTimestamp');
+            window.location.href = '/pages/login/';
+        }
     }
 };
 
@@ -154,7 +173,7 @@ function setActiveSidebarLink() {
 // Check user role and show/hide admin features
 function checkUserRoleAndShowAdminFeatures() {
     try {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         if (token) {
             const payload = JSON.parse(atob(token.split('.')[1]));
             const userRole = payload.scope;
@@ -337,12 +356,12 @@ function handleResponsiveBehavior() {
 
 // Load user information
 function loadUserInfo() {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token) {
         const usernameElement = document.querySelector('.user-name');
         if (usernameElement) {
-            // Try to get user data from localStorage first
-            const userData = localStorage.getItem('userData');
+            // Try to get user data from sessionStorage first
+            const userData = sessionStorage.getItem('userData');
             if (userData) {
                 try {
                     const user = JSON.parse(userData);
@@ -452,7 +471,7 @@ async function loadSideBar(user) {
 (function() {
     // Apply body class immediately when script loads
     if (window.innerWidth > 1024) {
-        const saved = localStorage.getItem('sidebarCollapsed');
+        const saved = sessionStorage.getItem('sidebarCollapsed');
         const isCollapsed = saved === 'true';
         if (isCollapsed) {
             document.body.classList.add('sidebar-state-collapsed');
