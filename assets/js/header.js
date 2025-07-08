@@ -21,7 +21,7 @@ function updateTimeOfDay() {
     if (timeOfDayElement) {
         const hour = new Date().getHours();
         let timeOfDay;
-        
+
         if (hour >= 5 && hour < 12) {
             timeOfDay = 'morning';
         } else if (hour >= 12 && hour < 17) {
@@ -31,7 +31,7 @@ function updateTimeOfDay() {
         } else {
             timeOfDay = 'night';
         }
-        
+
         timeOfDayElement.textContent = timeOfDay;
         console.log('Time of day updated:', timeOfDay);
     } else {
@@ -43,30 +43,30 @@ function updateTimeOfDay() {
 function updateCurrentDate() {
     const dateElement = document.getElementById('current-date');
     const mobileDateElement = document.getElementById('current-date-mobile');
-    
+
     const now = new Date();
-    const options = { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+    const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
     };
-    const mobileOptions = { 
-        month: 'short', 
+    const mobileOptions = {
+        month: 'short',
         day: 'numeric',
         year: 'numeric'
     };
-    
+
     const fullDate = now.toLocaleDateString('en-US', options);
     const mobileDate = now.toLocaleDateString('en-US', mobileOptions);
-    
+
     if (dateElement) {
         dateElement.textContent = fullDate;
         console.log('Date updated (desktop):', fullDate);
     } else {
         console.log('Date element (desktop) not found');
     }
-    
+
     if (mobileDateElement) {
         mobileDateElement.textContent = mobileDate;
         console.log('Date updated (mobile):', mobileDate);
@@ -78,14 +78,14 @@ function updateCurrentDate() {
 // Initialize header functionality
 function initHeader() {
     console.log('Initializing header...');
-    
+
     const menuToggleBtn = document.getElementById('menu-toggle-btn');
     const userMenuBtn = document.getElementById('user-menu-btn');
     const userDropdown = document.getElementById('user-dropdown');
 
     // Hamburger menu toggle - triggers sidebar
     if (menuToggleBtn) {
-        menuToggleBtn.addEventListener('click', function() {
+        menuToggleBtn.addEventListener('click', function () {
             // Call global toggleSidebar function defined in sidebar.js
             if (typeof window.toggleSidebar === 'function') {
                 window.toggleSidebar();
@@ -98,14 +98,14 @@ function initHeader() {
 
     // User dropdown toggle
     if (userMenuBtn && userDropdown) {
-        userMenuBtn.addEventListener('click', function(e) {
+        userMenuBtn.addEventListener('click', function (e) {
             e.stopPropagation();
             userDropdown.classList.toggle('hidden');
             userDropdown.classList.toggle('show');
         });
 
         // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
                 userDropdown.classList.add('hidden');
                 userDropdown.classList.remove('show');
@@ -120,16 +120,15 @@ function initHeader() {
     loadHeaderUserInfo();
     updateTimeOfDay();
     updateCurrentDate();
-    
+
     // Update time of day every minute
     setInterval(updateTimeOfDay, 60000);
-    
+
     // Update date every hour
     setInterval(updateCurrentDate, 3600000);
-    
+
     console.log('Header initialization complete');
 }
-
 
 
 // Load user information into header
@@ -137,21 +136,21 @@ async function loadHeaderUserInfo() {
     // First, load from sessionStorage for immediate display
     const userData = sessionStorage.getItem('userData');
     let fallbackName = 'User';
-    
+
     if (userData) {
         try {
             const user = JSON.parse(userData);
             fallbackName = user.name || user.email?.split('@')[0] || 'User';
-            
+
             // Determine premium flag from either field
             const premiumFlag = user.isPremium !== undefined ? user.isPremium : user.premium;
-            
+
             updateHeaderDisplay(fallbackName, user.email, user.role, premiumFlag);
         } catch (error) {
             console.error('Error parsing cached user data:', error);
         }
     }
-    
+
     // Then fetch fresh data from API
     try {
         const token = sessionStorage.getItem('token');
@@ -174,21 +173,21 @@ async function loadHeaderUserInfo() {
         }
 
         const data = await response.json();
-        
+
         if (data.code === 1000 && data.result) {
             const userName = data.result.name || data.result.email?.split('@')[0] || 'User';
-            
+
             // Update sessionStorage with fresh data
             sessionStorage.setItem('userData', JSON.stringify(data.result));
-            
+
             const premiumFlag2 = data.result.isPremium !== undefined ? data.result.isPremium : data.result.premium;
             updateHeaderDisplay(userName, data.result.email, data.result.role, premiumFlag2);
-            
+
             console.log('Header user info updated:', userName);
         } else {
             console.error('API response error:', data.message);
         }
-        
+
     } catch (error) {
         console.error('Error loading user info from API:', error);
     }
@@ -213,7 +212,7 @@ function updateHeaderDisplay(userName, email, role, isPremium) {
     }
     document.querySelectorAll('.user-display-role').forEach(el => {
         // reset classes
-        el.classList.remove('badge-basic','badge-premium','badge-admin');
+        el.classList.remove('badge-basic', 'badge-premium', 'badge-admin');
 
         // Construct inner HTML with optional icon
         if (label === 'Premium') {
@@ -238,7 +237,7 @@ function updateHeaderDisplayNames(name) {
 // Load header for pages
 async function loadHeader() {
     const headerContainer = document.getElementById('header-container');
-    
+
     if (headerContainer) {
         const headerHTML = await loadHeaderHTML();
         if (headerHTML) {
@@ -261,17 +260,17 @@ function handleHeaderResize() {
 }
 
 // Initialize header on DOM ready
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Check if header container exists or header already exists
     const headerContainer = document.getElementById('header-container');
     const existingHeader = document.getElementById('main-header');
-    
+
     if (headerContainer && !existingHeader) {
         loadHeader();
     } else if (existingHeader) {
         initHeader();
     }
-    
+
     // Handle window resize
     window.addEventListener('resize', handleHeaderResize);
 });

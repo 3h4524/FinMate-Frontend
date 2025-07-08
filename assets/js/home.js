@@ -1,7 +1,7 @@
 // Home page JavaScript - Dashboard functionality only
 
 // Load page components and initialize dashboard
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initializePageComponents();
     loadDashboardData();
     setupTransactionForm();
@@ -118,12 +118,12 @@ function updateRecentTransactionsDisplay(transactions) {
     }
 
     container.innerHTML = '';
-    
+
     transactions.forEach(transaction => {
         const emoji = getCategoryEmoji(transaction.categoryId);
         const transactionElement = document.createElement('div');
         transactionElement.className = 'flex items-center space-x-3 lg:space-x-4 p-3 lg:p-4 rounded-2xl hover:bg-gray-50 transition-colors border border-gray-100';
-        
+
         transactionElement.innerHTML = `
             <div class="w-12 h-12 lg:w-14 lg:h-14 bg-gray-100 rounded-full flex items-center justify-center text-lg lg:text-xl">
                 ${emoji}
@@ -137,7 +137,7 @@ function updateRecentTransactionsDisplay(transactions) {
                 ${transaction.amount >= 0 ? '+' : ''}${formatCurrency(transaction.amount)}
             </p>
         `;
-        
+
         container.appendChild(transactionElement);
     });
 }
@@ -173,12 +173,12 @@ function calculateSummary() {
     const totalIncomeElement = document.getElementById('totalIncome');
     const totalExpensesElement = document.getElementById('totalExpenses');
     const summarySavingsElement = document.getElementById('summarySavings');
-    
+
     if (totalIncomeElement && totalExpensesElement && summarySavingsElement) {
-        const income = parseFloat(totalIncomeElement.textContent.replace(/[^0-9.-]+/g,""));
-        const expenses = parseFloat(totalExpensesElement.textContent.replace(/[^0-9.-]+/g,""));
+        const income = parseFloat(totalIncomeElement.textContent.replace(/[^0-9.-]+/g, ""));
+        const expenses = parseFloat(totalExpensesElement.textContent.replace(/[^0-9.-]+/g, ""));
         const savings = income - expenses;
-        
+
         summarySavingsElement.textContent = formatCurrency(savings);
     }
 }
@@ -294,14 +294,14 @@ function formatDate(dateString) {
 }
 
 // Modal Event Handlers
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     const modal = document.getElementById('transactionModal');
     if (e.target === modal) {
         closeTransactionModal();
     }
 });
 
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
         const modal = document.getElementById('transactionModal');
         if (modal && !modal.classList.contains('hidden')) {

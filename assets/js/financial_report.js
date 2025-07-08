@@ -23,7 +23,7 @@ async function fetchGoalProgress() {
     console.log("fetching Goal Progress");
     try {
         const response = await apiRequest(`${API_BASE_URL}/goal_tracking/list`, {
-            headers: { 'userId': user.userId.toString() }
+            headers: {'userId': user.userId.toString()}
         });
 
         if (!response.ok) throw new Error("Failed to fetch Goal Progress");
@@ -79,7 +79,7 @@ function renderChart(type) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: 'top' },
+                legend: {position: 'top'},
                 tooltip: {
                     callbacks: {
                         label: context => {
@@ -158,7 +158,7 @@ function exportToCSV() {
             ['Date', 'Category', 'Type', 'Amount'],
             ...filteredData.map(t => [t.transactionDate, t.categoryName || t.userCategoryName, t.type, formatCurrency(t.amount.toFixed(2))])
         ].map(row => row.join(',')).join('\n');
-        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const blob = new Blob([csvContent], {type: 'text/csv'});
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;

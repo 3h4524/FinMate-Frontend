@@ -52,7 +52,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({email, password})
         });
 
         const data = await response.json();
@@ -86,7 +86,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
                     console.log('Regular user without 2FA, proceeding to login despite not verified');
                 }
             }
-            
+
             // If verified or regular user without 2FA, proceed with login
             console.log('User can proceed to login');
 

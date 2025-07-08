@@ -42,43 +42,129 @@
         }
 
         /* Custom colors for Tailwind v2 compatibility */
-        .bg-indigo-500 { background-color: #6366f1; }
-        .bg-indigo-600 { background-color: #4f46e5; }
-        .bg-purple-500 { background-color: #a855f7; }
-        .bg-purple-600 { background-color: #9333ea; }
-        .bg-blue-500 { background-color: #3b82f6; }
-        .bg-blue-600 { background-color: #2563eb; }
-        .bg-amber-500 { background-color: #f59e0b; }
-        .bg-amber-600 { background-color: #d97706; }
-        .text-indigo-600 { color: #4f46e5; }
-        .text-purple-600 { color: #9333ea; }
-        .text-blue-600 { color: #2563eb; }
-        .text-amber-600 { color: #d97706; }
-        .border-indigo-100 { border-color: #e0e7ff; }
-        .border-purple-100 { border-color: #f3e8ff; }
-        .border-blue-100 { border-color: #dbeafe; }
-        .border-amber-100 { border-color: #fef3c7; }
-        .from-indigo-50 { --tw-gradient-from: #eef2ff; }
-        .to-purple-50 { --tw-gradient-to: #faf5ff; }
-        .from-purple-50 { --tw-gradient-from: #faf5ff; }
-        .to-pink-50 { --tw-gradient-to: #fdf2f8; }
-        .from-blue-50 { --tw-gradient-from: #eff6ff; }
-        .to-indigo-50 { --tw-gradient-to: #eef2ff; }
-        .from-amber-50 { --tw-gradient-from: #fffbeb; }
-        .to-yellow-50 { --tw-gradient-to: #fefce8; }
-        .from-green-50 { --tw-gradient-from: #f0fdf4; }
-        .to-emerald-50 { --tw-gradient-to: #ecfdf5; }
-        .from-yellow-50 { --tw-gradient-from: #fefce8; }
-        .to-amber-50 { --tw-gradient-to: #fffbeb; }
+        .bg-indigo-500 {
+            background-color: #6366f1;
+        }
+
+        .bg-indigo-600 {
+            background-color: #4f46e5;
+        }
+
+        .bg-purple-500 {
+            background-color: #a855f7;
+        }
+
+        .bg-purple-600 {
+            background-color: #9333ea;
+        }
+
+        .bg-blue-500 {
+            background-color: #3b82f6;
+        }
+
+        .bg-blue-600 {
+            background-color: #2563eb;
+        }
+
+        .bg-amber-500 {
+            background-color: #f59e0b;
+        }
+
+        .bg-amber-600 {
+            background-color: #d97706;
+        }
+
+        .text-indigo-600 {
+            color: #4f46e5;
+        }
+
+        .text-purple-600 {
+            color: #9333ea;
+        }
+
+        .text-blue-600 {
+            color: #2563eb;
+        }
+
+        .text-amber-600 {
+            color: #d97706;
+        }
+
+        .border-indigo-100 {
+            border-color: #e0e7ff;
+        }
+
+        .border-purple-100 {
+            border-color: #f3e8ff;
+        }
+
+        .border-blue-100 {
+            border-color: #dbeafe;
+        }
+
+        .border-amber-100 {
+            border-color: #fef3c7;
+        }
+
+        .from-indigo-50 {
+            --tw-gradient-from: #eef2ff;
+        }
+
+        .to-purple-50 {
+            --tw-gradient-to: #faf5ff;
+        }
+
+        .from-purple-50 {
+            --tw-gradient-from: #faf5ff;
+        }
+
+        .to-pink-50 {
+            --tw-gradient-to: #fdf2f8;
+        }
+
+        .from-blue-50 {
+            --tw-gradient-from: #eff6ff;
+        }
+
+        .to-indigo-50 {
+            --tw-gradient-to: #eef2ff;
+        }
+
+        .from-amber-50 {
+            --tw-gradient-from: #fffbeb;
+        }
+
+        .to-yellow-50 {
+            --tw-gradient-to: #fefce8;
+        }
+
+        .from-green-50 {
+            --tw-gradient-from: #f0fdf4;
+        }
+
+        .to-emerald-50 {
+            --tw-gradient-to: #ecfdf5;
+        }
+
+        .from-yellow-50 {
+            --tw-gradient-from: #fefce8;
+        }
+
+        .to-amber-50 {
+            --tw-gradient-to: #fffbeb;
+        }
 
         /* Rounded utilities */
-        .rounded-3xl { border-radius: 1.5rem; }
+        .rounded-3xl {
+            border-radius: 1.5rem;
+        }
 
         /* Shadow utilities */
-        .shadow-lg { 
+        .shadow-lg {
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
-        .shadow-2xl { 
+
+        .shadow-2xl {
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
 
@@ -86,467 +172,478 @@
         .hover\:scale-105:hover {
             transform: scale(1.05);
         }
+
         .group-hover\:scale-110:hover {
             transform: scale(1.1);
         }
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-    <div id="header-container"></div>
-    <div id="sidebar-container"></div>
-    
-    <div class="main-content" id="mainContent" style="display: none;">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <!-- Header Section -->
-            <div class="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-indigo-100">
-                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-                    <div class="mb-6 lg:mb-0">
-                        <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
-                            Admin <span class="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Dashboard</span>
-                        </h1>
-                        <p class="text-lg text-gray-600">System overview and management</p>
+<div id="header-container"></div>
+<div id="sidebar-container"></div>
+
+<div class="main-content" id="mainContent" style="display: none;">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header Section -->
+        <div class="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-indigo-100">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <div class="mb-6 lg:mb-0">
+                    <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+                        Admin <span class="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Dashboard</span>
+                    </h1>
+                    <p class="text-lg text-gray-600">System overview and management</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-3 rounded-2xl">
+                        <i class="fas fa-user-shield text-white text-xl"></i>
                     </div>
-                    <div class="flex items-center space-x-4">
-                        <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-3 rounded-2xl">
-                            <i class="fas fa-user-shield text-white text-xl"></i>
-                        </div>
+                    <div>
+                        <div class="text-lg font-semibold text-gray-900" id="adminName">Admin</div>
+                        <div class="text-sm text-indigo-600 font-medium">Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Overview -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">System Overview</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Total Users -->
+                <div class="bg-white rounded-3xl shadow-lg p-6 border border-indigo-100 hover:shadow-xl transition-all duration-300">
+                    <div class="flex items-center justify-between">
                         <div>
-                            <div class="text-lg font-semibold text-gray-900" id="adminName">Admin</div>
-                            <div class="text-sm text-indigo-600 font-medium">Administrator</div>
+                            <h3 class="text-3xl font-bold text-gray-900" id="totalUsers">0</h3>
+                            <p class="text-sm text-gray-600 mt-1">Total Users</p>
+                            <div class="flex items-center mt-2">
+                                <i class="fas fa-arrow-up text-green-500 text-xs mr-1"></i>
+                                <span class="text-green-500 text-sm font-medium" id="usersChange">+0%</span>
+                            </div>
+                        </div>
+                        <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #6366f1, #4f46e5); border-radius: 16px; position: relative; margin: 0; padding: 0; box-sizing: border-box;">
+                            <i class="fas fa-users"
+                               style="color: white; font-size: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0; padding: 0; line-height: 1;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Transactions -->
+                <div class="bg-white rounded-3xl shadow-lg p-6 border border-purple-100 hover:shadow-xl transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-3xl font-bold text-gray-900" id="totalTransactions">0</h3>
+                            <p class="text-sm text-gray-600 mt-1">Total Transactions</p>
+                            <div class="flex items-center mt-2">
+                                <i class="fas fa-arrow-up text-green-500 text-xs mr-1"></i>
+                                <span class="text-green-500 text-sm font-medium" id="transactionsChange">+0%</span>
+                            </div>
+                        </div>
+                        <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #a855f7, #9333ea); border-radius: 16px; position: relative; margin: 0; padding: 0; box-sizing: border-box;">
+                            <i class="fas fa-chart-line"
+                               style="color: white; font-size: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0; padding: 0; line-height: 1;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Revenue -->
+                <div class="bg-white rounded-3xl shadow-lg p-6 border border-blue-100 hover:shadow-xl transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-3xl font-bold text-gray-900" id="totalRevenue">$0</h3>
+                            <p class="text-sm text-gray-600 mt-1">Total Revenue</p>
+                            <div class="flex items-center mt-2">
+                                <i class="fas fa-arrow-up text-green-500 text-xs mr-1"></i>
+                                <span class="text-green-500 text-sm font-medium" id="revenueChange">+0%</span>
+                            </div>
+                        </div>
+                        <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 16px; position: relative; margin: 0; padding: 0; box-sizing: border-box;">
+                            <i class="fas fa-dollar-sign"
+                               style="color: white; font-size: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0; padding: 0; line-height: 1;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Premium Users -->
+                <div class="bg-white rounded-3xl shadow-lg p-6 border border-amber-100 hover:shadow-xl transition-all duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-3xl font-bold text-gray-900" id="premiumUsers">0</h3>
+                            <p class="text-sm text-gray-600 mt-1">Premium Users</p>
+                            <div class="flex items-center mt-2">
+                                <i class="fas fa-arrow-up text-green-500 text-xs mr-1"></i>
+                                <span class="text-green-500 text-sm font-medium" id="premiumChange">+0%</span>
+                            </div>
+                        </div>
+                        <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 16px; position: relative; margin: 0; padding: 0; box-sizing: border-box;">
+                            <svg style="width: 20px; height: 20px; color: white; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0; padding: 0;"
+                                 fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                      d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732L14.146 12.8l-1.179 4.456a1 1 0 01-1.934 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732L9.854 7.2l1.179-4.456A1 1 0 0112 2z"
+                                      clip-rule="evenodd"/>
+                            </svg>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Statistics Overview -->
-            <div class="mb-8">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">System Overview</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- Total Users -->
-                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-indigo-100 hover:shadow-xl transition-all duration-300">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-3xl font-bold text-gray-900" id="totalUsers">0</h3>
-                                <p class="text-sm text-gray-600 mt-1">Total Users</p>
-                                <div class="flex items-center mt-2">
-                                    <i class="fas fa-arrow-up text-green-500 text-xs mr-1"></i>
-                                    <span class="text-green-500 text-sm font-medium" id="usersChange">+0%</span>
-                                </div>
+        <!-- Quick Actions & Recent Activity -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-3xl shadow-lg p-8 border border-indigo-100">
+                <h3 class="text-xl font-bold text-gray-900 mb-6">Quick Actions</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <a href="../user-management"
+                       class="group bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-6 border border-indigo-100 hover:shadow-lg transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300 flex items-center justify-center w-12 h-12">
+                                <span class="text-white text-xl" style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center;">👥</span>
                             </div>
-                            <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #6366f1, #4f46e5); border-radius: 16px; position: relative; margin: 0; padding: 0; box-sizing: border-box;">
-                                <i class="fas fa-users" style="color: white; font-size: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0; padding: 0; line-height: 1;"></i>
+                            <div>
+                                <h4 class="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">User Management</h4>
+                                <p class="text-sm text-gray-600">Manage accounts</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <div class="group bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100 hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer"
+                         onclick="exportData()">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-gradient-to-r from-purple-500 to-pink-600 p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300 flex items-center justify-center w-12 h-12">
+                                <span class="text-white text-xl" style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center;">📥</span>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">Export Data</h4>
+                                <p class="text-sm text-gray-600">Download reports</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Total Transactions -->
-                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-purple-100 hover:shadow-xl transition-all duration-300">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-3xl font-bold text-gray-900" id="totalTransactions">0</h3>
-                                <p class="text-sm text-gray-600 mt-1">Total Transactions</p>
-                                <div class="flex items-center mt-2">
-                                    <i class="fas fa-arrow-up text-green-500 text-xs mr-1"></i>
-                                    <span class="text-green-500 text-sm font-medium" id="transactionsChange">+0%</span>
-                                </div>
+                    <div class="group bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100 hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer"
+                         onclick="systemSettings()">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300 flex items-center justify-center w-12 h-12">
+                                <span class="text-white text-xl" style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center;">⚙️</span>
                             </div>
-                            <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #a855f7, #9333ea); border-radius: 16px; position: relative; margin: 0; padding: 0; box-sizing: border-box;">
-                                <i class="fas fa-chart-line" style="color: white; font-size: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0; padding: 0; line-height: 1;"></i>
+                            <div>
+                                <h4 class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">System Settings</h4>
+                                <p class="text-sm text-gray-600">Configure system</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Total Revenue -->
-                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-blue-100 hover:shadow-xl transition-all duration-300">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-3xl font-bold text-gray-900" id="totalRevenue">$0</h3>
-                                <p class="text-sm text-gray-600 mt-1">Total Revenue</p>
-                                <div class="flex items-center mt-2">
-                                    <i class="fas fa-arrow-up text-green-500 text-xs mr-1"></i>
-                                    <span class="text-green-500 text-sm font-medium" id="revenueChange">+0%</span>
-                                </div>
+                    <a href="../system-log"
+                       class="group bg-gradient-to-r from-amber-50 to-yellow-50 rounded-2xl p-6 border border-amber-100 hover:shadow-lg transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-gradient-to-r from-amber-500 to-yellow-600 p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300 flex items-center justify-center w-12 h-12">
+                                <span class="text-white text-xl" style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center;">📋</span>
                             </div>
-                            <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 16px; position: relative; margin: 0; padding: 0; box-sizing: border-box;">
-                                <i class="fas fa-dollar-sign" style="color: white; font-size: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0; padding: 0; line-height: 1;"></i>
+                            <div>
+                                <h4 class="font-semibold text-gray-900 group-hover:text-amber-600 transition-colors">System Logs</h4>
+                                <p class="text-sm text-gray-600">View activity</p>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Premium Users -->
-                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-amber-100 hover:shadow-xl transition-all duration-300">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-3xl font-bold text-gray-900" id="premiumUsers">0</h3>
-                                <p class="text-sm text-gray-600 mt-1">Premium Users</p>
-                                <div class="flex items-center mt-2">
-                                    <i class="fas fa-arrow-up text-green-500 text-xs mr-1"></i>
-                                    <span class="text-green-500 text-sm font-medium" id="premiumChange">+0%</span>
-                                </div>
-                            </div>
-                            <div style="width: 56px; height: 56px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 16px; position: relative; margin: 0; padding: 0; box-sizing: border-box;">
-                                <svg style="width: 20px; height: 20px; color: white; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0; padding: 0;" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732L14.146 12.8l-1.179 4.456a1 1 0 01-1.934 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732L9.854 7.2l1.179-4.456A1 1 0 0112 2z" clip-rule="evenodd"/>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
+                    </a>
                 </div>
             </div>
 
-            <!-- Quick Actions & Recent Activity -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                <!-- Quick Actions -->
-                <div class="bg-white rounded-3xl shadow-lg p-8 border border-indigo-100">
-                    <h3 class="text-xl font-bold text-gray-900 mb-6">Quick Actions</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <a href="../user-management" class="group bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-6 border border-indigo-100 hover:shadow-lg transition-all duration-300 hover:scale-105">
-                            <div class="flex items-center space-x-4">
-                                <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300 flex items-center justify-center w-12 h-12">
-                                    <span class="text-white text-xl" style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center;">👥</span>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">User Management</h4>
-                                    <p class="text-sm text-gray-600">Manage accounts</p>
-                                </div>
-                            </div>
-                        </a>
-
-                        <div class="group bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100 hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer" onclick="exportData()">
-                            <div class="flex items-center space-x-4">
-                                <div class="bg-gradient-to-r from-purple-500 to-pink-600 p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300 flex items-center justify-center w-12 h-12">
-                                    <span class="text-white text-xl" style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center;">📥</span>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">Export Data</h4>
-                                    <p class="text-sm text-gray-600">Download reports</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="group bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100 hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer" onclick="systemSettings()">
-                            <div class="flex items-center space-x-4">
-                                <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300 flex items-center justify-center w-12 h-12">
-                                    <span class="text-white text-xl" style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center;">⚙️</span>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">System Settings</h4>
-                                    <p class="text-sm text-gray-600">Configure system</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <a href="../system-log" class="group bg-gradient-to-r from-amber-50 to-yellow-50 rounded-2xl p-6 border border-amber-100 hover:shadow-lg transition-all duration-300 hover:scale-105">
-                            <div class="flex items-center space-x-4">
-                                <div class="bg-gradient-to-r from-amber-500 to-yellow-600 p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300 flex items-center justify-center w-12 h-12">
-                                    <span class="text-white text-xl" style="font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center;">📋</span>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-gray-900 group-hover:text-amber-600 transition-colors">System Logs</h4>
-                                    <p class="text-sm text-gray-600">View activity</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Recent Activity -->
-                <div class="bg-white rounded-3xl shadow-lg p-8 border border-purple-100">
-                    <h3 class="text-xl font-bold text-gray-900 mb-6">Recent Activity</h3>
-                    <div class="space-y-4" id="recentActivity">
-                        <!-- Activities will be loaded here -->
-                    </div>
+            <!-- Recent Activity -->
+            <div class="bg-white rounded-3xl shadow-lg p-8 border border-purple-100">
+                <h3 class="text-xl font-bold text-gray-900 mb-6">Recent Activity</h3>
+                <div class="space-y-4" id="recentActivity">
+                    <!-- Activities will be loaded here -->
                 </div>
             </div>
+        </div>
 
-            <!-- System Status -->
-            <div class="bg-white rounded-3xl shadow-lg p-8 border border-blue-100">
-                <h3 class="text-xl font-bold text-gray-900 mb-6">System Status</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-100">
-                        <div>
-                            <h4 class="font-semibold text-gray-900">Database</h4>
-                            <p class="text-sm text-gray-600 mt-1">All connections healthy</p>
-                        </div>
-                        <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+        <!-- System Status -->
+        <div class="bg-white rounded-3xl shadow-lg p-8 border border-blue-100">
+            <h3 class="text-xl font-bold text-gray-900 mb-6">System Status</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-100">
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Database</h4>
+                        <p class="text-sm text-gray-600 mt-1">All connections healthy</p>
                     </div>
+                    <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                </div>
 
-                    <div class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-100">
-                        <div>
-                            <h4 class="font-semibold text-gray-900">API Services</h4>
-                            <p class="text-sm text-gray-600 mt-1">All endpoints responding</p>
-                        </div>
-                        <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <div class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-100">
+                    <div>
+                        <h4 class="font-semibold text-gray-900">API Services</h4>
+                        <p class="text-sm text-gray-600 mt-1">All endpoints responding</p>
                     </div>
+                    <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                </div>
 
-                    <div class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-100">
-                        <div>
-                            <h4 class="font-semibold text-gray-900">Payment System</h4>
-                            <p class="text-sm text-gray-600 mt-1">Processing operational</p>
-                        </div>
-                        <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <div class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-100">
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Payment System</h4>
+                        <p class="text-sm text-gray-600 mt-1">Processing operational</p>
                     </div>
+                    <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                </div>
 
-                    <div class="flex items-center justify-between p-4 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-2xl border border-yellow-100">
-                        <div>
-                            <h4 class="font-semibold text-gray-900">Server Load</h4>
-                            <p class="text-sm text-gray-600 mt-1">Moderate - 65% CPU</p>
-                        </div>
-                        <div class="w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></div>
+                <div class="flex items-center justify-between p-4 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-2xl border border-yellow-100">
+                    <div>
+                        <h4 class="font-semibold text-gray-900">Server Load</h4>
+                        <p class="text-sm text-gray-600 mt-1">Moderate - 65% CPU</p>
                     </div>
+                    <div class="w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+</div>
 
-    <script>
-        let currentUser = null;
+<script>
+    let currentUser = null;
 
-        // Initialize when DOM is ready
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Initialize Lucide icons
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
-            }
+    // Initialize when DOM is ready
+    document.addEventListener('DOMContentLoaded', async function () {
+        // Initialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
 
-            // Load header and sidebar first
-            try {
-                await Promise.all([
-                    loadHeader ? loadHeader() : Promise.resolve(),
-                    loadSideBarSimple ? loadSideBarSimple() : Promise.resolve()
-                ]);
-            } catch (error) {
-                console.error('Error loading header/sidebar:', error);
-            }
-            // Check session validity
-            const loginTimestamp = sessionStorage.getItem('loginTimestamp');
-            const token = sessionStorage.getItem('token');
-            const userData = sessionStorage.getItem('userData');
-            
-            if (!token || !userData || !loginTimestamp) {
-                console.log('[AUTH] No valid session found, redirecting to login');
-                window.location.href = '../login';
-                return;
-            }
-            
-            // Check if session has expired (24 hours)
-            const loginTime = parseInt(loginTimestamp);
-            const currentTime = Date.now();
-            const sessionTimeout = 24 * 60 * 60 * 1000; // 24 hours
-            
-            if (currentTime - loginTime > sessionTimeout) {
-                console.log('[AUTH] Session expired, redirecting to login');
-                sessionStorage.clear();
-                window.location.href = '../login';
-                return;
-            }
+        // Load header and sidebar first
+        try {
+            await Promise.all([
+                loadHeader ? loadHeader() : Promise.resolve(),
+                loadSideBarSimple ? loadSideBarSimple() : Promise.resolve()
+            ]);
+        } catch (error) {
+            console.error('Error loading header/sidebar:', error);
+        }
+        // Check session validity
+        const loginTimestamp = sessionStorage.getItem('loginTimestamp');
+        const token = sessionStorage.getItem('token');
+        const userData = sessionStorage.getItem('userData');
 
-            console.log('[AUTH] Checking authentication status and admin role');
-            try {
-                const response = await fetch('http://localhost:8080/api/v1/auth/verify-token', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+        if (!token || !userData || !loginTimestamp) {
+            console.log('[AUTH] No valid session found, redirecting to login');
+            window.location.href = '../login';
+            return;
+        }
 
-                let data;
-                try {
-                    data = await response.json();
-                } catch (e) {
-                    console.error('[AUTH] Error parsing response:', e);
-                    redirectToLogin();
-                    return;
-                }
+        // Check if session has expired (24 hours)
+        const loginTime = parseInt(loginTimestamp);
+        const currentTime = Date.now();
+        const sessionTimeout = 24 * 60 * 60 * 1000; // 24 hours
 
-                if (data.code !== 1000) {
-                    console.log('[AUTH] Token verification failed:', data.message);
-                    redirectToLogin();
-                    return;
-                }
-
-                // Check if user has ADMIN role
-                try {
-                    const payload = JSON.parse(atob(token.split('.')[1]));
-                    const userRole = payload.scope;
-                    console.log('[AUTH] User role from token:', userRole);
-                    
-                    if (userRole !== 'ADMIN') {
-                        console.log('[AUTH] Access denied: User does not have ADMIN role');
-                        alert('Access denied. This page is only available for administrators.');
-                        window.location.href = '../home';
-                        return;
-                    }
-                } catch (e) {
-                    console.error('[AUTH] Error parsing token payload:', e);
-                    redirectToLogin();
-                    return;
-                }
-
-                // Authentication successful and user is admin
-                const mainContent = document.querySelector('.main-content');
-                if (mainContent) mainContent.style.display = 'block';
-
-                // Update admin info
-                const userInfo = JSON.parse(userData);
-                const adminName = userInfo.name || userInfo.email.split('@')[0];
-                const adminNameElement = document.getElementById('adminName');
-                if (adminNameElement) {
-                    adminNameElement.textContent = adminName;
-                }
-                
-                currentUser = userInfo;
-
-                // Load dashboard data
-                await loadDashboardData();
-
-            } catch (error) {
-                console.error('[AUTH] Error verifying token:', error);
-                redirectToLogin();
-            }
-        });
-
-        function redirectToLogin() {
+        if (currentTime - loginTime > sessionTimeout) {
+            console.log('[AUTH] Session expired, redirecting to login');
             sessionStorage.clear();
             window.location.href = '../login';
+            return;
         }
 
-        async function loadDashboardData() {
-            try {
-                await Promise.all([
-                    loadSystemStats(),
-                    loadRecentActivity()
-                ]);
-            } catch (error) {
-                console.error('Error loading dashboard data:', error);
-            }
-        }
-
-        async function loadSystemStats() {
-            try {
-                const token = sessionStorage.getItem('token');
-                
-                // Load users data
-                const usersResponse = await fetch('http://localhost:8080/api/admin/users?page=0&size=1000', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if (usersResponse.ok) {
-                    const usersData = await usersResponse.json();
-                    const users = usersData.content;
-                    
-                    // Calculate statistics
-                    const totalUsers = users.length;
-                    const premiumUsers = users.filter(u => u.isPremium && !u.isDelete).length;
-                    const activeUsers = users.filter(u => !u.isDelete).length;
-                    const thirtyDaysAgo = new Date(Date.now() - (30 * 24 * 60 * 60 * 1000));
-                    const lastLoginActiveUsers = users.filter(u => {
-                        if (u.isDelete) return false;
-                        const lastLoginDate = u.lastLoginAt ? new Date(u.lastLoginAt) : null;
-                        return lastLoginDate && lastLoginDate >= thirtyDaysAgo;
-                    }).length;
-                    
-                    // Update UI with real data
-                    document.getElementById('totalUsers').textContent = totalUsers.toLocaleString();
-                    document.getElementById('premiumUsers').textContent = premiumUsers.toLocaleString();
-                    
-                    // Calculate estimated transactions and revenue based on real data
-                    const estimatedTransactions = totalUsers * 8 + premiumUsers * 12; // Premium users make more transactions
-                    const estimatedRevenue = premiumUsers * 29.99 + activeUsers * 2.5; // Estimated monthly revenue
-                    
-                    document.getElementById('totalTransactions').textContent = estimatedTransactions.toLocaleString();
-                    document.getElementById('totalRevenue').textContent = `$${estimatedRevenue.toFixed(2)}`;
-                    
-                    // Get previous stats for percentage calculation
-                    const prevStats = JSON.parse(localStorage.getItem('adminStats') || '{}');
-                    
-                    // Calculate percentage changes
-                    const usersChange = calculateChange(prevStats.totalUsers, totalUsers);
-                    const premiumChange = calculateChange(prevStats.premiumUsers, premiumUsers);
-                    const transactionsChange = calculateChange(prevStats.transactions, estimatedTransactions);
-                    const revenueChange = calculateChange(prevStats.revenue, estimatedRevenue);
-                    
-                    // Update percentage displays
-                    document.getElementById('usersChange').textContent = formatPercentage(usersChange);
-                    document.getElementById('premiumChange').textContent = formatPercentage(premiumChange);
-                    document.getElementById('transactionsChange').textContent = formatPercentage(transactionsChange);
-                    document.getElementById('revenueChange').textContent = formatPercentage(revenueChange);
-                    
-                    // Save current stats for next time
-                    const currentStats = {
-                        totalUsers: totalUsers,
-                        premiumUsers: premiumUsers,
-                        transactions: estimatedTransactions,
-                        revenue: estimatedRevenue
-                    };
-                    localStorage.setItem('adminStats', JSON.stringify(currentStats));
+        console.log('[AUTH] Checking authentication status and admin role');
+        try {
+            const response = await fetch('http://localhost:8080/api/v1/auth/verify-token', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
                 }
-            } catch (error) {
-                console.error('Error loading system stats:', error);
+            });
+
+            let data;
+            try {
+                data = await response.json();
+            } catch (e) {
+                console.error('[AUTH] Error parsing response:', e);
+                redirectToLogin();
+                return;
             }
-        }
 
-        async function loadRecentActivity() {
-            const activities = [
-                {
-                    icon: 'fas fa-user-plus',
-                    title: 'New user registered',
-                    description: 'john.doe@example.com joined the platform',
-                    time: '5 minutes ago',
-                    type: 'user'
-                },
-                {
-                    icon: 'fas fa-credit-card',
-                    title: 'Premium subscription activated',
-                    description: 'User upgraded to premium plan',
-                    time: '12 minutes ago',
-                    type: 'payment'
-                },
-                {
-                    icon: 'fas fa-exclamation-triangle',
-                    title: 'System alert',
-                    description: 'High CPU usage detected on server 2',
-                    time: '1 hour ago',
-                    type: 'alert'
-                },
-                {
-                    icon: 'fas fa-cog',
-                    title: 'System maintenance completed',
-                    description: 'Database optimization finished successfully',
-                    time: '2 hours ago',
-                    type: 'system'
-                },
-                {
-                    icon: 'fas fa-users',
-                    title: 'Bulk user import',
-                    description: '150 users imported from CSV file',
-                    time: '3 hours ago',
-                    type: 'user'
+            if (data.code !== 1000) {
+                console.log('[AUTH] Token verification failed:', data.message);
+                redirectToLogin();
+                return;
+            }
+
+            // Check if user has ADMIN role
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const userRole = payload.scope;
+                console.log('[AUTH] User role from token:', userRole);
+
+                if (userRole !== 'ADMIN') {
+                    console.log('[AUTH] Access denied: User does not have ADMIN role');
+                    alert('Access denied. This page is only available for administrators.');
+                    window.location.href = '../home';
+                    return;
                 }
-            ];
+            } catch (e) {
+                console.error('[AUTH] Error parsing token payload:', e);
+                redirectToLogin();
+                return;
+            }
 
-            const activityList = document.getElementById('recentActivity');
-            if (activityList) {
-                activityList.innerHTML = activities.map(activity => {
-                    let iconColor = 'from-gray-500 to-gray-600';
-                    switch(activity.type) {
-                        case 'user':
-                            iconColor = 'from-indigo-500 to-purple-600';
-                            break;
-                        case 'payment':
-                            iconColor = 'from-green-500 to-emerald-600';
-                            break;
-                        case 'alert':
-                            iconColor = 'from-red-500 to-orange-600';
-                            break;
-                        case 'system':
-                            iconColor = 'from-blue-500 to-indigo-600';
-                            break;
-                    }
-                    
-                    return `
+            // Authentication successful and user is admin
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) mainContent.style.display = 'block';
+
+            // Update admin info
+            const userInfo = JSON.parse(userData);
+            const adminName = userInfo.name || userInfo.email.split('@')[0];
+            const adminNameElement = document.getElementById('adminName');
+            if (adminNameElement) {
+                adminNameElement.textContent = adminName;
+            }
+
+            currentUser = userInfo;
+
+            // Load dashboard data
+            await loadDashboardData();
+
+        } catch (error) {
+            console.error('[AUTH] Error verifying token:', error);
+            redirectToLogin();
+        }
+    });
+
+    function redirectToLogin() {
+        sessionStorage.clear();
+        window.location.href = '../login';
+    }
+
+    async function loadDashboardData() {
+        try {
+            await Promise.all([
+                loadSystemStats(),
+                loadRecentActivity()
+            ]);
+        } catch (error) {
+            console.error('Error loading dashboard data:', error);
+        }
+    }
+
+    async function loadSystemStats() {
+        try {
+            const token = sessionStorage.getItem('token');
+
+            // Load users data
+            const usersResponse = await fetch('http://localhost:8080/api/admin/users?page=0&size=1000', {
+                headers: {'Authorization': `Bearer ${token}`}
+            });
+
+            if (usersResponse.ok) {
+                const usersData = await usersResponse.json();
+                const users = usersData.content;
+
+                // Calculate statistics
+                const totalUsers = users.length;
+                const premiumUsers = users.filter(u => u.isPremium && !u.isDelete).length;
+                const activeUsers = users.filter(u => !u.isDelete).length;
+                const thirtyDaysAgo = new Date(Date.now() - (30 * 24 * 60 * 60 * 1000));
+                const lastLoginActiveUsers = users.filter(u => {
+                    if (u.isDelete) return false;
+                    const lastLoginDate = u.lastLoginAt ? new Date(u.lastLoginAt) : null;
+                    return lastLoginDate && lastLoginDate >= thirtyDaysAgo;
+                }).length;
+
+                // Update UI with real data
+                document.getElementById('totalUsers').textContent = totalUsers.toLocaleString();
+                document.getElementById('premiumUsers').textContent = premiumUsers.toLocaleString();
+
+                // Calculate estimated transactions and revenue based on real data
+                const estimatedTransactions = totalUsers * 8 + premiumUsers * 12; // Premium users make more transactions
+                const estimatedRevenue = premiumUsers * 29.99 + activeUsers * 2.5; // Estimated monthly revenue
+
+                document.getElementById('totalTransactions').textContent = estimatedTransactions.toLocaleString();
+                document.getElementById('totalRevenue').textContent = `$${estimatedRevenue.toFixed(2)}`;
+
+                // Get previous stats for percentage calculation
+                const prevStats = JSON.parse(localStorage.getItem('adminStats') || '{}');
+
+                // Calculate percentage changes
+                const usersChange = calculateChange(prevStats.totalUsers, totalUsers);
+                const premiumChange = calculateChange(prevStats.premiumUsers, premiumUsers);
+                const transactionsChange = calculateChange(prevStats.transactions, estimatedTransactions);
+                const revenueChange = calculateChange(prevStats.revenue, estimatedRevenue);
+
+                // Update percentage displays
+                document.getElementById('usersChange').textContent = formatPercentage(usersChange);
+                document.getElementById('premiumChange').textContent = formatPercentage(premiumChange);
+                document.getElementById('transactionsChange').textContent = formatPercentage(transactionsChange);
+                document.getElementById('revenueChange').textContent = formatPercentage(revenueChange);
+
+                // Save current stats for next time
+                const currentStats = {
+                    totalUsers: totalUsers,
+                    premiumUsers: premiumUsers,
+                    transactions: estimatedTransactions,
+                    revenue: estimatedRevenue
+                };
+                localStorage.setItem('adminStats', JSON.stringify(currentStats));
+            }
+        } catch (error) {
+            console.error('Error loading system stats:', error);
+        }
+    }
+
+    async function loadRecentActivity() {
+        const activities = [
+            {
+                icon: 'fas fa-user-plus',
+                title: 'New user registered',
+                description: 'john.doe@example.com joined the platform',
+                time: '5 minutes ago',
+                type: 'user'
+            },
+            {
+                icon: 'fas fa-credit-card',
+                title: 'Premium subscription activated',
+                description: 'User upgraded to premium plan',
+                time: '12 minutes ago',
+                type: 'payment'
+            },
+            {
+                icon: 'fas fa-exclamation-triangle',
+                title: 'System alert',
+                description: 'High CPU usage detected on server 2',
+                time: '1 hour ago',
+                type: 'alert'
+            },
+            {
+                icon: 'fas fa-cog',
+                title: 'System maintenance completed',
+                description: 'Database optimization finished successfully',
+                time: '2 hours ago',
+                type: 'system'
+            },
+            {
+                icon: 'fas fa-users',
+                title: 'Bulk user import',
+                description: '150 users imported from CSV file',
+                time: '3 hours ago',
+                type: 'user'
+            }
+        ];
+
+        const activityList = document.getElementById('recentActivity');
+        if (activityList) {
+            activityList.innerHTML = activities.map(activity => {
+                let iconColor = 'from-gray-500 to-gray-600';
+                switch (activity.type) {
+                    case 'user':
+                        iconColor = 'from-indigo-500 to-purple-600';
+                        break;
+                    case 'payment':
+                        iconColor = 'from-green-500 to-emerald-600';
+                        break;
+                    case 'alert':
+                        iconColor = 'from-red-500 to-orange-600';
+                        break;
+                    case 'system':
+                        iconColor = 'from-blue-500 to-indigo-600';
+                        break;
+                }
+
+                return `
                         <div class="flex items-start space-x-4 p-4 bg-gradient-to-r from-gray-50 to-white rounded-2xl border border-gray-100 hover:shadow-md transition-all duration-300">
                             <div class="bg-gradient-to-r ${iconColor} p-2 rounded-xl flex-shrink-0">
                                 <i class="${activity.icon} text-white text-sm"></i>
@@ -558,35 +655,35 @@
                             </div>
                         </div>
                     `;
-                }).join('');
-            }
+            }).join('');
         }
+    }
 
-        // Quick action functions
-        function exportData() {
-            alert('Export functionality will be implemented here');
-        }
+    // Quick action functions
+    function exportData() {
+        alert('Export functionality will be implemented here');
+    }
 
-        function systemSettings() {
-            alert('System settings panel will be implemented here');
-        }
+    function systemSettings() {
+        alert('System settings panel will be implemented here');
+    }
 
-        function viewLogs() {
-            alert('System logs viewer will be implemented here');
-        }
+    function viewLogs() {
+        alert('System logs viewer will be implemented here');
+    }
 
-        // Helper functions for percentage calculation
-        function calculateChange(oldValue, newValue) {
-            if (!oldValue || oldValue === 0) {
-                return newValue > 0 ? 15 : 0; // Default positive growth
-            }
-            return ((newValue - oldValue) / oldValue) * 100;
+    // Helper functions for percentage calculation
+    function calculateChange(oldValue, newValue) {
+        if (!oldValue || oldValue === 0) {
+            return newValue > 0 ? 15 : 0; // Default positive growth
         }
+        return ((newValue - oldValue) / oldValue) * 100;
+    }
 
-        function formatPercentage(change) {
-            const sign = change >= 0 ? '+' : '';
-            return `${sign}${change.toFixed(1)}%`;
-        }
-    </script>
+    function formatPercentage(change) {
+        const sign = change >= 0 ? '+' : '';
+        return `${sign}${change.toFixed(1)}%`;
+    }
+</script>
 </body>
 </html> 

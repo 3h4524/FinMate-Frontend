@@ -167,7 +167,7 @@ document.getElementById('register-form').addEventListener('submit', async functi
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name, email, password })
+            body: JSON.stringify({name, email, password})
         });
 
         const data = await response.json();
@@ -200,7 +200,7 @@ document.getElementById('register-form').addEventListener('submit', async functi
 document.addEventListener('DOMContentLoaded', function () {
     initPasswordValidation();
     initPasswordToggle();
-    
+
     // Initialize Google Sign-In
     import('./googleAuth.js').then(module => {
         module.initGoogleSignIn('signup_with');

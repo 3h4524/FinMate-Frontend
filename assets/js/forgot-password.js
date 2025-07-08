@@ -42,7 +42,7 @@ async function sendResetLink(email) {
                 'Content-Type': 'application/json'
             },
             credentials: 'include',
-            body: JSON.stringify({ email })
+            body: JSON.stringify({email})
         });
 
         const data = await response.json();

@@ -63,7 +63,7 @@ const isLoggedIn = () => {
 
 const getAuthHeaders = () => {
     const token = getToken();
-    return token ? { 'Authorization': `Bearer ${token}` } : {};
+    return token ? {'Authorization': `Bearer ${token}`} : {};
 };
 
 const apiRequest = async (url, options = {}) => {

@@ -14,7 +14,7 @@
     <script>
         // Clear any existing session data when login page loads
         // This ensures that when user closes browser and reopens, they must login again
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             // Clear any existing session data - CHỈ CLEAR KHI CẦN THIẾT
             if (window.location.search.includes('logout=true')) {
                 sessionStorage.clear();
@@ -150,8 +150,8 @@
             height: 90px;
             border-radius: 50%;
             background: conic-gradient(#6366f1 0deg 120deg,
-                    #8b5cf6 120deg 240deg,
-                    #a78bfa 240deg 360deg);
+            #8b5cf6 120deg 240deg,
+            #a78bfa 240deg 360deg);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -489,81 +489,81 @@
 </head>
 
 <body>
-    <!-- Add notification container -->
-    <div id="notification" class="notification">
-        <i class="fas fa-info-circle"></i>
-        <span id="notification-message"></span>
-        <i class="fas fa-times notification-close" onclick="hideNotification()"></i>
-    </div>
+<!-- Add notification container -->
+<div id="notification" class="notification">
+    <i class="fas fa-info-circle"></i>
+    <span id="notification-message"></span>
+    <i class="fas fa-times notification-close" onclick="hideNotification()"></i>
+</div>
 
-    <div class="container">
-        <div class="left-panel">
-            <div class="logo">
-                <i class="fas fa-chart-line"></i>
-                <span>FINMATE</span>
-            </div>
+<div class="container">
+    <div class="left-panel">
+        <div class="logo">
+            <i class="fas fa-chart-line"></i>
+            <span>FINMATE</span>
+        </div>
 
-            <div class="stats-container">
-                <div class="main-stat">5K+</div>
-                <div class="stat-label">Join members love and trust our <br>FinMate better and better</div>
+        <div class="stats-container">
+            <div class="main-stat">5K+</div>
+            <div class="stat-label">Join members love and trust our <br>FinMate better and better</div>
 
-                <div class="progress-circle">
-                    <span>95%</span>
-                </div>
-            </div>
-
-            <div class="welcome-text">
-                <h2>Welcome back!</h2>
-                <p>Start managing your finance faster and better with our secure platform</p>
+            <div class="progress-circle">
+                <span>95%</span>
             </div>
         </div>
 
-        <div class="right-panel">
-            <div class="login-header">
-                <h2>Welcome back!</h2>
-                <p>Start managing your finance faster and better</p>
-            </div>
-
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginEmail">Email</label>
-                    <div class="input-wrapper">
-                        <input type="email" id="loginEmail" name="loginEmail" placeholder="Enter your email" required>
-                    </div>
-                    <div id="emailError" class="error-message"></div>
-                </div>
-
-                <div class="form-group">
-                    <label for="loginPassword">Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="loginPassword" name="loginPassword" placeholder="Enter your password"
-                            required>
-                        <i class="fas fa-eye-slash password-toggle" onclick="togglePassword()"></i>
-                    </div>
-                    <div id="passwordError" class="error-message"></div>
-                </div>
-
-                <div class="forgot-password">
-                    <a href="../forgot-password">Forgot password?</a>
-                </div>
-
-                <button type="submit" class="login-btn">Sign In</button>
-            </form>
-
-            <div class="divider">
-                <span>or continue with</span>
-            </div>
-
-            <div class="social-buttons">
-                <!-- Container for Google button -->
-                <div id="google-button"></div>
-            </div>
-
-            <div class="signup-link">
-                Don't have an account? <a href="../register">Sign Up</a>
-            </div>
+        <div class="welcome-text">
+            <h2>Welcome back!</h2>
+            <p>Start managing your finance faster and better with our secure platform</p>
         </div>
     </div>
+
+    <div class="right-panel">
+        <div class="login-header">
+            <h2>Welcome back!</h2>
+            <p>Start managing your finance faster and better</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <div class="input-wrapper">
+                    <input type="email" id="loginEmail" name="loginEmail" placeholder="Enter your email" required>
+                </div>
+                <div id="emailError" class="error-message"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="loginPassword" name="loginPassword" placeholder="Enter your password"
+                           required>
+                    <i class="fas fa-eye-slash password-toggle" onclick="togglePassword()"></i>
+                </div>
+                <div id="passwordError" class="error-message"></div>
+            </div>
+
+            <div class="forgot-password">
+                <a href="../forgot-password">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="login-btn">Sign In</button>
+        </form>
+
+        <div class="divider">
+            <span>or continue with</span>
+        </div>
+
+        <div class="social-buttons">
+            <!-- Container for Google button -->
+            <div id="google-button"></div>
+        </div>
+
+        <div class="signup-link">
+            Don't have an account? <a href="../register">Sign Up</a>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

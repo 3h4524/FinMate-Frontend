@@ -18,7 +18,6 @@ let allFeatures = [];
 let promotionalOffers = [];
 
 
-
 async function handlePaymentResult(urlParams, orderCode) {
     const couponId = urlParams.get('couponId') || null;
     const statusPayment = urlParams.get('status') || null;
@@ -60,6 +59,7 @@ async function handlePaymentResult(urlParams, orderCode) {
 }
 
 const COUPON_CODE_MAX_LENGTH = 50;
+
 // Load header and sidebar
 async function loadHeaderAndSidebar() {
     try {

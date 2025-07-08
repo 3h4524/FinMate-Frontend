@@ -10,19 +10,6 @@
     <script type="module" src="/assets/js/auth.js" defer></script>
     <script type="module" src="/assets/js/register.js" defer></script>
 
-    <script>
-        // Clear any existing session data when register page loads
-        // KHÔNG CLEAR session nữa vì gây redirect về login
-        // window.addEventListener('load', function() {
-        //     // Clear any existing session data
-        //     sessionStorage.clear();
-        //     localStorage.removeItem('token');
-        //     localStorage.removeItem('userData');
-        //     localStorage.removeItem('loginTimestamp');
-        //     console.log('Session cleared on register page load');
-        // });
-    </script>
-
     <style>
         * {
             margin: 0;
@@ -131,8 +118,8 @@
             height: 90px;
             border-radius: 50%;
             background: conic-gradient(#6366f1 0deg 120deg,
-                    #8b5cf6 120deg 240deg,
-                    #a78bfa 240deg 360deg);
+            #8b5cf6 120deg 240deg,
+            #a78bfa 240deg 360deg);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -495,100 +482,100 @@
 </head>
 
 <body>
-    <!-- Add notification container -->
-    <div id="notification" class="notification">
-        <i class="fas fa-info-circle"></i>
-        <span id="notification-message"></span>
-        <i class="fas fa-times notification-close" onclick="hideNotification()"></i>
-    </div>
+<!-- Add notification container -->
+<div id="notification" class="notification">
+    <i class="fas fa-info-circle"></i>
+    <span id="notification-message"></span>
+    <i class="fas fa-times notification-close" onclick="hideNotification()"></i>
+</div>
 
-    <div class="container">
-        <div class="left-panel">
-            <div class="logo">
-                <i class="fas fa-chart-line"></i>
-                <span>FINMATE</span>
-            </div>
+<div class="container">
+    <div class="left-panel">
+        <div class="logo">
+            <i class="fas fa-chart-line"></i>
+            <span>FINMATE</span>
+        </div>
 
-            <div class="stats-container">
-                <div class="main-stat">5K+</div>
-                <div class="stat-label">Join members love and trust our <br>FinMate better and better</div>
+        <div class="stats-container">
+            <div class="main-stat">5K+</div>
+            <div class="stat-label">Join members love and trust our <br>FinMate better and better</div>
 
-                <div class="progress-circle">
-                    <span>95%</span>
-                </div>
-            </div>
-
-            <div class="welcome-text">
-                <h2>Sign Up</h2>
-                <p>Join our community and start managing your finances smarter</p>
+            <div class="progress-circle">
+                <span>95%</span>
             </div>
         </div>
 
-        <div class="right-panel">
-            <div class="register-header">
-                <h2>Sign Up</h2>
-                <p>Join our community and start managing your finances smarter</p>
-            </div>
-
-            <form id="register-form">
-                <div class="form-group">
-                    <label for="name">Full Name</label>
-                    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
-                    <div id="nameError" class="error-message"></div>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" placeholder="Enter your email address" required>
-                    <div id="emailError" class="error-message"></div>
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="password" name="password" placeholder="Create a password" required>
-                        <i class="fas fa-eye-slash password-toggle" onclick="togglePassword()"></i>
-                    </div>
-                    <div id="passwordError" class="error-message"></div>
-                    <div class="password-requirements">
-                        <p>Password must contain:</p>
-                        <ul>
-                            <li id="length">At least 8 characters</li>
-                            <li id="uppercase">One uppercase letter</li>
-                            <li id="lowercase">One lowercase letter</li>
-                            <li id="number">One number</li>
-                            <li id="special">One special character</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="confirm-password">Confirm Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="confirm-password" name="confirm-password"
-                            placeholder="Confirm your password" required>
-                        <i class="fas fa-eye-slash password-toggle" onclick="toggleConfirmPassword()"></i>
-                    </div>
-                    <div id="confirmPasswordError" class="error-message"></div>
-                </div>
-
-                <button type="submit" class="register-btn">Sign Up</button>
-            </form>
-
-            <div class="divider">
-                <span>or continue with</span>
-            </div>
-
-            <div class="social-buttons">
-                <!-- Container for Google button -->
-                <div id="google-button"></div>
-            </div>
-
-            <div class="login-link">
-                Already have an account? <a href="../login/">Sign In</a>
-            </div>
+        <div class="welcome-text">
+            <h2>Sign Up</h2>
+            <p>Join our community and start managing your finances smarter</p>
         </div>
     </div>
+
+    <div class="right-panel">
+        <div class="register-header">
+            <h2>Sign Up</h2>
+            <p>Join our community and start managing your finances smarter</p>
+        </div>
+
+        <form id="register-form">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                <div id="nameError" class="error-message"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                <div id="emailError" class="error-message"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" name="password" placeholder="Create a password" required>
+                    <i class="fas fa-eye-slash password-toggle" onclick="togglePassword()"></i>
+                </div>
+                <div id="passwordError" class="error-message"></div>
+                <div class="password-requirements">
+                    <p>Password must contain:</p>
+                    <ul>
+                        <li id="length">At least 8 characters</li>
+                        <li id="uppercase">One uppercase letter</li>
+                        <li id="lowercase">One lowercase letter</li>
+                        <li id="number">One number</li>
+                        <li id="special">One special character</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="confirm-password" name="confirm-password"
+                           placeholder="Confirm your password" required>
+                    <i class="fas fa-eye-slash password-toggle" onclick="toggleConfirmPassword()"></i>
+                </div>
+                <div id="confirmPasswordError" class="error-message"></div>
+            </div>
+
+            <button type="submit" class="register-btn">Sign Up</button>
+        </form>
+
+        <div class="divider">
+            <span>or continue with</span>
+        </div>
+
+        <div class="social-buttons">
+            <!-- Container for Google button -->
+            <div id="google-button"></div>
+        </div>
+
+        <div class="login-link">
+            Already have an account? <a href="../login/">Sign In</a>
+        </div>
+    </div>
+</div>
 </body>
 
 </html>

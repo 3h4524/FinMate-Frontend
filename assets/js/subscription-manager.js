@@ -279,7 +279,6 @@ function renderPackages(packagesData) {
 }
 
 
-
 // Map feature codes to feature names for display
 const getFeatureName = (featureCode) => {
     const feature = allFeatures.find(f => f.featureCode === featureCode);
@@ -461,9 +460,9 @@ function renderPagination() {
         for (let i = 0; i < totalPages; i++) {
             pages.push(`
                 <button onclick="changePage(${i})" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium ${i === currentPage
-                    ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
-                    : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                }">
+                ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
+                : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+            }">
                     ${i + 1}
                 </button>
             `);
@@ -554,7 +553,7 @@ function setupCheckBoxCreateOffer() {
 
             if (this.checked) {
                 if (!selectedList.some(item => item.id === packageId)) {
-                    selectedList.push({ id: packageId, name: pkg ? pkg.name : 'Unknown' });
+                    selectedList.push({id: packageId, name: pkg ? pkg.name : 'Unknown'});
                     if (selectedList.length != 0) buttonCreatePromotional.classList.remove("hidden");
                 }
                 // Hide edit and delete buttons
@@ -992,17 +991,17 @@ async function loadStats() {
 
         // Update DOM elements safely
         const elements = [
-            { id: 'totalRevenue', value: stats.totalRevenue },
-            { id: 'revenueChange', value: stats.revenueChange },
-            { id: 'totalSubscribers', value: stats.totalSubscribers },
-            { id: 'subscribersChange', value: stats.subscribersChange },
-            { id: 'conversionRate', value: stats.conversionRate },
-            { id: 'conversionChange', value: stats.conversionChange },
-            { id: 'avgRevenue', value: stats.avgRevenue },
-            { id: 'avgRevenueChange', value: stats.avgRevenueChange }
+            {id: 'totalRevenue', value: stats.totalRevenue},
+            {id: 'revenueChange', value: stats.revenueChange},
+            {id: 'totalSubscribers', value: stats.totalSubscribers},
+            {id: 'subscribersChange', value: stats.subscribersChange},
+            {id: 'conversionRate', value: stats.conversionRate},
+            {id: 'conversionChange', value: stats.conversionChange},
+            {id: 'avgRevenue', value: stats.avgRevenue},
+            {id: 'avgRevenueChange', value: stats.avgRevenueChange}
         ];
 
-        elements.forEach(({ id, value }) => {
+        elements.forEach(({id, value}) => {
             const element = document.getElementById(id);
             if (element) element.textContent = value;
         });
@@ -1108,7 +1107,6 @@ function showSuccessMessage(message) {
         }, 300);
     }, 3000);
 }
-
 
 
 // Global exports for HTML onclick handlers

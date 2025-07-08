@@ -36,7 +36,7 @@ async function fetchGoalProgress() {
     try {
 
         const response = await apiRequest(`${API_BASE_URL}/goal_tracking/list`, {
-            headers: { 'userId': user.userId.toString() }
+            headers: {'userId': user.userId.toString()}
         });
         const data = await response.json();
 
