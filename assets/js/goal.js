@@ -262,6 +262,7 @@ createFirstGoalButton.addEventListener('click', setDefaultDates);
 // Form submission
 newGoalForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+
     hideError();
 
     const formData = new FormData(newGoalForm);
@@ -306,9 +307,7 @@ newGoalForm.addEventListener('submit', async (e) => {
             body: JSON.stringify(goalData)
         });
 
-        console.log("Xong fetch, ", response);
         const data = await response.json();
-        console.log("Xong chuyen data thanh json: ", data);
 
         if (data.code === 1000) {
             showResult(data.message, "success");
@@ -322,7 +321,9 @@ newGoalForm.addEventListener('submit', async (e) => {
         }
 
     } catch (err) {
-        showResult(err.message, 'error');
+        if (err.message === 'The number of financial goals has been exceeded') PremiumModal.show(err.message);
+        else
+            showResult(err.message, 'error');
         closeModal();
     }
 });
