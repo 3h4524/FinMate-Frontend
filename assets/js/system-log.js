@@ -1,20 +1,6 @@
 let currentPage = 0;
 let totalPages = 0;
 
-// Utility function for debouncing
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-
 function saveFilters(startDate, endDate, entityType, adminId) {
     localStorage.setItem('logFilters', JSON.stringify({ startDate, endDate, entityType, adminId }));
 }
@@ -53,35 +39,54 @@ async function loadLogs(page = 0, size = 10, startDate = '', endDate = '', entit
         if (entityType) params.append('entityType', entityType);
         if (adminId) params.append('adminId', adminId);
 
-        const response = await apiRequest(`http://localhost:8080/api/admin/logs?${params.toString()}`);
+        const response = await apiRequest(`http://localhost:8080/api/admin/logs?${params}`);
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        const { result: { content: logs, totalPages: pages } } = await response.json();
 
-        const data = await response.json();
-        if (!data.result || !data.result.content) throw new Error('Data format incorrect');
+        if (!logs) throw new Error('Invalid data format');
 
-        const logs = data.result.content;
-        totalPages = data.result.totalPages;
+        totalPages = pages;
         currentPage = page;
 
-        const tbody = document.getElementById('logsBody');
-        tbody.innerHTML = '';
-        logs.forEach((log, index) => {
-            const tr = document.createElement('tr');
-            tr.className = 'table-row-hover';
-            tr.innerHTML = `
-    <td class="px-6 py-4 whitespace-nowrap">${log.id}</td>
-    <td class="px-6 py-4 whitespace-nowrap">${log.adminId}</td>
-    <td class="px-6 py-4 whitespace-nowrap">${log.action}</td>
-    <td class="px-6 py-4 whitespace-nowrap">${log.entityType}</td>
-    <td class="px-6 py-4 whitespace-nowrap">${formatTimestamp(log.createdAt)}</td>
-    <td class="px-6 py-4 text-right whitespace-nowrap">
-        <button class="action-icon view-icon mx-2" onclick="showLogDetails(${log.id})" title="View Details">
-            <i class="fas fa-eye text-blue-600 hover:text-blue-800"></i>
-        </button>
-    </td>
-`;
-            tbody.appendChild(tr);
-        });
+        document.getElementById('logsBody').innerHTML = logs.map(log => `
+            <tr class="table-row-hover">
+                <td class="px-4 py-3 whitespace-nowrap font-bold text-indigo-700">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-hashtag text-indigo-500"></i>
+                        ${log.id}
+                    </div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap font-semibold text-green-700">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-user-shield text-green-500"></i>
+                        ${log.adminId}
+                    </div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap font-semibold text-purple-700 uppercase">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-cog text-purple-500"></i>
+                        ${log.action}
+                    </div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-blue-700">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-folder text-blue-500"></i>
+                        ${log.entityType}
+                    </div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                    <span class="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 rounded px-2 py-1 font-mono text-sm">
+                        <i class="fas fa-calendar-alt text-indigo-500"></i>
+                        ${formatTimestamp(log.createdAt)}
+                    </span>
+                </td>
+                <td class="px-4 py-3 text-right whitespace-nowrap">
+                    <button class="action-icon view-icon mx-2" onclick="showLogDetails(${log.id})" title="View Details">
+                        <i class="fas fa-eye text-blue-600 hover:text-blue-800"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
 
         renderPagination();
     } catch (error) {
@@ -96,54 +101,42 @@ async function refreshData() {
         loadLogs(0, 10, filters.startDate, filters.endDate, filters.entityType, filters.adminId),
         loadStats(filters.startDate, filters.endDate)
     ]);
+    showNotification('Refresh Successful', 'Logs and statistics have been refreshed.', 'success');
 }
 
 async function showLogDetails(logId) {
     try {
         const response = await apiRequest(`http://localhost:8080/api/admin/logs/${logId}`);
         if (!response.ok) throw new Error('Failed to load log details');
-        const log = await response.json();
-        const logData = log.result;
+        const { result: logData } = await response.json();
+
+        const fields = [
+            { label: 'Log ID', icon: 'hashtag', color: 'indigo', value: logData.id },
+            { label: 'Admin ID', icon: 'user-shield', color: 'green', value: logData.adminId },
+            { label: 'Action', icon: 'cog', color: 'red', value: logData.action },
+            { label: 'Entity Type', icon: 'folder', color: 'yellow', value: logData.entityType },
+            { label: 'Entity ID', icon: 'tag', color: 'purple', value: logData.entityId },
+            { label: 'Timestamp', icon: 'calendar-alt', color: 'blue', value: formatTimestamp(logData.createdAt) },
+            { label: 'Details', icon: 'sticky-note', color: 'amber', value: logData.details }
+        ];
+
         document.getElementById('logDetailsContent').innerHTML = `
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="flex flex-col gap-4">
-                    <div class="flex flex-col items-start p-4 bg-white rounded-2xl shadow border-l-4 border-indigo-500">
-                        <div class="flex items-center gap-2 mb-2"><i class="fas fa-hashtag text-indigo-500 text-xl"></i><span class="text-xs text-gray-500 font-medium">Log ID</span></div>
-                        <div class="text-lg font-bold text-indigo-700 break-all">${logData.id || 'N/A'}</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                ${fields.map(({ label, icon, color, value }) => `
+                    <div class="p-3 bg-white rounded-lg shadow border-l-4 border-${color}-500">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="fas fa-${icon} text-${color}-500 text-lg"></i>
+                            <span class="text-xs text-gray-500 font-medium">${label}</span>
+                        </div>
+                        <div class="text-sm font-semibold text-${color}-700 break-all">${value || 'N/A'}</div>
                     </div>
-                    <div class="flex flex-col items-start p-4 bg-white rounded-2xl shadow border-l-4 border-green-500">
-                        <div class="flex items-center gap-2 mb-2"><i class="fas fa-user-shield text-green-500 text-xl"></i><span class="text-xs text-gray-500 font-medium">Admin ID</span></div>
-                        <div class="text-lg font-bold text-green-700 break-all">${logData.adminId || 'N/A'}</div>
-                    </div>
-                    <div class="flex flex-col items-start p-4 bg-white rounded-2xl shadow border-l-4 border-red-500">
-                        <div class="flex items-center gap-2 mb-2"><i class="fas fa-cog text-red-500 text-xl"></i><span class="text-xs text-gray-500 font-medium">Action</span></div>
-                        <div class="text-lg font-bold text-red-700 break-all">${logData.action || 'N/A'}</div>
-                    </div>
-                </div>
-                <div class="flex flex-col gap-4">
-                    <div class="flex flex-col items-start p-4 bg-white rounded-2xl shadow border-l-4 border-yellow-400">
-                        <div class="flex items-center gap-2 mb-2"><i class="fas fa-folder text-yellow-400 text-xl"></i><span class="text-xs text-gray-500 font-medium">Entity Type</span></div>
-                        <div class="text-lg font-bold text-yellow-700 break-all">${logData.entityType || 'N/A'}</div>
-                    </div>
-                    <div class="flex flex-col items-start p-4 bg-white rounded-2xl shadow border-l-4 border-purple-500">
-                        <div class="flex items-center gap-2 mb-2"><i class="fas fa-tag text-purple-500 text-xl"></i><span class="text-xs text-gray-500 font-medium">Entity ID</span></div>
-                        <div class="text-lg font-bold text-purple-700 break-all">${logData.entityId || 'N/A'}</div>
-                    </div>
-                    <div class="flex flex-col items-start p-4 bg-white rounded-2xl shadow border-l-4 border-blue-500">
-                        <div class="flex items-center gap-2 mb-2"><i class="fas fa-calendar-alt text-blue-500 text-xl"></i><span class="text-xs text-gray-500 font-medium">Timestamp</span></div>
-                        <div class="text-lg font-bold text-blue-700 break-all">${formatTimestamp(logData.createdAt)}</div>
-                    </div>
-                    <div class="flex flex-col items-start p-4 bg-white rounded-2xl shadow border-l-4 border-amber-500">
-                        <div class="flex items-center gap-2 mb-2"><i class="fas fa-sticky-note text-amber-500 text-xl"></i><span class="text-xs text-gray-500 font-medium">Details</span></div>
-                        <div class="text-lg font-bold text-amber-700 break-all">${logData.details || 'N/A'}</div>
-                    </div>
-                </div>
+                `).join('')}
             </div>
         `;
+
         const modal = document.getElementById('logDetailModal');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        setTimeout(() => modal.querySelector('.modal-content')?.classList?.add('show'), 10);
+        modal.classList.replace('hidden', 'flex');
+        setTimeout(() => modal.querySelector('.modal-content')?.classList.add('show'), 10);
     } catch (error) {
         showNotification('Load Failed', 'Failed to load log details. Please try again.', 'error');
         console.error('Error loading log details:', error);
@@ -296,15 +289,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Enable pressing Enter in filter inputs to trigger Apply Filters
-    ['startDate', 'endDate', 'entityType', 'adminId'].forEach(id => {
-        const input = document.getElementById(id);
-        if (input) {
-            input.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter') {
-                    document.getElementById('filterBtn').click();
-                }
-            });
-        }
+    document.querySelectorAll('#startDate, #endDate, #entityType, #adminId').forEach(input => {
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                document.getElementById('filterBtn').click();
+            }
+        });
     });
 });
 
@@ -357,10 +347,12 @@ function showNotification(title, message, type) {
     toastContainer.appendChild(notificationCard);
 }
 
-function formatTimestamp(isoString) {
+function formatTimestamp(isoString, useBr = false) {
     if (!isoString) return 'N/A';
-    const date = new Date(isoString);
-    const time = date.toLocaleTimeString('en-GB', { hour12: false });
-    const day = date.toLocaleDateString('en-CA');
-    return `${time}<br>${day}`;
+    if (isoString.includes('T')) {
+        const [date, timeWithMs] = isoString.split('T');
+        const time = timeWithMs.split('.')[0];
+        return useBr ? `${time}<br>${date}` : `${date} ${time}`;
+    }
+    return isoString;
 }
