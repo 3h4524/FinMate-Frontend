@@ -131,7 +131,7 @@ function updateRecentTransactionsDisplay(transactions) {
             <div class="flex-1">
                 <p class="font-semibold text-gray-800 text-base lg:text-lg">${transaction.description}</p>
                 <p class="text-gray-500 text-sm lg:text-base">${transaction.categoryName || 'General'}</p>
-                <p class="text-xs lg:text-sm text-gray-400">${formatDate(transaction.date)}</p>
+                <p class="text-xs lg:text-sm text-gray-400">${formatDate_ddMMyyyy(transaction.date)}</p>
             </div>
             <p class="font-bold text-lg lg:text-xl ${transaction.amount >= 0 ? 'text-green-600' : 'text-red-600'}">
                 ${transaction.amount >= 0 ? '+' : ''}${formatCurrency(transaction.amount)}
@@ -276,22 +276,6 @@ function getCategoryIdByName(categoryName) {
     return categoryMap[categoryName] || 1;
 }
 
-// Utility Functions
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD'
-    }).format(amount);
-}
-
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
-}
 
 // Modal Event Handlers
 document.addEventListener('click', function (e) {

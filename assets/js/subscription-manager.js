@@ -235,7 +235,7 @@ function renderPackages(packagesData) {
             </div>
             
             <div class="mb-4">
-                <div class="text-3xl font-bold text-gray-900">${formatPrice(pkg.price)}</div>
+                <div class="text-3xl font-bold text-gray-900">${formatCurrency(pkg.price)}</div>
                 <div class="text-sm text-gray-500">per ${pkg.durationValue} ${pkg.durationType.toLowerCase()}</div>
             </div>
             
@@ -347,7 +347,7 @@ function renderRecentSubscriptions(subscriptions) {
                         <p class="text-xs text-gray-500">${sub.packageName || 'Unknown Package'}</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-sm font-medium text-green-600">${formatPrice(sub.amount || 0)}</p>
+                        <p class="text-sm font-medium text-green-600">${formatCurrency(sub.amount || 0)}</p>
                         <p class="text-xs text-gray-500">${formatTimeAgo(sub.createdAt)}</p>
                     </div>
                 </div>
@@ -894,10 +894,6 @@ function getDurationText(value, type) {
     return `${value} ${typeMap[type] || 'month'}`;
 }
 
-function formatPrice(price) {
-    return formatCurrency(price);
-}
-
 function formatTimeAgo(dateString) {
     const now = new Date();
     const date = new Date(dateString);
@@ -969,7 +965,7 @@ async function loadStats() {
         if (revenueResponse.status === 'fulfilled' && revenueResponse.value?.ok) {
             const revenueData = await revenueResponse.value.json();
             if (revenueData.result) {
-                stats.totalRevenue = formatPrice(revenueData.result.revenue || 0);
+                stats.totalRevenue = formatCurrency(revenueData.result.revenue || 0);
                 stats.totalSubscribers = revenueData.result.subscribers || 0;
                 // Growth rates are not available from API, keep mock values
                 stats.revenueChange = "+12.5%";
@@ -1119,14 +1115,7 @@ window.changePage = changePage;
 window.loadSidebar = loadSidebar;
 
 // Additional utility functions
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    }).format(amount);
-}
+
 
 function debounce(func, wait) {
     let timeout;

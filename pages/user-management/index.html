@@ -668,11 +668,6 @@
         }
 
         // Helper functions for percentage calculation
-        function formatPercentage(change) {
-            const sign = change >= 0 ? '+' : '';
-            return `${sign}${change.toFixed(1)}%`;
-        }
-
         function openAddUserModal() {
             // Clear the form
             document.getElementById('editUserForm').reset();
@@ -689,12 +684,6 @@
             document.getElementById('editVerified').value = 'false';
 
             document.getElementById('editUserModal').classList.remove('hidden');
-        }
-
-        function formatDate(dateString) {
-            if (!dateString) return 'Never';
-            const date = new Date(dateString);
-            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
         }
 
         function setupPagination(totalPages, currentPageNum) {
@@ -1082,8 +1071,8 @@
                 document.getElementById('detailRole').textContent = user.role || 'USER';
                 document.getElementById('detailPremium').textContent = user.isPremium ? 'Premium' : 'Basic';
                 document.getElementById('detailVerified').textContent = user.verified ? 'Yes' : 'No';
-                document.getElementById('detailLastLogin').textContent = formatDate(user.lastLoginAt);
-                document.getElementById('detailCreatedAt').textContent = formatDate(user.createdAt);
+                document.getElementById('detailLastLogin').textContent = formatDate_ddMMyyyy(user.lastLoginAt);
+                document.getElementById('detailCreatedAt').textContent = formatDate_ddMMyyyy(user.createdAt);
 
                 // Load premium packages
                 const premiumPackagesDiv = document.getElementById('detailPremiumPackages');
@@ -1094,8 +1083,8 @@
                             <div class="premium-package-item">
                                 <h4>${pkg.premiumPackage?.name || 'Premium Package'}</h4>
                                 <p>Status: ${pkg.isActive ? 'Active' : 'Inactive'}</p>
-                                <p>Started: ${formatDate(pkg.startDate)}</p>
-                                <p>Expires: ${formatDate(pkg.endDate)}</p>
+                                <p>Started: ${formatDate_ddMMyyyy(pkg.startDate)}</p>
+                                <p>Expires: ${formatDate_ddMMyyyy(pkg.endDate)}</p>
                             </div>
                         `;
                     });

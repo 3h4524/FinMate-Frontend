@@ -1,7 +1,11 @@
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(amount);
+    return new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(amount);
 }
-
 
 function formatDate_ddMMyyyy(date) {
     const d = new Date(date);
@@ -11,9 +15,10 @@ function formatDate_ddMMyyyy(date) {
     return day + '/' + month + '/' + year;
 }
 
-const formatNumber = (num) => {
-    return new Intl.NumberFormat('en-US').format(num);
-};
+function formatPercentage(change) {
+    const sign = change >= 0 ? '+' : '';
+    return `${sign}${change.toFixed(1)}%`;
+}
 
 function getStatusColor(status) {
     switch (status) {

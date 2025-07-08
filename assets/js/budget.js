@@ -166,11 +166,11 @@ function addBudgetCategory(type = 'create', selectedCategory = null, amount = nu
     row.className = 'flex items-center gap-3 mb-3';
     row.innerHTML = `
         <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-300 transition" required>
-            <option value="">Chọn danh mục</option>
+            <option value="">Select category</option>
             ${systemCategories.map(cat => `<option value="${cat.id}" ${selectedCategory == cat.id ? 'selected' : ''}>${cat.name}</option>`).join('')}
             ${customCategories.map(cat => `<option value="custom_${cat.id}" ${selectedCategory === 'custom_' + cat.id ? 'selected' : ''}>${cat.name}</option>`).join('')}
         </select>
-        <input type="number" name="amounts[]" step="0.01" min="0" ${amount ? `value="${amount}"` : 'placeholder="Số tiền ($)"'} class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-300 transition" required>
+        <input type="number" name="amounts[]" step="0.01" min="0" ${amount ? `value="${amount}"` : 'placeholder="Amount (₫)"'} class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-300 transition" required>
         <button type="button" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 transition" onclick="removeBudgetCategory(this, '${type}')">×</button>
     `;
     categoryList.appendChild(row);
@@ -274,9 +274,9 @@ async function loadBudgetOverview() {
 
         } else {
             document.getElementById('activeBudgets').textContent = '0';
-            document.getElementById('totalBudgetAmount').textContent = '$0';
-            document.getElementById('totalSpentAmount').textContent = '$0';
-            document.getElementById('totalRemainingAmount').textContent = '$0';
+            document.getElementById('totalBudgetAmount').textContent = '0';
+            document.getElementById('totalSpentAmount').textContent = '0';
+            document.getElementById('totalRemainingAmount').textContent = '0';
             document.getElementById('overallProgressPercent').textContent = '0%';
             document.getElementById('overallProgressBar').style.width = '0%';
             document.getElementById('overBudgetCount').textContent = '0';
@@ -550,9 +550,9 @@ async function loadAnalysis(page) {
     const paginationContainer = document.getElementById("analysis-pagination");
     table.innerHTML = '<tr><td colspan="6" class="p-3"><i class="fas fa-spinner fa-spin"></i> Loading analysis...</td></tr>';
     paginationContainer.innerHTML = '';
-    document.getElementById('totalBudgeted').textContent = '$0';
-    document.getElementById('totalSpent').textContent = '$0';
-    document.getElementById('varianceAmount').textContent = '$0';
+    document.getElementById('totalBudgeted').textContent = '0';
+    document.getElementById('totalSpent').textContent = '0';
+    document.getElementById('varianceAmount').textContent = '0';
     document.getElementById('spendingRate').textContent = '0%';
 
     try {
@@ -874,10 +874,6 @@ function searchBudgets() {
         const category = row.cells[0]?.textContent.toLowerCase();
         row.style.display = category && category.includes(searchTerm) ? '' : 'none';
     });
-}
-
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(amount);
 }
 
 function setDefaultModalDates() {
