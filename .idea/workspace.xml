@@ -6,35 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="72949f31-0bd4-426c-a8e0-0239e303fb3b" name="Changes" comment="updatev2">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/css/forgot-password.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/forgot-password.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/css/login.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/login.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/css/register.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/register.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/css/reset-password.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/reset-password.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/css/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/styles.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/css/transaction.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/transaction.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/css/verify-email.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/verify-email.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/auth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/forgot-password.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/forgot-password.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/helper_functions.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/helper_functions.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/home.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/home.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/register.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/register.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/reset-password.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/reset-password.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/sidebar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/verify-email.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/verify-email.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/budget.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/budget.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/financial_report.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/financial_report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/forgot-password.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/forgot-password.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/goal.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/goal.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/home.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/reset-password.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/reset-password.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/set-password.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/set-password.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/sidebar.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/sidebar.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/transaction.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/transaction.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/user-management.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/user-management.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/verify-email.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/verify-email.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,7 +45,7 @@
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;authentication1&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;combinedFeature&quot;,
     &quot;last_opened_file_path&quot;: &quot;D:/new/Frontend1&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -102,6 +73,7 @@
       <workItem from="1750228910313" duration="458000" />
       <workItem from="1750262545743" duration="11000" />
       <workItem from="1750427066580" duration="690000" />
+      <workItem from="1752036524831" duration="1875000" />
     </task>
     <task id="LOCAL-00001" summary="update sidebar">
       <option name="closed" value="true" />

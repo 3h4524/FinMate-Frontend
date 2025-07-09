@@ -26,22 +26,224 @@
         }
     </script>
     <link href="/assets/css/global-layout.css" rel="stylesheet">
+    <link href="/assets/css/subscription-manager.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Ensure consistent layout for main content */
+        /* Enhanced responsive layout */
+        .main-content-grid {
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: 1fr;
+        }
+
+        /* Tablet and up */
+        @media (min-width: 768px) {
+            .main-content-grid {
+                gap: 2rem;
+            }
+        }
+
+        /* Desktop layout */
         @media (min-width: 1024px) {
             .main-content-grid {
-                display: grid !important;
-                grid-template-columns: 2fr 1fr !important;
-                gap: 2rem !important;
+                grid-template-columns: 2fr 1fr;
+                gap: 2rem;
             }
+        }
 
-            .packages-section {
-                min-width: 0 !important;
+        /* Large desktop */
+        @media (min-width: 1280px) {
+            .main-content-grid {
+                gap: 2.5rem;
             }
+        }
 
-            .subscriptions-section {
-                min-width: 0 !important;
+        /* Ensure consistent layout for main content */
+        .packages-section {
+            min-width: 0;
+            width: 100%;
+        }
+
+        .subscriptions-section {
+            min-width: 0;
+            width: 100%;
+        }
+
+        /* Responsive statistics grid */
+        .stats-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+
+        @media (min-width: 640px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Responsive package cards */
+        .packages-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 640px) {
+            .packages-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .packages-grid {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .packages-grid {
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            }
+        }
+
+        /* Responsive modal */
+        .modal-content {
+            width: 90%;
+            max-width: 500px;
+            margin: 1rem auto;
+        }
+
+        @media (min-width: 640px) {
+            .modal-content {
+                width: 95%;
+                max-width: 600px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .modal-content {
+                width: 100%;
+                max-width: 700px;
+            }
+        }
+
+        /* Responsive form grid */
+        .form-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 640px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Responsive header */
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .header-content {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        /* Responsive action buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        @media (min-width: 640px) {
+            .action-buttons {
+                flex-direction: row;
+                gap: 1rem;
+            }
+        }
+
+        /* Responsive filter buttons */
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .filter-buttons {
+                flex-wrap: nowrap;
+            }
+        }
+
+        /* Responsive section headers */
+        .section-header {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .section-header {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        /* Ensure text doesn't overflow on small screens */
+        .text-responsive {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        /* Responsive padding */
+        .responsive-padding {
+            padding: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .responsive-padding {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .responsive-padding {
+                padding: 2rem;
+            }
+        }
+
+        /* Responsive container */
+        .responsive-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .responsive-container {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .responsive-container {
+                padding-left: 2rem;
+                padding-right: 2rem;
             }
         }
     </style>
@@ -56,106 +258,98 @@
 <div id="header-container"></div>
 <div id="sidebar-container"></div>
 <div class="main-content" id="mainContent">
-    <div class="container mx-auto px-6 py-8">
+    <div class="responsive-container mx-auto py-6 lg:py-8">
         <!-- Header Section -->
-        <div class="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-indigo-100">
-            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-                <div class="flex-1 mb-6 lg:mb-0">
-                    <h1
-                            class="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+        <div class="bg-white rounded-3xl shadow-2xl responsive-padding mb-6 lg:mb-8 border border-indigo-100">
+            <div class="header-content">
+                <div class="flex-1">
+                    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2 text-responsive">
                         Subscription Manager
                     </h1>
-                    <p class="text-gray-600 text-lg">Manage subscription plans, pricing and analytics</p>
+                    <p class="text-gray-600 text-base lg:text-lg text-responsive">Manage subscription plans, pricing and analytics</p>
                 </div>
-                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                    <!-- Action Buttons -->
-                    <div class="flex space-x-3">
-                        <button
-                                class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-2xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
-                                onclick="openNewPackageModal()">
-                            <i class="fas fa-plus"></i>
-                            <span>New Package</span>
-                        </button>
-                        <button
-                                class="hidden bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-2xl 
-                                    font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
-                                onclick="openCreateOfferModal()" id="buttonCreatePromotional">
-                            <i class="fas fa-tags"></i>
-                            <span>Create Promotional Offer</span>
-                        </button>
-                    </div>
+                <div class="action-buttons">
+                    <button
+                            class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-2xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 text-sm sm:text-base"
+                            onclick="openNewPackageModal()">
+                        <i class="fas fa-plus"></i>
+                        <span>New Package</span>
+                    </button>
+                    <button
+                            class="hidden bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-2xl 
+                                font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 text-sm sm:text-base"
+                            onclick="openCreateOfferModal()" id="buttonCreatePromotional">
+                        <i class="fas fa-tags"></i>
+                        <span>Create Promotional Offer</span>
+                    </button>
                 </div>
             </div>
         </div>
 
         <!-- Statistics Overview -->
-        <div class="mb-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Subscription Analytics</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="mb-6 lg:mb-8">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 lg:mb-6 text-responsive">Subscription Analytics</h2>
+            <div class="stats-grid">
                 <!-- Total Revenue -->
-                <div
-                        class="bg-white rounded-3xl shadow-lg p-6 border border-green-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                <div class="bg-white rounded-3xl shadow-lg p-4 sm:p-6 border border-green-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
                     <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="text-3xl font-bold text-gray-900" id="totalRevenue">0đ</h3>
-                            <p class="text-gray-600 mt-1">Total Revenue</p>
+                        <div class="min-w-0 flex-1">
+                            <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 truncate" id="totalRevenue">0đ</h3>
+                            <p class="text-gray-600 mt-1 text-sm sm:text-base">Total Revenue</p>
                             <div class="text-sm font-medium text-green-600 mt-1" id="revenueChange">+0%</div>
                         </div>
-                        <div class="relative"
-                             style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                        <div class="relative flex-shrink-0"
+                             style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
                             <i class="fas fa-dollar-sign text-white"
-                               style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                               style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 16px;"></i>
                         </div>
                     </div>
                 </div>
 
                 <!-- Active Subscribers -->
-                <div
-                        class="bg-white rounded-3xl shadow-lg p-6 border border-blue-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                <div class="bg-white rounded-3xl shadow-lg p-4 sm:p-6 border border-blue-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
                     <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="text-3xl font-bold text-gray-900" id="totalSubscribers">0</h3>
-                            <p class="text-gray-600 mt-1">Active Subscribers</p>
+                        <div class="min-w-0 flex-1">
+                            <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 truncate" id="totalSubscribers">0</h3>
+                            <p class="text-gray-600 mt-1 text-sm sm:text-base">Active Subscribers</p>
                             <div class="text-sm font-medium text-blue-600 mt-1" id="subscribersChange">+0%</div>
                         </div>
-                        <div class="relative"
-                             style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+                        <div class="relative flex-shrink-0"
+                             style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
                             <i class="fas fa-users text-white"
-                               style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                               style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 16px;"></i>
                         </div>
                     </div>
                 </div>
 
                 <!-- Conversion Rate -->
-                <div
-                        class="bg-white rounded-3xl shadow-lg p-6 border border-amber-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                <div class="bg-white rounded-3xl shadow-lg p-4 sm:p-6 border border-amber-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
                     <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="text-3xl font-bold text-gray-900" id="conversionRate">0%</h3>
-                            <p class="text-gray-600 mt-1">Conversion Rate</p>
+                        <div class="min-w-0 flex-1">
+                            <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 truncate" id="conversionRate">0%</h3>
+                            <p class="text-gray-600 mt-1 text-sm sm:text-base">Conversion Rate</p>
                             <div class="text-sm font-medium text-amber-600 mt-1" id="conversionChange">+0.0%</div>
                         </div>
-                        <div class="relative"
-                             style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                        <div class="relative flex-shrink-0"
+                             style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
                             <i class="fas fa-percentage text-white"
-                               style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                               style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 16px;"></i>
                         </div>
                     </div>
                 </div>
 
                 <!-- Average Revenue Per User -->
-                <div
-                        class="bg-white rounded-3xl shadow-lg p-6 border border-purple-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                <div class="bg-white rounded-3xl shadow-lg p-4 sm:p-6 border border-purple-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
                     <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="text-3xl font-bold text-gray-900" id="avgRevenue">0đ</h3>
-                            <p class="text-gray-600 mt-1">Avg Revenue/User</p>
+                        <div class="min-w-0 flex-1">
+                            <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 truncate" id="avgRevenue">0đ</h3>
+                            <p class="text-gray-600 mt-1 text-sm sm:text-base">Avg Revenue/User</p>
                             <div class="text-sm font-medium text-purple-600 mt-1" id="avgRevenueChange">-0%</div>
                         </div>
-                        <div class="relative"
-                             style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);">
+                        <div class="relative flex-shrink-0"
+                             style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);">
                             <i class="fas fa-chart-line text-white"
-                               style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                               style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 16px;"></i>
                         </div>
                     </div>
                 </div>
@@ -163,33 +357,32 @@
         </div>
 
         <!-- Main Content Area -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-3 gap-8 main-content-grid"
-             style="min-height: auto;">
+        <div class="main-content-grid">
             <!-- Package Management Section -->
-            <div class="lg:col-span-2 xl:col-span-2 packages-section">
+            <div class="packages-section">
                 <div class="bg-white rounded-3xl shadow-lg border border-indigo-100">
                     <!-- Section Header -->
-                    <div class="p-8 border-b border-gray-200">
-                        <div class="flex items-center justify-between">
-                            <h2 class="text-2xl font-bold text-gray-900 flex items-center space-x-3">
-                                <span class="text-2xl">📦</span>
+                    <div class="responsive-padding border-b border-gray-200">
+                        <div class="section-header">
+                            <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center space-x-2 text-responsive">
+                                <span class="text-xl sm:text-2xl">📦</span>
                                 <span>All Packages</span>
                             </h2>
-                            <div class="flex space-x-2">
+                            <div class="filter-buttons">
                                 <button
-                                        class="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-colors filter-btn active"
+                                        class="px-3 sm:px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-colors filter-btn active whitespace-nowrap"
                                         data-filter="all">All
                                 </button>
                                 <button
-                                        class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors filter-btn"
+                                        class="px-3 sm:px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors filter-btn whitespace-nowrap"
                                         data-filter="monthly">Monthly
                                 </button>
                                 <button
-                                        class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors filter-btn"
+                                        class="px-3 sm:px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors filter-btn whitespace-nowrap"
                                         data-filter="yearly">Yearly
                                 </button>
                                 <button
-                                        class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors filter-btn"
+                                        class="px-3 sm:px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors filter-btn whitespace-nowrap"
                                         data-filter="active">Active
                                 </button>
                             </div>
@@ -197,8 +390,8 @@
                     </div>
 
                     <!-- Packages Grid -->
-                    <div class="p-8">
-                        <div id="packagesContainer" class="grid grid-cols-1 2xl:grid-cols-2 gap-6">
+                    <div class="responsive-padding">
+                        <div id="packagesContainer" class="packages-grid">
                             <!-- Loading State -->
                             <div class="col-span-full flex items-center justify-center py-12">
                                 <div class="text-center">
@@ -211,15 +404,15 @@
                         </div>
 
                         <!-- Pagination -->
-                        <div class="mt-8 flex items-center justify-between" id="pagination" style="display: none;">
+                        <div class="mt-6 lg:mt-8 flex items-center justify-between" id="pagination" style="display: none;">
                             <div class="flex-1 flex justify-between sm:hidden">
                                 <button
-                                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                                        class="relative inline-flex items-center px-3 sm:px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                                         id="prevBtn">
                                     Previous
                                 </button>
                                 <button
-                                        class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                                        class="ml-3 relative inline-flex items-center px-3 sm:px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                                         id="nextBtn">
                                     Next
                                 </button>
@@ -236,27 +429,27 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Recent Subscriptions Sidebar -->
-        <div class="lg:col-span-1 xl:col-span-1 subscriptions-section">
-            <div class="bg-white rounded-3xl shadow-lg border border-indigo-100">
-                <div class="p-6 border-b border-gray-200">
-                    <div class="flex items-center justify-between">
-                        <h2 class="text-xl font-bold text-gray-900 flex items-center space-x-2">
-                            <span class="text-xl">👥</span>
-                            <span>Recent Subscriptions</span>
-                        </h2>
-                        <a href="#" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">View All</a>
+            <!-- Recent Subscriptions Sidebar -->
+            <div class="subscriptions-section">
+                <div class="bg-white rounded-3xl shadow-lg border border-indigo-100">
+                    <div class="responsive-padding border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-lg sm:text-xl font-bold text-gray-900 flex items-center space-x-2 text-responsive">
+                                <span class="text-lg sm:text-xl">👥</span>
+                                <span>Recent Subscriptions</span>
+                            </h2>
+                            <a href="#" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium whitespace-nowrap">View All</a>
+                        </div>
                     </div>
-                </div>
-                <div class="p-6">
-                    <div id="recentSubscriptions">
-                        <div class="flex items-center justify-center py-8">
-                            <div class="text-center">
-                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto">
+                    <div class="responsive-padding">
+                        <div id="recentSubscriptions">
+                            <div class="flex items-center justify-center py-8">
+                                <div class="text-center">
+                                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto">
+                                    </div>
+                                    <p class="mt-2 text-gray-600 text-sm">Loading subscriptions...</p>
                                 </div>
-                                <p class="mt-2 text-gray-600 text-sm">Loading subscriptions...</p>
                             </div>
                         </div>
                     </div>
@@ -264,7 +457,6 @@
             </div>
         </div>
     </div>
-</div>
 </div>
 
 <!-- Create Package Modal -->
@@ -274,12 +466,11 @@
         <div class="fixed inset-0 transition-opacity" aria-hidden="true">
             <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
         </div>
-        <div
-                class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-            <div class="bg-white px-6 pt-6">
+        <div class="modal-content inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle">
+            <div class="bg-white px-4 sm:px-6 pt-6">
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900 flex items-center space-x-3">
-                        <span class="text-2xl">➕</span>
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center space-x-2 text-responsive">
+                        <span class="text-xl sm:text-2xl">➕</span>
                         <span>Create New Package</span>
                     </h2>
                     <button class="text-gray-400 hover:text-gray-600 transition-colors"
@@ -287,31 +478,31 @@
                         <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
-                <form id="createPackageForm" class="space-y-6">
+                <form id="createPackageForm" class="space-y-4 sm:space-y-6">
                     <div>
                         <label for="createName" class="block text-sm font-medium text-gray-700 mb-2">Package
                             Name</label>
                         <input type="text" id="createName" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                               class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base">
                     </div>
                     <div>
                         <label for="createPrice" class="block text-sm font-medium text-gray-700 mb-2">Price
                             (VND)</label>
                         <input type="number" id="createPrice" step="1000" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                               class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base">
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="form-grid">
                         <div>
                             <label for="createDurationValue"
                                    class="block text-sm font-medium text-gray-700 mb-2">Duration Value</label>
                             <input type="number" id="createDurationValue" value="1" required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                   class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base">
                         </div>
                         <div>
                             <label for="createDurationType"
                                    class="block text-sm font-medium text-gray-700 mb-2">Duration Type</label>
                             <select id="createDurationType" required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                    class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base">
                                 <option value="MONTH">Month</option>
                                 <option value="YEAR">Year</option>
                             </select>
@@ -321,18 +512,18 @@
                         <label for="createFeatures"
                                class="block text-sm font-medium text-gray-700 mb-2">Features</label>
                         <div id="createFeatures"
-                             class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-3 border border-gray-300 rounded-2xl bg-gray-50">
+                             class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-40 overflow-y-auto p-3 border border-gray-300 rounded-2xl bg-gray-50">
                             <!-- Features will be loaded here -->
                         </div>
                         <input type="hidden" id="createSelectedFeatures">
                     </div>
-                    <div class="bg-gray-50 px-6 py-4 -mx-6 -mb-6 flex justify-end space-x-3">
+                    <div class="bg-gray-50 px-4 sm:px-6 py-4 -mx-4 sm:-mx-6 -mb-6 flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
                         <button type="button"
-                                class="px-6 py-3 border border-gray-300 rounded-2xl text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors"
+                                class="px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 rounded-2xl text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors text-sm sm:text-base"
                                 onclick="closeNewPackageModal()">Cancel
                         </button>
                         <button type="submit"
-                                class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl hover:from-indigo-700 hover:to-purple-700 font-medium transition-all duration-300 hover:scale-105">
+                                class="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl hover:from-indigo-700 hover:to-purple-700 font-medium transition-all duration-300 hover:scale-105 text-sm sm:text-base">
                             Create
                             Package
                         </button>
@@ -350,12 +541,11 @@
         <div class="fixed inset-0 transition-opacity" aria-hidden="true">
             <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
         </div>
-        <div
-                class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-            <div class="bg-white px-6 pt-6">
+        <div class="modal-content inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle">
+            <div class="bg-white px-4 sm:px-6 pt-6">
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900 flex items-center space-x-3">
-                        <span class="text-2xl">✏️</span>
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center space-x-2 text-responsive">
+                        <span class="text-xl sm:text-2xl">✏️</span>
                         <span>Update Package</span>
                     </h2>
                     <button class="text-gray-400 hover:text-gray-600 transition-colors"
@@ -363,32 +553,32 @@
                         <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
-                <form id="updatePackageForm" class="space-y-6">
+                <form id="updatePackageForm" class="space-y-4 sm:space-y-6">
                     <input type="hidden" id="updatePackageId">
                     <div>
                         <label for="updateName" class="block text-sm font-medium text-gray-700 mb-2">Package
                             Name</label>
                         <input type="text" id="updateName" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                               class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base">
                     </div>
                     <div>
                         <label for="updatePrice" class="block text-sm font-medium text-gray-700 mb-2">Price
                             (VND)</label>
                         <input type="number" id="updatePrice" step="1000" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                               class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base">
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="form-grid">
                         <div>
                             <label for="updateDurationValue"
                                    class="block text-sm font-medium text-gray-700 mb-2">Duration Value</label>
                             <input type="number" id="updateDurationValue" required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                   class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base">
                         </div>
                         <div>
                             <label for="updateDurationType"
                                    class="block text-sm font-medium text-gray-700 mb-2">Duration Type</label>
                             <select id="updateDurationType" required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                    class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base">
                                 <option value="DAY">Day</option>
                                 <option value="WEEK">Week</option>
                                 <option value="MONTH">Month</option>
@@ -400,7 +590,7 @@
                         <label for="updateFeatures"
                                class="block text-sm font-medium text-gray-700 mb-2">Features</label>
                         <div id="updateFeatures"
-                             class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-3 border border-gray-300 rounded-2xl bg-gray-50">
+                             class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-40 overflow-y-auto p-3 border border-gray-300 rounded-2xl bg-gray-50">
                             <!-- Features will be loaded here -->
                         </div>
                         <input type="hidden" id="updateSelectedFeatures">
@@ -409,18 +599,18 @@
                         <label for="updateIsActive"
                                class="block text-sm font-medium text-gray-700 mb-2">Status</label>
                         <select id="updateIsActive" required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base">
                             <option value="true">Active</option>
                             <option value="false">Inactive</option>
                         </select>
                     </div>
-                    <div class="bg-gray-50 px-6 py-4 -mx-6 -mb-6 flex justify-end space-x-3">
+                    <div class="bg-gray-50 px-4 sm:px-6 py-4 -mx-4 sm:-mx-6 -mb-6 flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
                         <button type="button"
-                                class="px-6 py-3 border border-gray-300 rounded-2xl text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors"
+                                class="px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 rounded-2xl text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors text-sm sm:text-base"
                                 onclick="closeUpdateModal()">Cancel
                         </button>
                         <button type="submit"
-                                class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-2xl hover:from-green-700 hover:to-green-800 font-medium transition-all duration-300 hover:scale-105">
+                                class="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-2xl hover:from-green-700 hover:to-green-800 font-medium transition-all duration-300 hover:scale-105 text-sm sm:text-base">
                             Update
                             Package
                         </button>
@@ -438,12 +628,11 @@
         <div class="fixed inset-0 transition-opacity" aria-hidden="true">
             <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
         </div>
-        <div
-                class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-            <div class="bg-white px-6 pt-6">
+        <div class="modal-content inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle">
+            <div class="bg-white px-4 sm:px-6 pt-6">
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900 flex items-center space-x-3">
-                        <span class="text-2xl">🎉</span>
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center space-x-2 text-responsive">
+                        <span class="text-xl sm:text-2xl">🎉</span>
                         <span>Create Promotional Offer</span>
                     </h2>
                     <button class="text-gray-400 hover:text-gray-600 transition-colors"
@@ -451,34 +640,36 @@
                         <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
-                <form id="createOfferForm" class="space-y-6">
+                <form id="createOfferForm" class="space-y-4 sm:space-y-6">
                     <div>
                         <label for="discountEvent" class="block text-sm font-medium text-gray-700 mb-2">Discount
                             Event</label>
                         <input type="text" id="discountEvent" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                               class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base"
                                placeholder="E.g., Winter Flash Sale">
                     </div>
                     <div>
                         <label for="discountPercentage"
                                class="block text-sm font-medium text-gray-700 mb-2">Discount Percentage (%)</label>
                         <input type="number" id="discountPercentage" step="0.1" min="0" max="100" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                               class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base"
                                placeholder="E.g., 20.0">
                     </div>
-                    <div>
-                        <label for="startDate" class="block text-sm font-medium text-gray-700 mb-2">Start
-                            Date</label>
-                        <input type="date" id="startDate" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                               placeholder="yyyy/MM/dd">
-                    </div>
-                    <div>
-                        <label for="expiryDate" class="block text-sm font-medium text-gray-700 mb-2">Expiry
-                            Date</label>
-                        <input type="date" id="expiryDate" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                               placeholder="yyyy/MM/dd">
+                    <div class="form-grid">
+                        <div>
+                            <label for="startDate" class="block text-sm font-medium text-gray-700 mb-2">Start
+                                Date</label>
+                            <input type="date" id="startDate" required
+                                   class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base"
+                                   placeholder="yyyy/MM/dd">
+                        </div>
+                        <div>
+                            <label for="expiryDate" class="block text-sm font-medium text-gray-700 mb-2">Expiry
+                                Date</label>
+                            <input type="date" id="expiryDate" required
+                                   class="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base"
+                                   placeholder="yyyy/MM/dd">
+                        </div>
                     </div>
                     <div class="space-y-2">
                         <h4 class="text-sm font-medium text-gray-700">Selected Packages:</h4>
@@ -486,13 +677,13 @@
                             <!-- Package names will be dynamically inserted here -->
                         </div>
                     </div>
-                    <div class="bg-gray-50 px-6 py-4 -mx-6 -mb-6 flex justify-end space-x-3">
+                    <div class="bg-gray-50 px-4 sm:px-6 py-4 -mx-4 sm:-mx-6 -mb-6 flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
                         <button type="button"
-                                class="px-6 py-3 border border-gray-300 rounded-2xl text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors"
+                                class="px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 rounded-2xl text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors text-sm sm:text-base"
                                 onclick="closeCreateOfferModal()">Cancel
                         </button>
                         <button type="submit"
-                                class="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl hover:from-blue-700 hover:to-blue-800 font-medium transition-all duration-300 hover:scale-105">
+                                class="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl hover:from-blue-700 hover:to-blue-800 font-medium transition-all duration-300 hover:scale-105 text-sm sm:text-base">
                             Create
                             Offer
                         </button>

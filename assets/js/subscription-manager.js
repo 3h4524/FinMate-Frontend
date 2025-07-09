@@ -12,6 +12,7 @@ let currentFilter = 'all';
 let packages = [];
 let allFeatures = [];
 let selectedList = []; // Global array to store selected package IDs
+let resizeTimeout = null;
 
 const buttonCreatePromotional = document.getElementById("buttonCreatePromotional");
 
@@ -53,6 +54,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Setup functionality
         setupEventListeners();
+        setupResponsiveHandlers();
 
         // Load data
         await initializeSubscriptionManager();
@@ -144,6 +146,153 @@ function setupEventListeners() {
     setupCheckBoxCreateOffer();
 }
 
+// Setup responsive handlers
+function setupResponsiveHandlers() {
+    // Debounced resize handler
+    window.addEventListener('resize', debounce(handleResize, 250));
+    
+    // Initial responsive setup
+    handleResize();
+    
+    // Setup modal responsive behavior
+    setupModalResponsive();
+}
+
+// Enhanced responsive handling
+function handleResize() {
+    // Clear existing timeout
+    if (resizeTimeout) {
+        clearTimeout(resizeTimeout);
+    }
+    
+    // Debounce the resize handling
+    resizeTimeout = setTimeout(() => {
+        console.log('Handling resize...');
+        
+        // Adjust grid layout based on screen size
+        adjustGridLayout();
+        
+        // Rerender components if needed
+        if (packages.length > 0) {
+            renderPackages(packages);
+        }
+        
+        // Update modal positioning
+        updateModalPositioning();
+        
+        // Adjust statistics cards
+        adjustStatisticsLayout();
+        
+    }, 100);
+}
+
+// Adjust grid layout based on screen size
+function adjustGridLayout() {
+    const mainGrid = document.querySelector('.main-content-grid');
+    const packagesContainer = document.getElementById('packagesContainer');
+    
+    if (!mainGrid || !packagesContainer) return;
+    
+    const screenWidth = window.innerWidth;
+    
+    // Adjust main grid gap
+    if (screenWidth < 768) {
+        mainGrid.style.gap = '1rem';
+    } else if (screenWidth < 1024) {
+        mainGrid.style.gap = '1.5rem';
+    } else {
+        mainGrid.style.gap = '2rem';
+    }
+    
+    // Adjust packages grid columns
+    if (screenWidth < 640) {
+        packagesContainer.style.gridTemplateColumns = '1fr';
+    } else if (screenWidth < 1024) {
+        packagesContainer.style.gridTemplateColumns = 'repeat(auto-fit, minmax(300px, 1fr))';
+    } else if (screenWidth < 1280) {
+        packagesContainer.style.gridTemplateColumns = 'repeat(auto-fit, minmax(280px, 1fr))';
+    } else {
+        packagesContainer.style.gridTemplateColumns = 'repeat(auto-fit, minmax(320px, 1fr))';
+    }
+}
+
+// Update modal positioning for responsive
+function updateModalPositioning() {
+    const modals = ['createPackageModal', 'updatePackageModal', 'createOfferModal'];
+    const screenWidth = window.innerWidth;
+    
+    modals.forEach(modalId => {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            const modalContent = modal.querySelector('.modal-content');
+            if (modalContent) {
+                if (screenWidth < 640) {
+                    modalContent.style.width = '90%';
+                    modalContent.style.maxWidth = '500px';
+                } else if (screenWidth < 768) {
+                    modalContent.style.width = '95%';
+                    modalContent.style.maxWidth = '600px';
+                } else {
+                    modalContent.style.width = '100%';
+                    modalContent.style.maxWidth = '700px';
+                }
+            }
+        }
+    });
+}
+
+// Adjust statistics layout
+function adjustStatisticsLayout() {
+    const statsGrid = document.querySelector('.stats-grid');
+    if (!statsGrid) return;
+    
+    const screenWidth = window.innerWidth;
+    
+    if (screenWidth < 640) {
+        statsGrid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(240px, 1fr))';
+    } else if (screenWidth < 768) {
+        statsGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+    } else {
+        statsGrid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+    }
+}
+
+// Setup modal responsive behavior
+function setupModalResponsive() {
+    const modals = ['createPackageModal', 'updatePackageModal', 'createOfferModal'];
+    
+    modals.forEach(modalId => {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            // Handle modal backdrop click
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) {
+                    if (modalId === 'createPackageModal') {
+                        closeNewPackageModal();
+                    } else if (modalId === 'updatePackageModal') {
+                        closeUpdateModal();
+                    } else if (modalId === 'createOfferModal') {
+                        closeCreateOfferModal();
+                    }
+                }
+            });
+            
+            // Handle escape key
+            modal.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    if (modalId === 'createPackageModal') {
+                        closeNewPackageModal();
+                    } else if (modalId === 'updatePackageModal') {
+                        closeUpdateModal();
+                    } else if (modalId === 'createOfferModal') {
+                        closeCreateOfferModal();
+                    }
+                }
+            });
+        }
+    });
+}
+
 // This function will be replaced by the enhanced version below
 
 // Load packages
@@ -211,7 +360,9 @@ function renderPackages(packagesData) {
         return;
     }
 
-    container.innerHTML = packagesData.map(pkg => `
+    container.innerHTML = packagesData.map(pkg => {
+        const isSelected = selectedList.some(item => item.id == pkg.id);
+        return `
         <div class="bg-white border border-gray-200 rounded-3xl p-6 hover:shadow-lg transition-all duration-300 hover:scale-105">
             <div class="flex items-start justify-between mb-4">
                 <div class="flex items-center space-x-4">
@@ -223,8 +374,15 @@ function renderPackages(packagesData) {
                         <p class="text-sm text-gray-500 uppercase font-medium">${getDurationText(pkg.durationValue, pkg.durationType)}</p>
                     </div>
                 </div>
-                <div class="flex space-x-2">
-                    <input type="checkbox" id="checkbox-premium-${pkg.id}">
+                <div class="flex space-x-2 items-center">
+                    ${isSelected
+                        ? `<button type="button" class="w-8 h-8 bg-yellow-100 hover:bg-gray-200 text-yellow-600 rounded-lg flex items-center justify-center transition-colors" onclick="selectOfferPackage(${pkg.id})" title="Bỏ chọn tạo ưu đãi">
+                            <i class=\"fas fa-bolt\"></i>
+                        </button>`
+                        : `<button type="button" class="w-8 h-8 bg-gray-100 hover:bg-yellow-100 text-gray-400 hover:text-yellow-600 rounded-lg flex items-center justify-center transition-colors" onclick="selectOfferPackage(${pkg.id})" title="Chọn tạo ưu đãi">
+                            <i class=\"fas fa-bolt\"></i>
+                        </button>`
+                    }
                     <button id="button-edit-premium-${pkg.id}" onclick="openUpdateModal(${pkg.id})" class="w-8 h-8 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg flex items-center justify-center transition-colors">
                         <i class="fas fa-edit text-sm"></i>
                     </button>
@@ -262,20 +420,8 @@ function renderPackages(packagesData) {
                 </div>
             </div>
         </div>
-    `).join('');
-
-
-    selectedList.forEach(item => {
-        const checkbox = document.getElementById(`checkbox-premium-${item.id}`);
-        if (checkbox) {
-            checkbox.checked = true;
-            // Hide edit and delete buttons for checked packages
-            const editButton = document.getElementById(`button-edit-premium-${item.id}`);
-            const deleteButton = document.getElementById(`button-delete-premium-${item.id}`);
-            if (editButton) editButton.classList.add('hidden');
-            if (deleteButton) deleteButton.classList.add('hidden');
-        }
-    });
+    `;
+    }).join('');
 }
 
 
@@ -543,28 +689,18 @@ function closeUpdateModal() {
 
 function setupCheckBoxCreateOffer() {
     const checkboxes = document.querySelectorAll('[id^="checkbox-premium-"]');
-
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function () {
             const packageId = this.id.split('-').pop(); // Extract package ID from checkbox ID
             const pkg = packages.find(p => String(p.id) === packageId); // Find package by ID
-            const editButton = document.getElementById(`button-edit-premium-${packageId}`);
-            const deleteButton = document.getElementById(`button-delete-premium-${packageId}`);
-
             if (this.checked) {
                 if (!selectedList.some(item => item.id === packageId)) {
                     selectedList.push({id: packageId, name: pkg ? pkg.name : 'Unknown'});
                     if (selectedList.length != 0) buttonCreatePromotional.classList.remove("hidden");
                 }
-                // Hide edit and delete buttons
-                if (editButton) editButton.classList.add('hidden');
-                if (deleteButton) deleteButton.classList.add('hidden');
             } else {
                 selectedList = selectedList.filter(item => item.id !== packageId);
                 if (selectedList.length === 0) buttonCreatePromotional.classList.add("hidden");
-                // Show edit and delete buttons
-                if (editButton) editButton.classList.remove('hidden');
-                if (deleteButton) deleteButton.classList.remove('hidden');
             }
         });
     });
@@ -1129,29 +1265,30 @@ function debounce(func, wait) {
     };
 }
 
-// Enhanced responsive handling
+// Enhanced responsive handling - now handled by setupResponsiveHandlers()
 function handleResize() {
-    // Rerender components on resize for better responsive experience
-    if (packages.length > 0) {
-        renderPackages(packages);
-    }
+    // This function is now enhanced and called from setupResponsiveHandlers()
+    console.log('Resize event triggered');
 }
 
 // Initialize modal keyboard support and other event handlers when DOM is ready
 document.addEventListener('DOMContentLoaded', function () {
     setupModalKeyboardSupport();
-    // Add resize handler for responsive behavior
-    window.addEventListener('resize', debounce(handleResize, 250));
-
-    // Add click outside handlers for modals
-    document.addEventListener('click', function (e) {
-        if (e.target.classList.contains('fixed') && e.target.classList.contains('inset-0')) {
-            // Clicked on modal backdrop
-            if (e.target.id === 'createPackageModal') {
-                closeNewPackageModal();
-            } else if (e.target.id === 'updatePackageModal') {
-                closeUpdateModal();
-            }
-        }
-    });
+    // Responsive handlers are now set up in setupResponsiveHandlers()
 });
+
+// Thêm hàm chọn/bỏ chọn offer package
+window.selectOfferPackage = function(id) {
+    const pkg = packages.find(p => p.id == id);
+    if (!pkg) return;
+    const idx = selectedList.findIndex(item => item.id == id);
+    if (idx === -1) {
+        selectedList.push({id: id, name: pkg.name});
+        if (selectedList.length !== 0) buttonCreatePromotional.classList.remove("hidden");
+    } else {
+        selectedList.splice(idx, 1);
+        if (selectedList.length === 0) buttonCreatePromotional.classList.add("hidden");
+    }
+    renderPackages(packages);
+    setupCheckBoxCreateOffer(); // Đảm bảo các event khác vẫn hoạt động
+}

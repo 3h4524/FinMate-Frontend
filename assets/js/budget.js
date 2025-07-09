@@ -7,9 +7,18 @@ let systemCategories = [];
 
 
 async function initializeUI() {
+    await loadHeader(); // Đảm bảo header luôn load động, có hamburger menu
     await fetchUser();
     if (!user || !user.userId) return;
     await loadSideBar(user);
+    initSidebar();
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) mainContent.style.display = '';
+    const menuBtn = document.getElementById('menuToggle');
+    if (menuBtn) {
+        menuBtn.onclick = () => toggleSidebar();
+        menuBtn.style.display = '';
+    }
     await loadSystemCategories();
     await loadUserCategories();
     await loadBudgetOverview();

@@ -97,32 +97,42 @@ window.toggleSidebar = function () {
     const sidebar = document.getElementById('sidebar');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
     const mainContent = document.querySelector('.main-content');
+    const body = document.body;
 
-    if (!sidebar || !mainContent) {
-        console.error('Sidebar or main content element not found!');
+    if (!sidebar) {
+        console.error('[toggleSidebar] Sidebar element not found!');
         return;
     }
-
+    if (!mainContent) {
+        console.error('[toggleSidebar] Main content element not found!');
+        return;
+    }
     if (window.innerWidth <= 1024) {
         // Mobile: Toggle overlay sidebar
         sidebar.classList.toggle('sidebar-open');
         if (sidebarOverlay) {
             sidebarOverlay.classList.toggle('overlay-visible');
+        } else {
+            console.warn('[toggleSidebar] Sidebar overlay not found!');
         }
-
         // Reset main content styles for mobile
         mainContent.style.marginLeft = '0px';
         mainContent.style.width = '100%';
+        body.classList.remove('sidebar-collapsed');
     } else {
         // Desktop: Toggle collapsed sidebar and save state
         const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
         const newState = !isCollapsed;
-
         // Save new state to sessionStorage
         setSidebarState(newState);
-
         // Apply new state
         applySidebarState(newState);
+        // Đồng bộ class cho body
+        if (newState) {
+            body.classList.add('sidebar-collapsed');
+        } else {
+            body.classList.remove('sidebar-collapsed');
+        }
     }
 };
 
