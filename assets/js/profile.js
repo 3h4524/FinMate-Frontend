@@ -1,60 +1,6 @@
 // profile.js - handles fetching and updating user profile information
 import apiService from './services/api.js';
 
-<<<<<<< HEAD
-// Helper to show notification messages
-function showProfileNotification(message, type = 'success') {
-    const notification = document.getElementById('profileNotification');
-    if (!notification) return;
-
-    // Create notification content
-    const icon = document.createElement('i');
-    const textSpan = document.createElement('span');
-    const closeButton = document.createElement('button');
-
-    // Set icon based on type
-    icon.className = 'mr-2 fas';
-    switch (type) {
-        case 'success':
-            icon.classList.add('fa-check-circle', 'text-green-500');
-            break;
-        case 'error':
-            icon.classList.add('fa-exclamation-circle', 'text-red-500');
-            break;
-        default:
-            icon.classList.add('fa-info-circle', 'text-blue-500');
-            break;
-    }
-
-    // Set text content
-    textSpan.textContent = message;
-    textSpan.className = 'flex-grow';
-
-    // Set close button
-    closeButton.innerHTML = '<i class="fas fa-times"></i>';
-    closeButton.className = 'ml-3 text-gray-400 hover:text-gray-600 focus:outline-none';
-    closeButton.onclick = () => notification.classList.add('hidden');
-
-    // Clear and set up notification
-    notification.innerHTML = '';
-    notification.className = 'fixed bottom-4 right-4 max-w-md bg-white rounded-lg shadow-lg border border-gray-200 p-4 flex items-center';
-    notification.appendChild(icon);
-    notification.appendChild(textSpan);
-    notification.appendChild(closeButton);
-
-    notification.classList.remove('hidden');
-
-    // Auto hide after 4 seconds
-    const timeout = setTimeout(() => {
-        notification.classList.add('hidden');
-    }, 4000);
-
-    // Clear timeout if closed manually
-    closeButton.onclick = () => {
-        clearTimeout(timeout);
-        notification.classList.add('hidden');
-    };
-=======
 const API_BASE = 'http://localhost:8080';
 
 // Helper to show notification messages
@@ -64,16 +10,16 @@ function showProfileNotification(message, type = 'success') {
         type === 'success' ? 'bg-green-500' : 'bg-red-500'
     } text-white`;
     notification.style.zIndex = '9999';
-    
+
     notification.innerHTML = `
         <div class="flex items-center">
             <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-2"></i>
             <span>${message}</span>
         </div>
     `;
-    
+
     document.body.appendChild(notification);
-    
+
     // Animate in
     setTimeout(() => {
         notification.classList.remove('translate-x-full');
@@ -92,7 +38,6 @@ function showProfileNotification(message, type = 'success') {
 function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
->>>>>>> origin/update_profile
 }
 
 // Tab navigation
@@ -110,27 +55,14 @@ function initTabNavigation() {
 
             // Update tab styles
             tabs.forEach(t => {
-<<<<<<< HEAD
-                t.classList.remove('tab-active');
-                t.classList.add('tab-inactive');
-            });
-            tab.classList.remove('tab-inactive');
-            tab.classList.add('tab-active');
-
-            // Show/hide content
-            Object.values(tabContents).forEach(content => {
-                content.classList.add('hidden');
-            });
-            tabContents[targetTab]?.classList.remove('hidden');
-=======
                 if (t) {
-                t.classList.remove('tab-active');
-                t.classList.add('tab-inactive');
+                    t.classList.remove('tab-active');
+                    t.classList.add('tab-inactive');
                 }
             });
             if (tab) {
-            tab.classList.remove('tab-inactive');
-            tab.classList.add('tab-active');
+                tab.classList.remove('tab-inactive');
+                tab.classList.add('tab-active');
             }
 
             // Show/hide content
@@ -138,7 +70,6 @@ function initTabNavigation() {
                 if (content) content.classList.add('hidden');
             });
             if (tabContents[targetTab]) tabContents[targetTab].classList.remove('hidden');
->>>>>>> origin/update_profile
         });
     });
 }
@@ -152,19 +83,11 @@ async function loadProfile() {
             return;
         }
     } catch (error) {
-<<<<<<< HEAD
-        console.warn('API profile load failed, using localStorage', error);
-    }
-
-    // Fallback: localStorage
-    const cached = localStorage.getItem('userData');
-=======
         console.warn('API profile load failed, using sessionStorage', error);
     }
 
     // Fallback: sessionStorage
     const cached = sessionStorage.getItem('userData');
->>>>>>> origin/update_profile
     if (cached) {
         try {
             const user = JSON.parse(cached);
@@ -176,7 +99,7 @@ async function loadProfile() {
                 location: user.location,
                 bio: user.bio
             });
-        } catch(e){
+        } catch (e) {
             console.error('Parse cached user error', e);
         }
     }
@@ -186,30 +109,10 @@ function populateProfile(user) {
     // Header information
     document.getElementById('profileName').textContent = user.name || 'User';
     document.getElementById('profileEmail').textContent = user.email;
-    
+
     // Role badge
     const roleSpan = document.getElementById('profileRole');
     if (roleSpan) {
-<<<<<<< HEAD
-        const roleIcon = document.createElement('i');
-        roleIcon.className = 'mr-1 fas';
-        
-        if (user.isAdmin) {
-            roleSpan.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800';
-            roleIcon.classList.add('fa-shield-alt');
-            roleSpan.textContent = 'Admin';
-        } else if (user.isPremium) {
-            roleSpan.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800';
-            roleIcon.classList.add('fa-crown');
-            roleSpan.textContent = 'Premium';
-        } else {
-            roleSpan.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800';
-            roleIcon.classList.add('fa-user');
-            roleSpan.textContent = 'Basic';
-        }
-        
-        roleSpan.insertBefore(roleIcon, roleSpan.firstChild);
-=======
         roleSpan.innerHTML = '';
         let badgeClass = '';
         let iconClass = '';
@@ -232,23 +135,11 @@ function populateProfile(user) {
         roleSpan.className = badgeClass;
         roleSpan.appendChild(icon);
         roleSpan.appendChild(document.createTextNode(label));
->>>>>>> origin/update_profile
     }
 
     // Form fields
     document.getElementById('name').value = user.name || '';
     document.getElementById('email').value = user.email || '';
-<<<<<<< HEAD
-    document.getElementById('phone').value = user.phone || '';
-    document.getElementById('location').value = user.location || '';
-    document.getElementById('bio').value = user.bio || '';
-
-    // Load notification preferences if available
-    if (user.notifications) {
-        document.getElementById('emailNotifications').checked = user.notifications.email;
-        document.getElementById('pushNotifications').checked = user.notifications.push;
-        document.getElementById('monthlyReport').checked = user.notifications.monthlyReport;
-=======
 
     // Last login time
     const lastLoginSpan = document.getElementById('lastLoginTime');
@@ -265,7 +156,6 @@ function populateProfile(user) {
         lastLoginSpan.value = formatter.format(lastLogin);
     } else if (lastLoginSpan) {
         lastLoginSpan.value = '';
->>>>>>> origin/update_profile
     }
 
     // Load sidebar with username
@@ -274,8 +164,6 @@ function populateProfile(user) {
     }
 }
 
-<<<<<<< HEAD
-=======
 // Toggle edit mode for profile form
 function toggleEditMode(enabled) {
     const form = document.getElementById('profileForm');
@@ -335,7 +223,6 @@ function initEditMode() {
     });
 }
 
->>>>>>> origin/update_profile
 // Handle profile form submission
 function initProfileForm() {
     const form = document.getElementById('profileForm');
@@ -343,52 +230,9 @@ function initProfileForm() {
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const formData = {
             name: document.getElementById('name').value.trim(),
-<<<<<<< HEAD
-            email: document.getElementById('email').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
-            location: document.getElementById('location').value.trim(),
-            bio: document.getElementById('bio').value.trim()
-        };
-
-        try {
-            const updatedUser = await apiService.updateUserProfile(formData);
-            if (updatedUser) {
-                // Update local storage
-                const stored = JSON.parse(localStorage.getItem('userData') || '{}');
-                const newStored = { ...stored, ...formData };
-                localStorage.setItem('userData', JSON.stringify(newStored));
-
-                // Reflect changes in header without reload
-                if (typeof window.updateHeaderDisplayNames === 'function') {
-                    window.updateHeaderDisplayNames(updatedUser.name);
-                }
-
-                showProfileNotification('Thông tin đã được cập nhật thành công!', 'success');
-            }
-        } catch (error) {
-            console.error('Profile update failed:', error);
-            showProfileNotification(error.message || 'Cập nhật thất bại.', 'error');
-        }
-    });
-}
-
-// Handle password change
-function initPasswordForm() {
-    const form = document.getElementById('passwordForm');
-    if (!form) return;
-
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const currentPassword = document.getElementById('currentPassword').value.trim();
-        const newPassword = document.getElementById('newPassword').value.trim();
-        const confirmPassword = document.getElementById('confirmPassword').value.trim();
-
-        if (newPassword !== confirmPassword) {
-            showProfileNotification('Mật khẩu xác nhận không khớp.', 'error');
-=======
             email: document.getElementById('email').value.trim()
         };
 
@@ -405,18 +249,10 @@ function initPasswordForm() {
 
         if (!isValidEmail(formData.email)) {
             showProfileNotification('Invalid email format.', 'error');
->>>>>>> origin/update_profile
             return;
         }
 
         try {
-<<<<<<< HEAD
-            await apiService.changePassword({ currentPassword, newPassword });
-            showProfileNotification('Đổi mật khẩu thành công!', 'success');
-            form.reset();
-        } catch (error) {
-            showProfileNotification(error.message || 'Đổi mật khẩu thất bại.', 'error');
-=======
             const res = await fetch(`${API_BASE}/api/v1/users/profile`, {
                 method: 'PUT',
                 headers: {
@@ -433,7 +269,7 @@ function initPasswordForm() {
             if (res.ok && response.code === 1000) {
                 // Update session storage
                 const stored = JSON.parse(sessionStorage.getItem('userData') || '{}');
-                const newStored = { ...stored, ...formData };
+                const newStored = {...stored, ...formData};
                 sessionStorage.setItem('userData', JSON.stringify(newStored));
                 document.getElementById('profileName').textContent = formData.name;
                 document.getElementById('profileEmail').textContent = formData.email;
@@ -451,13 +287,10 @@ function initPasswordForm() {
             }
         } catch (error) {
             showProfileNotification('Update failed.', 'error');
->>>>>>> origin/update_profile
         }
     });
 }
 
-<<<<<<< HEAD
-=======
 // Password validation
 const passwordValidation = {
     length: false,
@@ -544,7 +377,7 @@ function showCurrentPasswordError() {
 }
 
 // Event listeners for password form
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const passwordForm = document.getElementById('passwordForm');
     const currentPassword = document.getElementById('currentPassword');
     const newPassword = document.getElementById('newPassword');
@@ -552,13 +385,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const passwordToggles = document.querySelectorAll('.password-toggle');
 
     // Hide current password error when user starts typing
-    currentPassword.addEventListener('input', function() {
+    currentPassword.addEventListener('input', function () {
         hideCurrentPasswordError();
     });
 
     // Password visibility toggle
     passwordToggles.forEach(toggle => {
-        toggle.addEventListener('click', function() {
+        toggle.addEventListener('click', function () {
             const input = this.parentElement.querySelector('input');
             const icon = this.querySelector('i');
             if (input.type === 'password') {
@@ -577,7 +410,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Form submission
-    passwordForm.addEventListener('submit', async function(e) {
+    passwordForm.addEventListener('submit', async function (e) {
         e.preventDefault();
 
         try {
@@ -601,35 +434,35 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch (jsonError) {
                 console.error('JSON Parse Error:', jsonError);
                 showProfileNotification('An error occurred while processing the response from the server!', 'error');
-            return;
-        }
+                return;
+            }
 
-            console.log('Response:', { status: response.status, data }); // Debug log
+            console.log('Response:', {status: response.status, data}); // Debug log
 
             if (response.ok) {
                 // Hide any error messages
                 hideCurrentPasswordError();
-                
+
                 // Show success notification
-            showProfileNotification('Password changed successfully!', 'success');
-                
+                showProfileNotification('Password changed successfully!', 'success');
+
                 // Reset form
                 passwordForm.reset();
                 validateForm();
             } else {
                 // Check specific error cases
                 if (data.message) {
-                    if (data.message.toLowerCase().includes('incorrect') || 
-                        data.message.toLowerCase().includes('wrong') || 
+                    if (data.message.toLowerCase().includes('incorrect') ||
+                        data.message.toLowerCase().includes('wrong') ||
                         data.message.toLowerCase().includes('invalid') ||
                         data.message.toLowerCase().includes('current password') ||
                         response.status === 400) {
                         // Hiển thị lỗi mật khẩu hiện tại không đúng
                         showCurrentPasswordError();
                         showProfileNotification('Current password is incorrect. Please check and try again!', 'error');
-                    } else if (data.message.toLowerCase().includes('token') || 
-                             data.message.toLowerCase().includes('unauthorized') || 
-                             response.status === 401) {
+                    } else if (data.message.toLowerCase().includes('token') ||
+                        data.message.toLowerCase().includes('unauthorized') ||
+                        response.status === 401) {
                         showProfileNotification('Your session has expired. Please log in again!', 'error');
                         // Redirect to login page after 2 seconds
                         setTimeout(() => {
@@ -667,7 +500,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
->>>>>>> origin/update_profile
 // Handle notification preferences
 function initNotificationPreferences() {
     const form = document.querySelector('#notificationsTab .space-y-6');
@@ -682,15 +514,9 @@ function initNotificationPreferences() {
 
         try {
             await apiService.updateNotificationPreferences(preferences);
-<<<<<<< HEAD
-            showProfileNotification('Tùy chọn thông báo đã được cập nhật!', 'success');
-        } catch (error) {
-            showProfileNotification('Không thể cập nhật tùy chọn thông báo.', 'error');
-=======
             showProfileNotification('Notification preferences updated successfully!', 'success');
         } catch (error) {
             showProfileNotification('Failed to update notification preferences.', 'error');
->>>>>>> origin/update_profile
         }
     };
 
@@ -739,23 +565,15 @@ window.addEventListener('DOMContentLoaded', () => {
     loadProfile();
     initTabNavigation();
     initProfileForm();
-<<<<<<< HEAD
-    initPasswordForm();
-    initPasswordToggle();
-    initNotificationPreferences();
-=======
     initPasswordToggle();
     initNotificationPreferences();
     initEditMode();
->>>>>>> origin/update_profile
-    
+
     // Mark main content ready to reveal opacity
     const main = document.querySelector('.main-content');
     if (main) {
         main.classList.add('content-ready');
     }
-<<<<<<< HEAD
-=======
 
     // Password form show/hide logic
     const btnShowPasswordForm = document.getElementById('btn-show-password-form');
@@ -807,18 +625,18 @@ window.addEventListener('DOMContentLoaded', () => {
                 'Authorization': 'Bearer ' + sessionStorage.getItem('token')
             }
         })
-        .then(res => {
-            if (!res.ok) throw new Error('API error: ' + res.status);
-            return res.json();
-        })
-        .then(data => {
-            if (data.result && typeof data.result.is2FAEnabled !== 'undefined') {
-                update2FAUI(data.result.is2FAEnabled);
-            }
-        })
-        .catch(err => console.error('2FA profile fetch error:', err));
+            .then(res => {
+                if (!res.ok) throw new Error('API error: ' + res.status);
+                return res.json();
+            })
+            .then(data => {
+                if (data.result && typeof data.result.is2FAEnabled !== 'undefined') {
+                    update2FAUI(data.result.is2FAEnabled);
+                }
+            })
+            .catch(err => console.error('2FA profile fetch error:', err));
 
-        btn2FA.addEventListener('click', function() {
+        btn2FA.addEventListener('click', function () {
             if (!is2FAEnabled) {
                 // Enable 2FA
                 update2FAUI(true);
@@ -828,19 +646,19 @@ window.addEventListener('DOMContentLoaded', () => {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + sessionStorage.getItem('token')
                     },
-                    body: JSON.stringify({ is2FAEnabled: true })
+                    body: JSON.stringify({is2FAEnabled: true})
                 })
-                .then(res => {
-                    if (!res.ok) throw new Error('API error: ' + res.status);
-                    return res.json();
-                })
-                .then(data => {
-                    showProfileNotification('Two-factor authentication enabled!', 'success');
-                })
-                .catch(err => {
-                    showProfileNotification('Failed to enable 2FA: ' + err.message, 'error');
-                    update2FAUI(false);
-                });
+                    .then(res => {
+                        if (!res.ok) throw new Error('API error: ' + res.status);
+                        return res.json();
+                    })
+                    .then(data => {
+                        showProfileNotification('Two-factor authentication enabled!', 'success');
+                    })
+                    .catch(err => {
+                        showProfileNotification('Failed to enable 2FA: ' + err.message, 'error');
+                        update2FAUI(false);
+                    });
             } else {
                 // Show disable modal
                 if (modal2FA) modal2FA.classList.remove('hidden');
@@ -850,10 +668,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Xử lý xác nhận tắt 2FA
     if (btnCancel2FA && btnConfirm2FA && modal2FA && btn2FA) {
-        btnCancel2FA.onclick = function() {
+        btnCancel2FA.onclick = function () {
             modal2FA.classList.add('hidden');
         };
-        btnConfirm2FA.onclick = function() {
+        btnConfirm2FA.onclick = function () {
             modal2FA.classList.add('hidden');
             fetch(`${API_BASE}/api/v1/users/profile/2fa`, {
                 method: 'PUT',
@@ -861,20 +679,20 @@ window.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + sessionStorage.getItem('token')
                 },
-                body: JSON.stringify({ is2FAEnabled: false })
+                body: JSON.stringify({is2FAEnabled: false})
             })
-            .then(res => {
-                if (!res.ok) throw new Error('API error: ' + res.status);
-                return res.json();
-            })
-            .then(data => {
-                update2FAUI(false);
-                showProfileNotification('Two-factor authentication disabled!', 'success');
-            })
-            .catch(err => {
-                showProfileNotification('Failed to disable 2FA: ' + err.message, 'error');
-                update2FAUI(true);
-            });
+                .then(res => {
+                    if (!res.ok) throw new Error('API error: ' + res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    update2FAUI(false);
+                    showProfileNotification('Two-factor authentication disabled!', 'success');
+                })
+                .catch(err => {
+                    showProfileNotification('Failed to disable 2FA: ' + err.message, 'error');
+                    update2FAUI(true);
+                });
         };
     }
 
@@ -889,83 +707,85 @@ window.addEventListener('DOMContentLoaded', () => {
     let pendingNewEmail = null;
 
     function showOtpEmailModal(email) {
-      pendingNewEmail = email;
-      inputOtpEmail.value = '';
-      otpEmailError.classList.add('hidden');
-      otpEmailSuccess.classList.add('hidden');
-      modalVerifyEmailOtp.classList.remove('hidden');
-      inputOtpEmail.focus();
+        pendingNewEmail = email;
+        inputOtpEmail.value = '';
+        otpEmailError.classList.add('hidden');
+        otpEmailSuccess.classList.add('hidden');
+        modalVerifyEmailOtp.classList.remove('hidden');
+        inputOtpEmail.focus();
     }
+
     function hideOtpEmailModal() {
-      modalVerifyEmailOtp.classList.add('hidden');
-      pendingNewEmail = null;
+        modalVerifyEmailOtp.classList.add('hidden');
+        pendingNewEmail = null;
     }
+
     if (btnCancelOtpEmail) {
-      btnCancelOtpEmail.onclick = hideOtpEmailModal;
+        btnCancelOtpEmail.onclick = hideOtpEmailModal;
     }
     if (btnResendOtpEmail) {
-      btnResendOtpEmail.onclick = async function() {
-        if (!pendingNewEmail) return;
-        otpEmailError.classList.add('hidden');
-        otpEmailSuccess.classList.add('hidden');
-        try {
-          const res = await fetch(`${API_BASE}/api/v1/auth/send-verification`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: pendingNewEmail })
-          });
-          if (res.ok) {
-            otpEmailSuccess.textContent = 'OTP resent successfully!';
-            otpEmailSuccess.classList.remove('hidden');
-          } else {
-            otpEmailError.textContent = 'Failed to resend OTP.';
-            otpEmailError.classList.remove('hidden');
-          }
-        } catch (e) {
-          otpEmailError.textContent = 'Network error.';
-          otpEmailError.classList.remove('hidden');
-        }
-      };
+        btnResendOtpEmail.onclick = async function () {
+            if (!pendingNewEmail) return;
+            otpEmailError.classList.add('hidden');
+            otpEmailSuccess.classList.add('hidden');
+            try {
+                const res = await fetch(`${API_BASE}/api/v1/auth/send-verification`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email: pendingNewEmail})
+                });
+                if (res.ok) {
+                    otpEmailSuccess.textContent = 'OTP resent successfully!';
+                    otpEmailSuccess.classList.remove('hidden');
+                } else {
+                    otpEmailError.textContent = 'Failed to resend OTP.';
+                    otpEmailError.classList.remove('hidden');
+                }
+            } catch (e) {
+                otpEmailError.textContent = 'Network error.';
+                otpEmailError.classList.remove('hidden');
+            }
+        };
     }
     if (btnConfirmOtpEmail) {
-      btnConfirmOtpEmail.onclick = async function() {
-        if (!pendingNewEmail) return;
-        const otp = inputOtpEmail.value.trim();
-        if (!otp || otp.length !== 6) {
-          otpEmailError.textContent = 'Please enter a valid 6-digit code.';
-          otpEmailError.classList.remove('hidden');
-          return;
-        }
-        otpEmailError.classList.add('hidden');
-        otpEmailSuccess.classList.add('hidden');
-        try {
-          const res = await fetch(`${API_BASE}/api/v1/users/profile/verify-email-change`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + sessionStorage.getItem('token')
-            },
-            body: JSON.stringify({ email: pendingNewEmail, otp })
-          });
-          const data = await res.json();
-          if (res.ok && data.code === 1000) {
-            otpEmailSuccess.textContent = 'Email updated and verified successfully!';
-            otpEmailSuccess.classList.remove('hidden');
-            // Lưu tab đang active là security trước khi reload
-            localStorage.setItem('profileActiveTab', 'security');
-            setTimeout(() => {
-              hideOtpEmailModal();
-              window.location.reload();
-            }, 1200);
-          } else {
-            otpEmailError.textContent = data.message || 'Invalid or expired code.';
-            otpEmailError.classList.remove('hidden');
-          }
-        } catch (e) {
-          otpEmailError.textContent = 'Network error.';
-          otpEmailError.classList.remove('hidden');
-        }
-      };
+        btnConfirmOtpEmail.onclick = async function () {
+            if (!pendingNewEmail) return;
+            const otp = inputOtpEmail.value.trim();
+            if (!otp || otp.length !== 6) {
+                otpEmailError.textContent = 'Please enter a valid 6-digit code.';
+                otpEmailError.classList.remove('hidden');
+                return;
+            }
+            otpEmailError.classList.add('hidden');
+            otpEmailSuccess.classList.add('hidden');
+            try {
+                const res = await fetch(`${API_BASE}/api/v1/users/profile/verify-email-change`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + sessionStorage.getItem('token')
+                    },
+                    body: JSON.stringify({email: pendingNewEmail, otp})
+                });
+                const data = await res.json();
+                if (res.ok && data.code === 1000) {
+                    otpEmailSuccess.textContent = 'Email updated and verified successfully!';
+                    otpEmailSuccess.classList.remove('hidden');
+                    // Lưu tab đang active là security trước khi reload
+                    localStorage.setItem('profileActiveTab', 'security');
+                    setTimeout(() => {
+                        hideOtpEmailModal();
+                        window.location.reload();
+                    }, 1200);
+                } else {
+                    otpEmailError.textContent = data.message || 'Invalid or expired code.';
+                    otpEmailError.classList.remove('hidden');
+                }
+            } catch (e) {
+                otpEmailError.textContent = 'Network error.';
+                otpEmailError.classList.remove('hidden');
+            }
+        };
     }
 
     // Inline OTP block logic
@@ -987,85 +807,85 @@ window.addEventListener('DOMContentLoaded', () => {
     if (saveProfileBtn) saveProfileBtn.disabled = false;
 
     if (emailInput) {
-      emailInput.addEventListener('input', function() {
-        const newEmail = emailInput.value.trim();
-        if (newEmail && newEmail !== originalEmail) {
-          inlineOtpBlock.classList.remove('hidden');
-          saveProfileBtn.disabled = true;
-          otpVerified = false;
-          pendingNewEmailInline = newEmail;
-          otpInlineError.classList.add('hidden');
-          otpInlineSuccess.classList.add('hidden');
-          otpInlineStatus.textContent = '';
-          inputOtpInline.value = '';
-        } else {
-          inlineOtpBlock.classList.add('hidden');
-          saveProfileBtn.disabled = false;
-          otpVerified = false;
-          pendingNewEmailInline = null;
-          otpInlineError.classList.add('hidden');
-          otpInlineSuccess.classList.add('hidden');
-          otpInlineStatus.textContent = '';
-          inputOtpInline.value = '';
-        }
-      });
+        emailInput.addEventListener('input', function () {
+            const newEmail = emailInput.value.trim();
+            if (newEmail && newEmail !== originalEmail) {
+                inlineOtpBlock.classList.remove('hidden');
+                saveProfileBtn.disabled = true;
+                otpVerified = false;
+                pendingNewEmailInline = newEmail;
+                otpInlineError.classList.add('hidden');
+                otpInlineSuccess.classList.add('hidden');
+                otpInlineStatus.textContent = '';
+                inputOtpInline.value = '';
+            } else {
+                inlineOtpBlock.classList.add('hidden');
+                saveProfileBtn.disabled = false;
+                otpVerified = false;
+                pendingNewEmailInline = null;
+                otpInlineError.classList.add('hidden');
+                otpInlineSuccess.classList.add('hidden');
+                otpInlineStatus.textContent = '';
+                inputOtpInline.value = '';
+            }
+        });
     }
     if (btnSendOtpInline) {
-      btnSendOtpInline.onclick = async function() {
-        if (!pendingNewEmailInline) return;
-        otpInlineError.classList.add('hidden');
-        otpInlineSuccess.classList.add('hidden');
-        otpInlineStatus.textContent = 'Sending...';
-        try {
-          const res = await fetch(`${API_BASE}/api/v1/users/profile/send-otp-change-email`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + sessionStorage.getItem('token')
-            },
-            body: JSON.stringify({ email: pendingNewEmailInline })
-          });
-          const data = await res.json();
-          if (res.ok && data.code === 1000) {
-            otpInlineStatus.textContent = 'OTP sent!';
-            btnSendOtpInline.textContent = 'Resend OTP';
-          } else {
-            otpInlineStatus.textContent = '';
-            otpInlineError.textContent = data.message || 'Failed to send OTP.';
-            otpInlineError.classList.remove('hidden');
-          }
-        } catch (e) {
-          otpInlineStatus.textContent = '';
-          otpInlineError.textContent = 'Network error.';
-          otpInlineError.classList.remove('hidden');
-        }
-      };
+        btnSendOtpInline.onclick = async function () {
+            if (!pendingNewEmailInline) return;
+            otpInlineError.classList.add('hidden');
+            otpInlineSuccess.classList.add('hidden');
+            otpInlineStatus.textContent = 'Sending...';
+            try {
+                const res = await fetch(`${API_BASE}/api/v1/users/profile/send-otp-change-email`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + sessionStorage.getItem('token')
+                    },
+                    body: JSON.stringify({email: pendingNewEmailInline})
+                });
+                const data = await res.json();
+                if (res.ok && data.code === 1000) {
+                    otpInlineStatus.textContent = 'OTP sent!';
+                    btnSendOtpInline.textContent = 'Resend OTP';
+                } else {
+                    otpInlineStatus.textContent = '';
+                    otpInlineError.textContent = data.message || 'Failed to send OTP.';
+                    otpInlineError.classList.remove('hidden');
+                }
+            } catch (e) {
+                otpInlineStatus.textContent = '';
+                otpInlineError.textContent = 'Network error.';
+                otpInlineError.classList.remove('hidden');
+            }
+        };
     }
     if (inputOtpInline) {
-      inputOtpInline.addEventListener('input', function() {
-        const newEmail = emailInput.value.trim();
-        const otp = inputOtpInline.value.trim();
-        if (newEmail && newEmail !== originalEmail && otp.length === 6) {
-          saveProfileBtn.disabled = false;
-          saveProfileBtn.textContent = 'Confirm';
-        } else if (newEmail && newEmail !== originalEmail) {
-          saveProfileBtn.disabled = true;
-          saveProfileBtn.textContent = 'Save';
-        }
-      });
+        inputOtpInline.addEventListener('input', function () {
+            const newEmail = emailInput.value.trim();
+            const otp = inputOtpInline.value.trim();
+            if (newEmail && newEmail !== originalEmail && otp.length === 6) {
+                saveProfileBtn.disabled = false;
+                saveProfileBtn.textContent = 'Confirm';
+            } else if (newEmail && newEmail !== originalEmail) {
+                saveProfileBtn.disabled = true;
+                saveProfileBtn.textContent = 'Save';
+            }
+        });
     }
 });
 
 function hideInlineOtpBlock() {
-  inlineOtpBlock.classList.add('hidden');
-  otpInlineError.classList.add('hidden');
-  otpInlineSuccess.classList.add('hidden');
-  otpInlineStatus.textContent = '';
-  inputOtpInline.value = '';
-  btnSendOtpInline.textContent = 'Send OTP';
-  otpVerified = false;
-  pendingNewEmailInline = null;
-  if (saveProfileBtn) saveProfileBtn.disabled = false;
+    inlineOtpBlock.classList.add('hidden');
+    otpInlineError.classList.add('hidden');
+    otpInlineSuccess.classList.add('hidden');
+    otpInlineStatus.textContent = '';
+    inputOtpInline.value = '';
+    btnSendOtpInline.textContent = 'Send OTP';
+    otpVerified = false;
+    pendingNewEmailInline = null;
+    if (saveProfileBtn) saveProfileBtn.disabled = false;
 }
 
 // Đổi email ở tab Security
@@ -1083,161 +903,164 @@ const otpEmailSuccess = document.getElementById('otp-email-success');
 const otpEmailStatus = document.getElementById('otp-email-status');
 
 if (btnShowEmailForm && emailFormWrapper) {
-  btnShowEmailForm.onclick = () => {
-    emailFormWrapper.classList.remove('hidden');
-    btnShowEmailForm.classList.add('hidden');
-    newEmailInput.value = '';
-    emailOtpBlock.classList.add('hidden');
-    otpEmailError.classList.add('hidden');
-    otpEmailSuccess.classList.add('hidden');
-    otpEmailStatus.textContent = '';
-    inputOtpEmail.value = '';
-    btnConfirmEmailForm.disabled = true;
-    btnConfirmEmailForm.textContent = 'Confirm';
-  };
+    btnShowEmailForm.onclick = () => {
+        emailFormWrapper.classList.remove('hidden');
+        btnShowEmailForm.classList.add('hidden');
+        newEmailInput.value = '';
+        emailOtpBlock.classList.add('hidden');
+        otpEmailError.classList.add('hidden');
+        otpEmailSuccess.classList.add('hidden');
+        otpEmailStatus.textContent = '';
+        inputOtpEmail.value = '';
+        btnConfirmEmailForm.disabled = true;
+        btnConfirmEmailForm.textContent = 'Confirm';
+    };
 }
 if (btnCancelEmailForm && emailFormWrapper && btnShowEmailForm) {
-  btnCancelEmailForm.onclick = () => {
-    emailFormWrapper.classList.add('hidden');
-    btnShowEmailForm.classList.remove('hidden');
-  };
+    btnCancelEmailForm.onclick = () => {
+        emailFormWrapper.classList.add('hidden');
+        btnShowEmailForm.classList.remove('hidden');
+    };
 }
 if (newEmailInput) {
-  newEmailInput.addEventListener('input', function() {
-    emailOtpBlock.classList.add('hidden');
-    otpEmailError.classList.add('hidden');
-    otpEmailSuccess.classList.add('hidden');
-    otpEmailStatus.textContent = '';
-    inputOtpEmail.value = '';
-    btnConfirmEmailForm.disabled = true;
-    btnConfirmEmailForm.textContent = 'Confirm';
-    if (newEmailInput.value.trim()) {
-      btnSendOtpEmail.disabled = false;
-    } else {
-      btnSendOtpEmail.disabled = true;
-    }
-  });
+    newEmailInput.addEventListener('input', function () {
+        emailOtpBlock.classList.add('hidden');
+        otpEmailError.classList.add('hidden');
+        otpEmailSuccess.classList.add('hidden');
+        otpEmailStatus.textContent = '';
+        inputOtpEmail.value = '';
+        btnConfirmEmailForm.disabled = true;
+        btnConfirmEmailForm.textContent = 'Confirm';
+        if (newEmailInput.value.trim()) {
+            btnSendOtpEmail.disabled = false;
+        } else {
+            btnSendOtpEmail.disabled = true;
+        }
+    });
 }
 let otpEmailCountdown = null;
+
 function startOtpEmailCountdown() {
-  let seconds = 60;
-  btnSendOtpEmail.disabled = true;
-  btnSendOtpEmail.textContent = `Resend OTP (${seconds}s)`;
-  otpEmailCountdown = setInterval(() => {
-    seconds--;
+    let seconds = 60;
+    btnSendOtpEmail.disabled = true;
     btnSendOtpEmail.textContent = `Resend OTP (${seconds}s)`;
-    if (seconds <= 0) {
-      clearInterval(otpEmailCountdown);
-      btnSendOtpEmail.disabled = false;
-      btnSendOtpEmail.textContent = 'Resend OTP';
-    }
-  }, 1000);
+    otpEmailCountdown = setInterval(() => {
+        seconds--;
+        btnSendOtpEmail.textContent = `Resend OTP (${seconds}s)`;
+        if (seconds <= 0) {
+            clearInterval(otpEmailCountdown);
+            btnSendOtpEmail.disabled = false;
+            btnSendOtpEmail.textContent = 'Resend OTP';
+        }
+    }, 1000);
 }
+
 if (btnSendOtpEmail) {
-  btnSendOtpEmail.onclick = async function() {
-    const email = newEmailInput.value.trim();
-    if (!email) return;
-    emailOtpBlock.classList.add('hidden');
-    otpEmailError.classList.add('hidden');
-    otpEmailSuccess.classList.add('hidden');
-    otpEmailStatus.textContent = 'Sending...';
-    if (otpEmailCountdown) clearInterval(otpEmailCountdown);
-    try {
-      const res = await fetch(`${API_BASE}/api/v1/users/profile/send-otp-change-email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + sessionStorage.getItem('token')
-        },
-        body: JSON.stringify({ email })
-      });
-      const data = await res.json();
-      if (res.ok && data.code === 1000) {
-        emailOtpBlock.classList.remove('hidden');
-        otpEmailStatus.textContent = 'OTP sent!';
-        startOtpEmailCountdown();
-      } else if (data.code === 2003 || (data.message && data.message.toLowerCase().includes('already exists'))) {
-        otpEmailStatus.textContent = '';
-        otpEmailError.textContent = 'This email is already registered.';
-        otpEmailError.classList.remove('hidden');
+    btnSendOtpEmail.onclick = async function () {
+        const email = newEmailInput.value.trim();
+        if (!email) return;
         emailOtpBlock.classList.add('hidden');
-        showProfileNotification('This email is already registered.', 'error');
-      } else {
-        otpEmailStatus.textContent = '';
-        otpEmailError.textContent = data.message || 'Failed to send OTP.';
-        otpEmailError.classList.remove('hidden');
-        emailOtpBlock.classList.add('hidden');
-      }
-    } catch (e) {
-      otpEmailStatus.textContent = '';
-      otpEmailError.textContent = 'Network error.';
-      otpEmailError.classList.remove('hidden');
-      emailOtpBlock.classList.add('hidden');
-    }
-  };
+        otpEmailError.classList.add('hidden');
+        otpEmailSuccess.classList.add('hidden');
+        otpEmailStatus.textContent = 'Sending...';
+        if (otpEmailCountdown) clearInterval(otpEmailCountdown);
+        try {
+            const res = await fetch(`${API_BASE}/api/v1/users/profile/send-otp-change-email`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + sessionStorage.getItem('token')
+                },
+                body: JSON.stringify({email})
+            });
+            const data = await res.json();
+            if (res.ok && data.code === 1000) {
+                emailOtpBlock.classList.remove('hidden');
+                otpEmailStatus.textContent = 'OTP sent!';
+                startOtpEmailCountdown();
+            } else if (data.code === 2003 || (data.message && data.message.toLowerCase().includes('already exists'))) {
+                otpEmailStatus.textContent = '';
+                otpEmailError.textContent = 'This email is already registered.';
+                otpEmailError.classList.remove('hidden');
+                emailOtpBlock.classList.add('hidden');
+                showProfileNotification('This email is already registered.', 'error');
+            } else {
+                otpEmailStatus.textContent = '';
+                otpEmailError.textContent = data.message || 'Failed to send OTP.';
+                otpEmailError.classList.remove('hidden');
+                emailOtpBlock.classList.add('hidden');
+            }
+        } catch (e) {
+            otpEmailStatus.textContent = '';
+            otpEmailError.textContent = 'Network error.';
+            otpEmailError.classList.remove('hidden');
+            emailOtpBlock.classList.add('hidden');
+        }
+    };
 }
 if (inputOtpEmail) {
-  inputOtpEmail.addEventListener('input', function() {
-    const otp = inputOtpEmail.value.trim();
-    if (otp.length === 6) {
-      btnConfirmEmailForm.disabled = false;
-      btnConfirmEmailForm.textContent = 'Confirm';
-    } else {
-      btnConfirmEmailForm.disabled = true;
-      btnConfirmEmailForm.textContent = 'Confirm';
-    }
-  });
+    inputOtpEmail.addEventListener('input', function () {
+        const otp = inputOtpEmail.value.trim();
+        if (otp.length === 6) {
+            btnConfirmEmailForm.disabled = false;
+            btnConfirmEmailForm.textContent = 'Confirm';
+        } else {
+            btnConfirmEmailForm.disabled = true;
+            btnConfirmEmailForm.textContent = 'Confirm';
+        }
+    });
 }
 if (emailChangeForm) {
-  emailChangeForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = newEmailInput.value.trim();
-    const otp = inputOtpEmail.value.trim();
-    if (!email || !otp || otp.length !== 6) {
-      otpEmailError.textContent = 'Please enter the 6-digit OTP code.';
-      otpEmailError.classList.remove('hidden');
-      return;
-    }
-    otpEmailError.classList.add('hidden');
-    otpEmailSuccess.classList.add('hidden');
-    otpEmailStatus.textContent = 'Verifying...';
-    try {
-      const res = await fetch(`${API_BASE}/api/v1/users/profile/verify-email-change`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + sessionStorage.getItem('token')
-        },
-        body: JSON.stringify({ email, otp })
-      });
-      const data = await res.json();
-      if (res.ok && data.code === 1000) {
-        otpEmailStatus.textContent = '';
-        otpEmailSuccess.textContent = 'Email updated and verified successfully!';
-        otpEmailSuccess.classList.remove('hidden');
-        // Lưu tab đang active là security trước khi reload
-        localStorage.setItem('profileActiveTab', 'security');
-        setTimeout(() => { window.location.reload(); }, 1200);
-      } else {
-        otpEmailStatus.textContent = '';
-        otpEmailError.textContent = data.message || 'Invalid or expired code.';
-        otpEmailError.classList.remove('hidden');
-      }
-    } catch (err) {
-      otpEmailStatus.textContent = '';
-      otpEmailError.textContent = 'Network error.';
-      otpEmailError.classList.remove('hidden');
-    }
-  });
+    emailChangeForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = newEmailInput.value.trim();
+        const otp = inputOtpEmail.value.trim();
+        if (!email || !otp || otp.length !== 6) {
+            otpEmailError.textContent = 'Please enter the 6-digit OTP code.';
+            otpEmailError.classList.remove('hidden');
+            return;
+        }
+        otpEmailError.classList.add('hidden');
+        otpEmailSuccess.classList.add('hidden');
+        otpEmailStatus.textContent = 'Verifying...';
+        try {
+            const res = await fetch(`${API_BASE}/api/v1/users/profile/verify-email-change`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + sessionStorage.getItem('token')
+                },
+                body: JSON.stringify({email, otp})
+            });
+            const data = await res.json();
+            if (res.ok && data.code === 1000) {
+                otpEmailStatus.textContent = '';
+                otpEmailSuccess.textContent = 'Email updated and verified successfully!';
+                otpEmailSuccess.classList.remove('hidden');
+                // Lưu tab đang active là security trước khi reload
+                localStorage.setItem('profileActiveTab', 'security');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1200);
+            } else {
+                otpEmailStatus.textContent = '';
+                otpEmailError.textContent = data.message || 'Invalid or expired code.';
+                otpEmailError.classList.remove('hidden');
+            }
+        } catch (err) {
+            otpEmailStatus.textContent = '';
+            otpEmailError.textContent = 'Network error.';
+            otpEmailError.classList.remove('hidden');
+        }
+    });
 }
 
 // Khi load lại trang, active lại tab nếu có trong localStorage
 window.addEventListener('DOMContentLoaded', () => {
-  const activeTab = localStorage.getItem('profileActiveTab');
-  if (activeTab) {
-    const tabBtn = document.querySelector(`[data-tab="${activeTab}"]`);
-    if (tabBtn) tabBtn.click();
-    localStorage.removeItem('profileActiveTab');
-  }
->>>>>>> origin/update_profile
+    const activeTab = localStorage.getItem('profileActiveTab');
+    if (activeTab) {
+        const tabBtn = document.querySelector(`[data-tab="${activeTab}"]`);
+        if (tabBtn) tabBtn.click();
+        localStorage.removeItem('profileActiveTab');
+    }
 }); 

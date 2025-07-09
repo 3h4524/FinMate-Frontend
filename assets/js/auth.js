@@ -1,9 +1,5 @@
 // Import API service
 import apiService from './services/api.js';
-<<<<<<< HEAD
-import { initGoogleSignIn } from './googleAuth.js';
-=======
->>>>>>> origin/update_profile
 
 // DOM Elements
 const loginForm = document.getElementById('loginForm');
@@ -44,15 +40,15 @@ export function toggleConfirmPassword() {
 export function showNotification(message, type = 'info') {
     const notification = document.getElementById('notification');
     const messageElement = document.getElementById('notification-message');
-    
+
     // Remove existing classes
     notification.classList.remove('success', 'error', 'info');
     // Add new type class
     notification.classList.add(type);
-    
+
     messageElement.textContent = message;
     notification.classList.add('show');
-    
+
     // Auto hide after 5 seconds
     setTimeout(() => {
         hideNotification();
@@ -80,9 +76,9 @@ export function initPasswordValidation() {
     // Initially mark all requirements as invalid
     Object.values(requirements).forEach(li => li.classList.add('invalid'));
 
-    password.addEventListener('input', function() {
+    password.addEventListener('input', function () {
         const value = this.value;
-        
+
         // Check length
         if (value.length >= 8) {
             requirements.length.classList.add('valid');
@@ -91,7 +87,7 @@ export function initPasswordValidation() {
             requirements.length.classList.remove('valid');
             requirements.length.classList.add('invalid');
         }
-        
+
         // Check uppercase
         if (/[A-Z]/.test(value)) {
             requirements.uppercase.classList.add('valid');
@@ -100,7 +96,7 @@ export function initPasswordValidation() {
             requirements.uppercase.classList.remove('valid');
             requirements.uppercase.classList.add('invalid');
         }
-        
+
         // Check lowercase
         if (/[a-z]/.test(value)) {
             requirements.lowercase.classList.add('valid');
@@ -109,7 +105,7 @@ export function initPasswordValidation() {
             requirements.lowercase.classList.remove('valid');
             requirements.lowercase.classList.add('invalid');
         }
-        
+
         // Check number
         if (/[0-9]/.test(value)) {
             requirements.number.classList.add('valid');
@@ -118,7 +114,7 @@ export function initPasswordValidation() {
             requirements.number.classList.remove('valid');
             requirements.number.classList.add('invalid');
         }
-        
+
         // Check special character
         if (/[!@#$%^&*]/.test(value)) {
             requirements.special.classList.add('valid');
@@ -172,7 +168,7 @@ export function initPasswordValidation() {
 //                 // Show error message
 //                 const errorMessage = data.message || 'Registration failed!';
 //                 showNotification(errorMessage, 'error');
-                
+
 //                 // If it's an email already exists error, show it in the email field
 //                 if (data.code === 1014) {
 //                     const emailError = document.getElementById('email-error');
@@ -241,43 +237,28 @@ export function initPasswordValidation() {
 document.addEventListener('DOMContentLoaded', () => {
     // Force English language
     document.documentElement.lang = 'en';
-<<<<<<< HEAD
-    
-    // Initialize Google Sign-In with appropriate text based on page
-    const isRegisterPage = window.location.pathname.includes('register.html');
-    initGoogleSignIn(isRegisterPage ? 'signup_with' : 'signin_with');
-
-    // Initialize forms based on current page
-    if (window.location.pathname.includes('register.html')) {
-        // initRegisterForm();
-        // initPasswordValidation();
-    } else if (window.location.pathname.includes('login.html')) {
-        // initLoginForm();
-    }
-}); 
-=======
 });
 
 // Session management functions
 function checkSessionValidity() {
     const loginTimestamp = sessionStorage.getItem('loginTimestamp');
     const token = sessionStorage.getItem('token');
-    
+
     if (!loginTimestamp || !token) {
         return false;
     }
-    
+
     const loginTime = parseInt(loginTimestamp);
     const currentTime = Date.now();
     const sessionTimeout = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-    
+
     // Check if session has expired (24 hours)
     if (currentTime - loginTime > sessionTimeout) {
         console.log('Session expired, clearing data');
         clearSessionData();
         return false;
     }
-    
+
     return true;
 }
 
@@ -292,7 +273,7 @@ function clearSessionData() {
 function setLogoutIntent() {
     const token = sessionStorage.getItem('token');
     const userData = sessionStorage.getItem('userData');
-    
+
     if (token && userData) {
         localStorage.setItem('logoutIntent', JSON.stringify({
             token: token,
@@ -306,17 +287,17 @@ function setLogoutIntent() {
 // Check and process logout intent on page load
 function checkLogoutIntent() {
     const logoutIntent = localStorage.getItem('logoutIntent');
-    
+
     if (logoutIntent) {
         try {
             const intent = JSON.parse(logoutIntent);
             const token = intent.token;
-            
+
             // Check if this was from browser close
             if (intent.browserClosed) {
                 console.log('Processing logout intent from browser close');
             }
-            
+
             // Send logout request
             fetch('http://localhost:8080/api/v1/auth/logout', {
                 method: 'POST',
@@ -342,18 +323,18 @@ function checkLogoutIntent() {
 function handleBeforeUnload() {
     const token = sessionStorage.getItem('token');
     const userData = sessionStorage.getItem('userData');
-    
+
     if (token && userData) {
         try {
             const user = JSON.parse(userData);
-            
+
             // Use synchronous XMLHttpRequest for more reliable delivery during page unload
             const xhr = new XMLHttpRequest();
             xhr.open('POST', 'http://localhost:8080/api/v1/auth/logout', false); // Synchronous
             xhr.setRequestHeader('Authorization', `Bearer ${token}`);
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send();
-            
+
             console.log('Logout request sent on page unload');
         } catch (error) {
             console.log('Error during logout on page unload:', error);
@@ -366,13 +347,13 @@ function handleVisibilityChange() {
     if (document.visibilityState === 'hidden') {
         const token = sessionStorage.getItem('token');
         const userData = sessionStorage.getItem('userData');
-        
+
         if (token && userData) {
             try {
                 const user = JSON.parse(userData);
                 // Set logout intent as backup
                 setLogoutIntent();
-                
+
                 // Send logout request to backend to set verified = false
                 fetch('http://localhost:8080/api/v1/auth/logout', {
                     method: 'POST',
@@ -403,14 +384,14 @@ function handleVisibilityChange() {
 function handlePageUnload() {
     const token = sessionStorage.getItem('token');
     const userData = sessionStorage.getItem('userData');
-    
+
     if (token && userData) {
         try {
             const user = JSON.parse(userData);
-            
+
             // Set logout intent as backup
             setLogoutIntent();
-            
+
             // Strategy 1: Use sendBeacon if available
             if (navigator.sendBeacon) {
                 const blob = new Blob([JSON.stringify({})], {type: 'application/json'});
@@ -445,7 +426,7 @@ function clearSessionOnAuthPages() {
 }
 
 // Call this function when page loads
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Check for logout intent first
     checkLogoutIntent();
     clearSessionOnAuthPages();
@@ -464,11 +445,11 @@ document.addEventListener('DOMContentLoaded', function() {
 function handleBrowserClose() {
     const token = sessionStorage.getItem('token');
     const userData = sessionStorage.getItem('userData');
-    
+
     if (token && userData) {
         try {
             const user = JSON.parse(userData);
-            
+
             // Store logout intent for next session
             localStorage.setItem('logoutIntent', JSON.stringify({
                 token: token,
@@ -476,7 +457,7 @@ function handleBrowserClose() {
                 timestamp: Date.now(),
                 browserClosed: true
             }));
-            
+
             // Try to send logout request
             if (navigator.sendBeacon) {
                 const blob = new Blob([JSON.stringify({})], {type: 'application/json'});
@@ -492,4 +473,3 @@ function handleBrowserClose() {
 window.addEventListener('beforeunload', handlePageUnload);
 window.addEventListener('unload', handleBrowserClose);
 document.addEventListener('visibilitychange', handleVisibilityChange); 
->>>>>>> origin/update_profile

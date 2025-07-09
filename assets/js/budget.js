@@ -5,68 +5,6 @@ const pageSize = 10;
 let customCategories = JSON.parse(localStorage.getItem('customCategories')) || [];
 let systemCategories = [];
 
-<<<<<<< HEAD
-const categoryMap = {
-    "Ăn uống": 5,
-    "Mua sắm": 6,
-    "Di chuyển": 7,
-    "Nhà cửa": 8,
-    "Giải trí": 9,
-    "Sức khỏe": 10,
-    "Giáo dục": 11,
-    "Hóa đơn": 12
-};
-
-// Fallback functions if helper files are not loaded
-if (typeof apiRequest === 'undefined') {
-  window.apiRequest = async (url, options = {}) => {
-    try {
-<<<<<<< HEAD
-      const token = localStorage.getItem('authToken');
-=======
-      const token = sessionStorage.getItem('authToken');
->>>>>>> origin/update_profile
-      const defaultOptions = {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` })
-        }
-      };
-      
-      const response = await fetch(url, { ...defaultOptions, ...options });
-      return response;
-    } catch (error) {
-      console.error('API request failed:', error);
-      return null;
-    }
-  };
-}
-
-if (typeof getCurrentUser === 'undefined') {
-  window.getCurrentUser = () => {
-    try {
-      const user = localStorage.getItem('currentUser');
-      return user ? JSON.parse(user) : { userId: 1 }; // fallback user
-    } catch (error) {
-      console.error('Error getting current user:', error);
-      return { userId: 1 };
-    }
-  };
-}
-
-if (typeof loadSideBarSimple === 'undefined') {
-  window.loadSideBarSimple = () => {
-    console.log('Sidebar loading function not available');
-  };
-}
-
-if (typeof loadHeaderSimple === 'undefined') {
-  window.loadHeaderSimple = () => {
-    console.log('Header loading function not available');
-  };
-}
-=======
->>>>>>> origin/release1.4
 
 async function initializeUI() {
     await fetchUser();
@@ -107,15 +45,15 @@ function closeModal(modalId) {
 
     setTimeout(() => {
         modal.classList.add('hidden');
-    }, 200); 
+    }, 200);
 
     const modalConfig = {
-        createBudgetModal: { formId: 'create-budget-form', listId: 'category-list', callback: addBudgetCategory },
-        updateBudgetModal: { formId: 'update-budget-form', listId: 'update-category-list' }
+        createBudgetModal: {formId: 'create-budget-form', listId: 'category-list', callback: addBudgetCategory},
+        updateBudgetModal: {formId: 'update-budget-form', listId: 'update-category-list'}
     };
 
     if (modalConfig[modalId]) {
-        const { formId, listId, callback } = modalConfig[modalId];
+        const {formId, listId, callback} = modalConfig[modalId];
         const form = document.getElementById(formId);
         const list = document.getElementById(listId);
         if (form) form.reset();
@@ -200,7 +138,7 @@ async function saveBudgetCategory(cat, data, budgetId) {
     const method = budgetId ? 'PUT' : 'POST';
     const response = await apiRequest(url, {
         method,
-        headers: { "Content-Type": "application/json", "userId": user.userId.toString() },
+        headers: {"Content-Type": "application/json", "userId": user.userId.toString()},
         body: JSON.stringify(budgetData)
     });
     const responseData = await response.json();
@@ -228,11 +166,11 @@ function addBudgetCategory(type = 'create', selectedCategory = null, amount = nu
     row.className = 'flex items-center gap-3 mb-3';
     row.innerHTML = `
         <select name="categories[]" class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-300 transition" required>
-            <option value="">Chọn danh mục</option>
+            <option value="">Select category</option>
             ${systemCategories.map(cat => `<option value="${cat.id}" ${selectedCategory == cat.id ? 'selected' : ''}>${cat.name}</option>`).join('')}
             ${customCategories.map(cat => `<option value="custom_${cat.id}" ${selectedCategory === 'custom_' + cat.id ? 'selected' : ''}>${cat.name}</option>`).join('')}
         </select>
-        <input type="number" name="amounts[]" step="0.01" min="0" ${amount ? `value="${amount}"` : 'placeholder="Số tiền ($)"'} class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-300 transition" required>
+        <input type="number" name="amounts[]" step="0.01" min="0" ${amount ? `value="${amount}"` : 'placeholder="Amount (₫)"'} class="flex-1 p-3 border border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-300 transition" required>
         <button type="button" class="bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 transition" onclick="removeBudgetCategory(this, '${type}')">×</button>
     `;
     categoryList.appendChild(row);
@@ -241,7 +179,7 @@ function addBudgetCategory(type = 'create', selectedCategory = null, amount = nu
 async function loadSystemCategories() {
     try {
         const response = await apiRequest('http://localhost:8080/api/categories', {
-            headers: { "userId": user.userId.toString() }
+            headers: {"userId": user.userId.toString()}
         });
         const data = await response.json();
         if (response.ok && data.result) {
@@ -264,7 +202,7 @@ async function loadSystemCategories() {
 async function loadUserCategories() {
     try {
         const response = await apiRequest(`http://localhost:8080/api/userCategories/${user.userId}`, {
-            headers: { "userId": user.userId.toString() }
+            headers: {"userId": user.userId.toString()}
         });
         const data = await response.json();
         if (response.ok && data.result) {
@@ -288,21 +226,21 @@ async function loadUserCategories() {
 async function loadBudgetOverview() {
     try {
         const response = await apiRequest(`http://localhost:8080/budget/list?page=0&size=1000`, {
-            headers: { "userId": user.userId.toString() }
+            headers: {"userId": user.userId.toString()}
         });
         const data = await response.json();
-        
+
         if (response.ok && data.result.content.length > 0) {
             const budgets = data.result.content;
             let totalBudget = 0;
             let totalSpent = 0;
             let overBudgetCount = 0;
             let nearLimitCount = 0;
-            
+
             budgets.forEach(budget => {
                 totalBudget += budget.amount;
                 totalSpent += budget.currentSpending || 0;
-                
+
                 const usagePercent = budget.percentageUsed;
                 if (usagePercent >= 100) {
                     overBudgetCount++;
@@ -310,10 +248,10 @@ async function loadBudgetOverview() {
                     nearLimitCount++;
                 }
             });
-            
+
             const remaining = totalBudget - totalSpent;
             const overallProgress = totalBudget > 0 ? (totalSpent / totalBudget * 100) : 0;
-            
+
             // Update overview elements
             document.getElementById('activeBudgets').textContent = budgets.length;
             document.getElementById('totalBudgetAmount').textContent = formatCurrency(totalBudget);
@@ -323,7 +261,7 @@ async function loadBudgetOverview() {
             document.getElementById('overallProgressBar').style.width = `${Math.min(overallProgress, 100)}%`;
             document.getElementById('overBudgetCount').textContent = overBudgetCount;
             document.getElementById('nearLimitCount').textContent = nearLimitCount;
-            
+
             // Update progress bar color based on overall progress
             const progressBar = document.getElementById('overallProgressBar');
             if (overallProgress >= 100) {
@@ -333,12 +271,12 @@ async function loadBudgetOverview() {
             } else {
                 progressBar.className = 'bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300';
             }
-            
+
         } else {
             document.getElementById('activeBudgets').textContent = '0';
-            document.getElementById('totalBudgetAmount').textContent = '$0';
-            document.getElementById('totalSpentAmount').textContent = '$0';
-            document.getElementById('totalRemainingAmount').textContent = '$0';
+            document.getElementById('totalBudgetAmount').textContent = '0';
+            document.getElementById('totalSpentAmount').textContent = '0';
+            document.getElementById('totalRemainingAmount').textContent = '0';
             document.getElementById('overallProgressPercent').textContent = '0%';
             document.getElementById('overallProgressBar').style.width = '0%';
             document.getElementById('overBudgetCount').textContent = '0';
@@ -411,7 +349,7 @@ async function monitorBudgets(page) {
 
     try {
         const response = await apiRequest(`http://localhost:8080/budget/list?page=${page}&size=${pageSize}`, {
-            headers: { "userId": user.userId.toString() }
+            headers: {"userId": user.userId.toString()}
         });
         const data = await response.json();
         if (response.ok && data.result.content.length > 0) {
@@ -481,11 +419,7 @@ async function fetchUser() {
     } catch (error) {
         console.error('Error fetching user:', error);
         showNotification('Error', 'Please log in to continue.', 'error');
-<<<<<<< HEAD
         window.location.href = '/login';
-=======
-        window.location.href = '/pages/login/';
->>>>>>> origin/update_profile
     }
 }
 
@@ -587,7 +521,7 @@ async function deleteBudget(budgetId) {
         try {
             const response = await apiRequest(`http://localhost:8080/budget/${budgetId}`, {
                 method: "DELETE",
-                headers: { "userId": user.userId.toString() }
+                headers: {"userId": user.userId.toString()}
             });
             if (response.ok) {
                 showNotification('Success', 'Budget deleted successfully!', 'success');
@@ -616,9 +550,9 @@ async function loadAnalysis(page) {
     const paginationContainer = document.getElementById("analysis-pagination");
     table.innerHTML = '<tr><td colspan="6" class="p-3"><i class="fas fa-spinner fa-spin"></i> Loading analysis...</td></tr>';
     paginationContainer.innerHTML = '';
-    document.getElementById('totalBudgeted').textContent = '$0';
-    document.getElementById('totalSpent').textContent = '$0';
-    document.getElementById('varianceAmount').textContent = '$0';
+    document.getElementById('totalBudgeted').textContent = '0';
+    document.getElementById('totalSpent').textContent = '0';
+    document.getElementById('varianceAmount').textContent = '0';
     document.getElementById('spendingRate').textContent = '0%';
 
     try {
@@ -626,7 +560,7 @@ async function loadAnalysis(page) {
             `http://localhost:8080/budget/analysis?page=${page}&size=${pageSize}` :
             `http://localhost:8080/budget/analysis?period=${period}&page=${page}&size=${pageSize}`;
         const response = await apiRequest(url, {
-            headers: { "userId": user.userId.toString() }
+            headers: {"userId": user.userId.toString()}
         });
         const data = await response.json();
         if (response.ok && data.result.content.length > 0) {
@@ -674,9 +608,9 @@ async function loadAnalysis(page) {
 
             if (budgetChart) budgetChart.destroy();
             const ctx = document.getElementById('budgetChart').getContext('2d');
-            
+
             let chartConfig;
-            
+
             if (chartType === 'pie') {
                 chartConfig = {
                     type: 'pie',
@@ -697,15 +631,15 @@ async function loadAnalysis(page) {
                             easing: 'easeInOutQuart'
                         },
                         plugins: {
-                            legend: { 
+                            legend: {
                                 position: 'top',
                                 labels: {
                                     usePointStyle: true,
                                     padding: 20
                                 }
                             },
-                            title: { 
-                                display: true, 
+                            title: {
+                                display: true,
                                 text: `Budget Overview - ${period === 'all' ? 'All Periods' : period === 'WEEKLY' ? 'Weekly' : 'Monthly'}`,
                                 font: {
                                     size: 16,
@@ -714,7 +648,7 @@ async function loadAnalysis(page) {
                             },
                             tooltip: {
                                 callbacks: {
-                                    label: function(context) {
+                                    label: function (context) {
                                         const label = context.label || '';
                                         const value = context.parsed;
                                         const total = context.dataset.data.reduce((a, b) => a + b, 0);
@@ -732,21 +666,21 @@ async function loadAnalysis(page) {
                     data: {
                         labels: chartLabels,
                         datasets: [
-                            { 
-                                label: 'Planned Budget', 
-                                data: plannedData, 
-                                backgroundColor: 'rgba(46, 125, 50, 0.6)', 
-                                borderColor: 'rgba(46, 125, 50, 1)', 
+                            {
+                                label: 'Planned Budget',
+                                data: plannedData,
+                                backgroundColor: 'rgba(46, 125, 50, 0.6)',
+                                borderColor: 'rgba(46, 125, 50, 1)',
                                 borderWidth: 2,
-                                fill: chartType === 'line' ? false : true
+                                fill: chartType !== 'line'
                             },
-                            { 
-                                label: 'Actual Spending', 
-                                data: actualData, 
-                                backgroundColor: 'rgba(211, 47, 47, 0.6)', 
-                                borderColor: 'rgba(211, 47, 47, 1)', 
+                            {
+                                label: 'Actual Spending',
+                                data: actualData,
+                                backgroundColor: 'rgba(211, 47, 47, 0.6)',
+                                borderColor: 'rgba(211, 47, 47, 1)',
                                 borderWidth: 2,
-                                fill: chartType === 'line' ? false : true
+                                fill: chartType !== 'line'
                             }
                         ]
                     },
@@ -758,32 +692,32 @@ async function loadAnalysis(page) {
                             easing: 'easeInOutQuart'
                         },
                         scales: {
-                            y: { 
-                                beginAtZero: true, 
-                                title: { display: true, text: 'Amount ($)' },
+                            y: {
+                                beginAtZero: true,
+                                title: {display: true, text: 'Amount ($)'},
                                 ticks: {
-                                    callback: function(value) {
+                                    callback: function (value) {
                                         return formatCurrency(value);
                                     }
                                 }
                             },
-                            x: { 
-                                title: { 
-                                    display: true, 
-                                    text: 'Categories' 
-                                } 
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Categories'
+                                }
                             }
                         },
                         plugins: {
-                            legend: { 
+                            legend: {
                                 position: 'top',
                                 labels: {
                                     usePointStyle: true,
                                     padding: 20
                                 }
                             },
-                            title: { 
-                                display: true, 
+                            title: {
+                                display: true,
                                 text: `Budget vs Actual by Category - ${period === 'all' ? 'All Periods' : period === 'WEEKLY' ? 'Weekly' : 'Monthly'}`,
                                 font: {
                                     size: 16,
@@ -792,7 +726,7 @@ async function loadAnalysis(page) {
                             },
                             tooltip: {
                                 callbacks: {
-                                    label: function(context) {
+                                    label: function (context) {
                                         const label = context.dataset.label || '';
                                         const value = context.parsed.y;
                                         return `${label}: ${formatCurrency(value)}`;
@@ -802,7 +736,7 @@ async function loadAnalysis(page) {
                         }
                     }
                 };
-                
+
                 // Thêm tension cho line chart
                 if (chartType === 'line') {
                     chartConfig.data.datasets.forEach(dataset => {
@@ -835,7 +769,7 @@ async function loadAnalysis(page) {
 }
 
 function renderPagination(container, pageData, fetchFunction) {
-    const { number, totalPages } = pageData;
+    const {number, totalPages} = pageData;
     if (totalPages <= 1) {
         container.innerHTML = '';
         return;
@@ -853,7 +787,7 @@ function renderPagination(container, pageData, fetchFunction) {
     const buttons = [
         createButton(number - 1, '', number === 0, '<i class="fas fa-chevron-left"></i>'),
         ...(startPage > 0 ? [createButton(0, '1'), ...(startPage > 1 ? ['<span class="px-4 py-2 text-gray-500">...</span>'] : [])] : []),
-        ...Array.from({ length: endPage - startPage }, (_, i) => createButton(startPage + i, startPage + i + 1, startPage + i === number)),
+        ...Array.from({length: endPage - startPage}, (_, i) => createButton(startPage + i, startPage + i + 1, startPage + i === number)),
         ...(endPage < totalPages ? [(endPage < totalPages - 1 ? '<span class="px-4 py-2 text-gray-500">...</span>' : ''), createButton(totalPages - 1, totalPages)] : []),
         createButton(number + 1, '', number === totalPages - 1, '<i class="fas fa-chevron-right"></i>')
     ];
@@ -878,7 +812,7 @@ function toggleChartType() {
         chartIcon.className = 'fas fa-chart-bar';
         chartTypeLabel.textContent = 'Bar Chart';
     }
-    
+
     // Reload analysis với chart type mới
     loadAnalysis(0);
 }
@@ -889,7 +823,7 @@ function exportToCSV() {
         `http://localhost:8080/budget/analysis?page=0&size=1000` :
         `http://localhost:8080/budget/analysis?period=${period}&page=0&size=1000`;
     apiRequest(url, {
-        headers: { "userId": user.userId.toString() }
+        headers: {"userId": user.userId.toString()}
     })
         .then(response => response.json())
         .then(data => {
@@ -913,7 +847,7 @@ function exportToCSV() {
                     headers.join(','),
                     ...rows.map(row => row.join(','))
                 ].join('\n');
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'});
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
                 link.download = `budget_analysis_${period === 'all' ? 'all' : period}_${new Date().toISOString().split('T')[0]}.csv`;
@@ -942,10 +876,6 @@ function searchBudgets() {
     });
 }
 
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-}
-
 function setDefaultModalDates() {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('startDate').value = today;
@@ -955,7 +885,7 @@ function setDefaultModalDates() {
 function setupEventListeners() {
     document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
     document.getElementById('searchInput').addEventListener('input', searchBudgets);
-    
+
     document.getElementById('analysisPeriod').addEventListener('change', () => {
         chartType = 'bar';
         const chartIcon = document.getElementById('chartIcon');
@@ -964,7 +894,7 @@ function setupEventListeners() {
         chartTypeLabel.textContent = 'Bar Chart';
         loadAnalysis(0);
     });
-    
+
     document.querySelectorAll('.fixed').forEach(modal => {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) closeModal(modal.id);

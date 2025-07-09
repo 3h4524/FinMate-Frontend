@@ -3,16 +3,16 @@
     <!-- Left Section: Menu + Logo -->
     <div class="flex items-center space-x-4">
         <!-- Hamburger Menu Button -->
-        <button 
-            id="menu-toggle-btn" 
-            class="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
-            aria-label="Menu"
+        <button
+                id="menu-toggle-btn"
+                class="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                aria-label="Menu"
         >
             <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
         </button>
-        
+
         <!-- Logo -->
         <div class="flex items-center space-x-2 cursor-pointer" onclick="window.location.href='../home'">
             <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
@@ -23,10 +23,10 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Spacer -->
     <div class="flex-1"></div>
-    
+
     <!-- Right Section: Greeting + Notifications + User Menu -->
     <div class="flex items-center space-x-6">
         <!-- Greeting & Date Section -->
@@ -38,7 +38,7 @@
                 Loading date...
             </div>
         </div>
-        
+
         <!-- Mobile Greeting - Simplified -->
         <div class="lg:hidden hidden md:flex flex-col items-end text-right">
             <div class="text-xs font-medium text-gray-600">
@@ -48,28 +48,28 @@
                 Loading...
             </div>
         </div>
-        
+
         <!-- Notifications -->
         <button class="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200 relative" title="Notifications">
             <i class="fas fa-bell text-gray-700 text-lg"></i>
             <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">3</span>
         </button>
-        
+
         <!-- User Profile -->
         <div class="relative">
-            <button 
-                id="user-menu-btn"
-                class="p-1 hover:bg-gray-100 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+            <button
+                    id="user-menu-btn"
+                    class="p-1 hover:bg-gray-100 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
             >
                 <div class="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center flex-none">
                     <i class="fas fa-user text-white text-sm"></i>
                 </div>
             </button>
-            
+
             <!-- User Dropdown Menu -->
-            <div 
-                id="user-dropdown" 
-                class="absolute right-0 top-full mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 py-2 hidden z-50"
+            <div
+                    id="user-dropdown"
+                    class="absolute right-0 top-full mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 py-2 hidden z-50"
             >
                 <div class="px-4 py-3 border-b border-gray-100">
                     <div class="flex items-center space-x-3">
@@ -83,7 +83,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="py-1">
                     <a href="../profile/" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
                         <i class="fas fa-user-edit w-5 h-5 mr-3 text-gray-400"></i>
@@ -94,9 +94,9 @@
                         Premium Plan
                     </a>
                     <div class="border-t border-gray-100 my-1"></div>
-                    <button 
-                        onclick="handleLogout()" 
-                        class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                    <button
+                            onclick="handleLogout()"
+                            class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                     >
                         <i class="fas fa-sign-out-alt w-5 h-5 mr-3"></i>
                         Sign Out
@@ -110,100 +110,101 @@
 <!-- Header Spacer -->
 <div id="header-spacer" class="h-16"></div>
 
-<<<<<<< HEAD
-=======
 <!-- Tab Logout Script -->
 <script src="../assets/js/tab-logout.js"></script>
 
->>>>>>> origin/update_profile
 <style>
-/* Header Styles */
-#main-header {
-    backdrop-filter: blur(8px);
-    background-color: rgba(255, 255, 255, 0.95);
-}
-
-/* User Dropdown Animation */
-#user-dropdown {
-    transform: translateY(-10px);
-    opacity: 0;
-    transition: all 0.2s ease-out;
-    pointer-events: none;
-}
-
-#user-dropdown.show {
-    transform: translateY(0);
-    opacity: 1;
-    pointer-events: auto;
-}
-
-/* Greeting Animation */
-.user-greeting-name {
-    transition: color 0.3s ease;
-}
-
-.user-greeting-name:hover {
-    color: #2563eb;
-}
-
-/* Greeting Section Styling */
-#current-date,
-#current-date-mobile {
-    line-height: 1.2;
-}
-
-/* Role badge styles */
-.role-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.2rem 0.6rem;
-    border-radius: 9999px;
-}
-
-.badge-basic {
-    background-color: #f3f4f6; /* gray-100 */
-    color: #374151; /* gray-700 */
-}
-
-.badge-premium {
-    background-color: #fef3c7; /* amber-100 */
-    color: #b45309; /* amber-700 */
-}
-
-.badge-admin {
-    background-color: #d1fae5; /* emerald-100 */
-    color: #065f46; /* emerald-800 */
-}
-
-/* Mobile Responsive */
-@media (max-width: 1024px) {
+    /* Header Styles */
     #main-header {
-        padding: 0 1rem;
+        backdrop-filter: blur(8px);
+        background-color: rgba(255, 255, 255, 0.95);
     }
-}
 
-@media (max-width: 768px) {
-    /* Hide greeting on small mobile */
-    .md\\:flex {
-        display: none !important;
+    /* User Dropdown Animation */
+    #user-dropdown {
+        transform: translateY(-10px);
+        opacity: 0;
+        transition: all 0.2s ease-out;
+        pointer-events: none;
     }
-}
 
-/* Notification Badge Animation */
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
+    #user-dropdown.show {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
 
-.notification-badge {
-    animation: pulse 2s infinite;
-}
+    /* Greeting Animation */
+    .user-greeting-name {
+        transition: color 0.3s ease;
+    }
 
-/* Subtle separator line */
-.greeting-separator {
-    width: 1px;
-    height: 24px;
-    background: linear-gradient(to bottom, transparent, #e5e7eb, transparent);
-}
+    .user-greeting-name:hover {
+        color: #2563eb;
+    }
+
+    /* Greeting Section Styling */
+    #current-date,
+    #current-date-mobile {
+        line-height: 1.2;
+    }
+
+    /* Role badge styles */
+    .role-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 9999px;
+    }
+
+    .badge-basic {
+        background-color: #f3f4f6; /* gray-100 */
+        color: #374151; /* gray-700 */
+    }
+
+    .badge-premium {
+        background-color: #fef3c7; /* amber-100 */
+        color: #b45309; /* amber-700 */
+    }
+
+    .badge-admin {
+        background-color: #d1fae5; /* emerald-100 */
+        color: #065f46; /* emerald-800 */
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 1024px) {
+        #main-header {
+            padding: 0 1rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        /* Hide greeting on small mobile */
+        .md\\:flex {
+            display: none !important;
+        }
+    }
+
+    /* Notification Badge Animation */
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    .notification-badge {
+        animation: pulse 2s infinite;
+    }
+
+    /* Subtle separator line */
+    .greeting-separator {
+        width: 1px;
+        height: 24px;
+        background: linear-gradient(to bottom, transparent, #e5e7eb, transparent);
+    }
 </style>

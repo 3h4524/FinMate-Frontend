@@ -3,11 +3,7 @@ let cachedUser = null;
 
 const getToken = () => {
     if (cachedToken === null) {
-<<<<<<< HEAD
-        cachedToken = localStorage.getItem('token');
-=======
         cachedToken = sessionStorage.getItem('token');
->>>>>>> origin/update_profile
     }
     return cachedToken;
 };
@@ -42,15 +38,9 @@ const clearCache = () => {
 };
 
 const redirectToLogin = () => {
-<<<<<<< HEAD
-    localStorage.removeItem('token');
-    clearCache(); // Xóa cache khi đăng xuất
-    window.location.href = '../login';
-=======
     sessionStorage.clear();
     clearCache(); // Xóa cache khi đăng xuất
     window.location.href = '/pages/login/';
->>>>>>> origin/update_profile
 };
 
 const isTokenExpired = () => {
@@ -73,7 +63,7 @@ const isLoggedIn = () => {
 
 const getAuthHeaders = () => {
     const token = getToken();
-    return token ? { 'Authorization': `Bearer ${token}` } : {};
+    return token ? {'Authorization': `Bearer ${token}`} : {};
 };
 
 const apiRequest = async (url, options = {}) => {

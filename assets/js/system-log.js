@@ -1,47 +1,12 @@
 let currentPage = 0;
 let totalPages = 0;
 
-<<<<<<< HEAD
-// Utility function for debouncing
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-// Update current date and time
-function updateDateTime() {
-    const now = new Date();
-    document.getElementById('current-date-time').textContent = now.toLocaleString('en-US', {
-        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-        hour: '2-digit', minute: '2-digit', timeZoneName: 'short', timeZone: 'Asia/Ho_Chi_Minh'
-    });
-}
-
-function saveFilters(startDate, endDate, entityType, adminId, keyword) {
-<<<<<<< HEAD
-    localStorage.setItem('logFilters', JSON.stringify({ startDate, endDate, entityType, adminId, keyword }));
-=======
 function saveFilters(startDate, endDate, entityType, adminId) {
-    localStorage.setItem('logFilters', JSON.stringify({ startDate, endDate, entityType, adminId }));
->>>>>>> origin/release1.4
+    localStorage.setItem('logFilters', JSON.stringify({startDate, endDate, entityType, adminId}));
 }
 
 function loadFilters() {
     const filters = JSON.parse(localStorage.getItem('logFilters') || '{}');
-=======
-    sessionStorage.setItem('logFilters', JSON.stringify({ startDate, endDate, entityType, adminId, keyword }));
-}
-
-function loadFilters() {
-    const filters = JSON.parse(sessionStorage.getItem('logFilters') || '{}');
->>>>>>> origin/update_profile
     document.getElementById('startDate').value = filters.startDate || '';
     document.getElementById('endDate').value = filters.endDate || '';
     document.getElementById('entityType').value = filters.entityType || '';
@@ -55,10 +20,6 @@ async function loadStats(startDate = '', endDate = '') {
         if (startDate) params.append('startDate', startDate);
         if (endDate) params.append('endDate', endDate);
         const response = await apiRequest(`http://localhost:8080/api/admin/logs/stats?${params.toString()}`);
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/update_profile
         if (!response.ok) throw new Error('Failed to load stats');
         const stats = await response.json();
         const data = stats.result;
@@ -72,7 +33,7 @@ async function loadStats(startDate = '', endDate = '') {
 
 async function loadLogs(page = 0, size = 10, startDate = '', endDate = '', entityType = '', adminId = '') {
     try {
-        const params = new URLSearchParams({ page, size });
+        const params = new URLSearchParams({page, size});
         if (startDate) params.append('startDate', startDate);
         if (endDate) params.append('endDate', endDate);
         if (entityType) params.append('entityType', entityType);
@@ -80,7 +41,7 @@ async function loadLogs(page = 0, size = 10, startDate = '', endDate = '', entit
 
         const response = await apiRequest(`http://localhost:8080/api/admin/logs?${params}`);
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-        const { result: { content: logs, totalPages: pages } } = await response.json();
+        const {result: {content: logs, totalPages: pages}} = await response.json();
 
         if (!logs) throw new Error('Invalid data format');
 
@@ -147,21 +108,21 @@ async function showLogDetails(logId) {
     try {
         const response = await apiRequest(`http://localhost:8080/api/admin/logs/${logId}`);
         if (!response.ok) throw new Error('Failed to load log details');
-        const { result: logData } = await response.json();
+        const {result: logData} = await response.json();
 
         const fields = [
-            { label: 'Log ID', icon: 'hashtag', color: 'indigo', value: logData.id },
-            { label: 'Admin ID', icon: 'user-shield', color: 'green', value: logData.adminId },
-            { label: 'Action', icon: 'cog', color: 'red', value: logData.action },
-            { label: 'Entity Type', icon: 'folder', color: 'yellow', value: logData.entityType },
-            { label: 'Entity ID', icon: 'tag', color: 'purple', value: logData.entityId },
-            { label: 'Timestamp', icon: 'calendar-alt', color: 'blue', value: formatTimestamp(logData.createdAt) },
-            { label: 'Details', icon: 'sticky-note', color: 'amber', value: logData.details }
+            {label: 'Log ID', icon: 'hashtag', color: 'indigo', value: logData.id},
+            {label: 'Admin ID', icon: 'user-shield', color: 'green', value: logData.adminId},
+            {label: 'Action', icon: 'cog', color: 'red', value: logData.action},
+            {label: 'Entity Type', icon: 'folder', color: 'yellow', value: logData.entityType},
+            {label: 'Entity ID', icon: 'tag', color: 'purple', value: logData.entityId},
+            {label: 'Timestamp', icon: 'calendar-alt', color: 'blue', value: formatTimestamp(logData.createdAt)},
+            {label: 'Details', icon: 'sticky-note', color: 'amber', value: logData.details}
         ];
 
         document.getElementById('logDetailsContent').innerHTML = `
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                ${fields.map(({ label, icon, color, value }) => `
+                ${fields.map(({label, icon, color, value}) => `
                     <div class="p-3 bg-white rounded-lg shadow border-l-4 border-${color}-500">
                         <div class="flex items-center gap-2 mb-1">
                             <i class="fas fa-${icon} text-${color}-500 text-lg"></i>
@@ -203,7 +164,7 @@ function renderPagination() {
 
     const buttons = [
         ...(startPage > 0 ? [createButton(0, '1'), ...(startPage > 1 ? ['<span class="px-4 py-2 text-gray-500">...</span>'] : [])] : []),
-        ...Array.from({ length: endPage - startPage }, (_, i) => createButton(startPage + i, startPage + i + 1, startPage + i === currentPage)),
+        ...Array.from({length: endPage - startPage}, (_, i) => createButton(startPage + i, startPage + i + 1, startPage + i === currentPage)),
         ...(endPage < totalPages ? [(endPage < totalPages - 1 ? '<span class="px-4 py-2 text-gray-500">...</span>' : ''), createButton(totalPages - 1, totalPages)] : []),
     ];
 
@@ -258,7 +219,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('exportBtn').addEventListener('click', async () => {
         try {
-            const response = await apiRequest('http://localhost:8080/api/admin/logs/export', { responseType: 'blob' });
+            const response = await apiRequest('http://localhost:8080/api/admin/logs/export', {responseType: 'blob'});
             if (!response.ok) throw new Error('Export failed');
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
@@ -386,19 +347,6 @@ function showNotification(title, message, type) {
     toastContainer.appendChild(notificationCard);
 }
 
-<<<<<<< HEAD
-// Thêm hàm show/hide mainContent
-function showMainContent() {
-    document.getElementById('mainContent').style.display = '';
-}
-function hideMainContent() {
-    document.getElementById('mainContent').style.display = 'none';
-<<<<<<< HEAD
-}
-=======
-}
->>>>>>> origin/update_profile
-=======
 function formatTimestamp(isoString, useBr = false) {
     if (!isoString) return 'N/A';
     if (isoString.includes('T')) {
@@ -408,4 +356,3 @@ function formatTimestamp(isoString, useBr = false) {
     }
     return isoString;
 }
->>>>>>> origin/release1.4

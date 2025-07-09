@@ -6,81 +6,6 @@ let filteredData;
 
 const API_BASE_URL = 'http://localhost:8080';
 
-<<<<<<< HEAD
-=======
-const token = sessionStorage.getItem('authToken');
-
-// Fallback functions if helper files are not loaded
-if (typeof apiRequest === 'undefined') {
-  window.apiRequest = async (url, options = {}) => {
-    try {
-      const defaultOptions = {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` })
-        }
-      };
-      
-      const response = await fetch(url, { ...defaultOptions, ...options });
-      return response;
-    } catch (error) {
-      console.error('API request failed:', error);
-      return null;
-    }
-  };
-}
-
-if (typeof getCurrentUser === 'undefined') {
-  window.getCurrentUser = () => {
-    try {
-      const user = sessionStorage.getItem('currentUser');
-      return user ? JSON.parse(user) : { userId: 1 }; // fallback user
-    } catch (error) {
-      console.error('Error getting current user:', error);
-      return { userId: 1 };
-    }
-  };
-}
-
-if (typeof loadSideBarSimple === 'undefined') {
-  window.loadSideBarSimple = () => {
-    console.log('Sidebar loading function not available');
-  };
-}
-
-if (typeof loadHeaderSimple === 'undefined') {
-  window.loadHeaderSimple = () => {
-    console.log('Header loading function not available');
-  };
-}
-
-if (typeof formatCurrency === 'undefined') {
-  window.formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', { 
-      style: 'currency', 
-      currency: 'USD' 
-    }).format(amount);
-  };
-}
-
-if (typeof formatDate_ddMMyyyy === 'undefined') {
-  window.formatDate_ddMMyyyy = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB');
-  };
-}
-
-if (typeof generateColors === 'undefined') {
-  window.generateColors = (count) => {
-    const colors = [
-      '#6366F1', '#9333EA', '#4F46E5', '#A855F7', '#3B82F6',
-      '#8B5CF6', '#7C3AED', '#5B21B6', '#6D28D9', '#3730A3'
-    ];
-    return Array.from({ length: count }, (_, i) => colors[i % colors.length]);
-  };
-}
-
->>>>>>> origin/update_profile
 // Initialize Chart.js
 let chartInstance = null;
 const ctx = document.getElementById('financialChart').getContext('2d');
@@ -98,7 +23,7 @@ async function fetchGoalProgress() {
     console.log("fetching Goal Progress");
     try {
         const response = await apiRequest(`${API_BASE_URL}/goal_tracking/list`, {
-            headers: { 'userId': user.userId.toString() }
+            headers: {'userId': user.userId.toString()}
         });
 
         if (!response.ok) throw new Error("Failed to fetch Goal Progress");
@@ -154,7 +79,7 @@ function renderChart(type) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: 'top' },
+                legend: {position: 'top'},
                 tooltip: {
                     callbacks: {
                         label: context => {
@@ -233,7 +158,7 @@ function exportToCSV() {
             ['Date', 'Category', 'Type', 'Amount'],
             ...filteredData.map(t => [t.transactionDate, t.categoryName || t.userCategoryName, t.type, formatCurrency(t.amount.toFixed(2))])
         ].map(row => row.join(',')).join('\n');
-        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const blob = new Blob([csvContent], {type: 'text/csv'});
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -366,28 +291,19 @@ function initPercenGoalProgress() {
 async function initializeUI() {
     try {
         console.log('Initializing financial report page...');
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> origin/update_profile
         // Load sidebar and header first
         if (typeof loadSideBarSimple === 'function') {
             loadSideBarSimple();
         } else {
             console.error('loadSideBarSimple function not found');
         }
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> origin/update_profile
         if (typeof loadHeaderSimple === 'function') {
             loadHeaderSimple();
         } else {
             console.error('loadHeaderSimple function not found');
         }
-<<<<<<< HEAD
 
         // Get user information
         user = getCurrentUser();
@@ -399,19 +315,6 @@ async function initializeUI() {
         updateChartTypeButtons('bar');
         updateReport();
 
-=======
-        
-        // Get user information
-        user = getCurrentUser();
-        console.log("Current user: ", user);
-        
-        // Fetch data and initialize UI
-        await Promise.all([fetchTransactions(), fetchGoalProgress()]); 
-        initPercenGoalProgress();
-        updateChartTypeButtons('bar');
-        updateReport();
-        
->>>>>>> origin/update_profile
         console.log('Financial report page initialized successfully');
     } catch (err) {
         const error = 'Failed to initialize app: ' + err.message;
@@ -423,21 +326,13 @@ async function initializeUI() {
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         console.log('DOM loaded, starting financial report page initialization...');
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> origin/update_profile
         // Check authentication
         if (typeof checkAuth !== 'undefined' && !checkAuth()) {
             console.log('Authentication check failed');
             return;
         }
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> origin/update_profile
         await initializeUI();
     } catch (error) {
         console.error('Error during financial report page initialization:', error);

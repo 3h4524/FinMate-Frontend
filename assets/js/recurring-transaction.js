@@ -136,17 +136,17 @@ const fetchStats = async () => {
     try {
         const user = getCurrentUser();
         const response = await apiRequest(`http://localhost:8080/api/transactions/stats?userId=${user.userId}`);
-        if (!response) return { totalIncome: 0, totalSpending: 0, incomeExpenseRatio: 0 };
+        if (!response) return {totalIncome: 0, totalSpending: 0, incomeExpenseRatio: 0};
         const data = await response.json();
         const result = data.result || {};
         const totalIncome = result.totalIncome || 0;
         const totalSpending = result.totalExpense || 0;
         // Calculate Income/Expense ratio as percentage
         const incomeExpenseRatio = totalSpending > 0 ? (totalIncome / totalSpending) * 100 : totalIncome > 0 ? 100 : 0;
-        return { totalIncome, totalSpending, incomeExpenseRatio };
+        return {totalIncome, totalSpending, incomeExpenseRatio};
     } catch (error) {
         console.error('Error fetching stats:', error);
-        return { totalIncome: 0, totalSpending: 0, incomeExpenseRatio: 0 };
+        return {totalIncome: 0, totalSpending: 0, incomeExpenseRatio: 0};
     }
 };
 
@@ -179,23 +179,23 @@ const loadCategories = async () => {
 
 const updateCategorySelects = (categories) => {
     const allChoices = [
-        { label: 'Danh mục - Thu nhập', id: 'income', disabled: true },
+        {label: 'Danh mục - Thu nhập', id: 'income', disabled: true},
         ...[...categories.system, ...categories.user]
             .filter(cat => cat.type === 'INCOME')
             .map(cat => ({
                 value: cat.isSystem ? `system-${cat.categoryId}` : `user-${cat.categoryId}`,
                 label: formatLabel(cat.icon, cat.categoryName),
-                customProperties: { type: 'income' }
+                customProperties: {type: 'income'}
             })),
-        { label: 'Danh mục - Chi tiêu', id: 'expense', disabled: true },
+        {label: 'Danh mục - Chi tiêu', id: 'expense', disabled: true},
         ...[...categories.system, ...categories.user]
             .filter(cat => cat.type === 'EXPENSE')
             .map(cat => ({
                 value: cat.isSystem ? `system-${cat.categoryId}` : `user-${cat.categoryId}`,
                 label: formatLabel(cat.icon, cat.categoryName),
-                customProperties: { type: 'expense' }
+                customProperties: {type: 'expense'}
             })),
-        { value: 'create-new', label: '➕ Tạo danh mục mới' }
+        {value: 'create-new', label: '➕ Tạo danh mục mới'}
     ];
     ['newCategory', 'updateCategory'].forEach(selectId => {
         const select = document.getElementById(selectId);
@@ -311,7 +311,7 @@ const renderTransactions = (transactionsData) => {
         const bgColor = isIncome ? 'from-green-50 to-green-100 border-green-200' : 'from-red-50 to-red-100 border-red-200';
         const iconBg = isIncome ? 'from-green-500 to-green-600' : 'from-red-500 to-red-600';
         const statusColor = t.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
-        
+
         return `
             <div class="bg-gradient-to-br ${bgColor} border rounded-3xl p-6 hover:shadow-xl transition-all duration-300 hover:scale-105" data-type="${t.type.toLowerCase()}" data-active="${t.isActive}">
                 <!-- Header -->
@@ -400,30 +400,30 @@ const updatePagination = () => {
     const pageNumbers = document.getElementById('pageNumbers');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
-    
+
     if (totalPages <= 1) {
         pagination.style.display = 'none';
         return;
     }
-    
+
     pagination.style.display = 'flex';
-    
+
     // Update mobile buttons
     prevBtn.disabled = currentPage === 0;
     nextBtn.disabled = currentPage >= totalPages - 1;
     prevBtn.onclick = () => changePage(currentPage - 1);
     nextBtn.onclick = () => changePage(currentPage + 1);
-    
+
     // Update desktop pagination
     let pageNumbersHTML = '';
     const maxVisiblePages = 5;
     let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
     let endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1);
-    
+
     if (endPage - startPage < maxVisiblePages - 1) {
         startPage = Math.max(0, endPage - maxVisiblePages + 1);
     }
-    
+
     // Previous button for desktop
     if (currentPage > 0) {
         pageNumbersHTML += `
@@ -433,21 +433,21 @@ const updatePagination = () => {
             </button>
         `;
     }
-    
+
     // Page numbers
     for (let i = startPage; i <= endPage; i++) {
         const isActive = i === currentPage;
         pageNumbersHTML += `
             <button onclick="changePage(${i})" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                isActive 
-                    ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600' 
-                    : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-            }">
+            isActive
+                ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
+                : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+        }">
                 ${i + 1}
             </button>
         `;
     }
-    
+
     // Next button for desktop
     if (currentPage < totalPages - 1) {
         pageNumbersHTML += `
@@ -457,7 +457,7 @@ const updatePagination = () => {
             </button>
         `;
     }
-    
+
     pageNumbers.innerHTML = pageNumbersHTML;
 };
 
@@ -739,7 +739,7 @@ const initEventListeners = () => {
             searchTransactions(e.target.value);
         });
     }
-    
+
     const tabBtns = document.querySelectorAll('.tab-btn');
     if (tabBtns.length > 0) {
         tabBtns.forEach(btn => {
@@ -748,17 +748,17 @@ const initEventListeners = () => {
             });
         });
     }
-    
+
     const newTransactionForm = document.getElementById('newTransactionForm');
     if (newTransactionForm) {
         newTransactionForm.addEventListener('submit', handleNewTransaction);
     }
-    
+
     const updateTransactionForm = document.getElementById('updateTransactionForm');
     if (updateTransactionForm) {
         updateTransactionForm.addEventListener('submit', handleUpdateTransaction);
     }
-    
+
     const createCategoryForm = document.getElementById('createCategoryForm');
     if (createCategoryForm) {
         createCategoryForm.addEventListener('submit', async (e) => {
@@ -783,7 +783,7 @@ const initEventListeners = () => {
             submitBtn.textContent = '⏳ Saving...';
             submitBtn.disabled = true;
             try {
-                const success = await createUserCategory({ userCategoryName, type, icon, color });
+                const success = await createUserCategory({userCategoryName, type, icon, color});
                 if (success) closeCreateCategoryModal();
             } catch (error) {
                 alert('Error creating category: ' + error.message);
@@ -793,24 +793,24 @@ const initEventListeners = () => {
             }
         });
     }
-    
+
     const closeCreateCategoryModalBtn = document.getElementById('closeCreateCategoryModalBtn');
     if (closeCreateCategoryModalBtn) {
         closeCreateCategoryModalBtn.addEventListener('click', closeCreateCategoryModal);
     }
-    
+
     const cancelCategoryBtn = document.getElementById('cancelCategoryBtn');
     if (cancelCategoryBtn) {
         cancelCategoryBtn.addEventListener('click', closeCreateCategoryModal);
     }
-    
+
     const createCategoryModal = document.getElementById('createCategoryModal');
     if (createCategoryModal) {
         createCategoryModal.addEventListener('click', (e) => {
             if (e.target === createCategoryModal) closeCreateCategoryModal();
         });
     }
-    
+
     document.addEventListener('change', (e) => {
         if (e.target.classList.contains('categorySelect') && e.target.value === 'create-new') {
             openCreateCategoryModal(e.target.id);
@@ -824,27 +824,27 @@ const initEventListeners = () => {
 const init = async () => {
     try {
         console.log('Initializing recurring transaction page...');
-        
+
         // Load sidebar and header first
         if (typeof loadSideBarSimple === 'function') {
             loadSideBarSimple();
         } else {
             console.error('loadSideBarSimple function not found');
         }
-        
+
         if (typeof loadHeaderSimple === 'function') {
             loadHeaderSimple();
         } else {
             console.error('loadHeaderSimple function not found');
         }
-        
+
         // Initialize event listeners
         initEventListeners();
-        
+
         // Load page data
         await loadCategories();
         await loadTransactions();
-        
+
         console.log('Recurring transaction page initialized successfully');
     } catch (error) {
         console.error('Error initializing recurring transaction page:', error);

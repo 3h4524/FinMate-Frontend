@@ -1,10 +1,6 @@
 async function addGoalContribution(contribution) {
     try {
-<<<<<<< HEAD
         const response = await apiRequest(`${API_BASE_URL}/contributions`, {
-=======
-        const response = await apiRequest(`${API_BASE_URL}/contributions/${contribution.goalId}`, {
->>>>>>> origin/update_profile
             method: 'POST',
             body: JSON.stringify(contribution)
         });

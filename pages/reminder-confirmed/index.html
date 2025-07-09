@@ -15,6 +15,7 @@
             justify-content: center;
             margin: 0;
         }
+
         .container {
             max-width: 28rem;
             background: white;
@@ -23,14 +24,17 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
+
         .success-icon {
             color: #10b981;
             font-size: 3rem;
         }
+
         .error-icon {
             color: #ef4444;
             font-size: 3rem;
         }
+
         .btn {
             background-color: #3b82f6;
             color: white;
@@ -42,40 +46,41 @@
             margin-top: 1.5rem;
             transition: background-color 0.3s;
         }
+
         .btn:hover {
             background-color: #2563eb;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div id="success-message" class="hidden">
-            <span class="success-icon">✓</span>
-            <h1 class="text-2xl font-bold text-gray-800 mt-4">Xác Nhận Thành Công!</h1>
-            <p class="text-gray-600 mt-2">Lời nhắc giao dịch của bạn đã được xác nhận. Cảm ơn bạn đã sử dụng FinMate!</p>
-            <a href="home.html" class="btn">Quay về Trang Chủ</a>
-        </div>
-        <div id="error-message" class="hidden">
-            <span class="error-icon">✗</span>
-            <h1 class="text-2xl font-bold text-gray-800 mt-4">Có Lỗi Xảy Ra</h1>
-            <p id="error-text" class="text-gray-600 mt-2"></p>
-            <a href="home.html" class="btn">Quay về Trang Chủ</a>
-        </div>
+<div class="container">
+    <div id="success-message" class="hidden">
+        <span class="success-icon">✓</span>
+        <h1 class="text-2xl font-bold text-gray-800 mt-4">Xác Nhận Thành Công!</h1>
+        <p class="text-gray-600 mt-2">Lời nhắc giao dịch của bạn đã được xác nhận. Cảm ơn bạn đã sử dụng FinMate!</p>
+        <a href="home.html" class="btn">Quay về Trang Chủ</a>
     </div>
+    <div id="error-message" class="hidden">
+        <span class="error-icon">✗</span>
+        <h1 class="text-2xl font-bold text-gray-800 mt-4">Có Lỗi Xảy Ra</h1>
+        <p id="error-text" class="text-gray-600 mt-2"></p>
+        <a href="home.html" class="btn">Quay về Trang Chủ</a>
+    </div>
+</div>
 
-    <script>
-        // Lấy tham số từ URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const status = urlParams.get('status');
-        const message = urlParams.get('message');
+<script>
+    // Lấy tham số từ URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status');
+    const message = urlParams.get('message');
 
-        // Hiển thị thông điệp tương ứng
-        if (status === 'success') {
-            document.getElementById('success-message').classList.remove('hidden');
-        } else if (status === 'error') {
-            document.getElementById('error-message').classList.remove('hidden');
-            document.getElementById('error-text').textContent = message ? decodeURIComponent(message) : 'Đã có lỗi xảy ra. Vui lòng thử lại.';
-        }
-    </script>
+    // Hiển thị thông điệp tương ứng
+    if (status === 'success') {
+        document.getElementById('success-message').classList.remove('hidden');
+    } else if (status === 'error') {
+        document.getElementById('error-message').classList.remove('hidden');
+        document.getElementById('error-text').textContent = message ? decodeURIComponent(message) : 'Đã có lỗi xảy ra. Vui lòng thử lại.';
+    }
+</script>
 </body>
 </html>

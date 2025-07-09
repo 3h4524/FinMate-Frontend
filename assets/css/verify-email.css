@@ -6,11 +6,7 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-<<<<<<< HEAD
-    background: linear-gradient(135deg, #f0f4f3 0%, #e6f0ed 100%);
-=======
     background: linear-gradient(135deg, #eef2ff 0%, #f3f4f6 100%);
->>>>>>> origin/update_profile
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -22,29 +18,17 @@ body {
     display: flex;
     background: white;
     border-radius: 24px;
-<<<<<<< HEAD
-    box-shadow: 0 32px 64px -12px rgba(52, 73, 67, 0.25);
-=======
     box-shadow: 0 32px 64px -12px rgba(99, 102, 241, 0.25);
->>>>>>> origin/update_profile
     overflow: hidden;
     max-width: 900px;
     width: 100%;
     min-height: 600px;
-<<<<<<< HEAD
-    border: 1px solid #d1e7dd;
-=======
     border: 1px solid #e0e7ff;
->>>>>>> origin/update_profile
 }
 
 .left-panel {
     flex: 1;
-<<<<<<< HEAD
-    background: linear-gradient(135deg, #2d5a3d 0%, #1a3d2e 50%, #0f2922 100%);
-=======
     background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%);
->>>>>>> origin/update_profile
     padding: 40px;
     display: flex;
     flex-direction: column;
@@ -78,19 +62,11 @@ body {
 
 .logo i {
     font-size: 28px;
-<<<<<<< HEAD
-    color: #a3c9a8;
-    background: rgba(163, 201, 168, 0.15);
-    padding: 12px;
-    border-radius: 12px;
-    border: 1px solid rgba(163, 201, 168, 0.25);
-=======
     color: #c4b5fd;
     background: rgba(196, 181, 253, 0.15);
     padding: 12px;
     border-radius: 12px;
     border: 1px solid rgba(196, 181, 253, 0.25);
->>>>>>> origin/update_profile
 }
 
 .logo span {
@@ -116,11 +92,7 @@ body {
     opacity: 0.9;
     line-height: 1.6;
     font-size: 16px;
-<<<<<<< HEAD
-    color: #c8e6c9;
-=======
     color: #ddd6fe;
->>>>>>> origin/update_profile
 }
 
 .right-panel {
@@ -145,32 +117,20 @@ body {
 
 .verify-email-header h2 {
     font-size: 32px;
-<<<<<<< HEAD
-    color: #2d5a3d;
-=======
     color: #4f46e5;
->>>>>>> origin/update_profile
     margin-bottom: 12px;
     font-weight: 700;
 }
 
 .verify-email-header p {
-<<<<<<< HEAD
-    color: #546e7a;
-=======
     color: #6b7280;
->>>>>>> origin/update_profile
     font-size: 16px;
     line-height: 1.5;
 }
 
 .verification-icon {
     font-size: 64px;
-<<<<<<< HEAD
-    color: #2d5a3d;
-=======
     color: #4f46e5;
->>>>>>> origin/update_profile
     margin-bottom: 24px;
 }
 
@@ -178,22 +138,13 @@ body {
     margin-bottom: 24px;
     padding: 16px;
     border-radius: 12px;
-<<<<<<< HEAD
-    background: #e8f5e9;
-    color: #2d5a3d;
-=======
     background: #eef2ff;
     color: #4f46e5;
->>>>>>> origin/update_profile
     font-weight: 600;
 }
 
 .resend-link {
-<<<<<<< HEAD
-    color: #388e3c;
-=======
     color: #6366f1;
->>>>>>> origin/update_profile
     text-decoration: none;
     font-weight: 600;
     font-size: 14px;
@@ -202,11 +153,7 @@ body {
 }
 
 .resend-link:hover {
-<<<<<<< HEAD
-    color: #2e7d32;
-=======
     color: #4f46e5;
->>>>>>> origin/update_profile
     text-decoration: underline;
 }
 
@@ -215,11 +162,7 @@ body {
 }
 
 .back-to-login a {
-<<<<<<< HEAD
-    color: #388e3c;
-=======
     color: #6366f1;
->>>>>>> origin/update_profile
     text-decoration: none;
     font-weight: 600;
     font-size: 14px;
@@ -227,11 +170,7 @@ body {
 }
 
 .back-to-login a:hover {
-<<<<<<< HEAD
-    color: #2e7d32;
-=======
     color: #4f46e5;
->>>>>>> origin/update_profile
     text-decoration: underline;
 }
 
@@ -243,12 +182,6 @@ body {
 }
 
 .success-message {
-<<<<<<< HEAD
-    color: #28a745;
-    font-size: 13px;
-    margin-top: 4px;
-    display: none;
-=======
     color: #6366f1;
     font-size: 13px;
     margin-top: 4px;
@@ -386,5 +319,4 @@ body {
     font-size: 16px;
     display: inline-block;
     min-width: 50px;
->>>>>>> origin/update_profile
 } 

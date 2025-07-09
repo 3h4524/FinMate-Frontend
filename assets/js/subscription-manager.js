@@ -32,16 +32,19 @@ document.addEventListener('DOMContentLoaded', async function () {
         } else {
             console.error('loadSideBarSimple function not found');
         }
+
         if (typeof loadHeader === 'function') {
             await loadHeader();
         } else {
             console.error('loadHeader function not found');
         }
+
         // Show main content after loading sidebar/header
         const mainApp = document.getElementById('main-app');
         if (mainApp) {
             mainApp.style.display = 'flex';
         }
+
         // Hide page loader if exists
         const pageLoader = document.getElementById('page-loader');
         if (pageLoader) {
@@ -82,44 +85,19 @@ async function initializeSubscriptionManager() {
 
 // Setup event listeners
 function setupEventListeners() {
-<<<<<<< HEAD
 
     // Filter buttons
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', function () {
-=======
-    // Search functionality
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        let searchTimeout;
-        searchInput.addEventListener('input', function(e) {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                searchPackages(e.target.value);
-            }, 500);
-        });
-    }
-
-    // Filter buttons
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
->>>>>>> origin/update_profile
             // Update active state
             document.querySelectorAll('.filter-btn').forEach(b => {
                 b.classList.remove('active', 'text-indigo-600', 'bg-indigo-50');
                 b.classList.add('text-gray-600', 'bg-gray-50');
             });
-<<<<<<< HEAD
 
             this.classList.add('active', 'text-indigo-600', 'bg-indigo-50');
             this.classList.remove('text-gray-600', 'bg-gray-50');
 
-=======
-            
-            this.classList.add('active', 'text-indigo-600', 'bg-indigo-50');
-            this.classList.remove('text-gray-600', 'bg-gray-50');
-            
->>>>>>> origin/update_profile
             // Apply filter
             currentFilter = this.dataset.filter;
             currentPage = 0;
@@ -139,7 +117,6 @@ function setupEventListeners() {
         updateForm.addEventListener('submit', handleUpdatePackage);
     }
 
-<<<<<<< HEAD
     const createOfferForm = document.getElementById('createOfferForm');
     if (createOfferForm) {
         createOfferForm.addEventListener('submit', handleCreateOffer);
@@ -149,12 +126,6 @@ function setupEventListeners() {
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
 
-=======
-    // Pagination mobile buttons
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    
->>>>>>> origin/update_profile
     if (prevBtn) {
         prevBtn.addEventListener('click', () => {
             if (currentPage > 0) {
@@ -170,23 +141,16 @@ function setupEventListeners() {
             }
         });
     }
-<<<<<<< HEAD
     setupCheckBoxCreateOffer();
-=======
->>>>>>> origin/update_profile
 }
 
 // This function will be replaced by the enhanced version below
 
 // Load packages
 async function loadPackages(page = 0, size = 4) {
-<<<<<<< HEAD
     if (buttonCreatePromotional) {
         if (selectedList.length === 0) buttonCreatePromotional.classList.add("hidden");
     }
-=======
-    hideMainContent();
->>>>>>> origin/update_profile
     try {
         const response = await apiRequest(
             `${API_BASE_URL}?page=${page}&size=${size}&sortBy=price&sortDirection=DESC`
@@ -201,38 +165,22 @@ async function loadPackages(page = 0, size = 4) {
             packages = data.result.content || [];
             currentPage = data.result.number || 0;
             totalPages = data.result.totalPages || 0;
-<<<<<<< HEAD
 
             // Apply current filter to packages
             applyCurrentFilter();
             setupCheckBoxCreateOffer();
         }
-=======
-            
-            // Apply current filter to packages
-            applyCurrentFilter();
-        }
-        showMainContent();
->>>>>>> origin/update_profile
     } catch (error) {
         console.error('Error loading packages:', error);
         showErrorMessage('Failed to load packages');
         renderEmptyPackages();
-<<<<<<< HEAD
-=======
-        showMainContent();
->>>>>>> origin/update_profile
     }
 }
 
 // Apply current filter to packages
 function applyCurrentFilter() {
     let filteredPackages = packages;
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> origin/update_profile
     // Apply filter based on currentFilter
     if (currentFilter !== 'all') {
         filteredPackages = packages.filter(pkg => {
@@ -248,11 +196,7 @@ function applyCurrentFilter() {
             }
         });
     }
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> origin/update_profile
     renderPackages(filteredPackages);
     renderPagination();
 }
@@ -280,35 +224,24 @@ function renderPackages(packagesData) {
                     </div>
                 </div>
                 <div class="flex space-x-2">
-<<<<<<< HEAD
                     <input type="checkbox" id="checkbox-premium-${pkg.id}">
                     <button id="button-edit-premium-${pkg.id}" onclick="openUpdateModal(${pkg.id})" class="w-8 h-8 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg flex items-center justify-center transition-colors">
                         <i class="fas fa-edit text-sm"></i>
                     </button>
                     <button id="button-delete-premium-${pkg.id}" onclick="deletePackage(${pkg.id})" class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-colors">
-=======
-                    <button onclick="openUpdateModal(${pkg.id})" class="w-8 h-8 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg flex items-center justify-center transition-colors">
-                        <i class="fas fa-edit text-sm"></i>
-                    </button>
-                    <button onclick="deletePackage(${pkg.id})" class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-colors">
->>>>>>> origin/update_profile
                         <i class="fas fa-trash text-sm"></i>
                     </button>
                 </div>
             </div>
             
             <div class="mb-4">
-                <div class="text-3xl font-bold text-gray-900">${formatPrice(pkg.price)}</div>
+                <div class="text-3xl font-bold text-gray-900">${formatCurrency(pkg.price)}</div>
                 <div class="text-sm text-gray-500">per ${pkg.durationValue} ${pkg.durationType.toLowerCase()}</div>
             </div>
             
             <div class="grid grid-cols-2 gap-4 mb-4 text-center">
                 <div>
-<<<<<<< HEAD
                     <div class="text-xl font-bold text-gray-900">${pkg.subscribers || 0}</div>
-=======
-                    <div class="text-xl font-bold text-gray-900">12</div>
->>>>>>> origin/update_profile
                     <div class="text-xs text-gray-500 uppercase">Subscribers</div>
                 </div>
                 <div>
@@ -321,11 +254,7 @@ function renderPackages(packagesData) {
                 <h4 class="text-sm font-medium text-gray-700">Features:</h4>
                 <div class="flex flex-wrap gap-1">
                     ${(pkg.features || []).slice(0, 3).map(feature => `
-<<<<<<< HEAD
                         <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-lg">${getFeatureName(feature)}</span>
-=======
-                        <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-lg">${feature.name}</span>
->>>>>>> origin/update_profile
                     `).join('')}
                     ${pkg.features && pkg.features.length > 3 ? `
                         <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-lg">+${pkg.features.length - 3} more</span>
@@ -334,7 +263,6 @@ function renderPackages(packagesData) {
             </div>
         </div>
     `).join('');
-<<<<<<< HEAD
 
 
     selectedList.forEach(item => {
@@ -351,17 +279,12 @@ function renderPackages(packagesData) {
 }
 
 
-
 // Map feature codes to feature names for display
 const getFeatureName = (featureCode) => {
     const feature = allFeatures.find(f => f.featureCode === featureCode);
     return feature ? feature.featureName : featureCode;
 };
 
-=======
-}
-
->>>>>>> origin/update_profile
 // Render empty state
 function renderEmptyPackages() {
     const container = document.getElementById('packagesContainer');
@@ -383,16 +306,9 @@ function renderEmptyPackages() {
 
 // Load recent subscriptions
 async function loadRecentSubscriptions() {
-<<<<<<< HEAD
     try {
         const response = await apiRequest(`${SUBSCRIPTION_API_URL}/recent?page=0&size=5&sortBy=createdAt&sortDirection=DESC`);
 
-=======
-    hideMainContent();
-    try {
-        const response = await apiRequest(`${SUBSCRIPTION_API_URL}/recent?page=0&size=5&sortBy=createdAt&sortDirection=DESC`);
-        
->>>>>>> origin/update_profile
         if (!response || !response.ok) {
             throw new Error('Failed to fetch recent subscriptions');
         }
@@ -403,17 +319,9 @@ async function loadRecentSubscriptions() {
         } else {
             renderEmptySubscriptions();
         }
-<<<<<<< HEAD
     } catch (error) {
         console.error('Error loading recent subscriptions:', error);
         renderEmptySubscriptions();
-=======
-        showMainContent();
-    } catch (error) {
-        console.error('Error loading recent subscriptions:', error);
-        renderEmptySubscriptions();
-        showMainContent();
->>>>>>> origin/update_profile
     }
 }
 
@@ -439,7 +347,7 @@ function renderRecentSubscriptions(subscriptions) {
                         <p class="text-xs text-gray-500">${sub.packageName || 'Unknown Package'}</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-sm font-medium text-green-600">${formatPrice(sub.amount || 0)}</p>
+                        <p class="text-sm font-medium text-green-600">${formatCurrency(sub.amount || 0)}</p>
                         <p class="text-xs text-gray-500">${formatTimeAgo(sub.createdAt)}</p>
                     </div>
                 </div>
@@ -465,10 +373,6 @@ function renderEmptySubscriptions() {
 
 // Load features for modals
 async function loadFeatures() {
-<<<<<<< HEAD
-=======
-    hideMainContent();
->>>>>>> origin/update_profile
     try {
         const response = await apiRequest(FEATURES_API_URL);
         if (response && response.ok) {
@@ -476,17 +380,9 @@ async function loadFeatures() {
             allFeatures = data.result || [];
             renderFeaturesInModals();
         }
-<<<<<<< HEAD
     } catch (error) {
         console.error('Error loading features:', error);
         allFeatures = [];
-=======
-        showMainContent();
-    } catch (error) {
-        console.error('Error loading features:', error);
-        allFeatures = [];
-        showMainContent();
->>>>>>> origin/update_profile
     }
 }
 
@@ -494,19 +390,11 @@ async function loadFeatures() {
 function renderFeaturesInModals() {
     const createContainer = document.getElementById('createFeatures');
     const updateContainer = document.getElementById('updateFeatures');
-<<<<<<< HEAD
 
     const featuresHTML = allFeatures.map(feature => `
         <div class="feature-item flex items-center space-x-2 p-2 bg-white rounded-xl hover:bg-indigo-50 cursor-pointer transition-colors" data-feature-id="${feature.featureCode}">
             <input type="checkbox" id="feature-${feature.featureCode}" class="rounded text-indigo-600 focus:ring-indigo-500">
             <label for="feature-${feature.featureCode}" class="text-sm text-gray-700 cursor-pointer">${feature.featureName}</label>
-=======
-    
-    const featuresHTML = allFeatures.map(feature => `
-        <div class="feature-item flex items-center space-x-2 p-2 bg-white rounded-xl hover:bg-indigo-50 cursor-pointer transition-colors" data-feature-id="${feature.id}">
-            <input type="checkbox" id="feature-${feature.id}" class="rounded text-indigo-600 focus:ring-indigo-500">
-            <label for="feature-${feature.id}" class="text-sm text-gray-700 cursor-pointer">${feature.name}</label>
->>>>>>> origin/update_profile
         </div>
     `).join('');
 
@@ -522,7 +410,6 @@ function renderFeaturesInModals() {
 }
 
 // Setup feature selection
-<<<<<<< HEAD
 function setupFeatureSelection(container, hiddenInputString) {
     const checkboxes = container.querySelectorAll('input[type="checkbox"]');
     const hiddenInput = document.getElementById(hiddenInputString);
@@ -533,18 +420,6 @@ function setupFeatureSelection(container, hiddenInputString) {
                 .filter(cb => cb.checked)
                 .map(cb => cb.id.split('-').pop());
 
-=======
-function setupFeatureSelection(container, hiddenInputId) {
-    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-    const hiddenInput = document.getElementById(hiddenInputId);
-
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            const selectedFeatures = Array.from(checkboxes)
-                .filter(cb => cb.checked)
-                .map(cb => cb.id.split('-').pop());
-            
->>>>>>> origin/update_profile
             if (hiddenInput) {
                 hiddenInput.value = selectedFeatures.join(',');
             }
@@ -584,17 +459,10 @@ function renderPagination() {
         const pages = [];
         for (let i = 0; i < totalPages; i++) {
             pages.push(`
-<<<<<<< HEAD
                 <button onclick="changePage(${i})" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium ${i === currentPage
-                    ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
-                    : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-=======
-                <button onclick="changePage(${i})" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                    i === currentPage 
-                        ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600' 
-                        : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
->>>>>>> origin/update_profile
-                }">
+                ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
+                : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+            }">
                     ${i + 1}
                 </button>
             `);
@@ -611,11 +479,6 @@ function changePage(page) {
     }
 }
 
-<<<<<<< HEAD
-=======
-// This function will be replaced by the enhanced version below
-
->>>>>>> origin/update_profile
 // Modal functions
 function openNewPackageModal() {
     const modal = document.getElementById('createPackageModal');
@@ -624,15 +487,7 @@ function openNewPackageModal() {
         // Reset form
         const form = document.getElementById('createPackageForm');
         if (form) form.reset();
-<<<<<<< HEAD
 
-=======
-        
-        // Clear selected features
-        const hiddenInput = document.getElementById('createSelectedFeatures');
-        if (hiddenInput) hiddenInput.value = '';
-        
->>>>>>> origin/update_profile
         // Uncheck all features
         const checkboxes = modal.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(cb => cb.checked = false);
@@ -650,11 +505,7 @@ function openUpdateModal(packageId) {
     const modal = document.getElementById('updatePackageModal');
     if (modal) {
         modal.classList.remove('hidden');
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> origin/update_profile
         // Find package data
         const pkg = packages.find(p => p.id === packageId);
         if (pkg) {
@@ -665,7 +516,6 @@ function openUpdateModal(packageId) {
             document.getElementById('updateDurationValue').value = pkg.durationValue;
             document.getElementById('updateDurationType').value = pkg.durationType;
             document.getElementById('updateIsActive').value = pkg.isActive.toString();
-<<<<<<< HEAD
 
             // Set selected features
             const featureCodes = (pkg.features || []);
@@ -680,20 +530,6 @@ function openUpdateModal(packageId) {
                 cb.checked = featureCodes.includes(featureCode);
             });
 
-=======
-            
-            // Set selected features
-            const featureIds = (pkg.features || []).map(f => f.id);
-            const hiddenInput = document.getElementById('updateSelectedFeatures');
-            if (hiddenInput) hiddenInput.value = featureIds.join(',');
-            
-            // Check corresponding checkboxes
-            const checkboxes = modal.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(cb => {
-                const featureId = parseInt(cb.id.split('-').pop());
-                cb.checked = featureIds.includes(featureId);
-            });
->>>>>>> origin/update_profile
         }
     }
 }
@@ -705,7 +541,6 @@ function closeUpdateModal() {
     }
 }
 
-<<<<<<< HEAD
 function setupCheckBoxCreateOffer() {
     const checkboxes = document.querySelectorAll('[id^="checkbox-premium-"]');
 
@@ -718,7 +553,7 @@ function setupCheckBoxCreateOffer() {
 
             if (this.checked) {
                 if (!selectedList.some(item => item.id === packageId)) {
-                    selectedList.push({ id: packageId, name: pkg ? pkg.name : 'Unknown' });
+                    selectedList.push({id: packageId, name: pkg ? pkg.name : 'Unknown'});
                     if (selectedList.length != 0) buttonCreatePromotional.classList.remove("hidden");
                 }
                 // Hide edit and delete buttons
@@ -779,45 +614,26 @@ function closeCreateOfferModal() {
 async function handleCreatePackage(e) {
     e.preventDefault();
 
-=======
-// Form handlers
-async function handleCreatePackage(e) {
-    e.preventDefault();
-    
->>>>>>> origin/update_profile
     // Validate form data
     const name = document.getElementById('createName').value.trim();
     const price = parseFloat(document.getElementById('createPrice').value);
     const durationValue = parseInt(document.getElementById('createDurationValue').value);
     const durationType = document.getElementById('createDurationType').value;
-<<<<<<< HEAD
     const features = document.getElementById('createSelectedFeatures').value
         ? document.getElementById('createSelectedFeatures').value.split(',').filter(f => f.trim())
         : [];
 
-=======
-    const featureIds = document.getElementById('createSelectedFeatures').value.split(',').filter(id => id).map(id => parseInt(id));
-    
->>>>>>> origin/update_profile
     // Basic validation
     if (!name) {
         showErrorMessage('Package name is required');
         return;
     }
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> origin/update_profile
     if (!price || price <= 0) {
         showErrorMessage('Valid price is required');
         return;
     }
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> origin/update_profile
     if (!durationValue || durationValue <= 0) {
         showErrorMessage('Valid duration value is required');
         return;
@@ -828,7 +644,6 @@ async function handleCreatePackage(e) {
         price,
         durationValue,
         durationType,
-<<<<<<< HEAD
         features
     };
 
@@ -836,36 +651,18 @@ async function handleCreatePackage(e) {
     try {
         // Show loading state
         const submitBtn = e.target.querySelector('button[type="submit"]');
-=======
-        featureIds
-    };
-
-    try {
-        // Show loading state
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
->>>>>>> origin/update_profile
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating...';
         submitBtn.disabled = true;
 
         const response = await apiRequest(API_BASE_URL, {
             method: 'POST',
-<<<<<<< HEAD
-=======
-            headers: {
-                'Content-Type': 'application/json'
-            },
->>>>>>> origin/update_profile
             body: JSON.stringify(formData)
         });
 
         if (response && response.ok) {
             showSuccessMessage('Package created successfully');
             closeNewPackageModal();
-<<<<<<< HEAD
             selectedList = [];
-=======
->>>>>>> origin/update_profile
             loadPackages();
             loadStats(); // Refresh stats
         } else {
@@ -887,49 +684,30 @@ async function handleCreatePackage(e) {
 
 async function handleUpdatePackage(e) {
     e.preventDefault();
-<<<<<<< HEAD
 
     const packageId = document.getElementById('updatePackageId').value;
 
-=======
-    
-    const packageId = document.getElementById('updatePackageId').value;
-    
->>>>>>> origin/update_profile
     // Validate form data
     const name = document.getElementById('updateName').value.trim();
     const price = parseFloat(document.getElementById('updatePrice').value);
     const durationValue = parseInt(document.getElementById('updateDurationValue').value);
     const durationType = document.getElementById('updateDurationType').value;
     const isActive = document.getElementById('updateIsActive').value === 'true';
-<<<<<<< HEAD
     const features = document.getElementById('updateSelectedFeatures').value
         ? document.getElementById('updateSelectedFeatures').value.split(',').filter(f => f.trim())
         : [];
 
-=======
-    const featureIds = document.getElementById('updateSelectedFeatures').value.split(',').filter(id => id).map(id => parseInt(id));
-    
->>>>>>> origin/update_profile
     // Basic validation
     if (!name) {
         showErrorMessage('Package name is required');
         return;
     }
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> origin/update_profile
     if (!price || price <= 0) {
         showErrorMessage('Valid price is required');
         return;
     }
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> origin/update_profile
     if (!durationValue || durationValue <= 0) {
         showErrorMessage('Valid duration value is required');
         return;
@@ -941,16 +719,10 @@ async function handleUpdatePackage(e) {
         durationValue,
         durationType,
         isActive,
-<<<<<<< HEAD
         features
     };
 
 
-=======
-        featureIds
-    };
-
->>>>>>> origin/update_profile
     try {
         // Show loading state
         const submitBtn = e.target.querySelector('button[type="submit"]');
@@ -960,22 +732,13 @@ async function handleUpdatePackage(e) {
 
         const response = await apiRequest(`${API_BASE_URL}/${packageId}`, {
             method: 'PUT',
-<<<<<<< HEAD
-=======
-            headers: {
-                'Content-Type': 'application/json'
-            },
->>>>>>> origin/update_profile
             body: JSON.stringify(formData)
         });
 
         if (response && response.ok) {
             showSuccessMessage('Package updated successfully');
             closeUpdateModal();
-<<<<<<< HEAD
             selectedList = [];
-=======
->>>>>>> origin/update_profile
             loadPackages();
             loadStats(); // Refresh stats
         } else {
@@ -995,7 +758,6 @@ async function handleUpdatePackage(e) {
     }
 }
 
-<<<<<<< HEAD
 // Offer
 async function handleCreateOffer(e) {
     e.preventDefault();
@@ -1074,18 +836,12 @@ async function handleCreateOffer(e) {
     }
 }
 
-=======
->>>>>>> origin/update_profile
 // Delete package with confirmation
 async function deletePackage(packageId) {
     // Find package name for better confirmation message
     const pkg = packages.find(p => p.id === packageId);
     const packageName = pkg ? pkg.name : 'this package';
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> origin/update_profile
     if (!confirm(`Are you sure you want to delete "${packageName}"? This action cannot be undone.`)) {
         return;
     }
@@ -1131,19 +887,11 @@ function getPackageIconBackground(name) {
 function getDurationText(value, type) {
     const typeMap = {
         'DAY': value === 1 ? 'day' : 'days',
-<<<<<<< HEAD
         'WEEK': value === 1 ? 'week' : 'weeks',
-=======
-        'WEEK': value === 1 ? 'week' : 'weeks', 
->>>>>>> origin/update_profile
         'MONTH': value === 1 ? 'month' : 'months',
         'YEAR': value === 1 ? 'year' : 'years'
     };
     return `${value} ${typeMap[type] || 'month'}`;
-}
-
-function formatPrice(price) {
-    return formatCurrency(price);
 }
 
 function formatTimeAgo(dateString) {
@@ -1181,11 +929,7 @@ async function loadSidebar() {
         if (response.ok) {
             const sidebarHTML = await response.text();
             sidebarContainer.innerHTML = sidebarHTML;
-<<<<<<< HEAD
 
-=======
-            
->>>>>>> origin/update_profile
             // Initialize sidebar functionality if needed
             if (window.initializeSidebar && typeof window.initializeSidebar === 'function') {
                 window.initializeSidebar();
@@ -1197,40 +941,9 @@ async function loadSidebar() {
     }
 }
 
-<<<<<<< HEAD
 
 // Enhanced stats loading with actual API integration
 async function loadStats() {
-=======
-// Enhanced search with filter support
-function searchPackages(query) {
-    // If no query, apply current filter only
-    if (!query || query.trim() === '') {
-        applyCurrentFilter();
-        return;
-    }
-
-    // Apply both search and filter
-    const filteredPackages = packages.filter(pkg => {
-        const matchesSearch = pkg.name.toLowerCase().includes(query.toLowerCase()) ||
-            (pkg.features && pkg.features.some(f => f.name.toLowerCase().includes(query.toLowerCase())));
-        
-        const matchesFilter = currentFilter === 'all' || 
-            (currentFilter === 'monthly' && pkg.durationType === 'MONTH') ||
-            (currentFilter === 'yearly' && pkg.durationType === 'YEAR') ||
-            (currentFilter === 'active' && pkg.isActive);
-        
-        return matchesSearch && matchesFilter;
-    });
-    
-    renderPackages(filteredPackages);
-    renderPagination();
-}
-
-// Enhanced stats loading with actual API integration
-async function loadStats() {
-    hideMainContent();
->>>>>>> origin/update_profile
     try {
         // Try to load actual stats first
         const [revenueResponse] = await Promise.allSettled([
@@ -1252,7 +965,7 @@ async function loadStats() {
         if (revenueResponse.status === 'fulfilled' && revenueResponse.value?.ok) {
             const revenueData = await revenueResponse.value.json();
             if (revenueData.result) {
-                stats.totalRevenue = formatPrice(revenueData.result.revenue || 0);
+                stats.totalRevenue = formatCurrency(revenueData.result.revenue || 0);
                 stats.totalSubscribers = revenueData.result.subscribers || 0;
                 // Growth rates are not available from API, keep mock values
                 stats.revenueChange = "+12.5%";
@@ -1274,17 +987,17 @@ async function loadStats() {
 
         // Update DOM elements safely
         const elements = [
-            { id: 'totalRevenue', value: stats.totalRevenue },
-            { id: 'revenueChange', value: stats.revenueChange },
-            { id: 'totalSubscribers', value: stats.totalSubscribers },
-            { id: 'subscribersChange', value: stats.subscribersChange },
-            { id: 'conversionRate', value: stats.conversionRate },
-            { id: 'conversionChange', value: stats.conversionChange },
-            { id: 'avgRevenue', value: stats.avgRevenue },
-            { id: 'avgRevenueChange', value: stats.avgRevenueChange }
+            {id: 'totalRevenue', value: stats.totalRevenue},
+            {id: 'revenueChange', value: stats.revenueChange},
+            {id: 'totalSubscribers', value: stats.totalSubscribers},
+            {id: 'subscribersChange', value: stats.subscribersChange},
+            {id: 'conversionRate', value: stats.conversionRate},
+            {id: 'conversionChange', value: stats.conversionChange},
+            {id: 'avgRevenue', value: stats.avgRevenue},
+            {id: 'avgRevenueChange', value: stats.avgRevenueChange}
         ];
 
-        elements.forEach(({ id, value }) => {
+        elements.forEach(({id, value}) => {
             const element = document.getElementById(id);
             if (element) element.textContent = value;
         });
@@ -1297,17 +1010,11 @@ async function loadStats() {
             const element = document.getElementById(id);
             if (element) element.textContent = id.includes('Revenue') ? '0đ' : '0';
         });
-<<<<<<< HEAD
-=======
-    } finally {
-        showMainContent();
->>>>>>> origin/update_profile
     }
 }
 
 // Enhanced modal close with escape key support
 function setupModalKeyboardSupport() {
-<<<<<<< HEAD
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             closeNewPackageModal();
@@ -1328,26 +1035,6 @@ function setupModalKeyboardSupport() {
                         closeUpdateModal();
                     } else if (modalId === 'createOfferModal') {
                         closeCreateOfferModal();
-=======
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeNewPackageModal();
-            closeUpdateModal();
-        }
-    });
-    
-    // Close modal when clicking outside
-    const modals = ['createPackageModal', 'updatePackageModal'];
-    modals.forEach(modalId => {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    if (modalId === 'createPackageModal') {
-                        closeNewPackageModal();
-                    } else {
-                        closeUpdateModal();
->>>>>>> origin/update_profile
                     }
                 }
             });
@@ -1358,11 +1045,7 @@ function setupModalKeyboardSupport() {
 // Enhanced error and success messaging
 function showErrorMessage(message) {
     console.error(message);
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> origin/update_profile
     // Create toast notification
     const toast = document.createElement('div');
     toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
@@ -1372,24 +1055,14 @@ function showErrorMessage(message) {
             <span>${message}</span>
         </div>
     `;
-<<<<<<< HEAD
 
     document.body.appendChild(toast);
 
-=======
-    
-    document.body.appendChild(toast);
-    
->>>>>>> origin/update_profile
     // Animate in
     setTimeout(() => {
         toast.classList.remove('translate-x-full');
     }, 100);
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> origin/update_profile
     // Remove after 5 seconds
     setTimeout(() => {
         toast.classList.add('translate-x-full');
@@ -1402,12 +1075,7 @@ function showErrorMessage(message) {
 }
 
 function showSuccessMessage(message) {
-<<<<<<< HEAD
 
-=======
-    console.log(message);
-    
->>>>>>> origin/update_profile
     // Create toast notification
     const toast = document.createElement('div');
     toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
@@ -1417,24 +1085,14 @@ function showSuccessMessage(message) {
             <span>${message}</span>
         </div>
     `;
-<<<<<<< HEAD
 
     document.body.appendChild(toast);
 
-=======
-    
-    document.body.appendChild(toast);
-    
->>>>>>> origin/update_profile
     // Animate in
     setTimeout(() => {
         toast.classList.remove('translate-x-full');
     }, 100);
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> origin/update_profile
     // Remove after 3 seconds
     setTimeout(() => {
         toast.classList.add('translate-x-full');
@@ -1446,50 +1104,6 @@ function showSuccessMessage(message) {
     }, 3000);
 }
 
-<<<<<<< HEAD
-
-=======
-// Refresh all data
-async function refreshData() {
-    hideMainContent();
-    try {
-        // Reset search and filters
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) searchInput.value = '';
-        
-        // Reset filter to 'all'
-        currentFilter = 'all';
-        currentPage = 0;
-        
-        // Update filter button states
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            if (btn.dataset.filter === 'all') {
-                btn.classList.add('text-indigo-600', 'bg-indigo-50');
-                btn.classList.remove('text-gray-600', 'bg-gray-50');
-            } else {
-                btn.classList.remove('text-indigo-600', 'bg-indigo-50');
-                btn.classList.add('text-gray-600', 'bg-gray-50');
-            }
-        });
-        
-        // Reload all data
-        await Promise.all([
-            loadStats(),
-            loadPackages(),
-            loadRecentSubscriptions(),
-            loadFeatures()
-        ]);
-        
-        showSuccessMessage('Data refreshed successfully');
-        
-    } catch (error) {
-        console.error('Error refreshing data:', error);
-        showErrorMessage('Failed to refresh data');
-    } finally {
-        showMainContent();
-    }
-}
->>>>>>> origin/update_profile
 
 // Global exports for HTML onclick handlers
 window.openNewPackageModal = openNewPackageModal;
@@ -1499,20 +1113,9 @@ window.closeUpdateModal = closeUpdateModal;
 window.deletePackage = deletePackage;
 window.changePage = changePage;
 window.loadSidebar = loadSidebar;
-<<<<<<< HEAD
-=======
-window.refreshData = refreshData;
->>>>>>> origin/update_profile
 
 // Additional utility functions
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    }).format(amount);
-}
+
 
 function debounce(func, wait) {
     let timeout;
@@ -1535,7 +1138,6 @@ function handleResize() {
 }
 
 // Initialize modal keyboard support and other event handlers when DOM is ready
-<<<<<<< HEAD
 document.addEventListener('DOMContentLoaded', function () {
     setupModalKeyboardSupport();
     // Add resize handler for responsive behavior
@@ -1543,16 +1145,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Add click outside handlers for modals
     document.addEventListener('click', function (e) {
-=======
-document.addEventListener('DOMContentLoaded', function() {
-    setupModalKeyboardSupport();
-    
-    // Add resize handler for responsive behavior
-    window.addEventListener('resize', debounce(handleResize, 250));
-    
-    // Add click outside handlers for modals
-    document.addEventListener('click', function(e) {
->>>>>>> origin/update_profile
         if (e.target.classList.contains('fixed') && e.target.classList.contains('inset-0')) {
             // Clicked on modal backdrop
             if (e.target.id === 'createPackageModal') {
@@ -1562,16 +1154,4 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-<<<<<<< HEAD
 });
-=======
-});
-
-// Thêm hàm show/hide mainContent
-function showMainContent() {
-    document.getElementById('mainContent').style.display = '';
-}
-function hideMainContent() {
-    document.getElementById('mainContent').style.display = 'none';
-} 
->>>>>>> origin/update_profile

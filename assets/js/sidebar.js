@@ -8,7 +8,7 @@ async function loadSidebarHTML() {
             throw new Error('Failed to load sidebar.html');
         }
         let html = await response.text();
-        
+
         // Apply saved state to HTML before rendering to prevent flash
         if (window.innerWidth > 1024) {
             const savedState = getSidebarState();
@@ -20,7 +20,7 @@ async function loadSidebarHTML() {
                 );
             }
         }
-        
+
         return html;
     } catch (error) {
         console.error('Error loading sidebar HTML:', error);
@@ -30,11 +30,7 @@ async function loadSidebarHTML() {
 
 // Sidebar state management
 function getSidebarState() {
-<<<<<<< HEAD
-    const saved = localStorage.getItem('sidebarCollapsed');
-=======
     const saved = sessionStorage.getItem('sidebarCollapsed');
->>>>>>> origin/update_profile
     return saved === null ? false : saved === 'true'; // Default to expanded (false) if no saved state
 }
 
@@ -51,11 +47,7 @@ function applyBodySidebarClass() {
 }
 
 function setSidebarState(isCollapsed) {
-<<<<<<< HEAD
-    localStorage.setItem('sidebarCollapsed', isCollapsed.toString());
-=======
     sessionStorage.setItem('sidebarCollapsed', isCollapsed.toString());
->>>>>>> origin/update_profile
     // Update body class immediately
     applyBodySidebarClass();
 }
@@ -63,9 +55,9 @@ function setSidebarState(isCollapsed) {
 function applySidebarState(isCollapsed) {
     const sidebar = document.getElementById('sidebar');
     const mainContent = document.querySelector('.main-content');
-    
+
     if (!sidebar) return;
-    
+
     if (window.innerWidth <= 1024) {
         // Mobile: Always reset to default mobile state
         sidebar.classList.remove('sidebar-collapsed', 'sidebar-open');
@@ -77,7 +69,7 @@ function applySidebarState(isCollapsed) {
         }
         return;
     }
-    
+
     // Desktop only: Apply collapsed/expanded state
     if (isCollapsed) {
         // Apply collapsed state
@@ -101,7 +93,7 @@ function applySidebarState(isCollapsed) {
 }
 
 // Global toggle sidebar function for header integration
-window.toggleSidebar = function() {
+window.toggleSidebar = function () {
     const sidebar = document.getElementById('sidebar');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
     const mainContent = document.querySelector('.main-content');
@@ -117,7 +109,7 @@ window.toggleSidebar = function() {
         if (sidebarOverlay) {
             sidebarOverlay.classList.toggle('overlay-visible');
         }
-        
+
         // Reset main content styles for mobile
         mainContent.style.marginLeft = '0px';
         mainContent.style.width = '100%';
@@ -125,29 +117,18 @@ window.toggleSidebar = function() {
         // Desktop: Toggle collapsed sidebar and save state
         const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
         const newState = !isCollapsed;
-        
-<<<<<<< HEAD
-        // Save new state to localStorage
-=======
+
         // Save new state to sessionStorage
->>>>>>> origin/update_profile
         setSidebarState(newState);
-        
+
         // Apply new state
         applySidebarState(newState);
     }
 };
 
 // Global logout function for sidebar integration
-window.handleLogout = function() {
+window.handleLogout = function () {
     if (confirm('Are you sure you want to logout?')) {
-<<<<<<< HEAD
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('userData');
-        localStorage.removeItem('user');
-        window.location.href = '../login/';
-=======
         const token = sessionStorage.getItem('token');
         if (token) {
             fetch('http://localhost:8080/api/v1/auth/logout', {
@@ -172,7 +153,6 @@ window.handleLogout = function() {
             localStorage.removeItem('loginTimestamp');
             window.location.href = '/pages/login/';
         }
->>>>>>> origin/update_profile
     }
 };
 
@@ -193,11 +173,7 @@ function setActiveSidebarLink() {
 // Check user role and show/hide admin features
 function checkUserRoleAndShowAdminFeatures() {
     try {
-<<<<<<< HEAD
-        const token = localStorage.getItem('token');
-=======
         const token = sessionStorage.getItem('token');
->>>>>>> origin/update_profile
         if (token) {
             const payload = JSON.parse(atob(token.split('.')[1]));
             const userRole = payload.scope;
@@ -229,7 +205,7 @@ function checkUserRoleAndShowAdminFeatures() {
                 if (userMenuSection) {
                     userMenuSection.style.display = 'block';
                 }
-                
+
                 const userMenuItems = document.querySelectorAll('.user-menu');
                 userMenuItems.forEach(item => {
                     item.style.display = 'flex';
@@ -259,7 +235,7 @@ function checkUserRoleAndShowAdminFeatures() {
 function setActiveTab() {
     const currentPage = window.location.pathname;
     const sidebarItems = document.querySelectorAll('.sidebar-item');
-    
+
     // Remove active class from all items
     sidebarItems.forEach(item => {
         item.classList.remove('active');
@@ -305,25 +281,25 @@ function setActiveTab() {
 function initSidebar() {
     const sidebar = document.getElementById('sidebar');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
-    
+
     // Apply saved sidebar state IMMEDIATELY for desktop
     if (window.innerWidth > 1024) {
         const savedState = getSidebarState();
         applySidebarState(savedState);
     }
-    
+
     // Handle responsive behavior
     handleResponsiveBehavior();
-    
+
     // Set initial active state
     setActiveTab();
-    
+
     // Check user role and adjust menu
     checkUserRoleAndShowAdminFeatures();
-    
+
     // Load user info
     loadUserInfo();
-    
+
     // Mark content as ready and enable transitions
     setTimeout(() => {
         const mainContent = document.querySelector('.main-content');
@@ -332,7 +308,7 @@ function initSidebar() {
         }
         document.body.classList.add('page-loaded');
     }, 50);
-    
+
     console.log('Sidebar initialized successfully');
 }
 
@@ -340,9 +316,9 @@ function initSidebar() {
 function handleResponsiveBehavior() {
     const sidebar = document.getElementById('sidebar');
     const mainContent = document.querySelector('.main-content');
-    
+
     // Handle window resize
-    window.addEventListener('resize', function() {
+    window.addEventListener('resize', function () {
         if (window.innerWidth <= 1024) {
             // Mobile: Reset sidebar state and close if open
             if (sidebar) {
@@ -365,11 +341,11 @@ function handleResponsiveBehavior() {
             applySidebarState(savedState);
         }
     });
-    
+
     // Handle overlay click on mobile
     const sidebarOverlay = document.getElementById('sidebar-overlay');
     if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', function() {
+        sidebarOverlay.addEventListener('click', function () {
             if (sidebar) {
                 sidebar.classList.remove('sidebar-open');
             }
@@ -380,21 +356,12 @@ function handleResponsiveBehavior() {
 
 // Load user information
 function loadUserInfo() {
-<<<<<<< HEAD
-    const token = localStorage.getItem('token');
-    if (token) {
-        const usernameElement = document.querySelector('.user-name');
-        if (usernameElement) {
-            // Try to get user data from localStorage first
-            const userData = localStorage.getItem('userData');
-=======
     const token = sessionStorage.getItem('token');
     if (token) {
         const usernameElement = document.querySelector('.user-name');
         if (usernameElement) {
             // Try to get user data from sessionStorage first
             const userData = sessionStorage.getItem('userData');
->>>>>>> origin/update_profile
             if (userData) {
                 try {
                     const user = JSON.parse(userData);
@@ -431,13 +398,13 @@ async function loadSideBarSimple(userName) {
                 }
             }
         }
-        
+
         const sidebarHtml = await loadSidebarHTML();
         if (sidebarHtml) {
             const container = document.getElementById('sidebar-container');
             if (container) {
                 container.innerHTML = sidebarHtml;
-                
+
                 // Update username if provided
                 if (userName) {
                     const usernameElement = document.querySelector('.user-name');
@@ -445,7 +412,7 @@ async function loadSideBarSimple(userName) {
                         usernameElement.textContent = userName;
                     }
                 }
-                
+
                 // Initialize sidebar - state will be applied immediately in initSidebar
                 initSidebar();
             }
@@ -476,13 +443,13 @@ async function loadSideBar(user) {
                 }
             }
         }
-        
+
         const sidebarHtml = await loadSidebarHTML();
         if (sidebarHtml) {
             const container = document.getElementById('sidebar-container');
             if (container) {
                 container.innerHTML = sidebarHtml;
-                
+
                 // Update user information
                 if (user) {
                     const usernameElement = document.querySelector('.user-name');
@@ -490,7 +457,7 @@ async function loadSideBar(user) {
                         usernameElement.textContent = user.name || user.username || 'User';
                     }
                 }
-                
+
                 // Initialize sidebar - state will be applied immediately in initSidebar
                 initSidebar();
             }
@@ -501,29 +468,25 @@ async function loadSideBar(user) {
 }
 
 // Apply body class as early as possible to prevent flash
-(function() {
+(function () {
     // Apply body class immediately when script loads
     if (window.innerWidth > 1024) {
-<<<<<<< HEAD
-        const saved = localStorage.getItem('sidebarCollapsed');
-=======
         const saved = sessionStorage.getItem('sidebarCollapsed');
->>>>>>> origin/update_profile
         const isCollapsed = saved === 'true';
         if (isCollapsed) {
             document.body.classList.add('sidebar-state-collapsed');
         }
     }
-    
+
     // Disable transitions during initial load
     document.body.classList.add('no-transition-on-load');
 })();
 
 // Initialize on DOM ready
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Apply body sidebar class immediately
     applyBodySidebarClass();
-    
+
     // Apply main content state immediately if sidebar already exists
     const sidebar = document.getElementById('sidebar');
     if (sidebar && window.innerWidth > 1024) {
@@ -547,7 +510,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    
+
     // Only initialize if sidebar container exists but sidebar doesn't exist yet
     const sidebarContainer = document.getElementById('sidebar-container');
 
@@ -560,7 +523,7 @@ document.addEventListener('DOMContentLoaded', function() {
         loadUserInfo();
         checkUserRoleAndShowAdminFeatures();
     }
-    
+
     // Remove no-transition class after a brief delay
     setTimeout(() => {
         document.body.classList.remove('no-transition-on-load');

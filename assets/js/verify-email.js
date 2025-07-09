@@ -66,7 +66,7 @@ async function sendVerificationCode() {
                 'Content-Type': 'application/json'
             },
             credentials: 'include',
-            body: JSON.stringify({ email })
+            body: JSON.stringify({email})
         });
 
         let data;
@@ -74,7 +74,7 @@ async function sendVerificationCode() {
         if (contentType && contentType.includes('application/json')) {
             data = await response.json();
         } else {
-            data = { message: 'Invalid response from server.' };
+            data = {message: 'Invalid response from server.'};
         }
 
         if (response.ok) {
@@ -119,7 +119,7 @@ document.getElementById('verificationForm').addEventListener('submit', async (e)
                 'Content-Type': 'application/json'
             },
             credentials: 'include',
-            body: JSON.stringify({ email: userEmail, otp })
+            body: JSON.stringify({email: userEmail, otp})
         });
 
         let data;
@@ -132,32 +132,12 @@ document.getElementById('verificationForm').addEventListener('submit', async (e)
         }
 
         const serverMessage = data.message ? data.message.trim().toLowerCase() : '';
-<<<<<<< HEAD
-        const isVerifiedCodefully = (data.code === 1000 && serverMessage === 'Email verified successfully');
-
-        if (response.ok || isVerifiedCodefully) {
-            showNotification('Verification successful! Please log in.', 'success');
-            if (timerInterval) clearInterval(timerInterval);
-
-            // Remove localStorage items as user will explicitly log in
-            // localStorage.removeItem('token');
-            // localStorage.removeItem('userData');
-
-            setTimeout(() => {
-                try {
-                    window.location.assign('../../pages/login');
-                } catch (error) {
-                    console.error('Redirection failed:', error);
-                    showNotification('Could not redirect. Please go to the login page manually.', 'error');
-                }
-            }, 1500);
-=======
         const isVerifiedCodefully = (data.code === 1000 && serverMessage.includes('verified'));
 
         if (response.ok || isVerifiedCodefully) {
             console.log('Verification successful, response data:', data);
             console.log('User role from response:', data.result?.role);
-            
+
             // Store user data
             sessionStorage.setItem('token', data.result.token);
             sessionStorage.setItem('loginTimestamp', Date.now().toString());
@@ -182,7 +162,7 @@ document.getElementById('verificationForm').addEventListener('submit', async (e)
                 // Check user role and redirect accordingly
                 const userRole = data.result.role;
                 console.log('Redirecting based on role:', userRole);
-                
+
                 if (userRole === 'ADMIN' || userRole === 'admin') {
                     console.log('Redirecting to admin dashboard');
                     window.location.href = '../admin-dashboard/index.html';
@@ -191,7 +171,6 @@ document.getElementById('verificationForm').addEventListener('submit', async (e)
                     window.location.href = '../home/index.html';
                 }
             }, 1000);
->>>>>>> origin/update_profile
         } else {
             console.error('Verification failed:', data.message, 'Status:', response.status);
             showNotification(data.message || 'Invalid verification code.', 'error');
