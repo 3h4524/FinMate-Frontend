@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FinMate - Login</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://accounts.google.com/gsi/client?hl=en" async defer></script>
-    <script type="module" src="/assets/js/auth.js" defer></script>
-    <script type="module" src="/assets/js/login.js" defer></script>
-    <script type="module" src="/assets/js/googleAuth.js" defer></script>
+    <script src="https://accounts.google.com/gsi/client?hl=en" async></script>
+    <script type="module" src="/assets/js/auth.js"></script>
+    <script type="module" src="/assets/js/login.js"></script>
+    <script type="module" src="/assets/js/googleAuth.js"></script>
+    <script src="/assets/js/password.js" defer></script>
 
     <script>
         // Clear any existing session data when login page loads
@@ -534,11 +535,10 @@
             </div>
 
             <div class="form-group">
-                <label for="loginPassword">Password</label>
+                <label for="password">Password</label>
                 <div class="input-wrapper">
-                    <input type="password" id="loginPassword" name="loginPassword" placeholder="Enter your password"
-                           required>
-                    <i class="fas fa-eye-slash password-toggle" onclick="togglePassword()"></i>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    <i class="fas fa-eye-slash password-toggle" data-action="toggle-password"></i>
                 </div>
                 <div id="passwordError" class="error-message"></div>
             </div>
@@ -566,4 +566,5 @@
 </div>
 
 </body>
+
 </html>

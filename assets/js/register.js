@@ -1,33 +1,3 @@
-function togglePassword() {
-    const passwordInput = document.getElementById('password');
-    const toggleIcon = document.querySelector('.password-toggle');
-
-    if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        toggleIcon.classList.remove('fa-eye-slash');
-        toggleIcon.classList.add('fa-eye');
-    } else {
-        passwordInput.type = 'password';
-        toggleIcon.classList.remove('fa-eye');
-        toggleIcon.classList.add('fa-eye-slash');
-    }
-}
-
-function toggleConfirmPassword() {
-    const confirmPasswordInput = document.getElementById('confirm-password');
-    const toggleIcon = document.querySelectorAll('.password-toggle')[1];
-
-    if (confirmPasswordInput.type === 'password') {
-        confirmPasswordInput.type = 'text';
-        toggleIcon.classList.remove('fa-eye-slash');
-        toggleIcon.classList.add('fa-eye');
-    } else {
-        confirmPasswordInput.type = 'password';
-        toggleIcon.classList.remove('fa-eye');
-        toggleIcon.classList.add('fa-eye-slash');
-    }
-}
-
 // Add notification functions
 function showNotification(message, type = 'info') {
     const notification = document.getElementById('notification');
@@ -120,23 +90,23 @@ function initPasswordValidation() {
 }
 
 function initPasswordToggle() {
-    document.querySelectorAll('.password-toggle').forEach(btn => {
-        const icon = btn;
-        const targetInput = btn.dataset.target ? document.getElementById(btn.dataset.target) : btn.previousElementSibling;
-        if (!targetInput) return;
+    // document.querySelectorAll('.password-toggle').forEach(btn => {
+    //     const icon = btn;
+    //     const targetInput = btn.dataset.target ? document.getElementById(btn.dataset.target) : btn.previousElementSibling;
+    //     if (!targetInput) return;
 
-        btn.addEventListener('click', () => {
-            if (targetInput.type === 'password') {
-                targetInput.type = 'text';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            } else {
-                targetInput.type = 'password';
-                icon.classList.add('fa-eye-slash');
-                icon.classList.remove('fa-eye');
-            }
-        });
-    });
+    //     btn.addEventListener('click', () => {
+    //         if (targetInput.type === 'password') {
+    //             targetInput.type = 'text';
+    //             icon.classList.remove('fa-eye-slash');
+    //             icon.classList.add('fa-eye');
+    //         } else {
+    //             targetInput.type = 'password';
+    //             icon.classList.add('fa-eye-slash');
+    //             icon.classList.remove('fa-eye');
+    //         }
+    //     });
+    // });
 }
 
 // Handle registration
@@ -199,7 +169,18 @@ document.getElementById('register-form').addEventListener('submit', async functi
 // Initialize everything when page loads
 document.addEventListener('DOMContentLoaded', function () {
     initPasswordValidation();
-    initPasswordToggle();
+    // initPasswordToggle();
+
+    const rightPanel = document.querySelector('.right-panel');
+    if (rightPanel) {
+        rightPanel.addEventListener('click', (event) => {
+            if (event.target.matches('[data-action="toggle-password"]')) {
+                togglePassword();
+            } else if (event.target.matches('[data-action="toggle-confirm-password"]')) {
+                togglePassword(true);
+            }
+        });
+    }
 
     // Initialize Google Sign-In
     import('./googleAuth.js').then(module => {

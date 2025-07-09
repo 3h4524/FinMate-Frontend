@@ -6,9 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FinMate - Register</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://accounts.google.com/gsi/client?hl=en" async defer></script>
-    <script type="module" src="/assets/js/auth.js" defer></script>
-    <script type="module" src="/assets/js/register.js" defer></script>
+    <script src="https://accounts.google.com/gsi/client?hl=en" async></script>
+    <script type="module" src="/assets/js/auth.js"></script>
+    <script type="module" src="/assets/js/register.js"></script>
+    <script src="/assets/js/password.js" defer></script>
 
     <style>
         * {
@@ -534,7 +535,7 @@
                 <label for="password">Password</label>
                 <div class="input-wrapper">
                     <input type="password" id="password" name="password" placeholder="Create a password" required>
-                    <i class="fas fa-eye-slash password-toggle" onclick="togglePassword()"></i>
+                    <i class="fas fa-eye-slash password-toggle" data-action="toggle-password"></i>
                 </div>
                 <div id="passwordError" class="error-message"></div>
                 <div class="password-requirements">
@@ -554,7 +555,7 @@
                 <div class="input-wrapper">
                     <input type="password" id="confirm-password" name="confirm-password"
                            placeholder="Confirm your password" required>
-                    <i class="fas fa-eye-slash password-toggle" onclick="toggleConfirmPassword()"></i>
+                    <i class="fas fa-eye-slash password-toggle" data-action="toggle-confirm-password"></i>
                 </div>
                 <div id="confirmPasswordError" class="error-message"></div>
             </div>

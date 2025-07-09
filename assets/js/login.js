@@ -1,18 +1,3 @@
-function togglePassword() {
-    const passwordInput = document.getElementById('loginPassword');
-    const toggleIcon = document.querySelector('.password-toggle');
-
-    if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        toggleIcon.classList.remove('fa-eye-slash');
-        toggleIcon.classList.add('fa-eye');
-    } else {
-        passwordInput.type = 'password';
-        toggleIcon.classList.remove('fa-eye');
-        toggleIcon.classList.add('fa-eye-slash');
-    }
-}
-
 // Add notification functions
 function showNotification(message, type = 'info') {
     const notification = document.getElementById('notification');
@@ -41,7 +26,7 @@ function hideNotification() {
 document.getElementById('loginForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
+    const password = document.getElementById('password').value;
 
     document.getElementById('emailError').style.display = 'none';
     document.getElementById('passwordError').style.display = 'none';
@@ -122,4 +107,14 @@ document.getElementById('loginForm').addEventListener('submit', async function (
         console.error('Login error:', error);
         showNotification('An error occurred during login. Please try again.', 'error');
     }
+});
+
+// Event delegation
+document.addEventListener('DOMContentLoaded', () => {
+    const rightPanel = document.querySelector('.right-panel');
+    rightPanel.addEventListener('click', (event) => {
+        if (event.target.matches('[data-action="toggle-password"]')) {
+            togglePassword();
+        }
+    });
 });
