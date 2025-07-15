@@ -433,7 +433,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Chỉ check session nếu KHÔNG phải trang login, register, forgot-password, reset-password, verify-email
     const path = window.location.pathname;
     const isAuthPage = (
-        path === '/index.html' ||
+        path === '/' ||
         /\/pages\/(register|forgot-password|reset-password|verify-email)(\/|\/index\.html)?$/.test(path)
     );
     if (!isAuthPage) {
