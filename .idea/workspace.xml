@@ -4,8 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="72949f31-0bd4-426c-a8e0-0239e303fb3b" name="Changes" comment="updatev2">
+    <list default="true" id="72949f31-0bd4-426c-a8e0-0239e303fb3b" name="Changes" comment="remove redundant function, fix togglePassword">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/financial_report.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/financial_report.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/helper_functions.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/helper_functions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/subscription-manager.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/subscription-manager.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/user-premium.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/user-premium.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/subscription-manager/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/subscription-manager/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/user_premium/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/user_premium/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -13,6 +19,11 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="combinedFeature" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="UPDATE_TYPE" value="REBASE" />
   </component>
@@ -22,12 +33,12 @@
     &quot;assignee&quot;: &quot;Phuchao1624&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/3h4524/FinMate-Frontend.git&quot;,
-    &quot;accountId&quot;: &quot;16b43888-0571-4fed-b0d5-96a7066811de&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/3h4524/FinMate-Frontend.git",
+    "accountId": "6773f4a7-b3d1-411e-822e-757f7e32f302"
   }
-}</component>
+}]]></component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -42,10 +53,11 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;JavaScript Debug.index.html.executor&quot;: &quot;Run&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;combinedFeature&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;fix__frontend&quot;,
     &quot;last_opened_file_path&quot;: &quot;D:/new/Frontend1&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -58,8 +70,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.26094.121" />
-        <option value="bundled-js-predefined-d6986cc7102b-b26f3e71634d-JavaScript-IU-251.26094.121" />
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.25410.129" />
+        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-IU-251.25410.129" />
       </set>
     </attachedChunks>
   </component>
@@ -74,6 +86,7 @@
       <workItem from="1750262545743" duration="11000" />
       <workItem from="1750427066580" duration="690000" />
       <workItem from="1752036524831" duration="1875000" />
+      <workItem from="1752112300190" duration="6357000" />
     </task>
     <task id="LOCAL-00001" summary="update sidebar">
       <option name="closed" value="true" />

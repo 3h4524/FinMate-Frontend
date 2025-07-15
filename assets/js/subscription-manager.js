@@ -1,4 +1,3 @@
-// Subscription Manager JavaScript
 // API Configuration
 const API_BASE_URL = 'http://localhost:8080/api/premium-package';
 const SUBSCRIPTION_API_URL = 'http://localhost:8080/api/subscriptions';
@@ -11,8 +10,8 @@ let totalPages = 0;
 let currentFilter = 'all';
 let packages = [];
 let allFeatures = [];
-let selectedList = []; // Global array to store selected package IDs
-let resizeTimeout = null;
+let selectedList = [];
+let offers =[];
 
 const buttonCreatePromotional = document.getElementById("buttonCreatePromotional");
 
@@ -27,20 +26,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             return;
         }
 
-        // Load sidebar and header first to avoid flash
-        if (typeof loadSideBarSimple === 'function') {
-            await loadSideBarSimple();
-        } else {
-            console.error('loadSideBarSimple function not found');
-        }
-
-        if (typeof loadHeader === 'function') {
-            await loadHeader();
-        } else {
-            console.error('loadHeader function not found');
-        }
-
-        // Show main content after loading sidebar/header
         const mainApp = document.getElementById('main-app');
         if (mainApp) {
             mainApp.style.display = 'flex';
@@ -54,14 +39,9 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Setup functionality
         setupEventListeners();
-        setupResponsiveHandlers();
 
         // Load data
         await initializeSubscriptionManager();
-
-        // Setup datetime updates
-        updateDateTime();
-        setInterval(updateDateTime, 60000);
 
         console.log('Subscription manager page initialized successfully');
     } catch (error) {
@@ -146,155 +126,6 @@ function setupEventListeners() {
     setupCheckBoxCreateOffer();
 }
 
-// Setup responsive handlers
-function setupResponsiveHandlers() {
-    // Debounced resize handler
-    window.addEventListener('resize', debounce(handleResize, 250));
-    
-    // Initial responsive setup
-    handleResize();
-    
-    // Setup modal responsive behavior
-    setupModalResponsive();
-}
-
-// Enhanced responsive handling
-function handleResize() {
-    // Clear existing timeout
-    if (resizeTimeout) {
-        clearTimeout(resizeTimeout);
-    }
-    
-    // Debounce the resize handling
-    resizeTimeout = setTimeout(() => {
-        console.log('Handling resize...');
-        
-        // Adjust grid layout based on screen size
-        adjustGridLayout();
-        
-        // Rerender components if needed
-        if (packages.length > 0) {
-            renderPackages(packages);
-        }
-        
-        // Update modal positioning
-        updateModalPositioning();
-        
-        // Adjust statistics cards
-        adjustStatisticsLayout();
-        
-    }, 100);
-}
-
-// Adjust grid layout based on screen size
-function adjustGridLayout() {
-    const mainGrid = document.querySelector('.main-content-grid');
-    const packagesContainer = document.getElementById('packagesContainer');
-    
-    if (!mainGrid || !packagesContainer) return;
-    
-    const screenWidth = window.innerWidth;
-    
-    // Adjust main grid gap
-    if (screenWidth < 768) {
-        mainGrid.style.gap = '1rem';
-    } else if (screenWidth < 1024) {
-        mainGrid.style.gap = '1.5rem';
-    } else {
-        mainGrid.style.gap = '2rem';
-    }
-    
-    // Adjust packages grid columns
-    if (screenWidth < 640) {
-        packagesContainer.style.gridTemplateColumns = '1fr';
-    } else if (screenWidth < 1024) {
-        packagesContainer.style.gridTemplateColumns = 'repeat(auto-fit, minmax(300px, 1fr))';
-    } else if (screenWidth < 1280) {
-        packagesContainer.style.gridTemplateColumns = 'repeat(auto-fit, minmax(280px, 1fr))';
-    } else {
-        packagesContainer.style.gridTemplateColumns = 'repeat(auto-fit, minmax(320px, 1fr))';
-    }
-}
-
-// Update modal positioning for responsive
-function updateModalPositioning() {
-    const modals = ['createPackageModal', 'updatePackageModal', 'createOfferModal'];
-    const screenWidth = window.innerWidth;
-    
-    modals.forEach(modalId => {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            const modalContent = modal.querySelector('.modal-content');
-            if (modalContent) {
-                if (screenWidth < 640) {
-                    modalContent.style.width = '90%';
-                    modalContent.style.maxWidth = '500px';
-                } else if (screenWidth < 768) {
-                    modalContent.style.width = '95%';
-                    modalContent.style.maxWidth = '600px';
-                } else {
-                    modalContent.style.width = '100%';
-                    modalContent.style.maxWidth = '700px';
-                }
-            }
-        }
-    });
-}
-
-// Adjust statistics layout
-function adjustStatisticsLayout() {
-    const statsGrid = document.querySelector('.stats-grid');
-    if (!statsGrid) return;
-    
-    const screenWidth = window.innerWidth;
-    
-    if (screenWidth < 640) {
-        statsGrid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(240px, 1fr))';
-    } else if (screenWidth < 768) {
-        statsGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
-    } else {
-        statsGrid.style.gridTemplateColumns = 'repeat(4, 1fr)';
-    }
-}
-
-// Setup modal responsive behavior
-function setupModalResponsive() {
-    const modals = ['createPackageModal', 'updatePackageModal', 'createOfferModal'];
-    
-    modals.forEach(modalId => {
-        const modal = document.getElementById(modalId);
-        if (modal) {
-            // Handle modal backdrop click
-            modal.addEventListener('click', function (e) {
-                if (e.target === modal) {
-                    if (modalId === 'createPackageModal') {
-                        closeNewPackageModal();
-                    } else if (modalId === 'updatePackageModal') {
-                        closeUpdateModal();
-                    } else if (modalId === 'createOfferModal') {
-                        closeCreateOfferModal();
-                    }
-                }
-            });
-            
-            // Handle escape key
-            modal.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape') {
-                    if (modalId === 'createPackageModal') {
-                        closeNewPackageModal();
-                    } else if (modalId === 'updatePackageModal') {
-                        closeUpdateModal();
-                    } else if (modalId === 'createOfferModal') {
-                        closeCreateOfferModal();
-                    }
-                }
-            });
-        }
-    });
-}
-
-// This function will be replaced by the enhanced version below
-
 // Load packages
 async function loadPackages(page = 0, size = 4) {
     if (buttonCreatePromotional) {
@@ -361,7 +192,7 @@ function renderPackages(packagesData) {
     }
 
     container.innerHTML = packagesData.map(pkg => {
-        const isSelected = selectedList.some(item => item.id == pkg.id);
+        const isSelected = selectedList.some(item => item.id === pkg.id);
         return `
         <div class="bg-white border border-gray-200 rounded-3xl p-6 hover:shadow-lg transition-all duration-300 hover:scale-105">
             <div class="flex items-start justify-between mb-4">
@@ -376,13 +207,13 @@ function renderPackages(packagesData) {
                 </div>
                 <div class="flex space-x-2 items-center">
                     ${isSelected
-                        ? `<button type="button" class="w-8 h-8 bg-yellow-100 hover:bg-gray-200 text-yellow-600 rounded-lg flex items-center justify-center transition-colors" onclick="selectOfferPackage(${pkg.id})" title="Bỏ chọn tạo ưu đãi">
+            ? `<button type="button" class="w-8 h-8 bg-yellow-100 hover:bg-gray-200 text-yellow-600 rounded-lg flex items-center justify-center transition-colors" onclick="selectOfferPackage(${pkg.id})" title="Bỏ chọn tạo ưu đãi">
                             <i class=\"fas fa-bolt\"></i>
                         </button>`
-                        : `<button type="button" class="w-8 h-8 bg-gray-100 hover:bg-yellow-100 text-gray-400 hover:text-yellow-600 rounded-lg flex items-center justify-center transition-colors" onclick="selectOfferPackage(${pkg.id})" title="Chọn tạo ưu đãi">
+            : `<button type="button" class="w-8 h-8 bg-gray-100 hover:bg-yellow-100 text-gray-400 hover:text-yellow-600 rounded-lg flex items-center justify-center transition-colors" onclick="selectOfferPackage(${pkg.id})" title="Chọn tạo ưu đãi">
                             <i class=\"fas fa-bolt\"></i>
                         </button>`
-                    }
+        }
                     <button id="button-edit-premium-${pkg.id}" onclick="openUpdateModal(${pkg.id})" class="w-8 h-8 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg flex items-center justify-center transition-colors">
                         <i class="fas fa-edit text-sm"></i>
                     </button>
@@ -453,14 +284,12 @@ function renderEmptyPackages() {
 // Load recent subscriptions
 async function loadRecentSubscriptions() {
     try {
-        const response = await apiRequest(`${SUBSCRIPTION_API_URL}/recent?page=0&size=5&sortBy=createdAt&sortDirection=DESC`);
-
-        if (!response || !response.ok) {
+        const response = await apiRequest(`${SUBSCRIPTION_API_URL}/recent?page=0&size=10&sortBy=createdAt&sortDirection=DESC`);
+        if (!response.ok) {
             throw new Error('Failed to fetch recent subscriptions');
         }
-
         const data = await response.json();
-        if (data.result && data.result.content) {
+        if (data.code === 1000 && data.result.content.length > 0) {
             renderRecentSubscriptions(data.result.content);
         } else {
             renderEmptySubscriptions();
@@ -473,7 +302,7 @@ async function loadRecentSubscriptions() {
 
 // Render recent subscriptions
 function renderRecentSubscriptions(subscriptions) {
-    const container = document.getElementById('recentSubscriptions');
+    const container = document.getElementById('recentSubscriptionsContent');
     if (!container) return;
 
     if (!subscriptions || subscriptions.length === 0) {
@@ -504,7 +333,7 @@ function renderRecentSubscriptions(subscriptions) {
 
 // Render empty subscriptions
 function renderEmptySubscriptions() {
-    const container = document.getElementById('recentSubscriptions');
+    const container = document.getElementById('recentSubscriptionsContent');
     if (!container) return;
 
     container.innerHTML = `
@@ -964,6 +793,7 @@ async function handleCreateOffer(e) {
             selectedList = [];
             loadPackages();
             loadStats();
+            toggleSection('offers');
         } else {
             throw new Error(data.message || "Fail to create an offer.");
         }
@@ -989,6 +819,7 @@ async function deletePackage(packageId) {
 
         if (response && response.ok) {
             showSuccessMessage(`Package "${packageName}" deleted successfully`);
+            selectedList = [];
             loadPackages();
             loadStats(); // Refresh stats
         } else {
@@ -1042,41 +873,6 @@ function formatTimeAgo(dateString) {
     if (diffHours < 24) return `${diffHours}h ago`;
     return `${diffDays}d ago`;
 }
-
-function updateDateTime() {
-    // Update any time-sensitive elements
-    loadRecentSubscriptions();
-}
-
-// Load sidebar function to prevent flash
-async function loadSidebar() {
-    try {
-        const sidebarContainer = document.getElementById('sidebar-container');
-        if (!sidebarContainer) return;
-
-        // Try to use the global loadSidebar function first
-        if (window.loadSidebar && typeof window.loadSidebar === 'function') {
-            await window.loadSidebar();
-            return;
-        }
-
-        // Fallback to manual loading
-        const response = await fetch('/sidebar.html');
-        if (response.ok) {
-            const sidebarHTML = await response.text();
-            sidebarContainer.innerHTML = sidebarHTML;
-
-            // Initialize sidebar functionality if needed
-            if (window.initializeSidebar && typeof window.initializeSidebar === 'function') {
-                window.initializeSidebar();
-            }
-        }
-    } catch (error) {
-        console.error('Error loading sidebar:', error);
-        // Don't throw error, just log it to prevent page breaking
-    }
-}
-
 
 // Enhanced stats loading with actual API integration
 async function loadStats() {
@@ -1178,68 +974,6 @@ function setupModalKeyboardSupport() {
     });
 }
 
-// Enhanced error and success messaging
-function showErrorMessage(message) {
-    console.error(message);
-
-    // Create toast notification
-    const toast = document.createElement('div');
-    toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
-    toast.innerHTML = `
-        <div class="flex items-center space-x-2">
-            <i class="fas fa-exclamation-circle"></i>
-            <span>${message}</span>
-        </div>
-    `;
-
-    document.body.appendChild(toast);
-
-    // Animate in
-    setTimeout(() => {
-        toast.classList.remove('translate-x-full');
-    }, 100);
-
-    // Remove after 5 seconds
-    setTimeout(() => {
-        toast.classList.add('translate-x-full');
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
-            }
-        }, 300);
-    }, 5000);
-}
-
-function showSuccessMessage(message) {
-
-    // Create toast notification
-    const toast = document.createElement('div');
-    toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
-    toast.innerHTML = `
-        <div class="flex items-center space-x-2">
-            <i class="fas fa-check-circle"></i>
-            <span>${message}</span>
-        </div>
-    `;
-
-    document.body.appendChild(toast);
-
-    // Animate in
-    setTimeout(() => {
-        toast.classList.remove('translate-x-full');
-    }, 100);
-
-    // Remove after 3 seconds
-    setTimeout(() => {
-        toast.classList.add('translate-x-full');
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
-            }
-        }, 300);
-    }, 3000);
-}
-
 
 // Global exports for HTML onclick handlers
 window.openNewPackageModal = openNewPackageModal;
@@ -1248,37 +982,15 @@ window.openUpdateModal = openUpdateModal;
 window.closeUpdateModal = closeUpdateModal;
 window.deletePackage = deletePackage;
 window.changePage = changePage;
-window.loadSidebar = loadSidebar;
 
-// Additional utility functions
-
-
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-// Enhanced responsive handling - now handled by setupResponsiveHandlers()
-function handleResize() {
-    // This function is now enhanced and called from setupResponsiveHandlers()
-    console.log('Resize event triggered');
-}
 
 // Initialize modal keyboard support and other event handlers when DOM is ready
 document.addEventListener('DOMContentLoaded', function () {
     setupModalKeyboardSupport();
-    // Responsive handlers are now set up in setupResponsiveHandlers()
 });
 
 // Thêm hàm chọn/bỏ chọn offer package
-window.selectOfferPackage = function(id) {
+window.selectOfferPackage = function (id) {
     const pkg = packages.find(p => p.id == id);
     if (!pkg) return;
     const idx = selectedList.findIndex(item => item.id == id);
@@ -1291,4 +1003,121 @@ window.selectOfferPackage = function(id) {
     }
     renderPackages(packages);
     setupCheckBoxCreateOffer(); // Đảm bảo các event khác vẫn hoạt động
+}
+
+
+async function toggleSection(section) {
+    const subscriptionsBtn = document.getElementById('subscriptionsBtn');
+    const offersBtn = document.getElementById('offersBtn');
+    const subscriptionsContent = document.getElementById('recentSubscriptionsContent');
+    const offersContent = document.getElementById('offersContent');
+    const sectionTitle = document.getElementById('sectionTitle');
+    const sectionIcon = document.getElementById('sectionIcon');
+
+    if (section === 'subscriptions') {
+        // Active subscriptions button
+        subscriptionsBtn.className = 'px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 bg-indigo-600 text-white';
+        offersBtn.className = 'px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 bg-gray-100 text-gray-600 hover:bg-gray-200';
+
+        // Show subscriptions content
+        subscriptionsContent.classList.remove('hidden');
+        offersContent.classList.add('hidden');
+
+        // Update title and icon
+        sectionTitle.textContent = 'Recent Subscriptions';
+        sectionIcon.textContent = '👥';
+        await loadRecentSubscriptions();
+    } else {
+        // Active offers button
+        offersBtn.className = 'px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 bg-indigo-600 text-white';
+        subscriptionsBtn.className = 'px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 bg-gray-100 text-gray-600 hover:bg-gray-200';
+
+        // Show offers content
+        offersContent.classList.remove('hidden');
+        subscriptionsContent.classList.add('hidden');
+
+        // Update title and icon
+        sectionTitle.textContent = 'Promotional Offers';
+        sectionIcon.textContent = '🎁';
+
+        await loadOffers();
+    }
+}
+
+
+async function loadOffers() {
+    try {
+        const response = await apiRequest(OFFER_API_URL);
+        const data = await response.json();
+
+        if (data.code === 1000) {
+            offers = data.result;
+            renderOffers();
+        } else {
+            renderEmptyOffers();
+        }
+    } catch (error) {
+        console.error('Error loading offers:', error);
+        renderEmptyOffers();
+    }
+}
+
+// Render offers
+function renderOffers() {
+    const container = document.getElementById('offersContent');
+    if (!container) return;
+
+    container.innerHTML = `
+    <div class="space-y-4">
+        ${offers.map(offer => `
+            <div class="flex items-center space-x-4 p-4 rounded-2xl hover:bg-gray-50 transition-colors border border-gray-100">
+                <div class="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                    ${offer.discountEvent.charAt(0)}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate">${offer.discountEvent || 'Unknown Offer'}</p>
+                    <div class="flex items-center space-x-4 mt-1">
+                        <p class="text-xs text-gray-500">Start: ${formatDate_ddMMyyyy(offer.startDate)}</p>
+                        <p class="text-xs text-gray-500">Expires: ${formatDate_ddMMyyyy(offer.expiryDate)}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-lg font-semibold text-green-600">${offer.discountPercentage}% OFF</p>
+                    <p class="text-xs text-gray-500">${offer.packageIds.length} package(s)</p>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <button 
+                        onclick="viewOfferDetail('${offer.id}')"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-xs font-medium"
+                    >
+                        View Detail
+                    </button>
+                    <button 
+                        onclick="deleteOffer('${offer.id}')"
+                        class="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-xs font-medium"
+                    >
+                        Delete
+                    </button>
+                </div>
+            </div>
+        `).join('')}
+    </div>
+`;
+}
+
+
+
+// Render empty offers
+function renderEmptyOffers() {
+    const container = document.getElementById('offersContent');
+    if (!container) return;
+
+    container.innerHTML = `
+                <div class="text-center py-8">
+                    <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-gift text-gray-400"></i>
+                    </div>
+                    <p class="text-gray-500 text-sm">No offers available</p>
+                </div>
+            `;
 }

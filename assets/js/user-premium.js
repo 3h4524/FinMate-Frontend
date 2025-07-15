@@ -305,7 +305,7 @@ async function fetchPromotionalOffers() {
     } catch (error) {
         showErrorMessage(error.message);
     }
-};
+}
 
 
 async function fetchPurchasedPremiumPlans() {
@@ -322,7 +322,7 @@ async function fetchPurchasedPremiumPlans() {
     } catch (error) {
         showErrorMessage('Error fetching packages:', error);
     }
-};
+}
 
 // Thêm function để disable/enable tất cả nút Buy Now
 function setAllBuyButtonsState(disabled) {
@@ -461,65 +461,3 @@ function setupCouponModal() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
-
-
-function showErrorMessage(message) {
-    console.error(message);
-
-    // Create toast notification
-    const toast = document.createElement('div');
-    toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
-    toast.innerHTML = `
-        <div class="flex items-center space-x-2">
-            <i class="fas fa-exclamation-circle"></i>
-            <span>${message}</span>
-        </div>
-    `;
-
-    document.body.appendChild(toast);
-
-    // Animate in
-    setTimeout(() => {
-        toast.classList.remove('translate-x-full');
-    }, 100);
-
-    // Remove after 5 seconds
-    setTimeout(() => {
-        toast.classList.add('translate-x-full');
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
-            }
-        }, 300);
-    }, 5000);
-}
-
-function showSuccessMessage(message) {
-
-    // Create toast notification
-    const toast = document.createElement('div');
-    toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
-    toast.innerHTML = `
-        <div class="flex items-center space-x-2">
-            <i class="fas fa-check-circle"></i>
-            <span>${message}</span>
-        </div>
-    `;
-
-    document.body.appendChild(toast);
-
-    // Animate in
-    setTimeout(() => {
-        toast.classList.remove('translate-x-full');
-    }, 100);
-
-    // Remove after 3 seconds
-    setTimeout(() => {
-        toast.classList.add('translate-x-full');
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
-            }
-        }, 300);
-    }, 3000);
-}

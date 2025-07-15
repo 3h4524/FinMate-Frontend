@@ -1,0 +1,217 @@
+/* Enhanced responsive layout */
+.main-content-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+}
+
+/* Tablet and up */
+@media (min-width: 768px) {
+    .main-content-grid {
+        gap: 2rem;
+    }
+}
+
+/* Desktop layout */
+@media (min-width: 1024px) {
+    .main-content-grid {
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+    }
+}
+
+/* Large desktop */
+@media (min-width: 1280px) {
+    .main-content-grid {
+        gap: 2.5rem;
+    }
+}
+
+/* Ensure consistent layout for main content */
+.packages-section {
+    min-width: 0;
+    width: 100%;
+}
+
+.subscriptions-section {
+    min-width: 0;
+    width: 100%;
+}
+
+/* Responsive statistics grid */
+.stats-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+@media (min-width: 640px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Responsive package cards */
+.packages-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+    .packages-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .packages-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+}
+
+@media (min-width: 1280px) {
+    .packages-grid {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    }
+}
+
+/* Responsive modal */
+.modal-content {
+    width: 90%;
+    max-width: 500px;
+    margin: 1rem auto;
+}
+
+@media (min-width: 640px) {
+    .modal-content {
+        width: 95%;
+        max-width: 600px;
+    }
+}
+
+@media (min-width: 768px) {
+    .modal-content {
+        width: 100%;
+        max-width: 700px;
+    }
+}
+
+/* Responsive form grid */
+.form-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Responsive header */
+.header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .header-content {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+/* Responsive action buttons */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+    .action-buttons {
+        flex-direction: row;
+        gap: 1rem;
+    }
+}
+
+/* Responsive filter buttons */
+.filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+    .filter-buttons {
+        flex-wrap: nowrap;
+    }
+}
+
+/* Responsive section headers */
+.section-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .section-header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+/* Ensure text doesn't overflow on small screens */
+.text-responsive {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Responsive padding */
+.responsive-padding {
+    padding: 1rem;
+}
+
+@media (min-width: 640px) {
+    .responsive-padding {
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .responsive-padding {
+        padding: 2rem;
+    }
+}
+
+/* Responsive container */
+.responsive-container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+    .responsive-container {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .responsive-container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+}

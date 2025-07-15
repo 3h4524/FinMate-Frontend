@@ -38,7 +38,7 @@ async function fetchGoalProgress() {
 async function fetchTransactions() {
     console.log("fetching Transactions");
     try {
-        const response = await apiRequest(`${API_BASE_URL}/api/transactions?userId=${user.userId}`);
+        const response = await apiRequest(`${API_BASE_URL}/api/transactions?userId=${user.userId}&size=5`);
         if (!response.ok) throw new Error('Failed to fetch transactions');
         const data = await response.json();
         transactions = data.result.content;
