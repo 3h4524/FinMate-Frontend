@@ -50,9 +50,10 @@ async function sendResetLink(email) {
         if (data.code === 1000) {
             showNotification('Password reset link has been sent to your email.', 'success');
             setTimeout(() => {
-                window.location.href = '../login/';
+                window.location.href = '/';
             }, 2000);
         } else {
+
             const errorMessage = data.message || 'Could not send password reset link.';
             showNotification(errorMessage, 'error');
         }

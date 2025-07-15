@@ -45,9 +45,12 @@ async function handleResponse(response) {
         sessionStorage.removeItem('userData');
         // Chỉ redirect về login nếu KHÔNG phải trang register, login, forgot-password, reset-password, verify-email
         const path = window.location.pathname;
-        const isAuthPage = /\/pages\/(login|register|forgot-password|reset-password|verify-email)(\/|\/index\.html)?$/.test(path);
+        const isAuthPage = (
+            path === '/' ||
+            /\/pages\/(register|forgot-password|reset-password|verify-email)(\/|\/index\.html)?$/.test(path)
+        );
         if (!isAuthPage) {
-            window.location.href = '/pages/login/';
+            window.location.href = '/';
         }
         return null;
     }
@@ -156,7 +159,7 @@ const apiService = {
         } finally {
             sessionStorage.removeItem('token');
             sessionStorage.removeItem('userData');
-            window.location.href = '/pages/login/';
+            window.location.href = '/';
         }
     },
 

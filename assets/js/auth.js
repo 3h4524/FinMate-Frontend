@@ -439,7 +439,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!isAuthPage) {
         if (!checkSessionValidity()) {
             console.log('Invalid session, redirecting to login');
-            window.location.href = '/pages/login/';
+            window.location.href = '/';
         }
     }
 });

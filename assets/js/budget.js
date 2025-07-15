@@ -64,7 +64,7 @@ async function fetchUser() {
     } catch (error) {
         console.error('Error fetching user:', error);
         showNotification('Error', 'Please log in to continue.', 'error');
-        window.location.href = '/login';
+        window.location.href = '/';
     }
 }
 
