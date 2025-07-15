@@ -133,7 +133,7 @@ window.handleLogout = function() {
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('userData');
         localStorage.removeItem('user');
-        window.location.href = '../login/index.html';
+        window.location.href = '/';
     }
 };
 

@@ -390,7 +390,7 @@
             // Kiểm tra role - chỉ cho phép USER vào trang home
             if (user.role === 'ADMIN' || user.role === 'admin') {
                 console.log('Admin detected, redirecting to admin dashboard');
-                window.location.href = 'pages/admin-dashboard/';
+                window.location.href = '/pages/admin-dashboard/';
                 return;
             }
 

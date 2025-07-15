@@ -6,12 +6,14 @@
   <component name="ChangeListManager">
     <list default="true" id="72949f31-0bd4-426c-a8e0-0239e303fb3b" name="Changes" comment="fix hehe">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/auth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/autho_helper.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/autho_helper.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/budget.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/budget.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/forgot-password.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/forgot-password.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/goal.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/goal.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/services/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/services/api.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/googleAuth.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/googleAuth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/login.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/login.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/sidebar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/user_auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/user_auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/forgot-password/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/forgot-password/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/header.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/home/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/home/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/reset-password/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/reset-password/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
