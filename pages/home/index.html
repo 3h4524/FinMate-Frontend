@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FinMate - Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="../../assets/css/global-layout.css" rel="stylesheet">
+    <link href="/assets/css/global-layout.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../../assets/js/tab-logout.js"></script>
-    <script src="../../assets/js/helper_functions.js"></script>
+    <script src="/assets/js/tab-logout.js"></script>
+    <script src="/assets/js/helper_functions.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -356,7 +356,7 @@
 </div>
 
 <!-- Scripts -->
-<script src="../../assets/js/autho_helper.js"></script>
+<script src="/assets/js/autho_helper.js"></script>
 <script>
     // Kiểm tra đăng nhập ngay khi load page
     document.addEventListener('DOMContentLoaded', function () {
@@ -367,7 +367,7 @@
 
         if (!token || !userData || !loginTimestamp) {
             console.log('No valid session found, redirecting to login');
-            window.location.href = '../login/';
+            window.location.href = '/';
             return;
         }
 
@@ -379,7 +379,7 @@
         if (currentTime - loginTime > sessionTimeout) {
             console.log('Session expired, redirecting to login');
             sessionStorage.clear();
-            window.location.href = '../login/';
+            window.location.href = '/';
             return;
         }
 
@@ -390,7 +390,7 @@
             // Kiểm tra role - chỉ cho phép USER vào trang home
             if (user.role === 'ADMIN' || user.role === 'admin') {
                 console.log('Admin detected, redirecting to admin dashboard');
-                window.location.href = '../admin-dashboard/index.html';
+                window.location.href = 'pages/admin-dashboard/';
                 return;
             }
 
@@ -399,13 +399,13 @@
         } catch (error) {
             console.error('Error parsing user data:', error);
             sessionStorage.clear();
-            window.location.href = '../login/';
+            window.location.href = '/';
         }
     });
 </script>
-<script src="../../assets/js/page-loader.js"></script>
-<script src="../../assets/js/header.js"></script>
-<script src="../../assets/js/sidebar.js"></script>
-<script src="../../assets/js/home.js"></script>
+<script src="/assets/js/page-loader.js"></script>
+<script src="/assets/js/header.js"></script>
+<script src="/assets/js/sidebar.js"></script>
+<script src="/assets/js/home.js"></script>
 </body>
 </html>
