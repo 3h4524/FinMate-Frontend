@@ -23,7 +23,7 @@ async function fetchGoalProgress() {
     console.log("fetching Goal Progress");
     try {
         const response = await apiRequest(`${API_BASE_URL}/goal_tracking/list`, {
-            headers: {'userId': user.userId.toString()}
+            headers: { 'userId': user.userId.toString() }
         });
 
         if (!response.ok) throw new Error("Failed to fetch Goal Progress");
@@ -38,10 +38,10 @@ async function fetchGoalProgress() {
 async function fetchTransactions() {
     console.log("fetching Transactions");
     try {
-        const response = await apiRequest(`${API_BASE_URL}/api/transactions?userId=${user.userId}&size=5`);
+        const response = await apiRequest(`${API_BASE_URL}/api/transactions/forReport?userId=${user.userId}`);
         if (!response.ok) throw new Error('Failed to fetch transactions');
         const data = await response.json();
-        transactions = data.result.content;
+        transactions = data.result;
         console.log("fetch transactions", transactions);
     } catch (error) {
         console.log(error);
@@ -56,21 +56,20 @@ function renderChart(type) {
     const canvas = document.getElementById('financialChart');
     canvas.classList.toggle('pie-chart', type === 'pie');
 
-    const labels = filteredData.map(t => t.categoryName || t.userCategoryName);
-
-    const backgroundColors = generateColors(labels.length)
-
+    const { labels, values } = groupByCategory(filteredData);
+    const backgroundColors = generateColors(labels.length);
 
     const chartData = {
         labels: labels,
         datasets: [{
-            label: 'Amount ($)',
-            data: filteredData.map(t => t.amount),
+            label: 'Amount (vnd)',
+            data: values,
             backgroundColor: type === 'pie' ? backgroundColors : '#6366F1',
             borderColor: '#6366F1',
             borderWidth: 1
         }]
     };
+
 
     chartInstance = new Chart(ctx, {
         type: type,
@@ -79,12 +78,12 @@ function renderChart(type) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: {position: 'top'},
+                legend: { position: 'top' },
                 tooltip: {
                     callbacks: {
                         label: context => {
                             const value = type === 'pie' ? context.parsed : context.parsed.y;
-                            return `$${value.toFixed(2)}`;
+                            return `${formatCurrency(value.toFixed(2))}`;
                         }
                     }
                 }
@@ -93,13 +92,30 @@ function renderChart(type) {
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        callback: value => `$${value.toFixed(2)}`
+                        callback: value => `${formatCurrency(value.toFixed(2))}`
                     }
                 }
             } : {}
         }
     });
 }
+
+function groupByCategory(data) {
+    const grouped = {};
+    data.forEach(item => {
+        const key = item.categoryName || item.userCategoryName;
+        if (!grouped[key]) {
+            grouped[key] = 0;
+        }
+        grouped[key] += item.amount;
+    });
+
+    const labels = Object.keys(grouped);
+    const values = Object.values(grouped);
+
+    return { labels, values };
+}
+
 
 function updateTable() {
     const tableBody = document.getElementById('transactionTable');
@@ -158,7 +174,7 @@ function exportToCSV() {
             ['Date', 'Category', 'Type', 'Amount'],
             ...filteredData.map(t => [t.transactionDate, t.categoryName || t.userCategoryName, t.type, formatCurrency(t.amount.toFixed(2))])
         ].map(row => row.join(',')).join('\n');
-        const blob = new Blob([csvContent], {type: 'text/csv'});
+        const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
