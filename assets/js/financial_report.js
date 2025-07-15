@@ -6,77 +6,6 @@ let filteredData;
 
 const API_BASE_URL = 'http://localhost:8080';
 
-// Fallback functions if helper files are not loaded
-if (typeof apiRequest === 'undefined') {
-  window.apiRequest = async (url, options = {}) => {
-    try {
-      const token = localStorage.getItem('authToken');
-      const defaultOptions = {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` })
-        }
-      };
-      
-      const response = await fetch(url, { ...defaultOptions, ...options });
-      return response;
-    } catch (error) {
-      console.error('API request failed:', error);
-      return null;
-    }
-  };
-}
-
-if (typeof getCurrentUser === 'undefined') {
-  window.getCurrentUser = () => {
-    try {
-      const user = localStorage.getItem('currentUser');
-      return user ? JSON.parse(user) : { userId: 1 }; // fallback user
-    } catch (error) {
-      console.error('Error getting current user:', error);
-      return { userId: 1 };
-    }
-  };
-}
-
-if (typeof loadSideBarSimple === 'undefined') {
-  window.loadSideBarSimple = () => {
-    console.log('Sidebar loading function not available');
-  };
-}
-
-if (typeof loadHeaderSimple === 'undefined') {
-  window.loadHeaderSimple = () => {
-    console.log('Header loading function not available');
-  };
-}
-
-if (typeof formatCurrency === 'undefined') {
-  window.formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', { 
-      style: 'currency', 
-      currency: 'USD' 
-    }).format(amount);
-  };
-}
-
-if (typeof formatDate_ddMMyyyy === 'undefined') {
-  window.formatDate_ddMMyyyy = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB');
-  };
-}
-
-if (typeof generateColors === 'undefined') {
-  window.generateColors = (count) => {
-    const colors = [
-      '#6366F1', '#9333EA', '#4F46E5', '#A855F7', '#3B82F6',
-      '#8B5CF6', '#7C3AED', '#5B21B6', '#6D28D9', '#3730A3'
-    ];
-    return Array.from({ length: count }, (_, i) => colors[i % colors.length]);
-  };
-}
-
 // Initialize Chart.js
 let chartInstance = null;
 const ctx = document.getElementById('financialChart').getContext('2d');
@@ -109,10 +38,10 @@ async function fetchGoalProgress() {
 async function fetchTransactions() {
     console.log("fetching Transactions");
     try {
-        const response = await apiRequest(`${API_BASE_URL}/api/transactions?userId=${user.userId}`);
+        const response = await apiRequest(`${API_BASE_URL}/api/transactions/forReport?userId=${user.userId}`);
         if (!response.ok) throw new Error('Failed to fetch transactions');
         const data = await response.json();
-        transactions = data.result.content;
+        transactions = data.result;
         console.log("fetch transactions", transactions);
     } catch (error) {
         console.log(error);
@@ -127,21 +56,20 @@ function renderChart(type) {
     const canvas = document.getElementById('financialChart');
     canvas.classList.toggle('pie-chart', type === 'pie');
 
-    const labels = filteredData.map(t => t.categoryName || t.userCategoryName);
-
-    const backgroundColors = generateColors(labels.length)
-
+    const { labels, values } = groupByCategory(filteredData);
+    const backgroundColors = generateColors(labels.length);
 
     const chartData = {
         labels: labels,
         datasets: [{
-            label: 'Amount ($)',
-            data: filteredData.map(t => t.amount),
+            label: 'Amount (vnd)',
+            data: values,
             backgroundColor: type === 'pie' ? backgroundColors : '#6366F1',
             borderColor: '#6366F1',
             borderWidth: 1
         }]
     };
+
 
     chartInstance = new Chart(ctx, {
         type: type,
@@ -155,7 +83,7 @@ function renderChart(type) {
                     callbacks: {
                         label: context => {
                             const value = type === 'pie' ? context.parsed : context.parsed.y;
-                            return `$${value.toFixed(2)}`;
+                            return `${formatCurrency(value.toFixed(2))}`;
                         }
                     }
                 }
@@ -164,13 +92,30 @@ function renderChart(type) {
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        callback: value => `$${value.toFixed(2)}`
+                        callback: value => `${formatCurrency(value.toFixed(2))}`
                     }
                 }
             } : {}
         }
     });
 }
+
+function groupByCategory(data) {
+    const grouped = {};
+    data.forEach(item => {
+        const key = item.categoryName || item.userCategoryName;
+        if (!grouped[key]) {
+            grouped[key] = 0;
+        }
+        grouped[key] += item.amount;
+    });
+
+    const labels = Object.keys(grouped);
+    const values = Object.values(grouped);
+
+    return { labels, values };
+}
+
 
 function updateTable() {
     const tableBody = document.getElementById('transactionTable');
@@ -362,30 +307,30 @@ function initPercenGoalProgress() {
 async function initializeUI() {
     try {
         console.log('Initializing financial report page...');
-        
+
         // Load sidebar and header first
         if (typeof loadSideBarSimple === 'function') {
             loadSideBarSimple();
         } else {
             console.error('loadSideBarSimple function not found');
         }
-        
+
         if (typeof loadHeaderSimple === 'function') {
             loadHeaderSimple();
         } else {
             console.error('loadHeaderSimple function not found');
         }
-        
+
         // Get user information
         user = getCurrentUser();
         console.log("Current user: ", user);
-        
+
         // Fetch data and initialize UI
-        await Promise.all([fetchTransactions(), fetchGoalProgress()]); 
+        await Promise.all([fetchTransactions(), fetchGoalProgress()]);
         initPercenGoalProgress();
         updateChartTypeButtons('bar');
         updateReport();
-        
+
         console.log('Financial report page initialized successfully');
     } catch (err) {
         const error = 'Failed to initialize app: ' + err.message;
@@ -397,13 +342,13 @@ async function initializeUI() {
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         console.log('DOM loaded, starting financial report page initialization...');
-        
+
         // Check authentication
         if (typeof checkAuth !== 'undefined' && !checkAuth()) {
             console.log('Authentication check failed');
             return;
         }
-        
+
         await initializeUI();
     } catch (error) {
         console.error('Error during financial report page initialization:', error);

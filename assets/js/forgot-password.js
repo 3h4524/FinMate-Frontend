@@ -33,8 +33,8 @@ async function sendResetLink(email) {
     try {
         // Disable button and show loading state
         submitButton.disabled = true;
-        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
-        showNotification('Đang gửi yêu cầu...', 'info');
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        showNotification('Sending request...', 'info');
 
         const response = await fetch('http://localhost:8080/api/v1/auth/forgot-password', {
             method: 'POST',
@@ -42,23 +42,23 @@ async function sendResetLink(email) {
                 'Content-Type': 'application/json'
             },
             credentials: 'include',
-            body: JSON.stringify({ email })
+            body: JSON.stringify({email})
         });
 
         const data = await response.json();
 
         if (data.code === 1000) {
-            showNotification('Liên kết đặt lại mật khẩu đã được gửi đến email của bạn.', 'success');
+            showNotification('Password reset link has been sent to your email.', 'success');
             setTimeout(() => {
-                window.location.href = '../login/index.html';
+                window.location.href = '../login/';
             }, 2000);
         } else {
-            const errorMessage = data.message || 'Không thể gửi liên kết đặt lại mật khẩu.';
+            const errorMessage = data.message || 'Could not send password reset link.';
             showNotification(errorMessage, 'error');
         }
     } catch (error) {
-        console.error('Lỗi khi gửi liên kết đặt lại mật khẩu:', error);
-        showNotification('Có lỗi xảy ra khi gửi liên kết đặt lại mật khẩu!', 'error');
+        console.error('Error sending password reset link:', error);
+        showNotification('An error occurred while sending the reset link!', 'error');
     } finally {
         // Reset button state
         submitButton.disabled = false;
@@ -75,12 +75,12 @@ document.getElementById('forgotForm').addEventListener('submit', function (event
 
     // Validate email
     if (!email) {
-        showNotification('Vui lòng nhập email của bạn.', 'error');
+        showNotification('Please enter your email address.', 'error');
         return;
     }
 
     if (!validateEmail(email)) {
-        showNotification('Vui lòng nhập email hợp lệ.', 'error');
+        showNotification('Please enter a valid email address.', 'error');
         return;
     }
 

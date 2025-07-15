@@ -154,59 +154,57 @@ function setActiveSidebarLink() {
 // Check user role and show/hide admin features
 function checkUserRoleAndShowAdminFeatures() {
     try {
-        const token = localStorage.getItem('token');
-        if (token) {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            const userRole = payload.scope;
-            console.log('User role from token:', userRole);
-
-            if (userRole === 'ADMIN') {
-                // Show admin menu items only
-                const adminMenus = document.querySelectorAll('.admin-menu');
-                adminMenus.forEach(menu => {
-                    menu.classList.remove('hidden');
-                    menu.style.display = 'block';
-                });
-
-                // Hide all user menu items for admin (including container)
-                const userMenuSection = document.querySelector('.user-menu-section');
-                if (userMenuSection) {
-                    userMenuSection.style.display = 'none';
-                }
-
-                const userMenuItems = document.querySelectorAll('.user-menu');
-                userMenuItems.forEach(item => {
-                    item.style.display = 'none';
-                });
-
-                console.log('Admin sidebar loaded - showing only admin features');
-            } else {
-                // Show user menu items only
-                const userMenuSection = document.querySelector('.user-menu-section');
-                if (userMenuSection) {
-                    userMenuSection.style.display = 'block';
-                }
-                
-                const userMenuItems = document.querySelectorAll('.user-menu');
-                userMenuItems.forEach(item => {
-                    item.style.display = 'flex';
-                });
-
-                // Hide admin menu items for regular users
-                const adminMenus = document.querySelectorAll('.admin-menu');
-                adminMenus.forEach(menu => {
-                    menu.classList.add('hidden');
-                    menu.style.display = 'none';
-                });
-
-                console.log('User sidebar loaded - showing only user features');
+        // Ưu tiên lấy userData từ sessionStorage (vì login và xác thực đều lưu ở đây)
+        let userData = sessionStorage.getItem('userData');
+        if (!userData) userData = localStorage.getItem('userData');
+        let userRole = null;
+        if (userData) {
+            try {
+                const user = JSON.parse(userData);
+                userRole = user.role;
+            } catch (e) { userRole = null; }
+        }
+        // Fallback: lấy từ token nếu không có userData
+        if (!userRole) {
+            const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+            if (token) {
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    userRole = payload.scope || payload.role;
+                } catch (e) { userRole = null; }
             }
+        }
+        if (userRole && userRole.toString().toUpperCase() === 'ADMIN') {
+            // Show admin menu items only
+            document.querySelectorAll('.admin-menu').forEach(menu => {
+                menu.classList.remove('hidden');
+                menu.style.display = 'block';
+            });
+            // Hide all user menu items for admin (including container)
+            const userMenuSection = document.querySelector('.user-menu-section');
+            if (userMenuSection) userMenuSection.style.display = 'none';
+            document.querySelectorAll('.user-menu').forEach(item => {
+                item.style.display = 'none';
+            });
+            console.log('Admin sidebar loaded - showing only admin features');
+        } else {
+            // Show user menu items only
+            const userMenuSection = document.querySelector('.user-menu-section');
+            if (userMenuSection) userMenuSection.style.display = 'block';
+            document.querySelectorAll('.user-menu').forEach(item => {
+                item.style.display = 'flex';
+            });
+            // Hide admin menu items for regular users
+            document.querySelectorAll('.admin-menu').forEach(menu => {
+                menu.classList.add('hidden');
+                menu.style.display = 'none';
+            });
+            console.log('User sidebar loaded - showing only user features');
         }
     } catch (error) {
         console.error('Error checking user role:', error);
         // Fallback: hide admin menus if error
-        const adminMenus = document.querySelectorAll('.admin-menu');
-        adminMenus.forEach(menu => {
+        document.querySelectorAll('.admin-menu').forEach(menu => {
             menu.classList.add('hidden');
         });
     }

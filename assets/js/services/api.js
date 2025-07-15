@@ -9,21 +9,21 @@ function validateToken(token) {
         const isValid = tokenData.exp * 1000 > Date.now();
         if (!isValid) {
             console.log('Token expired');
-            localStorage.removeItem('token');
-            localStorage.removeItem('userData');
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('userData');
         }
         return isValid;
     } catch (error) {
         console.error('Token validation error:', error);
-        localStorage.removeItem('token');
-        localStorage.removeItem('userData');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('userData');
         return false;
     }
 }
 
 // Helper function to get valid token
 function getValidToken() {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (!token) {
         console.log('No token found');
         return null;
@@ -41,9 +41,14 @@ async function handleResponse(response) {
     
     if (response.status === 401) {
         console.log('Unauthorized response');
-        localStorage.removeItem('token');
-        localStorage.removeItem('userData');
-        window.location.href = '/pages/login/index.html';
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('userData');
+        // Chỉ redirect về login nếu KHÔNG phải trang register, login, forgot-password, reset-password, verify-email
+        const path = window.location.pathname;
+        const isAuthPage = /\/pages\/(login|register|forgot-password|reset-password|verify-email)(\/|\/index\.html)?$/.test(path);
+        if (!isAuthPage) {
+            window.location.href = '/pages/login/';
+        }
         return null;
     }
     
@@ -85,8 +90,18 @@ const apiService = {
             }
 
             // Store token and user data
-            localStorage.setItem('token', data.result.token);
-            localStorage.setItem('userData', JSON.stringify(data.result));
+            sessionStorage.setItem('token', data.result.token);
+            sessionStorage.setItem('loginTimestamp', Date.now().toString());
+
+            // Store user data from response
+            const userData = {
+                email: data.result.email,
+                name: data.result.name,
+                role: data.result.role
+            };
+
+            sessionStorage.setItem('userData', JSON.stringify(userData));
+            console.log('Stored user data:', userData);
 
             return data.result;
         } catch (error) {
@@ -111,15 +126,15 @@ const apiService = {
             const data = await response.json();
             if (!response.ok || !data.success) {
                 console.log('Token verification failed:', data.message);
-                localStorage.removeItem('token');
-                localStorage.removeItem('userData');
+                sessionStorage.removeItem('token');
+                sessionStorage.removeItem('userData');
                 return false;
             }
             return true;
         } catch (error) {
             console.error('Token verification error:', error);
-            localStorage.removeItem('token');
-            localStorage.removeItem('userData');
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('userData');
             return false;
         }
     },
@@ -139,9 +154,9 @@ const apiService = {
         } catch (error) {
             console.error('Logout error:', error);
         } finally {
-            localStorage.removeItem('token');
-            localStorage.removeItem('userData');
-            window.location.href = '/pages/login/index.html';
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('userData');
+            window.location.href = '/pages/login/';
         }
     },
 
@@ -241,7 +256,7 @@ const apiService = {
     },
 
     async updateUserProfile(userData) {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         const response = await fetch(`${API_BASE_URL}/users/profile`, {
             method: 'PUT',
             headers: {
@@ -288,54 +303,7 @@ const apiService = {
             console.error('Get transactions error:', error);
             throw error;
         }
-    },
-
-    async createTransaction(transactionData) {
-        const token = getValidToken();
-        if (!token) return null;
-
-        const response = await fetch(`${API_BASE_URL}/transactions`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(transactionData),
-            credentials: 'include'
-        });
-        return handleResponse(response);
-    },
-
-    async updateTransaction(id, transactionData) {
-        const token = getValidToken();
-        if (!token) return null;
-
-        const response = await fetch(`${API_BASE_URL}/transactions/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(transactionData),
-            credentials: 'include'
-        });
-        return handleResponse(response);
-    },
-
-    async deleteTransaction(id) {
-        const token = getValidToken();
-        if (!token) return null;
-
-        const response = await fetch(`${API_BASE_URL}/transactions/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include'
-        });
-        return handleResponse(response);
     }
 };
 
-export default apiService; 
+export default apiService;

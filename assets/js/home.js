@@ -1,7 +1,7 @@
 // Home page JavaScript - Dashboard functionality only
 
 // Load page components and initialize dashboard
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initializePageComponents();
     loadDashboardData();
     setupTransactionForm();
@@ -60,7 +60,7 @@ function loadDashboardData() {
 
 async function loadWalletData() {
     try {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         if (!token) {
             console.error('No token found');
             return;
@@ -88,7 +88,7 @@ async function loadWalletData() {
 
 async function loadRecentTransactions() {
     try {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         if (!token) {
             console.error('No token found');
             return;
@@ -118,12 +118,12 @@ function updateRecentTransactionsDisplay(transactions) {
     }
 
     container.innerHTML = '';
-    
+
     transactions.forEach(transaction => {
         const emoji = getCategoryEmoji(transaction.categoryId);
         const transactionElement = document.createElement('div');
         transactionElement.className = 'flex items-center space-x-3 lg:space-x-4 p-3 lg:p-4 rounded-2xl hover:bg-gray-50 transition-colors border border-gray-100';
-        
+
         transactionElement.innerHTML = `
             <div class="w-12 h-12 lg:w-14 lg:h-14 bg-gray-100 rounded-full flex items-center justify-center text-lg lg:text-xl">
                 ${emoji}
@@ -131,13 +131,13 @@ function updateRecentTransactionsDisplay(transactions) {
             <div class="flex-1">
                 <p class="font-semibold text-gray-800 text-base lg:text-lg">${transaction.description}</p>
                 <p class="text-gray-500 text-sm lg:text-base">${transaction.categoryName || 'General'}</p>
-                <p class="text-xs lg:text-sm text-gray-400">${formatDate(transaction.date)}</p>
+                <p class="text-xs lg:text-sm text-gray-400">${formatDate_ddMMyyyy(transaction.date)}</p>
             </div>
             <p class="font-bold text-lg lg:text-xl ${transaction.amount >= 0 ? 'text-green-600' : 'text-red-600'}">
                 ${transaction.amount >= 0 ? '+' : ''}${formatCurrency(transaction.amount)}
             </p>
         `;
-        
+
         container.appendChild(transactionElement);
     });
 }
@@ -173,12 +173,12 @@ function calculateSummary() {
     const totalIncomeElement = document.getElementById('totalIncome');
     const totalExpensesElement = document.getElementById('totalExpenses');
     const summarySavingsElement = document.getElementById('summarySavings');
-    
+
     if (totalIncomeElement && totalExpensesElement && summarySavingsElement) {
-        const income = parseFloat(totalIncomeElement.textContent.replace(/[^0-9.-]+/g,""));
-        const expenses = parseFloat(totalExpensesElement.textContent.replace(/[^0-9.-]+/g,""));
+        const income = parseFloat(totalIncomeElement.textContent.replace(/[^0-9.-]+/g, ""));
+        const expenses = parseFloat(totalExpensesElement.textContent.replace(/[^0-9.-]+/g, ""));
         const savings = income - expenses;
-        
+
         summarySavingsElement.textContent = formatCurrency(savings);
     }
 }
@@ -228,7 +228,7 @@ async function handleTransactionSubmit(e) {
     }
 
     try {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         if (!token) {
             alert('Please login first');
             return;
@@ -276,32 +276,16 @@ function getCategoryIdByName(categoryName) {
     return categoryMap[categoryName] || 1;
 }
 
-// Utility Functions
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD'
-    }).format(amount);
-}
-
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
-}
 
 // Modal Event Handlers
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     const modal = document.getElementById('transactionModal');
     if (e.target === modal) {
         closeTransactionModal();
     }
 });
 
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
         const modal = document.getElementById('transactionModal');
         if (modal && !modal.classList.contains('hidden')) {

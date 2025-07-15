@@ -1,6 +1,6 @@
 async function addGoalContribution(contribution) {
     try {
-        const response = await apiRequest(`${API_BASE_URL}/contributions/${contribution.goalId}`, {
+        const response = await apiRequest(`${API_BASE_URL}/contributions`, {
             method: 'POST',
             body: JSON.stringify(contribution)
         });

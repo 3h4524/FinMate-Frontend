@@ -1,18 +1,3 @@
-function togglePassword() {
-    const passwordInput = document.getElementById('loginPassword');
-    const toggleIcon = document.querySelector('.password-toggle');
-
-    if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        toggleIcon.classList.remove('fa-eye-slash');
-        toggleIcon.classList.add('fa-eye');
-    } else {
-        passwordInput.type = 'password';
-        toggleIcon.classList.remove('fa-eye');
-        toggleIcon.classList.add('fa-eye-slash');
-    }
-}
-
 // Add notification functions
 function showNotification(message, type = 'info') {
     const notification = document.getElementById('notification');
@@ -37,11 +22,11 @@ function hideNotification() {
     notification.classList.remove('show');
 }
 
-// Xử lý đăng nhập
+// Handle login
 document.getElementById('loginForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
+    const password = document.getElementById('password').value;
 
     document.getElementById('emailError').style.display = 'none';
     document.getElementById('passwordError').style.display = 'none';
@@ -52,11 +37,14 @@ document.getElementById('loginForm').addEventListener('submit', async function (
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({email, password})
         });
 
         const data = await response.json();
         console.log('Login response:', data);
+        console.log('isVerified:', data.result?.isVerified);
+        console.log('is2FAEnabled:', data.result?.is2FAEnabled);
+        console.log('role:', data.result?.role);
 
         if (data.code === 1000 && data.result) {
             // Check if user is banned
@@ -65,31 +53,41 @@ document.getElementById('loginForm').addEventListener('submit', async function (
                 return;
             }
 
-            if (!data.result.verified) {
-                if (data.result.role === 'ADMIN') {
-                    showNotification('You must verify before login. Redirecting to verfication page...', 'error');
-
+            // Check email verification
+            if (!data.result.isVerified) {
+                // Only require verification for admin and 2FA users
+                if (data.result.role === 'ADMIN' || data.result.is2FAEnabled) {
+                    if (data.result.role === 'ADMIN') {
+                        showNotification('Admin account requires email verification. Redirecting to verification page...', 'error');
+                    } else {
+                        showNotification('Your account requires email verification. Redirecting to verification page...', 'error');
+                    }
+                    setTimeout(() => {
+                        window.location.href = `../verify-email/index.html?email=${email}`;
+                    }, 1000);
+                    return;
                 } else {
-                    showNotification('Your account is not verified. Redirecting to verfication page...', 'error');
-
+                    // Regular users without 2FA can proceed
+                    console.log('Regular user without 2FA, proceeding to login despite not verified');
                 }
-                setTimeout(() => {
-                    window.location.href = `../verify-email/index.html?email=${email}`;
-                }, 1000);
-                return;
             }
 
-            // Store user data
-            localStorage.setItem('token', data.result.token);
+            // If verified or regular user without 2FA, proceed with login
+            console.log('User can proceed to login');
+
+            // Store user data in sessionStorage instead of localStorage
+            sessionStorage.setItem('token', data.result.token);
+            sessionStorage.setItem('loginTimestamp', Date.now().toString());
 
             // Store user data from response
             const userData = {
                 email: data.result.email,
                 name: data.result.name,
-                role: data.result.role
+                role: data.result.role,
+                is2FAEnabled: data.result.is2FAEnabled || false
             };
 
-            localStorage.setItem('userData', JSON.stringify(userData));
+            sessionStorage.setItem('userData', JSON.stringify(userData));
             console.log('Stored user data:', userData);
 
             showNotification('Login successful! Redirecting...', 'success');
@@ -102,11 +100,26 @@ document.getElementById('loginForm').addEventListener('submit', async function (
                     window.location.href = '../home/index.html';
                 }
             }, 1000);
+        } else if (data.code === 1003) {
+            showNotification('Please verify your email before logging in.', 'error');
+            setTimeout(() => {
+                window.location.href = `../verify-email/index.html?email=${email}`;
+            }, 1000);
         } else {
             showNotification(data.message || 'Login failed!', 'error');
         }
     } catch (error) {
         console.error('Login error:', error);
-        showNotification('Có lỗi xảy ra khi đăng nhập', 'error');
+        showNotification('An error occurred during login. Please try again.', 'error');
     }
+});
+
+// Event delegation
+document.addEventListener('DOMContentLoaded', () => {
+    const rightPanel = document.querySelector('.right-panel');
+    rightPanel.addEventListener('click', (event) => {
+        if (event.target.matches('[data-action="toggle-password"]')) {
+            togglePassword();
+        }
+    });
 });

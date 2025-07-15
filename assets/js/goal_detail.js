@@ -106,7 +106,6 @@ const urlParams = new URLSearchParams(window.location.search);
 const goalId = urlParams.get('goalId');
 
 
-
 function renderError() {
     errorMessage.classList.remove('hidden');
     errorText.textContent = error;
@@ -218,7 +217,7 @@ async function renderChart() {
         },
         options: {
             scales: {
-                y: { beginAtZero: true }
+                y: {beginAtZero: true}
             }
         }
     });

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Feature Management - FinMate</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'indigo-50': '#eef2ff',
+                        'indigo-100': '#e0e7ff',
+                        'indigo-500': '#6366f1',
+                        'indigo-600': '#4f46e5',
+                        'purple-50': '#faf5ff',
+                        'purple-100': '#f3e8ff',
+                        'purple-500': '#a855f7',
+                        'purple-600': '#9333ea'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="/assets/css/global-layout.css" rel="stylesheet">
+    <link href="/assets/css/feature.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="/assets/js/header.js" defer></script>
+    <script src="/assets/js/autho_helper.js" defer></script>
+    <script src="/assets/js/helper_functions.js" defer></script>
+    <script src="/assets/js/sidebar.js" defer></script>
+    <script src="/assets/js/feature.js" defer></script>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-50 via-white to-purple-50 min-h-screen">
+    <div id="header-container"></div>
+    <div id="sidebar-container"></div>
+    <div class="main-content" id="mainContent">
+        <div class="responsive-container mx-auto py-6 lg:py-8">
+            <!-- Header Section -->
+            <div class="bg-white rounded-3xl shadow-2xl responsive-padding mb-6 lg:mb-8 border border-indigo-100">
+                <div class="header-content">
+                    <div class="flex-1">
+                        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2 text-responsive">
+                            Feature Management
+                        </h1>
+                        <p class="text-gray-600 text-base lg:text-lg text-responsive">Manage system features and configurations</p>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-2xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 text-sm sm:text-base"
+                                id="createBtn">
+                            <i class="fas fa-plus"></i>
+                            <span>Create Feature</span>
+                        </button>
+                        <button class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-2xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 text-sm sm:text-base"
+                                id="refreshBtn">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>Refresh</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Overview -->
+            <div class="mb-6 lg:mb-8">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 lg:mb-6 text-responsive">Feature Statistics</h2>
+                <div class="stats-grid">
+                    <!-- Total Features -->
+                    <div class="bg-white rounded-3xl shadow-lg p-4 sm:p-6 border border-blue-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div class="min-w-0 flex-1">
+                                <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 truncate" id="totalFeatures">0</h3>
+                                <p class="text-gray-600 mt-1 text-sm sm:text-base">Total Features</p>
+                                <div class="text-sm font-medium text-blue-600 mt-1">System wide</div>
+                            </div>
+                            <div class="relative flex-shrink-0"
+                                 style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+                                <i class="fas fa-cogs text-white"
+                                   style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 16px;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Features -->
+                    <div class="bg-white rounded-3xl shadow-lg p-4 sm:p-6 border border-green-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div class="flex items-center justify-between">
+                            <div class="min-w-0 flex-1">
+                                <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 truncate" id="activeFeatures">0</h3>
+                                <p class="text-gray-600 mt-1 text-sm sm:text-base">Active Features</p>
+                                <div class="text-sm font-medium text-green-600 mt-1">Currently enabled</div>
+                            </div>
+                            <div class="relative flex-shrink-0"
+                                 style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                <i class="fas fa-toggle-on text-white"
+                                   style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 16px;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="bg-white rounded-3xl shadow-lg border border-indigo-100 mb-6">
+                <div class="p-4 sm:p-6 border-b border-gray-200">
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center space-x-2">
+                        <span class="text-xl sm:text-2xl">🔍</span>
+                        <span>Filter Features</span>
+                    </h2>
+                </div>
+                <div class="p-4 sm:p-6">
+                    <div class="filter-section">
+                        <div>
+                            <label for="codeFilter" class="block text-sm font-medium text-gray-700 mb-2">Feature Code</label>
+                            <input type="text" id="codeFilter" placeholder="E.g., FEATURE01"
+                                   class="w-full p-3 rounded-2xl border border-gray-200 bg-white focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition shadow-sm"/>
+                        </div>
+                        <div>
+                            <label for="isActiveFilter" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                            <select id="isActiveFilter"
+                                    class="w-full p-3 rounded-2xl border border-gray-200 bg-white focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition shadow-sm">
+                                <option value="">All</option>
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="nameFilter" class="block text-sm font-medium text-gray-700 mb-2">Feature Name</label>
+                            <input type="text" id="nameFilter" placeholder="E.g., Payment Gateway"
+                                   class="w-full p-3 rounded-2xl border border-gray-200 bg-white focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition shadow-sm"/>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button class="bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white px-6 py-2 rounded-2xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
+                                id="filterBtn">
+                            <i class="fas fa-filter"></i>
+                            <span>Apply Filters</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Table Section -->
+            <div class="bg-white rounded-3xl shadow-lg border border-indigo-100">
+                <div class="p-4 sm:p-6 border-b border-gray-200">
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center space-x-2">
+                        <span class="text-xl sm:text-2xl">⚙️</span>
+                        <span>Feature Entries</span>
+                    </h2>
+                </div>
+                <div class="p-4 sm:p-6">
+                    <div class="table-container">
+                        <table id="featuresTable" class="w-full">
+                            <thead class="bg-gray-50 rounded-xl">
+                            <tr>
+                                <th class="p-4 text-left font-semibold text-gray-700 rounded-tl-xl">#</th>
+                                <th class="p-4 text-left font-semibold text-gray-700">Code</th>
+                                <th class="p-4 text-left font-semibold text-gray-700">Name</th>
+                                <th class="p-4 text-left font-semibold text-gray-700">Status</th>
+                                <th class="p-4 text-left font-semibold text-gray-700 rounded-tr-xl">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="featuresBody" class="divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="pagination-container mt-6" id="pagination">
+                        <div class="flex items-center space-x-2">
+                            <button class="px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                    id="prevBtn">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div id="pageNumbers" class="flex items-center space-x-1"></div>
+                            <button class="px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                    id="nextBtn">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create/Edit Feature Modal -->
+        <div id="featureModal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-50">
+            <div class="modal-content bg-white rounded-3xl shadow-2xl p-6 sm:p-8 relative">
+                <button onclick="closeFeatureModal()"
+                        class="absolute top-4 right-4 text-2xl text-gray-400 hover:text-gray-600 transition">×
+                </button>
+                <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <i class="fas fa-cogs text-indigo-600"></i> 
+                    <span id="modalTitle">Create Feature</span>
+                </h3>
+                <form id="featureForm">
+                    <div class="space-y-5">
+                        <!-- Row 1: Feature Code and Name -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            <div>
+                                <label for="code" class="block text-sm font-medium text-gray-700 mb-2">Feature Code</label>
+                                <input type="text" id="code" name="code" maxlength="50" placeholder="e.g., FEATURE01"
+                                       class="w-full p-3 rounded-2xl border border-gray-200 bg-white focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition"/>
+                            </div>
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Feature Name</label>
+                                <input type="text" id="name" name="name" maxlength="255" placeholder="e.g., Payment Gateway"
+                                       class="w-full p-3 rounded-2xl border border-gray-200 bg-white focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition"/>
+                            </div>
+                        </div>
+                        
+                        <!-- Row 2: Description -->
+                        <div>
+                            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                            <textarea id="description" name="description" maxlength="255" rows="4" placeholder="Enter feature description..."
+                                      class="w-full p-3 rounded-2xl border border-gray-200 bg-white focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition resize-none"></textarea>
+                        </div>
+                        
+                        <!-- Row 3: Status -->
+                        <div class="flex items-center bg-gray-50 p-4 rounded-2xl">
+                            <input type="checkbox" id="isActive" name="isActive"
+                                   class="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"/>
+                            <label for="isActive" class="ml-3 block text-sm font-medium text-gray-700">
+                                <span class="text-gray-900">Active Feature</span>
+                                <p class="text-xs text-gray-500 mt-1">Enable this feature for system use</p>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mt-8 flex flex-col sm:flex-row justify-end gap-3">
+                        <button type="button"
+                                class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-8 py-3 rounded-2xl font-medium transition-all duration-200 hover:scale-105 shadow-sm hover:shadow-md flex items-center justify-center space-x-2"
+                                onclick="closeFeatureModal()">
+                            <i class="fas fa-times"></i>
+                            <span>Cancel</span>
+                        </button>
+                        <button type="submit"
+                                class="bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white px-8 py-3 rounded-2xl font-medium transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2">
+                            <i class="fas fa-save"></i>
+                            <span>Save</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Feature Details Modal -->
+        <div id="featureDetailModal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-50">
+            <div class="modal-content bg-white rounded-3xl shadow-2xl p-6 sm:p-8 relative">
+                <button onclick="closeFeatureDetailModal()"
+                        class="absolute top-4 right-4 text-2xl text-gray-400 hover:text-gray-600 transition">×
+                </button>
+                <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <i class="fas fa-info-circle text-indigo-600"></i> 
+                    Feature Details
+                </h3>
+                <div id="featureDetailsContent" class="space-y-4"></div>
+                <div class="mt-6 flex justify-end">
+                    <button class="bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white px-6 py-2 rounded-2xl font-medium transition"
+                            onclick="closeFeatureDetailModal()">Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2 w-80 max-w-full"></div>
+    </div>
+</body>
+
+</html>

@@ -1,8 +1,8 @@
-// Subscription Manager JavaScript
 // API Configuration
 const API_BASE_URL = 'http://localhost:8080/api/premium-package';
 const SUBSCRIPTION_API_URL = 'http://localhost:8080/api/subscriptions';
 const FEATURES_API_URL = 'http://localhost:8080/api/features';
+const OFFER_API_URL = 'http://localhost:8080/api/promotional-offer';
 
 // Global variables
 let currentPage = 0;
@@ -10,37 +10,27 @@ let totalPages = 0;
 let currentFilter = 'all';
 let packages = [];
 let allFeatures = [];
+let selectedList = [];
+let offers =[];
+
+const buttonCreatePromotional = document.getElementById("buttonCreatePromotional");
 
 // Initialize page when DOM is loaded
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', async function () {
     try {
         console.log('Initializing subscription manager page...');
-        
+
         // Check authentication first
         if (!isLoggedIn()) {
             redirectToLogin();
             return;
         }
 
-        // Load sidebar and header first to avoid flash
-        if (typeof loadSideBarSimple === 'function') {
-            await loadSideBarSimple();
-        } else {
-            console.error('loadSideBarSimple function not found');
-        }
-        
-        if (typeof loadHeader === 'function') {
-            await loadHeader();
-        } else {
-            console.error('loadHeader function not found');
-        }
-        
-        // Show main content after loading sidebar/header
         const mainApp = document.getElementById('main-app');
         if (mainApp) {
             mainApp.style.display = 'flex';
         }
-        
+
         // Hide page loader if exists
         const pageLoader = document.getElementById('page-loader');
         if (pageLoader) {
@@ -49,13 +39,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         // Setup functionality
         setupEventListeners();
-        
+
         // Load data
         await initializeSubscriptionManager();
-        
-        // Setup datetime updates
-        updateDateTime();
-        setInterval(updateDateTime, 60000);
 
         console.log('Subscription manager page initialized successfully');
     } catch (error) {
@@ -81,30 +67,19 @@ async function initializeSubscriptionManager() {
 
 // Setup event listeners
 function setupEventListeners() {
-    // Search functionality
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        let searchTimeout;
-        searchInput.addEventListener('input', function(e) {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                searchPackages(e.target.value);
-            }, 500);
-        });
-    }
 
     // Filter buttons
     document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             // Update active state
             document.querySelectorAll('.filter-btn').forEach(b => {
                 b.classList.remove('active', 'text-indigo-600', 'bg-indigo-50');
                 b.classList.add('text-gray-600', 'bg-gray-50');
             });
-            
+
             this.classList.add('active', 'text-indigo-600', 'bg-indigo-50');
             this.classList.remove('text-gray-600', 'bg-gray-50');
-            
+
             // Apply filter
             currentFilter = this.dataset.filter;
             currentPage = 0;
@@ -124,10 +99,15 @@ function setupEventListeners() {
         updateForm.addEventListener('submit', handleUpdatePackage);
     }
 
+    const createOfferForm = document.getElementById('createOfferForm');
+    if (createOfferForm) {
+        createOfferForm.addEventListener('submit', handleCreateOffer);
+    }
+
     // Pagination mobile buttons
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
-    
+
     if (prevBtn) {
         prevBtn.addEventListener('click', () => {
             if (currentPage > 0) {
@@ -143,13 +123,14 @@ function setupEventListeners() {
             }
         });
     }
+    setupCheckBoxCreateOffer();
 }
-
-// This function will be replaced by the enhanced version below
 
 // Load packages
 async function loadPackages(page = 0, size = 4) {
-    hideMainContent();
+    if (buttonCreatePromotional) {
+        if (selectedList.length === 0) buttonCreatePromotional.classList.add("hidden");
+    }
     try {
         const response = await apiRequest(
             `${API_BASE_URL}?page=${page}&size=${size}&sortBy=price&sortDirection=DESC`
@@ -164,23 +145,22 @@ async function loadPackages(page = 0, size = 4) {
             packages = data.result.content || [];
             currentPage = data.result.number || 0;
             totalPages = data.result.totalPages || 0;
-            
+
             // Apply current filter to packages
             applyCurrentFilter();
+            setupCheckBoxCreateOffer();
         }
-        showMainContent();
     } catch (error) {
         console.error('Error loading packages:', error);
         showErrorMessage('Failed to load packages');
         renderEmptyPackages();
-        showMainContent();
     }
 }
 
 // Apply current filter to packages
 function applyCurrentFilter() {
     let filteredPackages = packages;
-    
+
     // Apply filter based on currentFilter
     if (currentFilter !== 'all') {
         filteredPackages = packages.filter(pkg => {
@@ -196,7 +176,7 @@ function applyCurrentFilter() {
             }
         });
     }
-    
+
     renderPackages(filteredPackages);
     renderPagination();
 }
@@ -211,7 +191,9 @@ function renderPackages(packagesData) {
         return;
     }
 
-    container.innerHTML = packagesData.map(pkg => `
+    container.innerHTML = packagesData.map(pkg => {
+        const isSelected = selectedList.some(item => item.id === pkg.id);
+        return `
         <div class="bg-white border border-gray-200 rounded-3xl p-6 hover:shadow-lg transition-all duration-300 hover:scale-105">
             <div class="flex items-start justify-between mb-4">
                 <div class="flex items-center space-x-4">
@@ -223,24 +205,32 @@ function renderPackages(packagesData) {
                         <p class="text-sm text-gray-500 uppercase font-medium">${getDurationText(pkg.durationValue, pkg.durationType)}</p>
                     </div>
                 </div>
-                <div class="flex space-x-2">
-                    <button onclick="openUpdateModal(${pkg.id})" class="w-8 h-8 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg flex items-center justify-center transition-colors">
+                <div class="flex space-x-2 items-center">
+                    ${isSelected
+            ? `<button type="button" class="w-8 h-8 bg-yellow-100 hover:bg-gray-200 text-yellow-600 rounded-lg flex items-center justify-center transition-colors" onclick="selectOfferPackage(${pkg.id})" title="Bỏ chọn tạo ưu đãi">
+                            <i class=\"fas fa-bolt\"></i>
+                        </button>`
+            : `<button type="button" class="w-8 h-8 bg-gray-100 hover:bg-yellow-100 text-gray-400 hover:text-yellow-600 rounded-lg flex items-center justify-center transition-colors" onclick="selectOfferPackage(${pkg.id})" title="Chọn tạo ưu đãi">
+                            <i class=\"fas fa-bolt\"></i>
+                        </button>`
+        }
+                    <button id="button-edit-premium-${pkg.id}" onclick="openUpdateModal(${pkg.id})" class="w-8 h-8 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg flex items-center justify-center transition-colors">
                         <i class="fas fa-edit text-sm"></i>
                     </button>
-                    <button onclick="deletePackage(${pkg.id})" class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-colors">
+                    <button id="button-delete-premium-${pkg.id}" onclick="deletePackage(${pkg.id})" class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-colors">
                         <i class="fas fa-trash text-sm"></i>
                     </button>
                 </div>
             </div>
             
             <div class="mb-4">
-                <div class="text-3xl font-bold text-gray-900">${formatPrice(pkg.price)}</div>
+                <div class="text-3xl font-bold text-gray-900">${formatCurrency(pkg.price)}</div>
                 <div class="text-sm text-gray-500">per ${pkg.durationValue} ${pkg.durationType.toLowerCase()}</div>
             </div>
             
             <div class="grid grid-cols-2 gap-4 mb-4 text-center">
                 <div>
-                    <div class="text-xl font-bold text-gray-900">12</div>
+                    <div class="text-xl font-bold text-gray-900">${pkg.subscribers || 0}</div>
                     <div class="text-xs text-gray-500 uppercase">Subscribers</div>
                 </div>
                 <div>
@@ -253,7 +243,7 @@ function renderPackages(packagesData) {
                 <h4 class="text-sm font-medium text-gray-700">Features:</h4>
                 <div class="flex flex-wrap gap-1">
                     ${(pkg.features || []).slice(0, 3).map(feature => `
-                        <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-lg">${feature.name}</span>
+                        <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-lg">${getFeatureName(feature)}</span>
                     `).join('')}
                     ${pkg.features && pkg.features.length > 3 ? `
                         <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-lg">+${pkg.features.length - 3} more</span>
@@ -261,8 +251,16 @@ function renderPackages(packagesData) {
                 </div>
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
+
+
+// Map feature codes to feature names for display
+const getFeatureName = (featureCode) => {
+    const feature = allFeatures.find(f => f.featureCode === featureCode);
+    return feature ? feature.featureName : featureCode;
+};
 
 // Render empty state
 function renderEmptyPackages() {
@@ -285,31 +283,26 @@ function renderEmptyPackages() {
 
 // Load recent subscriptions
 async function loadRecentSubscriptions() {
-    hideMainContent();
     try {
-        const response = await apiRequest(`${SUBSCRIPTION_API_URL}/recent?page=0&size=5&sortBy=createdAt&sortDirection=DESC`);
-        
-        if (!response || !response.ok) {
+        const response = await apiRequest(`${SUBSCRIPTION_API_URL}/recent?page=0&size=10&sortBy=createdAt&sortDirection=DESC`);
+        if (!response.ok) {
             throw new Error('Failed to fetch recent subscriptions');
         }
-
         const data = await response.json();
-        if (data.result && data.result.content) {
+        if (data.code === 1000 && data.result.content.length > 0) {
             renderRecentSubscriptions(data.result.content);
         } else {
             renderEmptySubscriptions();
         }
-        showMainContent();
     } catch (error) {
         console.error('Error loading recent subscriptions:', error);
         renderEmptySubscriptions();
-        showMainContent();
     }
 }
 
 // Render recent subscriptions
 function renderRecentSubscriptions(subscriptions) {
-    const container = document.getElementById('recentSubscriptions');
+    const container = document.getElementById('recentSubscriptionsContent');
     if (!container) return;
 
     if (!subscriptions || subscriptions.length === 0) {
@@ -329,7 +322,7 @@ function renderRecentSubscriptions(subscriptions) {
                         <p class="text-xs text-gray-500">${sub.packageName || 'Unknown Package'}</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-sm font-medium text-green-600">${formatPrice(sub.amount || 0)}</p>
+                        <p class="text-sm font-medium text-green-600">${formatCurrency(sub.amount || 0)}</p>
                         <p class="text-xs text-gray-500">${formatTimeAgo(sub.createdAt)}</p>
                     </div>
                 </div>
@@ -340,7 +333,7 @@ function renderRecentSubscriptions(subscriptions) {
 
 // Render empty subscriptions
 function renderEmptySubscriptions() {
-    const container = document.getElementById('recentSubscriptions');
+    const container = document.getElementById('recentSubscriptionsContent');
     if (!container) return;
 
     container.innerHTML = `
@@ -355,7 +348,6 @@ function renderEmptySubscriptions() {
 
 // Load features for modals
 async function loadFeatures() {
-    hideMainContent();
     try {
         const response = await apiRequest(FEATURES_API_URL);
         if (response && response.ok) {
@@ -363,11 +355,9 @@ async function loadFeatures() {
             allFeatures = data.result || [];
             renderFeaturesInModals();
         }
-        showMainContent();
     } catch (error) {
         console.error('Error loading features:', error);
         allFeatures = [];
-        showMainContent();
     }
 }
 
@@ -375,11 +365,11 @@ async function loadFeatures() {
 function renderFeaturesInModals() {
     const createContainer = document.getElementById('createFeatures');
     const updateContainer = document.getElementById('updateFeatures');
-    
+
     const featuresHTML = allFeatures.map(feature => `
-        <div class="feature-item flex items-center space-x-2 p-2 bg-white rounded-xl hover:bg-indigo-50 cursor-pointer transition-colors" data-feature-id="${feature.id}">
-            <input type="checkbox" id="feature-${feature.id}" class="rounded text-indigo-600 focus:ring-indigo-500">
-            <label for="feature-${feature.id}" class="text-sm text-gray-700 cursor-pointer">${feature.name}</label>
+        <div class="feature-item flex items-center space-x-2 p-2 bg-white rounded-xl hover:bg-indigo-50 cursor-pointer transition-colors" data-feature-id="${feature.featureCode}">
+            <input type="checkbox" id="feature-${feature.featureCode}" class="rounded text-indigo-600 focus:ring-indigo-500">
+            <label for="feature-${feature.featureCode}" class="text-sm text-gray-700 cursor-pointer">${feature.featureName}</label>
         </div>
     `).join('');
 
@@ -395,16 +385,16 @@ function renderFeaturesInModals() {
 }
 
 // Setup feature selection
-function setupFeatureSelection(container, hiddenInputId) {
+function setupFeatureSelection(container, hiddenInputString) {
     const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-    const hiddenInput = document.getElementById(hiddenInputId);
+    const hiddenInput = document.getElementById(hiddenInputString);
 
     checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
+        checkbox.addEventListener('change', function () {
             const selectedFeatures = Array.from(checkboxes)
                 .filter(cb => cb.checked)
                 .map(cb => cb.id.split('-').pop());
-            
+
             if (hiddenInput) {
                 hiddenInput.value = selectedFeatures.join(',');
             }
@@ -444,11 +434,10 @@ function renderPagination() {
         const pages = [];
         for (let i = 0; i < totalPages; i++) {
             pages.push(`
-                <button onclick="changePage(${i})" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                    i === currentPage 
-                        ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600' 
-                        : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                }">
+                <button onclick="changePage(${i})" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium ${i === currentPage
+                ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
+                : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+            }">
                     ${i + 1}
                 </button>
             `);
@@ -465,8 +454,6 @@ function changePage(page) {
     }
 }
 
-// This function will be replaced by the enhanced version below
-
 // Modal functions
 function openNewPackageModal() {
     const modal = document.getElementById('createPackageModal');
@@ -475,11 +462,7 @@ function openNewPackageModal() {
         // Reset form
         const form = document.getElementById('createPackageForm');
         if (form) form.reset();
-        
-        // Clear selected features
-        const hiddenInput = document.getElementById('createSelectedFeatures');
-        if (hiddenInput) hiddenInput.value = '';
-        
+
         // Uncheck all features
         const checkboxes = modal.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(cb => cb.checked = false);
@@ -497,7 +480,7 @@ function openUpdateModal(packageId) {
     const modal = document.getElementById('updatePackageModal');
     if (modal) {
         modal.classList.remove('hidden');
-        
+
         // Find package data
         const pkg = packages.find(p => p.id === packageId);
         if (pkg) {
@@ -508,18 +491,20 @@ function openUpdateModal(packageId) {
             document.getElementById('updateDurationValue').value = pkg.durationValue;
             document.getElementById('updateDurationType').value = pkg.durationType;
             document.getElementById('updateIsActive').value = pkg.isActive.toString();
-            
+
             // Set selected features
-            const featureIds = (pkg.features || []).map(f => f.id);
+            const featureCodes = (pkg.features || []);
+
             const hiddenInput = document.getElementById('updateSelectedFeatures');
-            if (hiddenInput) hiddenInput.value = featureIds.join(',');
-            
+            if (hiddenInput) hiddenInput.value = featureCodes.join(',');
+
             // Check corresponding checkboxes
             const checkboxes = modal.querySelectorAll('input[type="checkbox"]');
             checkboxes.forEach(cb => {
-                const featureId = parseInt(cb.id.split('-').pop());
-                cb.checked = featureIds.includes(featureId);
+                const featureCode = cb.id.split('-').pop();
+                cb.checked = featureCodes.includes(featureCode);
             });
+
         }
     }
 }
@@ -531,28 +516,89 @@ function closeUpdateModal() {
     }
 }
 
+function setupCheckBoxCreateOffer() {
+    const checkboxes = document.querySelectorAll('[id^="checkbox-premium-"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            const packageId = this.id.split('-').pop(); // Extract package ID from checkbox ID
+            const pkg = packages.find(p => String(p.id) === packageId); // Find package by ID
+            if (this.checked) {
+                if (!selectedList.some(item => item.id === packageId)) {
+                    selectedList.push({id: packageId, name: pkg ? pkg.name : 'Unknown'});
+                    if (selectedList.length != 0) buttonCreatePromotional.classList.remove("hidden");
+                }
+            } else {
+                selectedList = selectedList.filter(item => item.id !== packageId);
+                if (selectedList.length === 0) buttonCreatePromotional.classList.add("hidden");
+            }
+        });
+    });
+}
+
+// Open modal create offer
+function openCreateOfferModal() {
+    const modal = document.getElementById('createOfferModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        // Reset form
+        const form = document.getElementById('createOfferForm');
+        if (form) form.reset();
+        // Set default values
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        document.getElementById('startDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('expiryDate').value = tomorrow.toISOString().split('T')[0];
+
+
+        // Render selected packages
+        const selectedPackagesContainer = document.getElementById('selectedPackages');
+        if (selectedPackagesContainer) {
+            if (selectedList.length === 0) {
+                selectedPackagesContainer.innerHTML = '<span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-lg">No packages selected</span>';
+            } else {
+                selectedPackagesContainer.innerHTML = selectedList.slice(0, 3).map(item => `
+                    <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-lg">${item.name}</span>
+                `).join('') + (selectedList.length > 3 ? `
+                    <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-lg">+${selectedList.length - 3} more</span>
+                ` : '');
+            }
+        }
+    }
+}
+
+function closeCreateOfferModal() {
+    const modal = document.getElementById('createOfferModal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+
 // Form handlers
 async function handleCreatePackage(e) {
     e.preventDefault();
-    
+
     // Validate form data
     const name = document.getElementById('createName').value.trim();
     const price = parseFloat(document.getElementById('createPrice').value);
     const durationValue = parseInt(document.getElementById('createDurationValue').value);
     const durationType = document.getElementById('createDurationType').value;
-    const featureIds = document.getElementById('createSelectedFeatures').value.split(',').filter(id => id).map(id => parseInt(id));
-    
+    const features = document.getElementById('createSelectedFeatures').value
+        ? document.getElementById('createSelectedFeatures').value.split(',').filter(f => f.trim())
+        : [];
+
     // Basic validation
     if (!name) {
         showErrorMessage('Package name is required');
         return;
     }
-    
+
     if (!price || price <= 0) {
         showErrorMessage('Valid price is required');
         return;
     }
-    
+
     if (!durationValue || durationValue <= 0) {
         showErrorMessage('Valid duration value is required');
         return;
@@ -563,27 +609,25 @@ async function handleCreatePackage(e) {
         price,
         durationValue,
         durationType,
-        featureIds
+        features
     };
+
 
     try {
         // Show loading state
         const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating...';
         submitBtn.disabled = true;
 
         const response = await apiRequest(API_BASE_URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify(formData)
         });
 
         if (response && response.ok) {
             showSuccessMessage('Package created successfully');
             closeNewPackageModal();
+            selectedList = [];
             loadPackages();
             loadStats(); // Refresh stats
         } else {
@@ -605,28 +649,30 @@ async function handleCreatePackage(e) {
 
 async function handleUpdatePackage(e) {
     e.preventDefault();
-    
+
     const packageId = document.getElementById('updatePackageId').value;
-    
+
     // Validate form data
     const name = document.getElementById('updateName').value.trim();
     const price = parseFloat(document.getElementById('updatePrice').value);
     const durationValue = parseInt(document.getElementById('updateDurationValue').value);
     const durationType = document.getElementById('updateDurationType').value;
     const isActive = document.getElementById('updateIsActive').value === 'true';
-    const featureIds = document.getElementById('updateSelectedFeatures').value.split(',').filter(id => id).map(id => parseInt(id));
-    
+    const features = document.getElementById('updateSelectedFeatures').value
+        ? document.getElementById('updateSelectedFeatures').value.split(',').filter(f => f.trim())
+        : [];
+
     // Basic validation
     if (!name) {
         showErrorMessage('Package name is required');
         return;
     }
-    
+
     if (!price || price <= 0) {
         showErrorMessage('Valid price is required');
         return;
     }
-    
+
     if (!durationValue || durationValue <= 0) {
         showErrorMessage('Valid duration value is required');
         return;
@@ -638,8 +684,9 @@ async function handleUpdatePackage(e) {
         durationValue,
         durationType,
         isActive,
-        featureIds
+        features
     };
+
 
     try {
         // Show loading state
@@ -650,15 +697,13 @@ async function handleUpdatePackage(e) {
 
         const response = await apiRequest(`${API_BASE_URL}/${packageId}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify(formData)
         });
 
         if (response && response.ok) {
             showSuccessMessage('Package updated successfully');
             closeUpdateModal();
+            selectedList = [];
             loadPackages();
             loadStats(); // Refresh stats
         } else {
@@ -678,12 +723,91 @@ async function handleUpdatePackage(e) {
     }
 }
 
+// Offer
+async function handleCreateOffer(e) {
+    e.preventDefault();
+
+    // Get form values
+    const discountEvent = document.getElementById('discountEvent').value.trim();
+    const discountPercentage = parseFloat(document.getElementById('discountPercentage').value);
+    const startDate = document.getElementById('startDate').value;
+    const expiryDate = document.getElementById('expiryDate').value;
+
+    // Validation
+    if (!discountEvent) {
+        showErrorMessage('Discount Event is required');
+        return;
+    }
+
+    if (isNaN(discountPercentage) || discountPercentage <= 0) {
+        showErrorMessage('Discount Percentage must be greater than 0');
+        return;
+    }
+
+    const now = new Date();
+    now.setHours(0, 0, 0, 0); // Normalize to start of day
+    const start = new Date(startDate);
+    const expiry = new Date(expiryDate);
+
+    if (isNaN(start.getTime()) || isNaN(expiry.getTime())) {
+        showErrorMessage('Invalid date format');
+        return;
+    }
+
+    if (start < now) {
+        showErrorMessage('Start Date must be today or in the future');
+        return;
+    }
+
+    if (expiry <= now) {
+        showErrorMessage('Expiry Date must be in the future');
+        return;
+    }
+
+    if (start >= expiry) {
+        showErrorMessage('Expiry Date must be on or after Start Date');
+        return;
+    }
+
+
+    // Prepare form data with package IDs from selectedList
+    const formData = {
+        discountEvent: discountEvent,
+        discountPercentage: discountPercentage,
+        startDate: startDate,
+        expiryDate: expiryDate,
+        packageIds: selectedList.map(item => item.id)
+    };
+
+    try {
+        const response = await apiRequest(`${OFFER_API_URL}`, {
+            method: 'POST',
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        if (data.code === 1000) {
+            showSuccessMessage(data.message);
+            closeCreateOfferModal();
+            selectedList = [];
+            loadPackages();
+            loadStats();
+            toggleSection('offers');
+        } else {
+            throw new Error(data.message || "Fail to create an offer.");
+        }
+    } catch (err) {
+        showErrorMessage(err.message);
+    }
+}
+
 // Delete package with confirmation
 async function deletePackage(packageId) {
     // Find package name for better confirmation message
     const pkg = packages.find(p => p.id === packageId);
     const packageName = pkg ? pkg.name : 'this package';
-    
+
     if (!confirm(`Are you sure you want to delete "${packageName}"? This action cannot be undone.`)) {
         return;
     }
@@ -695,6 +819,7 @@ async function deletePackage(packageId) {
 
         if (response && response.ok) {
             showSuccessMessage(`Package "${packageName}" deleted successfully`);
+            selectedList = [];
             loadPackages();
             loadStats(); // Refresh stats
         } else {
@@ -729,15 +854,11 @@ function getPackageIconBackground(name) {
 function getDurationText(value, type) {
     const typeMap = {
         'DAY': value === 1 ? 'day' : 'days',
-        'WEEK': value === 1 ? 'week' : 'weeks', 
+        'WEEK': value === 1 ? 'week' : 'weeks',
         'MONTH': value === 1 ? 'month' : 'months',
         'YEAR': value === 1 ? 'year' : 'years'
     };
     return `${value} ${typeMap[type] || 'month'}`;
-}
-
-function formatPrice(price) {
-    return formatCurrency(price);
 }
 
 function formatTimeAgo(dateString) {
@@ -753,68 +874,8 @@ function formatTimeAgo(dateString) {
     return `${diffDays}d ago`;
 }
 
-function updateDateTime() {
-    // Update any time-sensitive elements
-    loadRecentSubscriptions();
-}
-
-// Load sidebar function to prevent flash
-async function loadSidebar() {
-    try {
-        const sidebarContainer = document.getElementById('sidebar-container');
-        if (!sidebarContainer) return;
-
-        // Try to use the global loadSidebar function first
-        if (window.loadSidebar && typeof window.loadSidebar === 'function') {
-            await window.loadSidebar();
-            return;
-        }
-
-        // Fallback to manual loading
-        const response = await fetch('/sidebar.html');
-        if (response.ok) {
-            const sidebarHTML = await response.text();
-            sidebarContainer.innerHTML = sidebarHTML;
-            
-            // Initialize sidebar functionality if needed
-            if (window.initializeSidebar && typeof window.initializeSidebar === 'function') {
-                window.initializeSidebar();
-            }
-        }
-    } catch (error) {
-        console.error('Error loading sidebar:', error);
-        // Don't throw error, just log it to prevent page breaking
-    }
-}
-
-// Enhanced search with filter support
-function searchPackages(query) {
-    // If no query, apply current filter only
-    if (!query || query.trim() === '') {
-        applyCurrentFilter();
-        return;
-    }
-
-    // Apply both search and filter
-    const filteredPackages = packages.filter(pkg => {
-        const matchesSearch = pkg.name.toLowerCase().includes(query.toLowerCase()) ||
-            (pkg.features && pkg.features.some(f => f.name.toLowerCase().includes(query.toLowerCase())));
-        
-        const matchesFilter = currentFilter === 'all' || 
-            (currentFilter === 'monthly' && pkg.durationType === 'MONTH') ||
-            (currentFilter === 'yearly' && pkg.durationType === 'YEAR') ||
-            (currentFilter === 'active' && pkg.isActive);
-        
-        return matchesSearch && matchesFilter;
-    });
-    
-    renderPackages(filteredPackages);
-    renderPagination();
-}
-
 // Enhanced stats loading with actual API integration
 async function loadStats() {
-    hideMainContent();
     try {
         // Try to load actual stats first
         const [revenueResponse] = await Promise.allSettled([
@@ -836,7 +897,7 @@ async function loadStats() {
         if (revenueResponse.status === 'fulfilled' && revenueResponse.value?.ok) {
             const revenueData = await revenueResponse.value.json();
             if (revenueData.result) {
-                stats.totalRevenue = formatPrice(revenueData.result.revenue || 0);
+                stats.totalRevenue = formatCurrency(revenueData.result.revenue || 0);
                 stats.totalSubscribers = revenueData.result.subscribers || 0;
                 // Growth rates are not available from API, keep mock values
                 stats.revenueChange = "+12.5%";
@@ -858,17 +919,17 @@ async function loadStats() {
 
         // Update DOM elements safely
         const elements = [
-            { id: 'totalRevenue', value: stats.totalRevenue },
-            { id: 'revenueChange', value: stats.revenueChange },
-            { id: 'totalSubscribers', value: stats.totalSubscribers },
-            { id: 'subscribersChange', value: stats.subscribersChange },
-            { id: 'conversionRate', value: stats.conversionRate },
-            { id: 'conversionChange', value: stats.conversionChange },
-            { id: 'avgRevenue', value: stats.avgRevenue },
-            { id: 'avgRevenueChange', value: stats.avgRevenueChange }
+            {id: 'totalRevenue', value: stats.totalRevenue},
+            {id: 'revenueChange', value: stats.revenueChange},
+            {id: 'totalSubscribers', value: stats.totalSubscribers},
+            {id: 'subscribersChange', value: stats.subscribersChange},
+            {id: 'conversionRate', value: stats.conversionRate},
+            {id: 'conversionChange', value: stats.conversionChange},
+            {id: 'avgRevenue', value: stats.avgRevenue},
+            {id: 'avgRevenueChange', value: stats.avgRevenueChange}
         ];
 
-        elements.forEach(({ id, value }) => {
+        elements.forEach(({id, value}) => {
             const element = document.getElementById(id);
             if (element) element.textContent = value;
         });
@@ -881,31 +942,31 @@ async function loadStats() {
             const element = document.getElementById(id);
             if (element) element.textContent = id.includes('Revenue') ? '0đ' : '0';
         });
-    } finally {
-        showMainContent();
     }
 }
 
 // Enhanced modal close with escape key support
 function setupModalKeyboardSupport() {
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             closeNewPackageModal();
             closeUpdateModal();
+            closeCreateOfferModal();
         }
     });
-    
-    // Close modal when clicking outside
-    const modals = ['createPackageModal', 'updatePackageModal'];
+
+    const modals = ['createPackageModal', 'updatePackageModal', 'createOfferModal'];
     modals.forEach(modalId => {
         const modal = document.getElementById(modalId);
         if (modal) {
-            modal.addEventListener('click', function(e) {
+            modal.addEventListener('click', function (e) {
                 if (e.target === modal) {
                     if (modalId === 'createPackageModal') {
                         closeNewPackageModal();
-                    } else {
+                    } else if (modalId === 'updatePackageModal') {
                         closeUpdateModal();
+                    } else if (modalId === 'createOfferModal') {
+                        closeCreateOfferModal();
                     }
                 }
             });
@@ -913,109 +974,6 @@ function setupModalKeyboardSupport() {
     });
 }
 
-// Enhanced error and success messaging
-function showErrorMessage(message) {
-    console.error(message);
-    
-    // Create toast notification
-    const toast = document.createElement('div');
-    toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
-    toast.innerHTML = `
-        <div class="flex items-center space-x-2">
-            <i class="fas fa-exclamation-circle"></i>
-            <span>${message}</span>
-        </div>
-    `;
-    
-    document.body.appendChild(toast);
-    
-    // Animate in
-    setTimeout(() => {
-        toast.classList.remove('translate-x-full');
-    }, 100);
-    
-    // Remove after 5 seconds
-    setTimeout(() => {
-        toast.classList.add('translate-x-full');
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
-            }
-        }, 300);
-    }, 5000);
-}
-
-function showSuccessMessage(message) {
-    console.log(message);
-    
-    // Create toast notification
-    const toast = document.createElement('div');
-    toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
-    toast.innerHTML = `
-        <div class="flex items-center space-x-2">
-            <i class="fas fa-check-circle"></i>
-            <span>${message}</span>
-        </div>
-    `;
-    
-    document.body.appendChild(toast);
-    
-    // Animate in
-    setTimeout(() => {
-        toast.classList.remove('translate-x-full');
-    }, 100);
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-        toast.classList.add('translate-x-full');
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
-            }
-        }, 300);
-    }, 3000);
-}
-
-// Refresh all data
-async function refreshData() {
-    hideMainContent();
-    try {
-        // Reset search and filters
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) searchInput.value = '';
-        
-        // Reset filter to 'all'
-        currentFilter = 'all';
-        currentPage = 0;
-        
-        // Update filter button states
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            if (btn.dataset.filter === 'all') {
-                btn.classList.add('text-indigo-600', 'bg-indigo-50');
-                btn.classList.remove('text-gray-600', 'bg-gray-50');
-            } else {
-                btn.classList.remove('text-indigo-600', 'bg-indigo-50');
-                btn.classList.add('text-gray-600', 'bg-gray-50');
-            }
-        });
-        
-        // Reload all data
-        await Promise.all([
-            loadStats(),
-            loadPackages(),
-            loadRecentSubscriptions(),
-            loadFeatures()
-        ]);
-        
-        showSuccessMessage('Data refreshed successfully');
-        
-    } catch (error) {
-        console.error('Error refreshing data:', error);
-        showErrorMessage('Failed to refresh data');
-    } finally {
-        showMainContent();
-    }
-}
 
 // Global exports for HTML onclick handlers
 window.openNewPackageModal = openNewPackageModal;
@@ -1024,63 +982,142 @@ window.openUpdateModal = openUpdateModal;
 window.closeUpdateModal = closeUpdateModal;
 window.deletePackage = deletePackage;
 window.changePage = changePage;
-window.loadSidebar = loadSidebar;
-window.refreshData = refreshData;
 
-// Additional utility functions
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    }).format(amount);
+
+// Initialize modal keyboard support and other event handlers when DOM is ready
+document.addEventListener('DOMContentLoaded', function () {
+    setupModalKeyboardSupport();
+});
+
+// Thêm hàm chọn/bỏ chọn offer package
+window.selectOfferPackage = function (id) {
+    const pkg = packages.find(p => p.id == id);
+    if (!pkg) return;
+    const idx = selectedList.findIndex(item => item.id == id);
+    if (idx === -1) {
+        selectedList.push({id: id, name: pkg.name});
+        if (selectedList.length !== 0) buttonCreatePromotional.classList.remove("hidden");
+    } else {
+        selectedList.splice(idx, 1);
+        if (selectedList.length === 0) buttonCreatePromotional.classList.add("hidden");
+    }
+    renderPackages(packages);
+    setupCheckBoxCreateOffer(); // Đảm bảo các event khác vẫn hoạt động
 }
 
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
 
-// Enhanced responsive handling
-function handleResize() {
-    // Rerender components on resize for better responsive experience
-    if (packages.length > 0) {
-        renderPackages(packages);
+async function toggleSection(section) {
+    const subscriptionsBtn = document.getElementById('subscriptionsBtn');
+    const offersBtn = document.getElementById('offersBtn');
+    const subscriptionsContent = document.getElementById('recentSubscriptionsContent');
+    const offersContent = document.getElementById('offersContent');
+    const sectionTitle = document.getElementById('sectionTitle');
+    const sectionIcon = document.getElementById('sectionIcon');
+
+    if (section === 'subscriptions') {
+        // Active subscriptions button
+        subscriptionsBtn.className = 'px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 bg-indigo-600 text-white';
+        offersBtn.className = 'px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 bg-gray-100 text-gray-600 hover:bg-gray-200';
+
+        // Show subscriptions content
+        subscriptionsContent.classList.remove('hidden');
+        offersContent.classList.add('hidden');
+
+        // Update title and icon
+        sectionTitle.textContent = 'Recent Subscriptions';
+        sectionIcon.textContent = '👥';
+        await loadRecentSubscriptions();
+    } else {
+        // Active offers button
+        offersBtn.className = 'px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 bg-indigo-600 text-white';
+        subscriptionsBtn.className = 'px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 bg-gray-100 text-gray-600 hover:bg-gray-200';
+
+        // Show offers content
+        offersContent.classList.remove('hidden');
+        subscriptionsContent.classList.add('hidden');
+
+        // Update title and icon
+        sectionTitle.textContent = 'Promotional Offers';
+        sectionIcon.textContent = '🎁';
+
+        await loadOffers();
     }
 }
 
-// Initialize modal keyboard support and other event handlers when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-    setupModalKeyboardSupport();
-    
-    // Add resize handler for responsive behavior
-    window.addEventListener('resize', debounce(handleResize, 250));
-    
-    // Add click outside handlers for modals
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('fixed') && e.target.classList.contains('inset-0')) {
-            // Clicked on modal backdrop
-            if (e.target.id === 'createPackageModal') {
-                closeNewPackageModal();
-            } else if (e.target.id === 'updatePackageModal') {
-                closeUpdateModal();
-            }
-        }
-    });
-});
 
-// Thêm hàm show/hide mainContent
-function showMainContent() {
-    document.getElementById('mainContent').style.display = '';
+async function loadOffers() {
+    try {
+        const response = await apiRequest(OFFER_API_URL);
+        const data = await response.json();
+
+        if (data.code === 1000) {
+            offers = data.result;
+            renderOffers();
+        } else {
+            renderEmptyOffers();
+        }
+    } catch (error) {
+        console.error('Error loading offers:', error);
+        renderEmptyOffers();
+    }
 }
-function hideMainContent() {
-    document.getElementById('mainContent').style.display = 'none';
-} 
+
+// Render offers
+function renderOffers() {
+    const container = document.getElementById('offersContent');
+    if (!container) return;
+
+    container.innerHTML = `
+    <div class="space-y-4">
+        ${offers.map(offer => `
+            <div class="flex items-center space-x-4 p-4 rounded-2xl hover:bg-gray-50 transition-colors border border-gray-100">
+                <div class="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                    ${offer.discountEvent.charAt(0)}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate">${offer.discountEvent || 'Unknown Offer'}</p>
+                    <div class="flex items-center space-x-4 mt-1">
+                        <p class="text-xs text-gray-500">Start: ${formatDate_ddMMyyyy(offer.startDate)}</p>
+                        <p class="text-xs text-gray-500">Expires: ${formatDate_ddMMyyyy(offer.expiryDate)}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-lg font-semibold text-green-600">${offer.discountPercentage}% OFF</p>
+                    <p class="text-xs text-gray-500">${offer.packageIds.length} package(s)</p>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <button 
+                        onclick="viewOfferDetail('${offer.id}')"
+                        class="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-xs font-medium"
+                    >
+                        View Detail
+                    </button>
+                    <button 
+                        onclick="deleteOffer('${offer.id}')"
+                        class="px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-xs font-medium"
+                    >
+                        Delete
+                    </button>
+                </div>
+            </div>
+        `).join('')}
+    </div>
+`;
+}
+
+
+
+// Render empty offers
+function renderEmptyOffers() {
+    const container = document.getElementById('offersContent');
+    if (!container) return;
+
+    container.innerHTML = `
+                <div class="text-center py-8">
+                    <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-gift text-gray-400"></i>
+                    </div>
+                    <p class="text-gray-500 text-sm">No offers available</p>
+                </div>
+            `;
+}

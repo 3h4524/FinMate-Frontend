@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('resetPasswordForm');
     const passwordInput = document.getElementById('password');
     const confirmPasswordInput = document.getElementById('confirmPassword');
@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function togglePasswordVisibility(input, toggle) {
         const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
         input.setAttribute('type', type);
-        toggle.innerHTML = type === 'password' ? 
-            '<i class="fas fa-eye"></i>' : 
+        toggle.innerHTML = type === 'password' ?
+            '<i class="fas fa-eye"></i>' :
             '<i class="fas fa-eye-slash"></i>';
     }
 
@@ -52,12 +52,12 @@ document.addEventListener('DOMContentLoaded', function() {
         togglePasswordVisibility(confirmPasswordInput, confirmPasswordToggle);
     });
 
-    form.addEventListener('submit', async function(e) {
+    form.addEventListener('submit', async function (e) {
         e.preventDefault();
-        
+
         const password = passwordInput.value.trim();
         const confirmPassword = confirmPasswordInput.value.trim();
-        
+
         // Reset messages
         errorMessage.style.display = 'none';
         successMessage.style.display = 'none';
@@ -84,9 +84,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     token,
-                    password 
+                    password
                 })
             });
 
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 form.reset();
                 // Redirect to login page after 3 seconds
                 setTimeout(() => {
-                    window.location.href = '../login/index.html';
+                    window.location.href = '../login/';
                 }, 3000);
             } else {
                 showError(data.message || 'An error occurred. Please try again.');

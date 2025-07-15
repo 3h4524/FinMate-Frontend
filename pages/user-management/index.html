@@ -27,6 +27,533 @@
     </script>
     <link href="/assets/css/global-layout.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Enhanced responsive layout - giống Subscription Manager */
+        .main-content-grid {
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: 1fr;
+        }
+
+        /* Tablet and up */
+        @media (min-width: 768px) {
+            .main-content-grid {
+                gap: 2rem;
+            }
+        }
+
+        /* Desktop layout */
+        @media (min-width: 1024px) {
+            .main-content-grid {
+                grid-template-columns: 2fr 1fr;
+                gap: 2rem;
+            }
+        }
+
+        /* Large desktop */
+        @media (min-width: 1280px) {
+            .main-content-grid {
+                gap: 2.5rem;
+            }
+        }
+
+        /* Ensure consistent layout for main content */
+        .users-section {
+            min-width: 0;
+            width: 100%;
+        }
+
+        .filters-section {
+            min-width: 0;
+            width: 100%;
+        }
+
+        /* Responsive statistics grid */
+        .stats-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+
+        @media (min-width: 640px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Responsive user cards */
+        .users-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 640px) {
+            .users-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .users-grid {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .users-grid {
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            }
+        }
+
+        /* Responsive modal */
+        .modal-content {
+            width: 90%;
+            max-width: 500px;
+            margin: 1rem auto;
+        }
+
+        @media (min-width: 640px) {
+            .modal-content {
+                width: 95%;
+                max-width: 600px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .modal-content {
+                width: 100%;
+                max-width: 700px;
+            }
+        }
+
+        /* Responsive form grid */
+        .form-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 640px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Responsive header */
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .header-content {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        /* Responsive action buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        @media (min-width: 640px) {
+            .action-buttons {
+                flex-direction: row;
+                gap: 1rem;
+            }
+        }
+
+        /* Responsive filter buttons */
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .filter-buttons {
+                flex-wrap: nowrap;
+            }
+        }
+
+        /* Responsive section headers */
+        .section-header {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .section-header {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        /* Ensure text doesn't overflow on small screens */
+        .text-responsive {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        /* Responsive padding */
+        .responsive-padding {
+            padding: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .responsive-padding {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .responsive-padding {
+                padding: 2rem;
+            }
+        }
+
+        /* Responsive container */
+        .responsive-container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .responsive-container {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .responsive-container {
+                padding-left: 2rem;
+                padding-right: 2rem;
+            }
+        }
+
+        /* User card styles */
+        .user-card {
+            background-color: white;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .user-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .user-avatar {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.125rem;
+        }
+
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.25rem;
+            word-wrap: break-word;
+        }
+
+        .user-email {
+            color: #6b7280;
+            font-size: 0.875rem;
+            word-wrap: break-word;
+        }
+
+        .user-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .user-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .user-badge.premium {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .user-badge.basic {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+
+        .user-badge.active {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .user-badge.suspended {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
+
+        .user-details {
+            margin: 1rem 0;
+        }
+
+        .user-detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .user-detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-detail-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .user-detail-value {
+            font-weight: 500;
+            color: #111827;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .user-action-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .user-action-btn.view {
+            background-color: #dbeafe;
+            color: #2563eb;
+        }
+
+        .user-action-btn.view:hover {
+            background-color: #bfdbfe;
+        }
+
+        .user-action-btn.edit {
+            background-color: #dcfce7;
+            color: #16a34a;
+        }
+
+        .user-action-btn.edit:hover {
+            background-color: #bbf7d0;
+        }
+
+        .user-action-btn.ban {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
+
+        .user-action-btn.ban:hover {
+            background-color: #fecaca;
+        }
+
+        .user-action-btn.restore {
+            background-color: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .user-action-btn.restore:hover {
+            background-color: #dcfce7;
+        }
+
+        /* Loading animation */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-spinner {
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #6366f1;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background-color: white;
+            transition: all 0.2s ease;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #6366f1;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #4f46e5;
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #b91c1c;
+        }
+    </style>
     <script src="/assets/js/page-loader.js" defer></script>
     <script src="/assets/js/header.js" defer></script>
     <script src="/assets/js/sidebar.js" defer></script>
@@ -39,98 +566,87 @@
     <div id="header-container"></div>
     <div id="sidebar-container"></div>
     <div class="main-content" id="mainContent" style="display: none;">
-        <div class="container mx-auto px-6 py-8">
+        <div class="responsive-container mx-auto py-6 lg:py-8">
             <!-- Header Section -->
-            <div class="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-indigo-100">
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div class="bg-white rounded-3xl shadow-2xl responsive-padding mb-6 lg:mb-8 border border-indigo-100">
+                <div class="header-content">
                     <div class="flex-1">
-                        <h1 class="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1 sm:mb-2">
                             User Management
                         </h1>
-                        <p class="text-gray-600 text-lg">Manage all user accounts and activities</p>
+                        <p class="text-gray-600 text-base sm:text-lg">Manage all user accounts and activities</p>
                     </div>
-                    <div class="mt-6 md:mt-0 flex items-center space-x-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
-                                <span class="text-white text-xl">👤</span>
-                            </div>
-                            <div>
-                                <div class="font-semibold text-gray-900" id="adminName">Admin</div>
-                                <div class="text-sm text-gray-500">Administrator</div>
-                            </div>
-                        </div>
+                    <div class="action-buttons">
+                        <!-- Admin info section removed -->
                     </div>
                 </div>
             </div>
 
             <!-- Statistics Overview -->
-            <div class="mb-8">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">User Statistics</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="mb-6 lg:mb-8">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 lg:mb-6 text-responsive">User Statistics</h2>
+                <div class="stats-grid">
                     <!-- Total Users -->
-                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-indigo-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <div class="bg-white rounded-3xl shadow-lg p-4 sm:p-6 border border-indigo-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
                         <div class="flex items-center justify-between">
                             <div>
-                                <h3 class="text-3xl font-bold text-gray-900" id="totalUsers">0</h3>
-                                <p class="text-gray-600 mt-1">Total Users</p>
+                                <h3 class="text-2xl sm:text-3xl font-bold text-gray-900" id="totalUsers">0</h3>
+                                <p class="text-gray-600 mt-1 text-xs sm:text-sm">Total Users</p>
                                 <div class="flex items-center mt-2 text-green-600">
                                     <i class="fas fa-arrow-up text-xs"></i>
-                                    <span class="text-sm ml-1" id="totalUsersChange">+0%</span>
+                                    <span class="text-xs sm:text-sm ml-1" id="totalUsersChange">+0%</span>
                                 </div>
                             </div>
-                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);">
-                                <i class="fas fa-users text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                            <div class="relative" style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);">
+                                <i class="fas fa-users text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 16px;"></i>
                             </div>
                         </div>
                     </div>
-
                     <!-- Active Users -->
-                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-green-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <div class="bg-white rounded-3xl shadow-lg p-4 sm:p-6 border border-green-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
                         <div class="flex items-center justify-between">
                             <div>
-                                <h3 class="text-3xl font-bold text-gray-900" id="activeUsers">0</h3>
-                                <p class="text-gray-600 mt-1">Active Users</p>
+                                <h3 class="text-2xl sm:text-3xl font-bold text-gray-900" id="activeUsers">0</h3>
+                                <p class="text-gray-600 mt-1 text-xs sm:text-sm">Active Users</p>
                                 <div class="flex items-center mt-2 text-green-600">
                                     <i class="fas fa-arrow-up text-xs"></i>
-                                    <span class="text-sm ml-1" id="activeUsersChange">+0%</span>
+                                    <span class="text-xs sm:text-sm ml-1" id="activeUsersChange">+0%</span>
                                 </div>
                             </div>
-                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                                <i class="fas fa-user-check text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                            <div class="relative" style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                <i class="fas fa-user-check text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 16px;"></i>
                             </div>
                         </div>
                     </div>
-
                     <!-- Premium Users -->
-                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-amber-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <div class="bg-white rounded-3xl shadow-lg p-4 sm:p-6 border border-amber-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
                         <div class="flex items-center justify-between">
                             <div>
-                                <h3 class="text-3xl font-bold text-gray-900" id="premiumUsers">0</h3>
-                                <p class="text-gray-600 mt-1">Premium Users</p>
+                                <h3 class="text-2xl sm:text-3xl font-bold text-gray-900" id="premiumUsers">0</h3>
+                                <p class="text-gray-600 mt-1 text-xs sm:text-sm">Premium Users</p>
                                 <div class="flex items-center mt-2 text-green-600">
                                     <i class="fas fa-arrow-up text-xs"></i>
-                                    <span class="text-sm ml-1" id="premiumUsersChange">+0%</span>
+                                    <span class="text-xs sm:text-sm ml-1" id="premiumUsersChange">+0%</span>
                                 </div>
                             </div>
-                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
-                                <span class="text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;">👑</span>
+                            <div class="relative" style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                                <span class="text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 16px;">👑</span>
                             </div>
                         </div>
                     </div>
-
                     <!-- New Users -->
-                    <div class="bg-white rounded-3xl shadow-lg p-6 border border-blue-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <div class="bg-white rounded-3xl shadow-lg p-4 sm:p-6 border border-blue-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
                         <div class="flex items-center justify-between">
                             <div>
-                                <h3 class="text-3xl font-bold text-gray-900" id="newUsers">0</h3>
-                                <p class="text-gray-600 mt-1">New Users (30d)</p>
+                                <h3 class="text-2xl sm:text-3xl font-bold text-gray-900" id="newUsers">0</h3>
+                                <p class="text-gray-600 mt-1 text-xs sm:text-sm">New Users (30d)</p>
                                 <div class="flex items-center mt-2 text-green-600">
                                     <i class="fas fa-arrow-up text-xs"></i>
-                                    <span class="text-sm ml-1" id="newUsersChange">+0%</span>
+                                    <span class="text-xs sm:text-sm ml-1" id="newUsersChange">+0%</span>
                                 </div>
                             </div>
-                            <div class="relative" style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
-                                <i class="fas fa-user-plus text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                            <div class="relative" style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+                                <i class="fas fa-user-plus text-white" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 16px;"></i>
                             </div>
                         </div>
                     </div>
@@ -140,66 +656,64 @@
             <!-- User Management Section -->
             <div class="bg-white rounded-3xl shadow-lg border border-indigo-100">
                 <!-- Management Header -->
-                <div class="p-8 border-b border-gray-200">
-                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                <div class="responsive-padding border-b border-gray-200">
+                    <div class="section-header">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900">All Users</h2>
-                            <p class="text-gray-600 mt-1">Manage user accounts and activities</p>
+                            <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">All Users</h2>
+                            <p class="text-gray-600 mt-1 text-xs sm:text-sm">Manage user accounts and activities</p>
                         </div>
-                        <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                        <div class="filter-buttons">
                             <!-- Search Box -->
-                            <div class="relative">
+                            <div class="relative w-full sm:w-auto">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-search text-gray-400"></i>
                                 </div>
-                                <input type="text" class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-2xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Search users...">
+                                <input type="text" class="block w-full pl-10 pr-3 py-2 sm:py-3 border border-gray-300 rounded-2xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-base" placeholder="Search users...">
                             </div>
-                            
                             <!-- Status Filter -->
-                            <select class="px-4 py-3 border border-gray-300 rounded-2xl bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" id="statusFilter">
+                            <select class="px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-2xl bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-xs sm:text-base" id="statusFilter">
                                 <option value="">All Status</option>
                                 <option value="active">Active</option>
                                 <option value="suspended">Suspended</option>
                                 <option value="premium">Premium</option>
                                 <option value="basic">Basic</option>
                             </select>
-                            
                             <!-- Add User Button -->
-                            <button class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-2xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2" onclick="openAddUserModal()">
+                            <button class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-2xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 text-xs sm:text-base" onclick="openAddUserModal()">
                                 <i class="fas fa-plus"></i>
-                                <span>Add User</span>
+                                <span class="hidden xs:inline">Add User</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Users Table -->
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
+                <!-- Users Table Section -->
+                <div class="responsive-padding overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 text-xs sm:text-sm">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">USER</th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BALANCE</th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ACCOUNT TYPE</th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">STATUS</th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">LAST LOGIN</th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ACTIONS</th>
+                                <th scope="col" class="px-2 sm:px-6 py-3 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">USER</th>
+                                <th scope="col" class="px-2 sm:px-6 py-3 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">BALANCE</th>
+                                <th scope="col" class="px-2 sm:px-6 py-3 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">ACCOUNT TYPE</th>
+                                <th scope="col" class="px-2 sm:px-6 py-3 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">STATUS</th>
+                                <th scope="col" class="px-2 sm:px-6 py-3 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">LAST LOGIN</th>
+                                <th scope="col" class="px-2 sm:px-6 py-3 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ACTIONS</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200" id="usersTableBody">
-                            <!-- Users will be loaded here -->
+                            <!-- Users will be loaded here by JS -->
                         </tbody>
                     </table>
                 </div>
 
                 <!-- Pagination -->
-                <div class="px-8 py-6 border-t border-gray-200">
+                <div class="responsive-padding border-t border-gray-200">
                     <div class="flex items-center justify-between">
                         <div class="flex-1 flex justify-between sm:hidden">
-                            <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            <button class="relative inline-flex items-center px-3 sm:px-4 py-2 border border-gray-300 text-xs sm:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                                 Previous
                             </button>
-                            <button class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            <button class="ml-3 relative inline-flex items-center px-3 sm:px-4 py-2 border border-gray-300 text-xs sm:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                                 Next
                             </button>
                         </div>
@@ -347,6 +861,14 @@
     </div>
 
     <script>
+        // Check login status as early as possible
+        (function() {
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/pages/login/';
+            }
+        })();
+
         let currentPage = 0;
         const pageSize = 10;
         let user;
@@ -360,7 +882,7 @@
                 if (user.role !== 'ADMIN') {
                     console.log('[AUTH] Access denied: User does not have ADMIN role');
                     alert('Access denied. This page is only available for administrators.');
-                    window.location.href = '../home';
+                    window.location.href = '/pages/login/';
                     return;
                 }
                 // Load sidebar and header first to avoid flash
@@ -377,9 +899,7 @@
                 // Ẩn mainContent khi bắt đầu load data
                 const mainContent = document.getElementById('mainContent');
                 if (mainContent) mainContent.style.display = 'none';
-                // Update admin info
-                const adminName = user.username || "Unknown";
-                document.getElementById('adminName').textContent = adminName;
+                // Admin info section removed
                 // Load users data và stats
                 await loadUserStats();
                 await loadUsers();
@@ -391,145 +911,126 @@
             }
         });
 
-        async function loadUsers(page = 0) {
+        // State lưu filter hiện tại
+        let currentFilter = { search: '', status: '' };
+
+        // Sửa lại loadUsers để xử lý filter đúng với backend hiện tại
+        async function loadUsers(page = 0, filter = currentFilter) {
             try {
-                const token = localStorage.getItem('token');
+                const token = sessionStorage.getItem('token');
                 if (!token) {
-                    window.location.href = 'login.html';
+                    window.location.href = '/pages/login/';
                     return;
                 }
-
-                // Show loading state
                 const tbody = document.getElementById('usersTableBody');
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 40px;">
-                            <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
-                                <div style="width: 40px; height: 40px; border: 4px solid var(--gray-200); border-top: 4px solid var(--main-green); border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                                <div style="color: var(--text-light);">Loading users...</div>
-                            </div>
-                        </td>
-                    </tr>
-                `;
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-gray-500">Loading users...</td></tr>`;
 
-                const response = await fetch(`http://localhost:8080/api/admin/users?page=${page}&size=${pageSize}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to load users');
+                // Nếu có search, dùng API search
+                if (filter.search) {
+                    let url = `http://localhost:8080/api/admin/users/search?keyword=${encodeURIComponent(filter.search)}&page=0&size=1000`;
+                    const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (!response.ok) throw new Error('Failed to load users');
+                    const data = await response.json();
+                    let users = data.content;
+                    // Nếu có filter status, filter trên client
+                    if (filter.status) users = filterUsersByStatus(users, filter.status);
+                    // Phân trang client
+                    const paged = paginate(users, page, pageSize);
+                    renderUsersTable(paged.items);
+                    setupPagination(paged.totalPages, page, filter);
+                    return;
                 }
-
+                // Nếu chỉ filter status, fetch toàn bộ user rồi filter client
+                if (filter.status) {
+                    let url = `http://localhost:8080/api/admin/users?page=0&size=1000`;
+                    const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (!response.ok) throw new Error('Failed to load users');
+                    const data = await response.json();
+                    let users = filterUsersByStatus(data.content, filter.status);
+                    // Phân trang client
+                    const paged = paginate(users, page, pageSize);
+                    renderUsersTable(paged.items);
+                    setupPagination(paged.totalPages, page, filter);
+                    return;
+                }
+                // Không filter, dùng phân trang backend
+                let url = `http://localhost:8080/api/admin/users?page=${page}&size=${pageSize}`;
+                const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!response.ok) throw new Error('Failed to load users');
                 const data = await response.json();
-                displayUsers(data.content);
-                setupPagination(data.totalPages, page);
+                console.log('API Response data:', data);
+                console.log('Users content:', data.content);
+                renderUsersTable(data.content);
+                setupPagination(data.totalPages, page, filter);
             } catch (error) {
                 console.error('Error loading users:', error);
                 const tbody = document.getElementById('usersTableBody');
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-light);">
-                            <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
-                            <div>Failed to load users. Please try again.</div>
-                        </td>
-                    </tr>
-                `;
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-red-500">Failed to load users. Please try again.</td></tr>`;
             }
         }
 
-        function displayUsers(users) {
-            const tbody = document.getElementById('usersTableBody');
-            tbody.innerHTML = '';
-
-            if (!users || users.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="px-6 py-12 text-center">
-                            <div class="flex flex-col items-center">
-                                <i class="fas fa-users text-5xl text-gray-300 mb-4"></i>
-                                <div class="text-gray-500">No users found</div>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            users.forEach(user => {
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-gray-50 transition-colors';
-                const userInitials = user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase();
-
-                // Get balance from wallet or default to 0
-                let balanceAmount = '$0.00';
-                if (user.wallet && user.wallet.balance !== undefined) {
-                    balanceAmount = `$${parseFloat(user.wallet.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-                } else if (user.balance !== undefined) {
-                    balanceAmount = `$${parseFloat(user.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        function renderUsersGrid(users) {
+            const grid = document.getElementById('usersGridBody');
+            if (!grid) return;
+            
+            console.log('Rendering users grid with data:', users);
+            
+            grid.innerHTML = users.map((user, index) => {
+                console.log(`User ${index}:`, user, 'ID:', user.id, 'Type:', typeof user.id);
+                
+                // Ensure user.id exists and is valid
+                if (user.id === null || user.id === undefined) {
+                    console.error('User missing ID:', user);
+                    return ''; // Skip this user
                 }
-
-                const lastLogin = formatRelativeTime(user.lastLoginAt);
-
-                tr.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 h-12 w-12">
-                                <div class="h-12 w-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold text-lg">
-                                    ${userInitials}
-                                </div>
-                            </div>
-                            <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">${user.name || 'N/A'}</div>
-                                <div class="text-sm text-gray-500">${user.email}</div>
-                            </div>
+                
+                return `
+                <div class="user-card">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="user-avatar">
+                            ${user.avatar ? `<img src="${user.avatar}" class="w-12 h-12 rounded-full object-cover">` : user.name.charAt(0)}
                         </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-semibold text-gray-900">${balanceAmount}</div>
-                        <div class="text-xs text-gray-500">Total Balance</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex px-3 py-1 text-xs font-medium rounded-full ${user.isPremium 
-                            ? 'bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-800 border border-amber-200' 
-                            : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 border border-gray-300'}">
-                            ${user.isPremium ? '👑 Premium' : 'Basic'}
+                        <div class="user-info">
+                            <div class="user-name">${user.name}</div>
+                            <div class="user-email">${user.email}</div>
+                        </div>
+                    </div>
+                    <div class="user-badges">
+                        <span class="user-badge ${user.isPremium ? 'premium' : 'basic'}">
+                            ${user.isPremium ? 'Premium' : 'Basic'}
                         </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex px-3 py-1 text-xs font-medium rounded-full ${user.isDelete 
-                            ? 'bg-gradient-to-r from-red-100 to-pink-100 text-red-800 border border-red-200' 
-                            : 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200'}">
-                            <div class="w-2 h-2 ${user.isDelete ? 'bg-red-500' : 'bg-green-500'} rounded-full mr-2 mt-0.5"></div>
+                        <span class="user-badge ${user.isDelete ? 'suspended' : 'active'}">
                             ${user.isDelete ? 'Suspended' : 'Active'}
                         </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        ${lastLogin}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div class="flex space-x-2">
-                            <button onclick="openDetailModal(${user.id})" 
-                                class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 p-2 rounded-lg transition-all duration-200 hover:scale-105" 
-                                title="View Details">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button onclick="openEditModal(${user.id})" 
-                                class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 p-2 rounded-lg transition-all duration-200 hover:scale-105" 
-                                title="Edit User">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button onclick="${user.isDelete ? 'restoreUser' : 'banUser'}(${user.id})" 
-                                class="text-${user.isDelete ? 'blue' : 'red'}-600 hover:text-${user.isDelete ? 'blue' : 'red'}-900 bg-${user.isDelete ? 'blue' : 'red'}-50 hover:bg-${user.isDelete ? 'blue' : 'red'}-100 p-2 rounded-lg transition-all duration-200 hover:scale-105" 
-                                title="${user.isDelete ? 'Restore User' : 'Ban User'}">
-                                <i class="fas fa-${user.isDelete ? 'undo' : 'ban'}"></i>
-                            </button>
+                    </div>
+                    <div class="user-details">
+                        <div class="user-detail-item">
+                            <span class="user-detail-label">Số dư:</span>
+                            <span class="user-detail-value">${user.balance ? user.balance.toLocaleString() + ' đ' : '0 đ'}</span>
                         </div>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
+                        <div class="user-detail-item">
+                            <span class="user-detail-label">Last login:</span>
+                            <span class="user-detail-value">${user.lastLogin || '-'}</span>
+                        </div>
+                    </div>
+                    <div class="user-actions">
+                        <button onclick="openDetailModal(${user.id})" class="user-action-btn view" title="Xem chi tiết">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button onclick="openEditModal(${user.id})" class="user-action-btn edit" title="Sửa">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        ${user.isDelete ? 
+                            `<button onclick="restoreUser(${user.id})" class="user-action-btn restore" title="Unban">
+                                <i class="fas fa-user-check"></i>
+                            </button>` :
+                            `<button onclick="banUser(${user.id})" class="user-action-btn ban" title="Ban">
+                                <i class="fas fa-ban"></i>
+                            </button>`
+                        }
+                    </div>
+                </div>
+            `}).filter(html => html !== '').join('');
         }
 
         function formatRelativeTime(dateString) {
@@ -557,7 +1058,7 @@
 
         async function loadUserStats() {
             try {
-                const token = localStorage.getItem('token');
+                const token = sessionStorage.getItem('token');
                 if (!token) return;
 
                 // Load all users to calculate stats
@@ -660,11 +1161,6 @@
         }
 
         // Helper functions for percentage calculation
-        function formatPercentage(change) {
-            const sign = change >= 0 ? '+' : '';
-            return `${sign}${change.toFixed(1)}%`;
-        }
-
         function openAddUserModal() {
             // Clear the form
             document.getElementById('editUserForm').reset();
@@ -683,71 +1179,43 @@
             document.getElementById('editUserModal').classList.remove('hidden');
         }
 
-        function formatDate(dateString) {
-            if (!dateString) return 'Never';
-            const date = new Date(dateString);
-            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-        }
-
-        function setupPagination(totalPages, currentPageNum) {
+        // Sửa setupPagination để truyền filter
+        function setupPagination(totalPages, currentPageNum, filter = currentFilter) {
             currentPage = currentPageNum;
             const pagination = document.getElementById('pagination');
             pagination.innerHTML = '';
-
-            // Update pagination info
             const showingFrom = Math.min(currentPage * pageSize + 1, totalPages * pageSize);
             const showingTo = Math.min((currentPage + 1) * pageSize, totalPages * pageSize);
             const totalResults = totalPages * pageSize;
-            
             document.getElementById('showingFrom').textContent = showingFrom;
             document.getElementById('showingTo').textContent = showingTo;
             document.getElementById('totalResults').textContent = totalResults;
-
             if (totalPages <= 1) return;
-
             // Previous button
             const prevBtn = document.createElement('button');
-            prevBtn.className = `relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors ${
-                currentPage === 0 ? 'cursor-not-allowed opacity-50' : 'hover:text-gray-700'
-            }`;
+            prevBtn.className = `relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors ${currentPage === 0 ? 'cursor-not-allowed opacity-50' : 'hover:text-gray-700'}`;
             prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
             prevBtn.disabled = currentPage === 0;
-            if (currentPage > 0) {
-                prevBtn.onclick = () => loadUsers(currentPage - 1);
-            }
+            if (currentPage > 0) prevBtn.onclick = () => loadUsers(currentPage - 1, filter);
             pagination.appendChild(prevBtn);
-
             // Page numbers
             const maxVisiblePages = 5;
             let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
             let endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1);
-            
-            if (endPage - startPage < maxVisiblePages - 1) {
-                startPage = Math.max(0, endPage - maxVisiblePages + 1);
-            }
-
+            if (endPage - startPage < maxVisiblePages - 1) startPage = Math.max(0, endPage - maxVisiblePages + 1);
             for (let i = startPage; i <= endPage; i++) {
                 const pageBtn = document.createElement('button');
-                pageBtn.className = `relative inline-flex items-center px-4 py-2 border text-sm font-medium transition-colors ${
-                    i === currentPage 
-                        ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600' 
-                        : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 hover:text-gray-700'
-                }`;
+                pageBtn.className = `relative inline-flex items-center px-4 py-2 border text-sm font-medium transition-colors ${i === currentPage ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 hover:text-gray-700'}`;
                 pageBtn.textContent = i + 1;
-                pageBtn.onclick = () => loadUsers(i);
+                pageBtn.onclick = () => loadUsers(i, filter);
                 pagination.appendChild(pageBtn);
             }
-
             // Next button
             const nextBtn = document.createElement('button');
-            nextBtn.className = `relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors ${
-                currentPage === totalPages - 1 ? 'cursor-not-allowed opacity-50' : 'hover:text-gray-700'
-            }`;
+            nextBtn.className = `relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors ${currentPage === totalPages - 1 ? 'cursor-not-allowed opacity-50' : 'hover:text-gray-700'}`;
             nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
             nextBtn.disabled = currentPage === totalPages - 1;
-            if (currentPage < totalPages - 1) {
-                nextBtn.onclick = () => loadUsers(currentPage + 1);
-            }
+            if (currentPage < totalPages - 1) nextBtn.onclick = () => loadUsers(currentPage + 1, filter);
             pagination.appendChild(nextBtn);
         }
 
@@ -756,7 +1224,7 @@
             const statusFilter = document.getElementById('statusFilter').value;
 
             try {
-                const token = localStorage.getItem('token');
+                const token = sessionStorage.getItem('token');
 
                 // If no search keyword and no filter, load all users
                 if (!keyword && !statusFilter) {
@@ -795,7 +1263,7 @@
                         });
                     }
 
-                    displayUsers(filteredUsers);
+                    renderUsersGrid(filteredUsers);
                     setupPagination(Math.ceil(filteredUsers.length / pageSize), 0);
                 } else {
                     // Fallback: load all users and filter manually
@@ -810,7 +1278,7 @@
 
         async function loadAllUsersAndFilter(keyword, statusFilter) {
             try {
-                const token = localStorage.getItem('token');
+                const token = sessionStorage.getItem('token');
                 const response = await fetch('http://localhost:8080/api/admin/users?page=0&size=1000', {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -847,7 +1315,7 @@
                         });
                     }
 
-                    displayUsers(filteredUsers);
+                    renderUsersGrid(filteredUsers);
                     setupPagination(Math.ceil(filteredUsers.length / pageSize), 0);
                 } else {
                     throw new Error('Failed to load users');
@@ -858,24 +1326,23 @@
             }
         }
 
-        // Add event listeners for search and filter
+        // Sửa event listener filter/search
+        function handleFilterChange() {
+            const search = document.querySelector('input[placeholder="Search users..."]').value.trim();
+            const status = document.getElementById('statusFilter').value;
+            currentFilter = { search, status };
+            loadUsers(0, currentFilter);
+        }
         document.addEventListener('DOMContentLoaded', function () {
-            // Search input listener
             const searchInput = document.querySelector('input[placeholder="Search users..."]');
             if (searchInput) {
-                searchInput.addEventListener('input', debounce(searchUsers, 500));
+                searchInput.addEventListener('input', debounce(handleFilterChange, 500));
                 searchInput.addEventListener('keypress', function (e) {
-                    if (e.key === 'Enter') {
-                        searchUsers();
-                    }
+                    if (e.key === 'Enter') handleFilterChange();
                 });
             }
-
-            // Status filter listener
             const statusFilter = document.getElementById('statusFilter');
-            if (statusFilter) {
-                statusFilter.addEventListener('change', searchUsers);
-            }
+            if (statusFilter) statusFilter.addEventListener('change', handleFilterChange);
         });
 
         // Debounce function to limit API calls
@@ -893,7 +1360,7 @@
 
         async function openEditModal(userId) {
             try {
-                const token = localStorage.getItem('token');
+                const token = sessionStorage.getItem('token');
                 const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -955,7 +1422,7 @@
             }
 
             try {
-                const token = localStorage.getItem('token');
+                const token = sessionStorage.getItem('token');
                 let url, method;
 
                 if (isNewUser) {
@@ -992,7 +1459,7 @@
                 }
 
                 closeModal('editUserModal');
-                await loadUsers(currentPage);
+                await loadUsers(currentPage, currentFilter);
                 await loadUserStats();
                 alert(isNewUser ? 'User created successfully' : 'User updated successfully');
             } catch (error) {
@@ -1001,13 +1468,55 @@
             }
         });
 
+        // New banUser function to show modal
         async function banUser(userId) {
-            if (!confirm('Are you sure you want to ban this user?')) {
-                return;
-            }
-
             try {
-                const token = localStorage.getItem('token');
+                console.log('banUser called with userId:', userId, typeof userId);
+                
+                // Validate userId
+                if (userId === null || userId === undefined || userId === 'null' || userId === '') {
+                    throw new Error('Invalid user ID provided to banUser');
+                }
+
+                const token = sessionStorage.getItem('token');
+                const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load user data');
+                }
+
+                const user = await response.json();
+                console.log('User data loaded:', user);
+                showBanConfirmModal(userId, user.name, user.email);
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showErrorNotification('❌ Error', `Failed to load user data: ${error.message}`);
+            }
+        }
+
+        // Execute ban user (called after modal confirmation)
+        async function executeBanUser(userId) {
+            try {
+                console.log('executeBanUser called with userId:', userId, typeof userId);
+                
+                // Validate userId
+                if (userId === null || userId === undefined || userId === 'null' || userId === '') {
+                    throw new Error('Invalid user ID');
+                }
+
+                const token = sessionStorage.getItem('token');
+                
+                // Show loading state
+                const banButtons = document.querySelectorAll(`button[onclick*="banUser(${userId})"]`);
+                banButtons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                });
+
                 const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
                     method: 'DELETE',
                     headers: {
@@ -1016,21 +1525,79 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to ban user');
+                    const errorData = await response.json().catch(() => null);
+                    const errorMessage = errorData?.message || 'Failed to ban user';
+                    throw new Error(errorMessage);
                 }
 
-                await loadUsers(currentPage);
+                await loadUsers(currentPage, currentFilter);
                 await loadUserStats();
-                alert('User has been banned successfully');
+                
+                // Show success notification with better styling
+                showSuccessNotification('✅ User Banned Successfully', 'The user account has been suspended and cannot log in.');
+                
             } catch (error) {
                 console.error('Error banning user:', error);
-                alert('Failed to ban user. Please try again.');
+                showErrorNotification('❌ Ban Failed', `Failed to ban user: ${error.message}`);
+            } finally {
+                // Restore button state
+                const banButtons = document.querySelectorAll(`button[onclick*="banUser(${userId})"]`);
+                banButtons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-ban"></i>';
+                });
             }
         }
 
+        // New restoreUser function to show modal
         async function restoreUser(userId) {
             try {
-                const token = localStorage.getItem('token');
+                console.log('restoreUser called with userId:', userId, typeof userId);
+                
+                // Validate userId
+                if (userId === null || userId === undefined || userId === 'null' || userId === '') {
+                    throw new Error('Invalid user ID provided to restoreUser');
+                }
+
+                const token = sessionStorage.getItem('token');
+                const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load user data');
+                }
+
+                const user = await response.json();
+                console.log('User data loaded for restore:', user);
+                showUnbanConfirmModal(userId, user.name, user.email);
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showErrorNotification('❌ Error', `Failed to load user data: ${error.message}`);
+            }
+        }
+
+        // Execute restore user (called after modal confirmation)
+        async function executeRestoreUser(userId) {
+            try {
+                console.log('executeRestoreUser called with userId:', userId, typeof userId);
+                
+                // Validate userId
+                if (userId === null || userId === undefined || userId === 'null' || userId === '') {
+                    throw new Error('Invalid user ID');
+                }
+
+                const token = sessionStorage.getItem('token');
+                
+                // Show loading state
+                const restoreButtons = document.querySelectorAll(`button[onclick*="restoreUser(${userId})"]`);
+                restoreButtons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                });
+
                 const response = await fetch(`http://localhost:8080/api/admin/users/${userId}/restore`, {
                     method: 'POST',
                     headers: {
@@ -1039,22 +1606,33 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to unban user');
+                    const errorData = await response.json().catch(() => null);
+                    const errorMessage = errorData?.message || 'Failed to unban user';
+                    throw new Error(errorMessage);
                 }
 
-                await loadUsers(currentPage);
+                await loadUsers(currentPage, currentFilter);
                 await loadUserStats();
-                alert('User has been unbanned successfully');
+                
+                // Show success notification with better styling
+                showSuccessNotification('✅ User Restored Successfully', 'The user account is now active and can log in again.');
+                
             } catch (error) {
                 console.error('Error unbanning user:', error);
-                alert('Failed to unban user. Please try again.');
+                showErrorNotification('❌ Restore Failed', `Failed to unban user: ${error.message}`);
+            } finally {
+                // Restore button state
+                const restoreButtons = document.querySelectorAll(`button[onclick*="restoreUser(${userId})"]`);
+                restoreButtons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-user-check"></i>';
+                });
             }
-
         }
 
         async function openDetailModal(userId) {
             try {
-                const token = localStorage.getItem('token');
+                const token = sessionStorage.getItem('token');
                 const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -1074,8 +1652,8 @@
                 document.getElementById('detailRole').textContent = user.role || 'USER';
                 document.getElementById('detailPremium').textContent = user.isPremium ? 'Premium' : 'Basic';
                 document.getElementById('detailVerified').textContent = user.verified ? 'Yes' : 'No';
-                document.getElementById('detailLastLogin').textContent = formatDate(user.lastLoginAt);
-                document.getElementById('detailCreatedAt').textContent = formatDate(user.createdAt);
+                document.getElementById('detailLastLogin').textContent = formatDate_ddMMyyyy(user.lastLoginAt);
+                document.getElementById('detailCreatedAt').textContent = formatDate_ddMMyyyy(user.createdAt);
 
                 // Load premium packages
                 const premiumPackagesDiv = document.getElementById('detailPremiumPackages');
@@ -1086,8 +1664,8 @@
                             <div class="premium-package-item">
                                 <h4>${pkg.premiumPackage?.name || 'Premium Package'}</h4>
                                 <p>Status: ${pkg.isActive ? 'Active' : 'Inactive'}</p>
-                                <p>Started: ${formatDate(pkg.startDate)}</p>
-                                <p>Expires: ${formatDate(pkg.endDate)}</p>
+                                <p>Started: ${formatDate_ddMMyyyy(pkg.startDate)}</p>
+                                <p>Expires: ${formatDate_ddMMyyyy(pkg.endDate)}</p>
                             </div>
                         `;
                     });
@@ -1110,7 +1688,402 @@
                 alert('Failed to load user data. Please try again.');
             }
         }
+
+        // Hàm render lại table user
+        function renderUsersTable(users) {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+            
+            console.log('Rendering users table with data:', users);
+            
+            if (!users || users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-gray-500">No users found</td></tr>`;
+                return;
+            }
+            users.forEach((user, index) => {
+                console.log(`Table User ${index}:`, user, 'ID:', user.id, 'Type:', typeof user.id);
+                
+                // Ensure user.id exists and is valid
+                if (user.id === null || user.id === undefined) {
+                    console.error('Table User missing ID:', user);
+                    return; // Skip this user
+                }
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50 transition-colors';
+                const userInitials = user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase();
+                let balanceAmount = '0 đ';
+                if (user.balance !== undefined) {
+                    balanceAmount = user.balance.toLocaleString() + ' đ';
+                }
+                const lastLogin = user.lastLogin || '-';
+                tr.innerHTML = `
+                    <td class="px-2 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-12 w-12">
+                                <div class="h-12 w-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold text-lg">
+                                    ${userInitials}
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">${user.name || 'N/A'}</div>
+                                <div class="text-sm text-gray-500">${user.email}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-2 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden md:table-cell">
+                        <div class="text-sm font-semibold text-gray-900">${balanceAmount}</div>
+                        <div class="text-xs text-gray-500">Total Balance</div>
+                    </td>
+                    <td class="px-2 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden md:table-cell">
+                        <span class="inline-flex px-3 py-1 text-xs font-medium rounded-full ${user.isPremium ? 'bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-800 border border-amber-200' : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 border border-gray-300'}">
+                            ${user.isPremium ? '👑 Premium' : 'Basic'}
+                        </span>
+                    </td>
+                    <td class="px-2 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                        <span class="inline-flex px-3 py-1 text-xs font-medium rounded-full ${user.isDelete ? 'bg-gradient-to-r from-red-100 to-pink-100 text-red-800 border border-red-200' : 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200'}">
+                            <div class="w-2 h-2 ${user.isDelete ? 'bg-red-500' : 'bg-green-500'} rounded-full mr-2 mt-0.5"></div>
+                            ${user.isDelete ? 'Suspended' : 'Active'}
+                        </span>
+                    </td>
+                    <td class="px-2 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden md:table-cell text-sm text-gray-500">
+                        ${lastLogin}
+                    </td>
+                    <td class="px-2 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <button onclick="openDetailModal(${user.id})" class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 p-2 rounded-lg transition-all duration-200 hover:scale-105" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button onclick="openEditModal(${user.id})" class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 p-2 rounded-lg transition-all duration-200 hover:scale-105" title="Edit User">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            ${user.isDelete ? 
+                                `<button onclick="restoreUser(${user.id})" class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 p-2 rounded-lg transition-all duration-200 hover:scale-105" title="Unban User">
+                                    <i class="fas fa-user-check"></i>
+                                </button>` :
+                                `<button onclick="banUser(${user.id})" class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition-all duration-200 hover:scale-105" title="Ban User">
+                                    <i class="fas fa-ban"></i>
+                                </button>`
+                            }
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Hàm filter status trên client
+        function filterUsersByStatus(users, status) {
+            switch (status) {
+                case 'active': return users.filter(u => !u.isDelete);
+                case 'suspended': return users.filter(u => u.isDelete);
+                case 'premium': return users.filter(u => u.isPremium && !u.isDelete);
+                case 'basic': return users.filter(u => !u.isPremium && !u.isDelete);
+                default: return users;
+            }
+        }
+        // Hàm phân trang client
+        function paginate(array, page, pageSize) {
+            const totalPages = Math.ceil(array.length / pageSize);
+            const start = page * pageSize;
+            const end = start + pageSize;
+            return { items: array.slice(start, end), totalPages };
+        }
+        
+        // Variables for ban confirmation
+        let pendingBanUserId = null;
+        let pendingUnbanUserId = null;
+        let isProcessingBan = false;
+        
+        // Debug function to check pending IDs
+        function debugPendingIds() {
+            console.log('Current pending IDs:', { 
+                pendingBanUserId, 
+                pendingUnbanUserId,
+                banType: typeof pendingBanUserId,
+                unbanType: typeof pendingUnbanUserId
+            });
+        }
+
+        // Show ban confirmation modal
+        function showBanConfirmModal(userId, userName, userEmail) {
+            console.log('showBanConfirmModal called with:', { userId, userName, userEmail, type: typeof userId });
+            pendingBanUserId = userId;
+            console.log('Set pendingBanUserId to:', pendingBanUserId);
+            debugPendingIds();
+            
+            // Update modal content
+            document.getElementById('banUserName').textContent = userName || 'Unknown User';
+            document.getElementById('banUserEmail').textContent = userEmail || '';
+            document.getElementById('banUserAvatar').textContent = (userName || 'U').charAt(0).toUpperCase();
+            
+            // Show modal
+            document.getElementById('banConfirmModal').classList.remove('hidden');
+        }
+
+        // Close ban confirmation modal
+        function closeBanConfirmModal() {
+            document.getElementById('banConfirmModal').classList.add('hidden');
+            pendingBanUserId = null;
+        }
+
+        // Show unban confirmation modal
+        function showUnbanConfirmModal(userId, userName, userEmail) {
+            console.log('showUnbanConfirmModal called with:', { userId, userName, userEmail, type: typeof userId });
+            pendingUnbanUserId = userId;
+            console.log('Set pendingUnbanUserId to:', pendingUnbanUserId);
+            debugPendingIds();
+            
+            // Update modal content
+            document.getElementById('unbanUserName').textContent = userName || 'Unknown User';
+            document.getElementById('unbanUserEmail').textContent = userEmail || '';
+            document.getElementById('unbanUserAvatar').textContent = (userName || 'U').charAt(0).toUpperCase();
+            
+            // Show modal
+            document.getElementById('unbanConfirmModal').classList.remove('hidden');
+        }
+
+        // Close unban confirmation modal
+        function closeUnbanConfirmModal() {
+            document.getElementById('unbanConfirmModal').classList.add('hidden');
+            pendingUnbanUserId = null;
+        }
+
+        // Confirm ban user
+        async function confirmBanUser() {
+            if (isProcessingBan) {
+                console.log('Already processing ban, ignoring duplicate call');
+                return;
+            }
+            
+            debugPendingIds();
+            console.log('confirmBanUser called with pendingBanUserId:', pendingBanUserId, typeof pendingBanUserId);
+            if (pendingBanUserId === null || pendingBanUserId === undefined) {
+                console.error('No pending ban user ID found!');
+                return;
+            }
+            
+            // Prevent multiple calls
+            isProcessingBan = true;
+            const userIdToProcess = pendingBanUserId;
+            pendingBanUserId = null; // Clear immediately to prevent duplicate calls
+            
+            closeBanConfirmModal();
+            
+            try {
+                await executeBanUser(userIdToProcess);
+            } finally {
+                isProcessingBan = false; // Reset flag regardless of success/failure
+            }
+        }
+
+        // Confirm unban user
+        async function confirmUnbanUser() {
+            if (isProcessingBan) {
+                console.log('Already processing action, ignoring duplicate call');
+                return;
+            }
+            
+            debugPendingIds();
+            console.log('confirmUnbanUser called with pendingUnbanUserId:', pendingUnbanUserId, typeof pendingUnbanUserId);
+            if (pendingUnbanUserId === null || pendingUnbanUserId === undefined) {
+                console.error('No pending unban user ID found!');
+                return;
+            }
+            
+            // Prevent multiple calls
+            isProcessingBan = true;
+            const userIdToProcess = pendingUnbanUserId;
+            pendingUnbanUserId = null; // Clear immediately to prevent duplicate calls
+            
+            closeUnbanConfirmModal();
+            
+            try {
+                await executeRestoreUser(userIdToProcess);
+            } finally {
+                isProcessingBan = false; // Reset flag regardless of success/failure
+            }
+        }
+
+        // Show success notification
+        function showSuccessNotification(title, message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-white border-l-4 border-green-500 rounded-2xl shadow-2xl p-4 max-w-sm z-50 transform translate-x-full transition-transform duration-300';
+            notification.innerHTML = `
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-green-600"></i>
+                        </div>
+                    </div>
+                    <div class="ml-3 flex-1">
+                        <h3 class="text-sm font-semibold text-gray-900">${title}</h3>
+                        <p class="text-sm text-gray-600 mt-1">${message}</p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+        // Show error notification
+        function showErrorNotification(title, message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-white border-l-4 border-red-500 rounded-2xl shadow-2xl p-4 max-w-sm z-50 transform translate-x-full transition-transform duration-300';
+            notification.innerHTML = `
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-exclamation-triangle text-red-600"></i>
+                        </div>
+                    </div>
+                    <div class="ml-3 flex-1">
+                        <h3 class="text-sm font-semibold text-gray-900">${title}</h3>
+                        <p class="text-sm text-gray-600 mt-1">${message}</p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Auto remove after 7 seconds (longer for errors)
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => notification.remove(), 300);
+            }, 7000);
+        }
     </script>
+
+    <!-- Ban Confirmation Modal -->
+    <div id="banConfirmModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 w-full max-w-md mx-4 relative">
+            <div class="text-center">
+                <!-- Warning Icon -->
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                </div>
+                
+                <!-- Title -->
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Ban User Account</h3>
+                
+                <!-- User Info -->
+                <div class="bg-gray-50 rounded-2xl p-4 mb-4">
+                    <div class="flex items-center justify-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold" id="banUserAvatar">
+                            U
+                        </div>
+                        <div class="text-left">
+                            <div class="font-medium text-gray-900" id="banUserName">User Name</div>
+                            <div class="text-sm text-gray-500" id="banUserEmail">user@example.com</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Warning Message -->
+                <div class="text-left bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6">
+                    <h4 class="font-semibold text-amber-800 mb-2 flex items-center">
+                        <i class="fas fa-ban mr-2"></i>
+                        This action will:
+                    </h4>
+                    <ul class="text-sm text-amber-700 space-y-1">
+                        <li class="flex items-center"><i class="fas fa-circle text-xs mr-2"></i>Suspend their account immediately</li>
+                        <li class="flex items-center"><i class="fas fa-circle text-xs mr-2"></i>Prevent them from logging in</li>
+                        <li class="flex items-center"><i class="fas fa-circle text-xs mr-2"></i>Block access to all services</li>
+                        <li class="flex items-center"><i class="fas fa-circle text-xs mr-2"></i>Can be reversed later</li>
+                    </ul>
+                </div>
+                
+                <!-- Buttons -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button type="button" onclick="closeBanConfirmModal()" 
+                            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-2xl font-medium transition-all duration-200">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </button>
+                    <button type="button" onclick="confirmBanUser()" 
+                            class="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-3 rounded-2xl font-medium transition-all duration-200">
+                        <i class="fas fa-ban mr-2"></i>Ban User
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unban Confirmation Modal -->
+    <div id="unbanConfirmModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 w-full max-w-md mx-4 relative">
+            <div class="text-center">
+                <!-- Success Icon -->
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                    <i class="fas fa-user-check text-green-600 text-2xl"></i>
+                </div>
+                
+                <!-- Title -->
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Restore User Account</h3>
+                
+                <!-- User Info -->
+                <div class="bg-gray-50 rounded-2xl p-4 mb-4">
+                    <div class="flex items-center justify-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold" id="unbanUserAvatar">
+                            U
+                        </div>
+                        <div class="text-left">
+                            <div class="font-medium text-gray-900" id="unbanUserName">User Name</div>
+                            <div class="text-sm text-gray-500" id="unbanUserEmail">user@example.com</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Success Message -->
+                <div class="text-left bg-green-50 border border-green-200 rounded-2xl p-4 mb-6">
+                    <h4 class="font-semibold text-green-800 mb-2 flex items-center">
+                        <i class="fas fa-user-check mr-2"></i>
+                        This action will:
+                    </h4>
+                    <ul class="text-sm text-green-700 space-y-1">
+                        <li class="flex items-center"><i class="fas fa-circle text-xs mr-2"></i>Restore their account access</li>
+                        <li class="flex items-center"><i class="fas fa-circle text-xs mr-2"></i>Allow them to log in again</li>
+                        <li class="flex items-center"><i class="fas fa-circle text-xs mr-2"></i>Reactivate all services</li>
+                        <li class="flex items-center"><i class="fas fa-circle text-xs mr-2"></i>Remove suspension status</li>
+                    </ul>
+                </div>
+                
+                <!-- Buttons -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button type="button" onclick="closeUnbanConfirmModal()" 
+                            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-2xl font-medium transition-all duration-200">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </button>
+                    <button type="button" onclick="confirmUnbanUser()" 
+                            class="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-2xl font-medium transition-all duration-200">
+                        <i class="fas fa-user-check mr-2"></i>Restore User
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
