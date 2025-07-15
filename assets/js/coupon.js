@@ -2,7 +2,6 @@ let currentPage = 0;
 let totalPages = 0;
 let allPremiumPackages = [];
 
-// Utility function for debouncing
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -15,18 +14,10 @@ function debounce(func, wait) {
     };
 }
 
-// Update current date and time
-function updateDateTime() {
-    const now = new Date();
-    document.getElementById('current-date-time').textContent = now.toLocaleString('en-US', {
-        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-        hour: '2-digit', minute: '2-digit', timeZoneName: 'short', timeZone: 'Asia/Ho_Chi_Minh'
-    });
-}
 
-// Save and load filters
+
 function saveFilters(code, isActive, startDate, endDate) {
-    localStorage.setItem('couponFilters', JSON.stringify({code, isActive, startDate, endDate}));
+    localStorage.setItem('couponFilters', JSON.stringify({ code, isActive, startDate, endDate }));
 }
 
 function loadFilters() {
@@ -38,7 +29,6 @@ function loadFilters() {
     return filters;
 }
 
-// Load coupon statistics
 async function loadStats() {
     try {
         const response = await apiRequest('http://localhost:8080/api/coupon');
@@ -57,14 +47,12 @@ async function loadStats() {
     }
 }
 
-// Load premium packages
 async function loadPremiumPackages() {
     try {
         const response = await apiRequest('http://localhost:8080/api/premium-package/fetchAll');
         if (!response.ok) throw new Error('Failed to load premium packages');
         const data = await response.json();
         allPremiumPackages = data.result || [];
-        console.log(allPremiumPackages);
         return allPremiumPackages;
     } catch (error) {
         showNotification('Error', 'Failed to load premium packages. Please try again.', 'error');
@@ -73,10 +61,9 @@ async function loadPremiumPackages() {
     }
 }
 
-// Load coupons
 async function loadCoupons(page = 0, size = 6) {
     try {
-        const params = new URLSearchParams({page, size, sortBy: 'usedCount', sortDirection: 'DESC'});
+        const params = new URLSearchParams({ page, size, sortBy: 'usedCount', sortDirection: 'DESC' });
         await fetchAndRenderCoupons(`http://localhost:8080/api/coupon?${params.toString()}`, 'GET');
     } catch (error) {
         showNotification('Error', `Failed to load coupons: ${error.message}`, 'error');
@@ -106,10 +93,10 @@ async function searchCoupons(page = 0, size = 6, code = '', isActive = '', start
 
 async function fetchAndRenderCoupons(url, method, body = null) {
     try {
-        const options = {method};
+        const options = { method };
         if (body) {
             options.body = JSON.stringify(body);
-            options.headers = {'Content-Type': 'application/json'};
+            options.headers = { 'Content-Type': 'application/json' };
         }
 
         const response = await apiRequest(url, options);
@@ -126,58 +113,82 @@ async function fetchAndRenderCoupons(url, method, body = null) {
         coupons.forEach((coupon, index) => {
             if (!coupon.id) {
                 console.warn(`Coupon at index ${index} has no ID`, coupon);
-                return; // Skip rendering this coupon
+                return;
             }
             const tr = document.createElement('tr');
             tr.className = 'table-row-hover';
             tr.innerHTML = `
-                        <td class="p-3">${index + 1 + currentPage * (body ? body.size : parseInt(new URLSearchParams(url.split('?')[1]).get('size')) || 6)}</td>
-                        <td class="p-3">${coupon.code}</td>
-                        <td class="p-3">${coupon.discountPercentage}%</td>
-                        <td class="p-3">${coupon.isActive ? 'Active' : 'Inactive'}</td>
-                        <td class="p-3">${coupon.usedCount}/${coupon.maxUsage || '∞'}</td>
-                        <td class="p-3">
-                            <button class="action-icon view-icon mx-2" onclick="showCouponDetails(${coupon.id})" title="View Details">
-                                <i class="fas fa-eye text-teal-600 hover:text-teal-800"></i>
-                            </button>
-                            <button class="action-icon edit-icon mx-2" onclick="editCoupon(${coupon.id})" title="Edit">
-                                <i class="fas fa-edit text-yellow-600 hover:text-yellow-800"></i>
-                            </button>
-                            <button class="action-icon delete-icon mx-2" onclick="deleteCoupon(${coupon.id})" title="Delete">
-                                <i class="fas fa-trash text-red-600 hover:text-red-800"></i>
-                            </button>
-                        </td>
-                    `;
+                <td class="px-4 py-3 whitespace-nowrap font-bold text-indigo-700">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-hashtag text-indigo-500"></i>
+                        ${index + 1 + currentPage * (body ? body.size : parseInt(new URLSearchParams(url.split('?')[1]).get('size')) || 6)}
+                    </div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap font-semibold text-green-700">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-ticket-alt text-green-500"></i>
+                        ${coupon.code}
+                    </div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap font-semibold text-purple-700">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-percentage text-purple-500"></i>
+                        ${coupon.discountPercentage}%
+                    </div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap font-semibold text-blue-700">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-toggle-on text-blue-500"></i>
+                        ${coupon.isActive ? 'Active' : 'Inactive'}
+                    </div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                    <span class="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 rounded px-2 py-1 font-mono text-sm">
+                        <i class="fas fa-chart-bar text-indigo-500"></i>
+                        ${coupon.usedCount}/${coupon.maxUsage || '∞'}
+                    </span>
+                </td>
+                <td class="px-6 py-3 text-right whitespace-nowrap">
+                    <button class="action-icon view-icon mx-2" onclick="showCouponDetails(${coupon.id})" title="View Details">
+                        <i class="fas fa-eye text-blue-600 hover:text-blue-800"></i>
+                    </button>
+                    <button class="action-icon edit-icon mx-2" onclick="editCoupon(${coupon.id})" title="Edit">
+                        <i class="fas fa-edit text-yellow-600 hover:text-yellow-800"></i>
+                    </button>
+                    <button class="action-icon delete-icon mx-2" onclick="deleteCoupon(${coupon.id})" title="Delete">
+                        <i class="fas fa-trash text-red-600 hover:text-red-800"></i>
+                    </button>
+                </td>
+            `;
             tbody.appendChild(tr);
         });
 
         renderPagination();
         showNotification('Success', 'Coupons loaded successfully!', 'success');
     } catch (error) {
-        throw error; // Re-throw để hàm gọi xử lý lỗi
+        throw error;
     }
 }
 
-// Render premium packages for selection
 function renderPremiumPackages(containerId, selectedPackageIds = []) {
     const container = document.getElementById(containerId);
     if (!allPremiumPackages || allPremiumPackages.length === 0) {
         container.innerHTML = '<p class="text-gray-600">No premium packages available</p>';
         return;
     }
+    console.log("id: ", selectedPackageIds);
 
     const packagesHTML = allPremiumPackages.map(pkg => `
-                <div class="package-item flex items-center gap-2 p-2 rounded-md bg-gray-100 cursor-pointer text-sm text-[var(--text-dark)] ${selectedPackageIds.includes(pkg.id) ? '' : 'opacity-75'}" 
-                     data-package-id="${pkg.id}" 
-                     onclick="togglePremiumPackage('${containerId}', ${pkg.id})">
-                    <i class="fas ${selectedPackageIds.includes(pkg.id) ? 'fa-check text-[var(--primary)]' : 'fa-plus text-gray-600'} text-xs"></i>
-                    ${pkg.name}
-                </div>
-            `).join('');
+        <div class="package-item flex items-center gap-2 p-2 rounded-md bg-gray-100 cursor-pointer text-sm text-gray-700 ${selectedPackageIds.includes(pkg.id) ? '' : 'opacity-75'}" 
+             data-package-id="${pkg.id}" 
+             onclick="togglePremiumPackage('${containerId}', ${pkg.id})">
+            <i class="fas ${selectedPackageIds.includes(pkg.id) ? 'fa-check text-indigo-500' : 'fa-plus text-gray-600'} text-xs"></i>
+            ${pkg.name}
+        </div>
+    `).join('');
     container.innerHTML = packagesHTML;
 }
 
-// Toggle premium package selection
 function togglePremiumPackage(containerId, packageId) {
     const container = document.getElementById(containerId);
     const packageItem = container.querySelector(`[data-package-id="${packageId}"]`);
@@ -187,19 +198,18 @@ function togglePremiumPackage(containerId, packageId) {
     if (selectedPackageIds.includes(packageId)) {
         selectedPackageIds = selectedPackageIds.filter(id => id !== packageId);
         packageItem.classList.add('opacity-75');
-        packageItem.querySelector('i').classList.remove('fa-check', 'text-[var(--primary)]');
+        packageItem.querySelector('i').classList.remove('fa-check', 'text-indigo-500');
         packageItem.querySelector('i').classList.add('fa-plus', 'text-gray-600');
     } else {
         selectedPackageIds.push(packageId);
         packageItem.classList.remove('opacity-75');
         packageItem.querySelector('i').classList.remove('fa-plus', 'text-gray-600');
-        packageItem.querySelector('i').classList.add('fa-check', 'text-[var(--primary)]');
+        packageItem.querySelector('i').classList.add('fa-check', 'text-indigo-500');
     }
 
     input.value = selectedPackageIds.join(',');
 }
 
-// Refresh data
 async function refreshData() {
     const filters = loadFilters();
     await Promise.all([
@@ -209,7 +219,6 @@ async function refreshData() {
     ]);
 }
 
-// Show coupon details
 async function showCouponDetails(couponId) {
     try {
         const response = await apiRequest(`http://localhost:8080/api/coupon/${couponId}`);
@@ -219,74 +228,35 @@ async function showCouponDetails(couponId) {
         const expiryDate = couponData.expiryDate ?
             new Date(couponData.expiryDate).toLocaleDateString('vi-VN') : 'N/A';
         const createdAt = couponData.createdAt ?
-            `${new Date(couponData.createdAt).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'})}<br>
-                    ${new Date(couponData.createdAt).toLocaleDateString('vi-VN')}` : 'N/A';
+            formatTimestamp(couponData.createdAt, true) : 'N/A';
         const premiumPackages = couponData.premiumPackages || [];
+
+        const fields = [
+            { label: 'Coupon Code', icon: 'ticket-alt', color: 'indigo', value: couponData.code || 'N/A' },
+            { label: 'Discount Percentage', icon: 'percentage', color: 'green', value: `${couponData.discountPercentage || 'N/A'}%` },
+            { label: 'Description', icon: 'info-circle', color: 'red', value: couponData.description || 'N/A' },
+            { label: 'Max Usage', icon: 'ticket-alt', color: 'yellow', value: couponData.maxUsage || 'Unlimited' },
+            { label: 'Used Count', icon: 'chart-bar', color: 'blue', value: couponData.usedCount || 0 },
+            { label: 'Expiry Date', icon: 'calendar-day', color: 'indigo', value: expiryDate },
+            { label: 'Status', icon: 'toggle-on', color: 'purple', value: couponData.isActive ? 'Active' : 'Inactive' },
+            { label: 'Applicable Premium Packages', icon: 'crown', color: 'indigo', value: premiumPackages.length > 0 ? premiumPackages.map(p => p.name).join(', ') : 'None' },
+            { label: 'Created At', icon: 'calendar-day', color: 'indigo', value: createdAt }
+        ];
+
         document.getElementById('couponDetailsContent').innerHTML = `
-                    <div class="col-span-2 flex items-center gap-3 p-4 border rounded-lg bg-teal-50 shadow-sm">
-                        <i class="fas fa-ticket-alt text-teal-600 text-lg"></i>
-                        <div>
-                            <p class="text-sm text-[var(--text-light)]">Coupon Code</p>
-                            <p class="font-semibold text-[var(--text-dark)]">${couponData.code || 'N/A'}</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                ${fields.map(({ label, icon, color, value }) => `
+                    <div class="p-3 bg-white rounded-lg shadow border-l-4 border-${color}-500">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="fas fa-${icon} text-${color}-500 text-lg"></i>
+                            <span class="text-xs text-gray-500 font-medium">${label}</span>
                         </div>
+                        <div class="text-sm font-semibold text-${color}-700 break-all">${value}</div>
                     </div>
-                    <div class="flex items-center gap-3 p-4 border rounded-lg bg-green-50 shadow-sm">
-                        <i class="fas fa-percentage text-green-600 text-lg"></i>
-                        <div>
-                            <p class="text-sm text-[var(--text-light)]">Discount Percentage</p>
-                            <p class="font-semibold text-[var(--text-dark)]">${couponData.discountPercentage || 'N/A'}%</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3 p-4 border rounded-lg bg-red-50 shadow-sm">
-                        <i class="fas fa-info-circle text-red-600 text-lg"></i>
-                        <div>
-                            <p class="text-sm text-[var(--text-light)]">Description</p>
-                            <p class="font-semibold text-[var(--text-dark)]">${couponData.description || 'N/A'}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3 p-4 border rounded-lg bg-yellow-50 shadow-sm">
-                        <i class="fas fa-ticket-alt text-yellow-600 text-lg"></i>
-                        <div>
-                            <p class="text-sm text-[var(--text-light)]">Max Usage</p>
-                            <p class="font-semibold text-[var(--text-dark)]">${couponData.maxUsage || 'Unlimited'}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3 p-4 border rounded-lg bg-blue-50 shadow-sm">
-                        <i class="fas fa-ticket-alt text-blue-600 text-lg"></i>
-                        <div>
-                            <p class="text-sm text-[var(--text-light)]">Used Count</p>
-                            <p class="font-semibold text-[var(--text-dark)]">${couponData.usedCount || 0}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3 p-4 border rounded-lg bg-gray-50 shadow-sm">
-                        <i class="fas fa-calendar-day text-gray-600 text-lg"></i>
-                        <div>
-                            <p class="text-sm text-[var(--text-light)]">Expiry Date</p>
-                            <p class="font-semibold text-[var(--text-dark)]">${expiryDate}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3 p-4 border rounded-lg bg-purple-50 shadow-sm">
-                        <i class="fas fa-toggle-on text-purple-600 text-lg"></i>
-                        <div>
-                            <p class="text-sm text-[var(--text-light)]">Status</p>
-                            <p class="font-semibold text-[var(--text-dark)]">${couponData.isActive ? 'Active' : 'Inactive'}</p>
-                        </div>
-                    </div>
-                    <div class="col-span-2 flex items-center gap-3 p-4 border rounded-lg bg-teal-50 shadow-sm">
-                        <i class="fas fa-crown text-teal-600 text-lg"></i>
-                        <div>
-                            <p class="text-sm text-[var(--text-light)]">Applicable Premium Packages</p>
-                            <p class="font-semibold text-[var(--text-dark)]">${premiumPackages.length > 0 ? premiumPackages.map(p => p.name).join(', ') : 'None'}</p>
-                        </div>
-                    </div>
-                    <div class="col-span-2 flex items-center gap-3 p-4 border rounded-lg bg-teal-50 shadow-sm">
-                        <i class="fas fa-calendar-day text-teal-600 text-lg"></i>
-                        <div>
-                            <p class="text-sm text-[var(--text-light)]">Created At</p>
-                            <p class="font-semibold text-[var(--text-dark)]">${createdAt}</p>
-                        </div>
-                    </div>
-                `;
+                `).join('')}
+            </div>
+        `;
+
         const modal = document.getElementById('couponDetailModal');
         modal.classList.remove('hidden');
         modal.classList.add('flex');
@@ -297,7 +267,6 @@ async function showCouponDetails(couponId) {
     }
 }
 
-// Close coupon detail modal
 function closeCouponDetailModal() {
     const modal = document.getElementById('couponDetailModal');
     const content = modal.querySelector('.modal-content');
@@ -308,7 +277,6 @@ function closeCouponDetailModal() {
     }, 200);
 }
 
-// Open create/edit coupon modal
 async function openCouponModal(coupon = null) {
     const modal = document.getElementById('couponModal');
     const form = document.getElementById('couponForm');
@@ -325,6 +293,7 @@ async function openCouponModal(coupon = null) {
         document.getElementById('expiryDate').value = coupon.expiryDate ? new Date(coupon.expiryDate).toISOString().split('T')[0] : '';
         document.getElementById('isActive').checked = coupon.isActive || false;
         const packageIds = coupon.premiumPackages ? coupon.premiumPackages.map(p => p.id) : [];
+        console.log("package: ", coupon.premiumPackages)
         document.getElementById('selectedPremiumPackages').value = packageIds.join(',');
         renderPremiumPackages('premiumPackages', packageIds);
         form.dataset.couponId = coupon.id;
@@ -338,7 +307,6 @@ async function openCouponModal(coupon = null) {
     setTimeout(() => modal.querySelector('.modal-content').classList.add('show'), 10);
 }
 
-// Close coupon modal
 function closeCouponModal() {
     const modal = document.getElementById('couponModal');
     const content = modal.querySelector('.modal-content');
@@ -349,7 +317,6 @@ function closeCouponModal() {
     }, 200);
 }
 
-// Edit coupon
 async function editCoupon(couponId) {
     if (!couponId) {
         showNotification('Error', 'Invalid coupon ID.', 'error');
@@ -367,11 +334,10 @@ async function editCoupon(couponId) {
     }
 }
 
-// Delete coupon
 async function deleteCoupon(couponId) {
     if (!confirm('Are you sure you want to delete this coupon?')) return;
     try {
-        const response = await apiRequest(`http://localhost:8080/api/coupon/${couponId}`, {method: 'DELETE'});
+        const response = await apiRequest(`http://localhost:8080/api/coupon/${couponId}`, { method: 'DELETE' });
         if (!response.ok) throw new Error('Delete failed');
         showNotification('Success', 'Coupon deleted successfully!', 'success');
         const filters = loadFilters();
@@ -382,7 +348,6 @@ async function deleteCoupon(couponId) {
     }
 }
 
-// Render pagination
 function renderPagination() {
     const pageNumbers = document.getElementById('pageNumbers');
     pageNumbers.innerHTML = '';
@@ -392,12 +357,12 @@ function renderPagination() {
     startPage = Math.max(0, endPage - maxButtons);
 
     const createButton = (page, text, disabled = false) => {
-        return `<button class="px-4 py-2 rounded-lg ${disabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-teal-600 hover:bg-teal-700'} text-white transition" ${disabled ? 'disabled' : `onclick="loadCoupons(${page}, 6)"`}>${text}</button>`;
+        return `<button class="px-4 py-2 rounded-lg ${disabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'} text-white transition" ${disabled ? 'disabled' : `onclick="loadCoupons(${page}, 6)"`}>${text}</button>`;
     };
 
     const buttons = [
         ...(startPage > 0 ? [createButton(0, '1'), ...(startPage > 1 ? ['<span class="px-4 py-2 text-gray-500">...</span>'] : [])] : []),
-        ...Array.from({length: endPage - startPage}, (_, i) => createButton(startPage + i, startPage + i + 1, startPage + i === currentPage)),
+        ...Array.from({ length: endPage - startPage }, (_, i) => createButton(startPage + i, startPage + i + 1, startPage + i === currentPage)),
         ...(endPage < totalPages ? [(endPage < totalPages - 1 ? '<span class="px-4 py-2 text-gray-500">...</span>' : ''), createButton(totalPages - 1, totalPages)] : []),
     ];
 
@@ -406,64 +371,76 @@ function renderPagination() {
     document.getElementById('nextBtn').disabled = currentPage >= totalPages - 1;
 }
 
-// Show notification
 function showNotification(title, message, type) {
     const toastContainer = document.getElementById('toastContainer');
     const notificationCard = document.createElement('div');
-    notificationCard.className = `mb-3 notification-slide-in ${type === 'error' ? 'bg-red-50 text-red-800' : type === 'warning' ? 'bg-yellow-50 text-yellow-800' : 'bg-green-50 text-green-800'}`;
-    const iconPaths = {
-        error: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />',
-        warning: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />',
-        success: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />'
+    const typeStyles = {
+        error: {
+            border: 'border-l-4 border-red-500',
+            icon: '<i class="fas fa-times-circle text-red-500 text-lg"></i>'
+        },
+        warning: {
+            border: 'border-l-4 border-yellow-400',
+            icon: '<i class="fas fa-exclamation-triangle text-yellow-500 text-lg"></i>'
+        },
+        success: {
+            border: 'border-l-4 border-green-500',
+            icon: '<i class="fas fa-check-circle text-green-500 text-lg"></i>'
+        },
+        info: {
+            border: 'border-l-4 border-blue-500',
+            icon: '<i class="fas fa-info-circle text-blue-500 text-lg"></i>'
+        }
     };
+    const style = typeStyles[type] || typeStyles.info;
+    notificationCard.className = `flex items-start gap-3 bg-white shadow-lg rounded-xl p-4 mb-3 fade-in ${style.border}`;
     notificationCard.innerHTML = `
-                <div class="rounded-lg p-3 shadow-sm transition-all duration-300 text-sm">
-                    <div class="flex items-start space-x-2">
-                        <svg class="w-4 h-4 mt-0.5 ${type === 'error' ? 'text-red-600' : type === 'warning' ? 'text-yellow-600' : 'text-green-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            ${iconPaths[type]}
-                        </svg>
-                        <div class="flex-1">
-                            <h3 class="font-semibold leading-snug">${title}</h3>
-                            <p class="mt-0.5 leading-snug">${message}</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-    toastContainer.appendChild(notificationCard);
-    setTimeout(() => {
-        notificationCard.classList.remove('notification-slide-in');
-        notificationCard.classList.add('notification-slide-out');
+        <div class="flex-shrink-0 mt-0.5">${style.icon}</div>
+        <div class="flex-1">
+            <div class="flex items-center justify-between">
+                <h3 class="font-semibold text-gray-900">${title}</h3>
+                <button class="ml-2 text-gray-400 hover:text-gray-600 text-lg font-bold leading-none focus:outline-none" aria-label="Close notification" tabindex="0">×</button>
+            </div>
+            <div class="mt-1 text-gray-700 text-sm">${message}</div>
+        </div>
+    `;
+    notificationCard.querySelector('button').onclick = () => {
+        notificationCard.classList.remove('fade-in');
+        notificationCard.classList.add('fade-out');
         setTimeout(() => notificationCard.remove(), 300);
-    }, 3000);
+    };
+    setTimeout(() => {
+        notificationCard.classList.remove('fade-in');
+        notificationCard.classList.add('fade-out');
+        setTimeout(() => notificationCard.remove(), 300);
+    }, 4000);
+    toastContainer.appendChild(notificationCard);
 }
 
-// Initialize page
-document.addEventListener('DOMContentLoaded', async () => {
-    updateDateTime();
-    setInterval(updateDateTime, 60000);
-    if (!checkAuth()) return;
-
-    const user = getCurrentUser();
-    if (user) {
-        const userInfo = JSON.parse(localStorage.getItem('userData') || '{}');
-        const userName = userInfo.name || userInfo.email?.split('@')[0] || 'Admin';
-        loadSideBarSimple(userName);
-        const filters = loadFilters();
-        await Promise.all([
-            loadCoupons(0, 6),
-            loadStats(),
-            loadPremiumPackages()
-        ]);
+function formatTimestamp(isoString, useBr = false) {
+    if (!isoString) return 'N/A';
+    if (isoString.includes('T')) {
+        const [date, timeWithMs] = isoString.split('T');
+        const time = timeWithMs.split('.')[0];
+        return useBr ? `${time}<br>${date}` : `${date} ${time}`;
     }
+    return isoString;
+}
 
-    // Search input handler
+document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('searchInput').addEventListener('input', debounce(() => {
         const code = document.getElementById('searchInput').value;
         saveFilters(code, document.getElementById('isActiveFilter').value, document.getElementById('startDateFilter').value, document.getElementById('endDateFilter').value);
         searchCoupons(0, 6, code, document.getElementById('isActiveFilter').value, document.getElementById('startDateFilter').value, document.getElementById('endDateFilter').value);
     }, 500));
 
-    // Filter button handler
+    await Promise.all([
+        loadCoupons(0, 6),
+        loadStats(),
+        loadPremiumPackages()
+    ]);
+
+
     document.getElementById('filterBtn').addEventListener('click', () => {
         const code = document.getElementById('codeFilter').value;
         const isActive = document.getElementById('isActiveFilter').value;
@@ -474,7 +451,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadStats();
     });
 
-    // Pagination handlers
     document.getElementById('prevBtn').addEventListener('click', () => {
         if (currentPage > 0) {
             currentPage--;
@@ -491,13 +467,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // Refresh button handler
     document.getElementById('refreshBtn').addEventListener('click', refreshData);
 
-    // Create coupon button handler
     document.getElementById('createBtn').addEventListener('click', () => openCouponModal());
 
-    // Form submission handler
     document.getElementById('couponForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const form = e.target;
@@ -509,14 +482,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             maxUsage: form.maxUsage.value ? parseInt(form.maxUsage.value) : null,
             expiryDate: form.expiryDate.value,
             isActive: form.isActive.checked,
-            premiumId: form.premiumPackageIds.value ? form.premiumPackageIds.value.split(',').map(id => parseInt(id)).filter(id => !isNaN(id)) : []
+            premiumPackageIds: form.premiumPackageIds.value ? form.premiumPackageIds.value.split(',').map(id => parseInt(id)).filter(id => !isNaN(id)) : []
         };
         try {
             const method = couponId ? 'PUT' : 'POST';
             const url = couponId ? `http://localhost:8080/api/coupon/${couponId}` : 'http://localhost:8080/api/coupon';
             const response = await apiRequest(url, {
                 method,
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(couponData)
             });
             if (!response.ok) throw new Error(couponId ? 'Failed to update coupon' : 'Failed to create coupon');
@@ -528,5 +501,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             showNotification('Error', couponId ? 'Failed to update coupon. Please try again.' : 'Failed to create coupon. Please try again.', 'error');
             console.error('Error saving coupon:', error);
         }
+    });
+
+    // Enable pressing Enter in filter inputs to trigger Apply Filters
+    document.querySelectorAll('#codeFilter, #isActiveFilter, #startDateFilter, #endDateFilter').forEach(input => {
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                document.getElementById('filterBtn').click();
+            }
+        });
     });
 });
