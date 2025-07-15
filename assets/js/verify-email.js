@@ -142,13 +142,13 @@ document.getElementById('verificationForm').addEventListener('submit', async (e)
             sessionStorage.setItem('token', data.result.token);
             sessionStorage.setItem('loginTimestamp', Date.now().toString());
 
-            // Store user data from response
+            // Store user data from response, đảm bảo có isVerified
             const userData = {
                 email: data.result.email,
                 name: data.result.name,
-                role: data.result.role
+                role: data.result.role,
+                isVerified: data.result.isVerified !== undefined ? data.result.isVerified : true // fallback true nếu không có
             };
-
             sessionStorage.setItem('userData', JSON.stringify(userData));
             console.log('Stored user data:', userData);
 

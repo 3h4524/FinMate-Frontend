@@ -97,6 +97,13 @@
                     <i class="fas fa-star w-5 h-5"></i>
                     <span class="sidebar-label font-medium">Subscription Manager</span>
                 </button>
+
+                <!-- Features -->
+                <button class="sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+                        data-page="feature" onclick="window.location.href='../feature'">
+                    <i class="fas fa-cogs w-5 h-5"></i>
+                    <span class="sidebar-label font-medium">Features</span>
+                </button>
             </div>
 
         </div>
@@ -359,143 +366,3 @@
         }
     }
 </style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const sidebar = document.getElementById('sidebar');
-        const sidebarToggle = document.getElementById('sidebar-toggle');
-        const sidebarOverlay = document.getElementById('sidebar-overlay');
-        const sidebarItems = document.querySelectorAll('.sidebar-item');
-
-        let sidebarCollapsed = false;
-        let activeTab = 'dashboard';
-
-        sidebarToggle.addEventListener('click', function () {
-            sidebarCollapsed = !sidebarCollapsed;
-
-            if (sidebarCollapsed) {
-                sidebar.classList.add('sidebar-collapsed');
-                sidebar.style.width = '80px';
-            } else {
-                sidebar.classList.remove('sidebar-collapsed');
-                sidebar.style.width = '256px';
-            }
-        });
-
-        sidebarItems.forEach(item => {
-            item.addEventListener('click', function () {
-                const page = this.dataset.page;
-                if (page) {
-                    setActiveTab(page);
-
-                    switch (page) {
-                        case 'dashboard':
-                            window.location.href = '/pages/home/index.html';
-                            break;
-                        case 'transactions':
-                            window.location.href = '/pages/transaction/index.html';
-                            break;
-                        case 'goals':
-                            window.location.href = '/pages/goal/index.html';
-                            break;
-                        case 'budget':
-                            window.location.href = '/pages/budget/index.html';
-                            break;
-                        case 'reports':
-                            window.location.href = '/pages/financial_report/index.html';
-                            break;
-                        case 'premium':
-                            window.location.href = '/pages/user_premium/index.html';
-                            break;
-                        case 'admin-dashboard':
-                            window.location.href = '/pages/admin-dashboard/index.html';
-                            break;
-                        case 'user-management':
-                            window.location.href = '/pages/user-management/index.html';
-                            break;
-                    }
-                }
-            });
-        });
-
-        function setActiveTab(tabId) {
-            activeTab = tabId;
-
-            sidebarItems.forEach(item => {
-                item.classList.remove('active');
-                item.classList.add('text-gray-600', 'hover:bg-gray-100', 'hover:text-gray-800');
-                item.classList.remove('bg-gradient-to-r', 'from-blue-500', 'to-purple-600', 'text-white', 'shadow-lg');
-            });
-
-            const activeItem = document.querySelector(`[data-page="${tabId}"]`);
-            if (activeItem) {
-                activeItem.classList.add('active');
-                activeItem.classList.remove('text-gray-600', 'hover:bg-gray-100', 'hover:text-gray-800');
-                activeItem.classList.add('bg-gradient-to-r', 'from-blue-500', 'to-purple-600', 'text-white', 'shadow-lg');
-            }
-        }
-
-        if (window.innerWidth <= 1024) {
-            sidebar.classList.add('sidebar-mobile');
-
-            sidebarToggle.addEventListener('click', function () {
-                sidebar.classList.toggle('sidebar-open');
-                sidebarOverlay.classList.toggle('overlay-visible');
-            });
-
-            sidebarOverlay.addEventListener('click', function () {
-                sidebar.classList.remove('sidebar-open');
-                sidebarOverlay.classList.remove('overlay-visible');
-            });
-        }
-
-        const currentPage = window.location.pathname;
-        if (currentPage.includes('home')) {
-            setActiveTab('dashboard');
-        } else if (currentPage.includes('transaction')) {
-            setActiveTab('transactions');
-        } else if (currentPage.includes('budget')) {
-            setActiveTab('budget');
-        } else if (currentPage.includes('goal')) {
-            setActiveTab('goals');
-        } else if (currentPage.includes('financial_report')) {
-            setActiveTab('reports');
-        } else if (currentPage.includes('admin-dashboard')) {
-            setActiveTab('admin-dashboard');
-        } else if (currentPage.includes('user-management')) {
-            setActiveTab('user-management');
-        }
-
-        loadUserInfo();
-    });
-
-    function loadUserInfo() {
-        const token = localStorage.getItem('token');
-        if (token) {
-            const usernameElement = document.querySelector('.user-name');
-            if (usernameElement) {
-                usernameElement.textContent = 'Nguyễn Văn A';
-            }
-        }
-    }
-
-    function toggleAdminMenu(isAdmin) {
-        const adminMenus = document.querySelectorAll('.admin-menu');
-        adminMenus.forEach(menu => {
-            if (isAdmin) {
-                menu.classList.remove('hidden');
-            } else {
-                menu.classList.add('hidden');
-            }
-        });
-    }
-
-    function handleLogout() {
-        if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('refreshToken');
-            localStorage.removeItem('user');
-            window.location.href = '/pages/login/';
-        }
-    }
-</script>

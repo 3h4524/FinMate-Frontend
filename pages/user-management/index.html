@@ -389,13 +389,22 @@
             background-color: #bbf7d0;
         }
 
-        .user-action-btn.delete {
+        .user-action-btn.ban {
             background-color: #fef2f2;
             color: #dc2626;
         }
 
-        .user-action-btn.delete:hover {
+        .user-action-btn.ban:hover {
             background-color: #fecaca;
+        }
+
+        .user-action-btn.restore {
+            background-color: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .user-action-btn.restore:hover {
+            background-color: #dcfce7;
         }
 
         /* Loading animation */
@@ -568,15 +577,7 @@
                         <p class="text-gray-600 text-base sm:text-lg">Manage all user accounts and activities</p>
                     </div>
                     <div class="action-buttons">
-                        <div class="flex items-center space-x-2 sm:space-x-3">
-                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
-                                <span class="text-white text-lg sm:text-xl">👤</span>
-                            </div>
-                            <div>
-                                <div class="font-semibold text-gray-900 text-sm sm:text-base" id="adminName">Admin</div>
-                                <div class="text-xs sm:text-sm text-gray-500">Administrator</div>
-                            </div>
-                        </div>
+                        <!-- Admin info section removed -->
                     </div>
                 </div>
             </div>
@@ -898,9 +899,7 @@
                 // Ẩn mainContent khi bắt đầu load data
                 const mainContent = document.getElementById('mainContent');
                 if (mainContent) mainContent.style.display = 'none';
-                // Update admin info
-                const adminName = user.username || "Unknown";
-                document.getElementById('adminName').textContent = adminName;
+                // Admin info section removed
                 // Load users data và stats
                 await loadUserStats();
                 await loadUsers();
@@ -959,6 +958,8 @@
                 const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
                 if (!response.ok) throw new Error('Failed to load users');
                 const data = await response.json();
+                console.log('API Response data:', data);
+                console.log('Users content:', data.content);
                 renderUsersTable(data.content);
                 setupPagination(data.totalPages, page, filter);
             } catch (error) {
@@ -971,7 +972,19 @@
         function renderUsersGrid(users) {
             const grid = document.getElementById('usersGridBody');
             if (!grid) return;
-            grid.innerHTML = users.map(user => `
+            
+            console.log('Rendering users grid with data:', users);
+            
+            grid.innerHTML = users.map((user, index) => {
+                console.log(`User ${index}:`, user, 'ID:', user.id, 'Type:', typeof user.id);
+                
+                // Ensure user.id exists and is valid
+                if (user.id === null || user.id === undefined) {
+                    console.error('User missing ID:', user);
+                    return ''; // Skip this user
+                }
+                
+                return `
                 <div class="user-card">
                     <div class="flex items-center space-x-4 mb-4">
                         <div class="user-avatar">
@@ -1007,12 +1020,17 @@
                         <button onclick="openEditModal(${user.id})" class="user-action-btn edit" title="Sửa">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button onclick="deleteUser(${user.id})" class="user-action-btn delete" title="Xóa">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        ${user.isDelete ? 
+                            `<button onclick="restoreUser(${user.id})" class="user-action-btn restore" title="Unban">
+                                <i class="fas fa-user-check"></i>
+                            </button>` :
+                            `<button onclick="banUser(${user.id})" class="user-action-btn ban" title="Ban">
+                                <i class="fas fa-ban"></i>
+                            </button>`
+                        }
                     </div>
                 </div>
-            `).join('');
+            `}).filter(html => html !== '').join('');
         }
 
         function formatRelativeTime(dateString) {
@@ -1450,13 +1468,55 @@
             }
         });
 
+        // New banUser function to show modal
         async function banUser(userId) {
-            if (!confirm('Are you sure you want to ban this user?')) {
-                return;
-            }
-
             try {
+                console.log('banUser called with userId:', userId, typeof userId);
+                
+                // Validate userId
+                if (userId === null || userId === undefined || userId === 'null' || userId === '') {
+                    throw new Error('Invalid user ID provided to banUser');
+                }
+
                 const token = sessionStorage.getItem('token');
+                const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load user data');
+                }
+
+                const user = await response.json();
+                console.log('User data loaded:', user);
+                showBanConfirmModal(userId, user.name, user.email);
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showErrorNotification('❌ Error', `Failed to load user data: ${error.message}`);
+            }
+        }
+
+        // Execute ban user (called after modal confirmation)
+        async function executeBanUser(userId) {
+            try {
+                console.log('executeBanUser called with userId:', userId, typeof userId);
+                
+                // Validate userId
+                if (userId === null || userId === undefined || userId === 'null' || userId === '') {
+                    throw new Error('Invalid user ID');
+                }
+
+                const token = sessionStorage.getItem('token');
+                
+                // Show loading state
+                const banButtons = document.querySelectorAll(`button[onclick*="banUser(${userId})"]`);
+                banButtons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                });
+
                 const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
                     method: 'DELETE',
                     headers: {
@@ -1465,21 +1525,79 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to ban user');
+                    const errorData = await response.json().catch(() => null);
+                    const errorMessage = errorData?.message || 'Failed to ban user';
+                    throw new Error(errorMessage);
                 }
 
                 await loadUsers(currentPage, currentFilter);
                 await loadUserStats();
-                alert('User has been banned successfully');
+                
+                // Show success notification with better styling
+                showSuccessNotification('✅ User Banned Successfully', 'The user account has been suspended and cannot log in.');
+                
             } catch (error) {
                 console.error('Error banning user:', error);
-                alert('Failed to ban user. Please try again.');
+                showErrorNotification('❌ Ban Failed', `Failed to ban user: ${error.message}`);
+            } finally {
+                // Restore button state
+                const banButtons = document.querySelectorAll(`button[onclick*="banUser(${userId})"]`);
+                banButtons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-ban"></i>';
+                });
             }
         }
 
+        // New restoreUser function to show modal
         async function restoreUser(userId) {
             try {
+                console.log('restoreUser called with userId:', userId, typeof userId);
+                
+                // Validate userId
+                if (userId === null || userId === undefined || userId === 'null' || userId === '') {
+                    throw new Error('Invalid user ID provided to restoreUser');
+                }
+
                 const token = sessionStorage.getItem('token');
+                const response = await fetch(`http://localhost:8080/api/admin/users/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load user data');
+                }
+
+                const user = await response.json();
+                console.log('User data loaded for restore:', user);
+                showUnbanConfirmModal(userId, user.name, user.email);
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showErrorNotification('❌ Error', `Failed to load user data: ${error.message}`);
+            }
+        }
+
+        // Execute restore user (called after modal confirmation)
+        async function executeRestoreUser(userId) {
+            try {
+                console.log('executeRestoreUser called with userId:', userId, typeof userId);
+                
+                // Validate userId
+                if (userId === null || userId === undefined || userId === 'null' || userId === '') {
+                    throw new Error('Invalid user ID');
+                }
+
+                const token = sessionStorage.getItem('token');
+                
+                // Show loading state
+                const restoreButtons = document.querySelectorAll(`button[onclick*="restoreUser(${userId})"]`);
+                restoreButtons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                });
+
                 const response = await fetch(`http://localhost:8080/api/admin/users/${userId}/restore`, {
                     method: 'POST',
                     headers: {
@@ -1488,17 +1606,28 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to unban user');
+                    const errorData = await response.json().catch(() => null);
+                    const errorMessage = errorData?.message || 'Failed to unban user';
+                    throw new Error(errorMessage);
                 }
 
                 await loadUsers(currentPage, currentFilter);
                 await loadUserStats();
-                alert('User has been unbanned successfully');
+                
+                // Show success notification with better styling
+                showSuccessNotification('✅ User Restored Successfully', 'The user account is now active and can log in again.');
+                
             } catch (error) {
                 console.error('Error unbanning user:', error);
-                alert('Failed to unban user. Please try again.');
+                showErrorNotification('❌ Restore Failed', `Failed to unban user: ${error.message}`);
+            } finally {
+                // Restore button state
+                const restoreButtons = document.querySelectorAll(`button[onclick*="restoreUser(${userId})"]`);
+                restoreButtons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-user-check"></i>';
+                });
             }
-
         }
 
         async function openDetailModal(userId) {
@@ -1564,11 +1693,21 @@
         function renderUsersTable(users) {
             const tbody = document.getElementById('usersTableBody');
             tbody.innerHTML = '';
+            
+            console.log('Rendering users table with data:', users);
+            
             if (!users || users.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-gray-500">No users found</td></tr>`;
                 return;
             }
-            users.forEach(user => {
+            users.forEach((user, index) => {
+                console.log(`Table User ${index}:`, user, 'ID:', user.id, 'Type:', typeof user.id);
+                
+                // Ensure user.id exists and is valid
+                if (user.id === null || user.id === undefined) {
+                    console.error('Table User missing ID:', user);
+                    return; // Skip this user
+                }
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-gray-50 transition-colors';
                 const userInitials = user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase();
@@ -1617,9 +1756,14 @@
                             <button onclick="openEditModal(${user.id})" class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 p-2 rounded-lg transition-all duration-200 hover:scale-105" title="Edit User">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button onclick="deleteUser(${user.id})" class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition-all duration-200 hover:scale-105" title="Delete User">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            ${user.isDelete ? 
+                                `<button onclick="restoreUser(${user.id})" class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 p-2 rounded-lg transition-all duration-200 hover:scale-105" title="Unban User">
+                                    <i class="fas fa-user-check"></i>
+                                </button>` :
+                                `<button onclick="banUser(${user.id})" class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition-all duration-200 hover:scale-105" title="Ban User">
+                                    <i class="fas fa-ban"></i>
+                                </button>`
+                            }
                         </div>
                     </td>
                 `;
@@ -1644,7 +1788,302 @@
             const end = start + pageSize;
             return { items: array.slice(start, end), totalPages };
         }
+        
+        // Variables for ban confirmation
+        let pendingBanUserId = null;
+        let pendingUnbanUserId = null;
+        let isProcessingBan = false;
+        
+        // Debug function to check pending IDs
+        function debugPendingIds() {
+            console.log('Current pending IDs:', { 
+                pendingBanUserId, 
+                pendingUnbanUserId,
+                banType: typeof pendingBanUserId,
+                unbanType: typeof pendingUnbanUserId
+            });
+        }
+
+        // Show ban confirmation modal
+        function showBanConfirmModal(userId, userName, userEmail) {
+            console.log('showBanConfirmModal called with:', { userId, userName, userEmail, type: typeof userId });
+            pendingBanUserId = userId;
+            console.log('Set pendingBanUserId to:', pendingBanUserId);
+            debugPendingIds();
+            
+            // Update modal content
+            document.getElementById('banUserName').textContent = userName || 'Unknown User';
+            document.getElementById('banUserEmail').textContent = userEmail || '';
+            document.getElementById('banUserAvatar').textContent = (userName || 'U').charAt(0).toUpperCase();
+            
+            // Show modal
+            document.getElementById('banConfirmModal').classList.remove('hidden');
+        }
+
+        // Close ban confirmation modal
+        function closeBanConfirmModal() {
+            document.getElementById('banConfirmModal').classList.add('hidden');
+            pendingBanUserId = null;
+        }
+
+        // Show unban confirmation modal
+        function showUnbanConfirmModal(userId, userName, userEmail) {
+            console.log('showUnbanConfirmModal called with:', { userId, userName, userEmail, type: typeof userId });
+            pendingUnbanUserId = userId;
+            console.log('Set pendingUnbanUserId to:', pendingUnbanUserId);
+            debugPendingIds();
+            
+            // Update modal content
+            document.getElementById('unbanUserName').textContent = userName || 'Unknown User';
+            document.getElementById('unbanUserEmail').textContent = userEmail || '';
+            document.getElementById('unbanUserAvatar').textContent = (userName || 'U').charAt(0).toUpperCase();
+            
+            // Show modal
+            document.getElementById('unbanConfirmModal').classList.remove('hidden');
+        }
+
+        // Close unban confirmation modal
+        function closeUnbanConfirmModal() {
+            document.getElementById('unbanConfirmModal').classList.add('hidden');
+            pendingUnbanUserId = null;
+        }
+
+        // Confirm ban user
+        async function confirmBanUser() {
+            if (isProcessingBan) {
+                console.log('Already processing ban, ignoring duplicate call');
+                return;
+            }
+            
+            debugPendingIds();
+            console.log('confirmBanUser called with pendingBanUserId:', pendingBanUserId, typeof pendingBanUserId);
+            if (pendingBanUserId === null || pendingBanUserId === undefined) {
+                console.error('No pending ban user ID found!');
+                return;
+            }
+            
+            // Prevent multiple calls
+            isProcessingBan = true;
+            const userIdToProcess = pendingBanUserId;
+            pendingBanUserId = null; // Clear immediately to prevent duplicate calls
+            
+            closeBanConfirmModal();
+            
+            try {
+                await executeBanUser(userIdToProcess);
+            } finally {
+                isProcessingBan = false; // Reset flag regardless of success/failure
+            }
+        }
+
+        // Confirm unban user
+        async function confirmUnbanUser() {
+            if (isProcessingBan) {
+                console.log('Already processing action, ignoring duplicate call');
+                return;
+            }
+            
+            debugPendingIds();
+            console.log('confirmUnbanUser called with pendingUnbanUserId:', pendingUnbanUserId, typeof pendingUnbanUserId);
+            if (pendingUnbanUserId === null || pendingUnbanUserId === undefined) {
+                console.error('No pending unban user ID found!');
+                return;
+            }
+            
+            // Prevent multiple calls
+            isProcessingBan = true;
+            const userIdToProcess = pendingUnbanUserId;
+            pendingUnbanUserId = null; // Clear immediately to prevent duplicate calls
+            
+            closeUnbanConfirmModal();
+            
+            try {
+                await executeRestoreUser(userIdToProcess);
+            } finally {
+                isProcessingBan = false; // Reset flag regardless of success/failure
+            }
+        }
+
+        // Show success notification
+        function showSuccessNotification(title, message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-white border-l-4 border-green-500 rounded-2xl shadow-2xl p-4 max-w-sm z-50 transform translate-x-full transition-transform duration-300';
+            notification.innerHTML = `
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-green-600"></i>
+                        </div>
+                    </div>
+                    <div class="ml-3 flex-1">
+                        <h3 class="text-sm font-semibold text-gray-900">${title}</h3>
+                        <p class="text-sm text-gray-600 mt-1">${message}</p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+        // Show error notification
+        function showErrorNotification(title, message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-white border-l-4 border-red-500 rounded-2xl shadow-2xl p-4 max-w-sm z-50 transform translate-x-full transition-transform duration-300';
+            notification.innerHTML = `
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-exclamation-triangle text-red-600"></i>
+                        </div>
+                    </div>
+                    <div class="ml-3 flex-1">
+                        <h3 class="text-sm font-semibold text-gray-900">${title}</h3>
+                        <p class="text-sm text-gray-600 mt-1">${message}</p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Auto remove after 7 seconds (longer for errors)
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => notification.remove(), 300);
+            }, 7000);
+        }
     </script>
+
+    <!-- Ban Confirmation Modal -->
+    <div id="banConfirmModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 w-full max-w-md mx-4 relative">
+            <div class="text-center">
+                <!-- Warning Icon -->
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                </div>
+                
+                <!-- Title -->
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Ban User Account</h3>
+                
+                <!-- User Info -->
+                <div class="bg-gray-50 rounded-2xl p-4 mb-4">
+                    <div class="flex items-center justify-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold" id="banUserAvatar">
+                            U
+                        </div>
+                        <div class="text-left">
+                            <div class="font-medium text-gray-900" id="banUserName">User Name</div>
+                            <div class="text-sm text-gray-500" id="banUserEmail">user@example.com</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Warning Message -->
+                <div class="text-left bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6">
+                    <h4 class="font-semibold text-amber-800 mb-2 flex items-center">
+                        <i class="fas fa-ban mr-2"></i>
+                        This action will:
+                    </h4>
+                    <ul class="text-sm text-amber-700 space-y-1">
+                        <li class="flex items-center"><i class="fas fa-circle text-xs mr-2"></i>Suspend their account immediately</li>
+                        <li class="flex items-center"><i class="fas fa-circle text-xs mr-2"></i>Prevent them from logging in</li>
+                        <li class="flex items-center"><i class="fas fa-circle text-xs mr-2"></i>Block access to all services</li>
+                        <li class="flex items-center"><i class="fas fa-circle text-xs mr-2"></i>Can be reversed later</li>
+                    </ul>
+                </div>
+                
+                <!-- Buttons -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button type="button" onclick="closeBanConfirmModal()" 
+                            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-2xl font-medium transition-all duration-200">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </button>
+                    <button type="button" onclick="confirmBanUser()" 
+                            class="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-3 rounded-2xl font-medium transition-all duration-200">
+                        <i class="fas fa-ban mr-2"></i>Ban User
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unban Confirmation Modal -->
+    <div id="unbanConfirmModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 w-full max-w-md mx-4 relative">
+            <div class="text-center">
+                <!-- Success Icon -->
+                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                    <i class="fas fa-user-check text-green-600 text-2xl"></i>
+                </div>
+                
+                <!-- Title -->
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Restore User Account</h3>
+                
+                <!-- User Info -->
+                <div class="bg-gray-50 rounded-2xl p-4 mb-4">
+                    <div class="flex items-center justify-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold" id="unbanUserAvatar">
+                            U
+                        </div>
+                        <div class="text-left">
+                            <div class="font-medium text-gray-900" id="unbanUserName">User Name</div>
+                            <div class="text-sm text-gray-500" id="unbanUserEmail">user@example.com</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Success Message -->
+                <div class="text-left bg-green-50 border border-green-200 rounded-2xl p-4 mb-6">
+                    <h4 class="font-semibold text-green-800 mb-2 flex items-center">
+                        <i class="fas fa-user-check mr-2"></i>
+                        This action will:
+                    </h4>
+                    <ul class="text-sm text-green-700 space-y-1">
+                        <li class="flex items-center"><i class="fas fa-circle text-xs mr-2"></i>Restore their account access</li>
+                        <li class="flex items-center"><i class="fas fa-circle text-xs mr-2"></i>Allow them to log in again</li>
+                        <li class="flex items-center"><i class="fas fa-circle text-xs mr-2"></i>Reactivate all services</li>
+                        <li class="flex items-center"><i class="fas fa-circle text-xs mr-2"></i>Remove suspension status</li>
+                    </ul>
+                </div>
+                
+                <!-- Buttons -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button type="button" onclick="closeUnbanConfirmModal()" 
+                            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-2xl font-medium transition-all duration-200">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </button>
+                    <button type="button" onclick="confirmUnbanUser()" 
+                            class="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-2xl font-medium transition-all duration-200">
+                        <i class="fas fa-user-check mr-2"></i>Restore User
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

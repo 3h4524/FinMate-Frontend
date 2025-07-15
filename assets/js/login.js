@@ -100,6 +100,11 @@ document.getElementById('loginForm').addEventListener('submit', async function (
                     window.location.href = '../home/index.html';
                 }
             }, 1000);
+        } else if (data.code === 1003) {
+            showNotification('Please verify your email before logging in.', 'error');
+            setTimeout(() => {
+                window.location.href = `../verify-email/index.html?email=${email}`;
+            }, 1000);
         } else {
             showNotification(data.message || 'Login failed!', 'error');
         }
