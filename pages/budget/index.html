@@ -9,16 +9,31 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../assets/js/page-loader.js"></script>
     <script src="../../assets/js/sidebar.js"></script>
     <script src="../../assets/js/header.js"></script>
     <script src="/assets/js/budget.js" defer></script>
     <script src="/assets/js/autho_helper.js" defer></script>
     <script src="/assets/js/helper_functions.js" defer></script>
+    <script src="/assets/js/user_auth.js" defer></script>
+    <script type="module" src="/assets/js/limitFeature.js" defer></script>
 
     <style>
-        * {
-            box-sizing: border-box;
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @keyframes notificationSlideIn {
@@ -26,7 +41,6 @@
                 transform: translateY(-100%);
                 opacity: 0;
             }
-
             to {
                 transform: translateY(0);
                 opacity: 1;
@@ -38,128 +52,84 @@
                 transform: translateY(0);
                 opacity: 1;
             }
-
             to {
                 transform: translateY(-100%);
                 opacity: 0;
             }
         }
 
+        .animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
+        .animate-slide-up { animation: slideUp 0.3s ease-out; }
+        .notification-slide-in { animation: notificationSlideIn 0.3s ease-out; }
+        .notification-slide-out { animation: notificationSlideOut 0.3s ease-in; }
+
+        /* Modal animations */
         .modal-content {
             transform: scale(0.95);
             transition: transform 0.2s ease-in-out;
         }
+        .modal-content.show { transform: scale(1); }
 
-        .modal-content.show {
-            transform: scale(1);
-        }
-
-        #header-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            background-color: white;
-        }
-
-        #toastContainer {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            z-index: 9999;
-            width: 320px;
-            max-width: 90%;
-        }
-
+        /* Essential layout styles */
         .main-content {
             padding-top: 80px;
             min-height: 100vh;
             width: 100%;
-            margin: 0 auto;
+            max-width: 100%;
             transition: margin-left 0.3s ease-in-out;
         }
 
-        /* Responsive sidebar adjustments */
         body.sidebar-collapsed .main-content {
             margin-left: 80px;
         }
 
         @media (max-width: 1023px) {
-            .main-content {
-                margin-left: 0 !important;
-            }
-
-            body.sidebar-collapsed .main-content {
-                margin-left: 0;
-            }
+            .main-content { margin-left: 0 !important; }
+            body.sidebar-collapsed .main-content { margin-left: 0; }
         }
 
-        /* Responsive table */
-        table {
-            width: 100%;
-            min-width: 600px;
-        }
-
-        /* Modal responsive */
-        .modal-content {
-            width: 100%;
-            max-width: 800px;
-            min-width: 300px;
-            margin: 0 auto;
-        }
-
+        /* Responsive grid adjustments */
         @media (max-width: 767px) {
-            .modal-content {
-                max-width: 90%;
-                min-width: 280px;
-            }
-
-            table {
-                min-width: 100%;
-            }
-
-            .grid-cols-4,
-            .grid-cols-3,
-            .grid-cols-2 {
+            .grid-cols-4, .grid-cols-3, .grid-cols-2 {
                 grid-template-columns: 1fr;
             }
         }
+        .text-teal-600 { color: #3b82f6; }
+        .bg-teal-600 { background-color: #3b82f6; }
+        .hover\:bg-teal-700:hover { background-color: #2563eb; }
+        .focus\:ring-teal-500\/20:focus {
+            --tw-ring-color: rgba(59, 130, 246, 0.2);
+            box-shadow: var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+        }
+        .focus\:border-teal-500:focus { border-color: #3b82f6; }
     </style>
 </head>
 
-<body
-    class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-    <div id="header-container"></div>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen overflow-x-hidden">
+<div class="flex min-h-screen w-full">
+    <!-- Sidebar -->
     <div id="sidebar-container"></div>
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
-    <div class="main-content flex-1 min-h-screen w-full p-6 lg:p-8" id="mainContent">
-            <header
-                class="bg-white rounded-2xl p-5 shadow-lg flex flex-col md:flex-row justify-between items-center mb-6">
-                <div class="mb-4 md:mb-0">
-                    <h1 class="text-2xl font-bold text-gray-800">Budget Management</h1>
-                </div>
-                <div class="relative flex-1 max-w-md mx-4">
-                    <input type="text" id="searchInput" placeholder="Search budgets..." aria-label="Search budgets"
-                        class="w-full p-3 pl-4 pr-10 border border-gray-300 rounded-full bg-gray-50 focus:border-blue-600 focus:ring-2 focus:ring-blue-300 transition">
-                    <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
-                </div>
-                <div class="flex items-center gap-3">
-                    <button
-                        class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-5 py-2 rounded-xl hover:shadow-xl hover:-translate-y-1 transition flex items-center gap-2"
-                        onclick="openModal('createBudgetModal')">
-                        <i class="fas fa-plus"></i> Create Budget
+    <!-- Header -->
+    <div id="header-container"></div>
+    <!-- Main Content -->
+    <main class="main-content flex-1 ml-0 transition-all duration-300 ease-in-out lg:ml-64 min-h-screen w-full" id="mainContent" style="display: none;">
+        <div class="p-6 lg:p-8 w-full max-w-none">
+
+            <!-- Action Header -->
+            <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 md:mb-0">Budget Management</h2>
+                    <button class="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-2xl font-semibold flex items-center space-x-2 hover:from-blue-500 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-lg" onclick="openModal('createBudgetModal')">
+                        <i class="fas fa-plus"></i>
+                        <span>Create Budget</span>
                     </button>
-                    <button id="menuToggle" class="p-3 rounded-full bg-gray-200 hover:bg-gray-300 md:hidden"><i
-                            class="fas fa-bars"></i></button>
                 </div>
-            </header>
+            </div>
 
             <!-- Budget Overview -->
-            <div class="bg-white rounded-2xl p-6 shadow-lg w-full mb-6">
-                <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-200">
-                </div>
+            <div class="bg-white rounded-3xl p-6 shadow-lg w-full mb-6">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Active Budgets Card -->
                     <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200">
                         <div class="flex items-center justify-between">
                             <div>
@@ -171,33 +141,39 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Total Budget Card -->
                     <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm text-purple-600 font-medium">Total Budget</p>
-                                <p id="totalBudgetAmount" class="text-2xl font-bold text-purple-800">0</p>
+                                <p id="totalBudgetAmount" class="text-2xl font-bold text-purple-800">₫0</p>
                             </div>
                             <div class="bg-purple-500 p-3 rounded-full">
                                 <i class="fas fa-dollar-sign text-white text-lg"></i>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Total Spent Card -->
                     <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl border border-orange-200">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm text-orange-600 font-medium">Total Spent</p>
-                                <p id="totalSpentAmount" class="text-2xl font-bold text-orange-800">0</p>
+                                <p class="text-sm text-orange-600 font-medium">Total Spending</p>
+                                <p id="totalSpentAmount" class="text-2xl font-bold text-orange-800">₫0</p>
                             </div>
                             <div class="bg-orange-500 p-3 rounded-full">
                                 <i class="fas fa-shopping-cart text-white text-lg"></i>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Remaining Card -->
                     <div class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl border border-green-200">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm text-green-600 font-medium">Remaining</p>
-                                <p id="totalRemainingAmount" class="text-2xl font-bold text-green-800">0</p>
+                                <p id="totalRemainingAmount" class="text-2xl font-bold text-green-800">₫0</p>
                             </div>
                             <div class="bg-green-500 p-3 rounded-full">
                                 <i class="fas fa-piggy-bank text-white text-lg"></i>
@@ -205,6 +181,8 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Progress Section -->
                 <div class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
                     <div class="bg-gray-50 p-4 rounded-xl">
                         <div class="flex items-center justify-between mb-2">
@@ -212,9 +190,7 @@
                             <span id="overallProgressPercent" class="text-sm font-bold text-gray-800">0%</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div id="overallProgressBar"
-                                class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
-                                style="width: 0%"></div>
+                            <div id="overallProgressBar" class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
                         </div>
                     </div>
                     <div class="bg-gray-50 p-4 rounded-xl">
@@ -222,279 +198,387 @@
                             <span class="text-sm font-medium text-gray-600">Over Budget</span>
                             <span id="overBudgetCount" class="text-sm font-bold text-red-600">0</span>
                         </div>
-                        <div class="text-xs text-gray-500 mt-1">Categories exceeding limit</div>
+                        <div class="text-xs text-gray-500 mt-1">Categories over limit</div>
                     </div>
                     <div class="bg-gray-50 p-4 rounded-xl">
                         <div class="flex items-center justify-between">
                             <span class="text-sm font-medium text-gray-600">Near Limit</span>
                             <span id="nearLimitCount" class="text-sm font-bold text-yellow-600">0</span>
                         </div>
-                        <div class="text-xs text-gray-500 mt-1">Categories near threshold</div>
+                        <div class="text-xs text-gray-500 mt-1">Categories near limit</div>
                     </div>
                 </div>
             </div>
 
+            <!-- Budget Monitoring Section -->
             <div class="flex flex-col gap-6 items-center">
-                <!-- Budget Monitoring -->
-                <div class="bg-white rounded-2xl p-6 shadow-lg w-full">
+                <div class="bg-white rounded-3xl p-6 shadow-lg w-full">
                     <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold flex items-center gap-2"><i
-                                class="fas fa-chart-line text-blue-600"></i> Budget Monitoring</h2>
-                        <button
-                            class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-5 py-2 rounded-xl hover:shadow-xl hover:-translate-y-1 transition flex items-center gap-2"
-                            onclick="refreshAllData()">
-                            <i class="fas fa-sync-alt"></i> Refresh
+                        <h2 class="text-xl font-semibold flex items-center gap-2">
+                            <i class="fas fa-chart-line text-teal-600"></i> Budget Monitoring
+                        </h2>
+                        <button class="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2.5 rounded-2xl font-semibold flex items-center space-x-2 hover:from-blue-500 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-lg" onclick="refreshAllData()">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>Refresh</span>
                         </button>
                     </div>
-                    <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2 w-[320px] max-w-full"></div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-center">
-                            <thead>
-                                <tr class="bg-gray-100">
-                                    <th class="p-3 font-semibold">Category</th>
-                                    <th class="p-3 font-semibold">Period</th>
-                                    <th class="p-3 font-semibold">Usage</th>
-                                    <th class="p-3 font-semibold">Progress</th>
-                                    <th class="p-3 font-semibold">Remaining</th>
-                                    <th class="p-3 font-semibold">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="monitor-table-body"></tbody>
-                        </table>
-                    </div>
-                    <div id="monitor-pagination" class="flex justify-center mt-4 gap-2"></div>
-                </div>
 
-                <!-- Budget vs Actual Analysis -->
-                <div class="bg-white rounded-2xl p-6 shadow-lg w-full">
-                    <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-200">
-                        <h2 class="text-xl font-semibold flex items-center gap-2"><i
-                                class="fas fa-chart-bar text-blue-600"></i> Budget vs Actual Analysis</h2>
-                        <div class="flex gap-3">
-                            <select id="analysisPeriod"
-                                class="border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-600 transition">
-                                <option value="all" selected>All</option>
-                                <option value="WEEKLY">Weekly</option>
-                                <option value="MONTHLY">Monthly</option>
-                            </select>
-                            <button
-                                class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-5 py-2 rounded-xl hover:shadow-xl hover:-translate-y-1 transition flex items-center gap-2"
-                                onclick="toggleChartType()">
-                                <i id="chartIcon" class="fas fa-chart-bar"></i> <span id="chartTypeLabel">Bar
-                                    Chart</span>
-                            </button>
-                            <button
-                                class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-5 py-2 rounded-xl hover:shadow-xl hover:-translate-y-1 transition flex items-center gap-2"
-                                onclick="exportToCSV()">
-                                <i class="fas fa-download"></i> Export CSV
-                            </button>
+                    <!-- Toast Container -->
+                    <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2 w-80 max-w-full"></div>
+
+                    <!-- Card Template -->
+                    <div id="budgetCardTemplate" class="hidden">
+                        <div class="p-4 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105 budget-card">
+                            <div class="flex flex-col gap-3">
+                                <div class="flex justify-between items-center">
+                                    <h3 id="cardCategory" class="font-semibold text-lg text-gray-800"></h3>
+                                    <span id="cardStatus" class="px-2 py-1 text-xs font-medium rounded-full"></span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-sync-alt text-gray-500"></i>
+                                    <span id="cardPeriod" class="text-sm text-gray-600"></span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-percentage text-gray-500"></i>
+                                    <span id="cardUsage" class="text-sm text-gray-600"></span>
+                                </div>
+                                <div class="w-full h-2 bg-gray-200 rounded-full">
+                                    <div id="cardProgress" class="h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-wallet text-gray-500"></i>
+                                    <span id="cardRemaining" class="text-sm text-gray-600"></span>
+                                </div>
+                                <div class="flex justify-end gap-2 mt-2">
+                                    <button id="cardViewBtn" class="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-50 transition">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button id="cardEditBtn" class="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-50 transition">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button id="cardDeleteBtn" class="text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50 transition">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="h-80 mb-6">
-                        <canvas id="budgetChart"></canvas>
+
+                    <!-- Budget Cards Container -->
+                    <div id="monitor-table-body" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Cards will be dynamically added by budget.js -->
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                        <div class="bg-blue-50 p-4 rounded-xl text-center shadow-sm">
-                            <p class="text-gray-600 text-sm">Total Budgeted</p>
-                            <p id="totalBudgeted" class="font-bold text-lg text-blue-800">0</p>
-                        </div>
-                        <div class="bg-red-50 p-4 rounded-xl text-center shadow-sm">
-                            <p class="text-gray-600 text-sm">Total Spent</p>
-                            <p id="totalSpent" class="font-bold text-lg text-red-800">0</p>
-                        </div>
-                        <div class="bg-yellow-50 p-4 rounded-xl text-center shadow-sm">
-                            <p class="text-gray-600 text-sm">Variance</p>
-                            <p id="varianceAmount" class="font-bold text-lg">0</p>
-                        </div>
-                        <div class="bg-purple-50 p-4 rounded-xl text-center shadow-sm">
-                            <p class="text-gray-600 text-sm">Spending Rate</p>
-                            <p id="spendingRate" class="font-bold text-lg">0%</p>
-                        </div>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-center">
-                            <thead>
-                                <tr class="bg-gray-100">
-                                    <th class="p-3 font-semibold">Category</th>
-                                    <th class="p-3 font-semibold">Planned Amount</th>
-                                    <th class="p-3 font-semibold">Actual spending</th>
-                                    <th class="p-3 font-semibold">Variance</th>
-                                    <th class="p-3 font-semibold">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="analysis-table"></tbody>
-                        </table>
-                    </div>
-                    <div id="analysis-pagination" class="flex justify-center mt-4 gap-2"></div>
                 </div>
             </div>
-        </main>
 
-        <!-- Create Budget Modal -->
-        <div id="createBudgetModal"
-            class="fixed inset-0 z-[1000] bg-black/60 hidden flex items-center justify-center animate-fade-in">
-            <div
-                class="bg-white bg-opacity-95 backdrop-blur-md rounded-2xl shadow-2xl p-8 w-full modal-content max-h-[90vh] overflow-y-auto">
-                <button onclick="closeModal('createBudgetModal')"
-                    class="absolute top-4 right-4 text-2xl text-gray-500 hover:text-blue-600 transition">×
-                </button>
-                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                    <i class="fas fa-wallet text-blue-600"></i> Create Budget Plan
-                </h3>
-                <form id="create-budget-form" class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="startDate" class="block text-sm font-semibold text-gray-700 mb-2">Start
-                                Date</label>
-                            <input type="date" name="startDate" id="startDate"
-                                class="w-full p-3 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                required>
-                        </div>
-                        <div>
-                            <label for="periodType" class="block text-sm font-semibold text-gray-700 mb-2">Budget
-                                Period</label>
-                            <select name="periodType" id="periodType"
-                                class="w-full p-3 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                required>
-                                <option value="">Select Period</option>
-                                <option value="WEEKLY">Weekly</option>
-                                <option value="MONTHLY">Monthly</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label for="threshold" class="block text-sm font-semibold text-gray-700 mb-2">Alert Threshold
-                            (%)</label>
-                        <input type="number" min="0" max="100" id="threshold" name="threshold" placeholder="E.g., 80"
-                            class="w-full p-3 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                            required>
-                    </div>
-                    <div>
-                        <label for="category-list" class="block text-sm font-semibold text-gray-700 mb-2">Categories and
-                            Amounts</label>
-                        <div id="category-list" class="space-y-4 max-h-[300px] overflow-y-auto pr-2"></div>
-                        <div class="flex justify-between mt-4">
-                            <button type="button" onclick="addBudgetCategory()"
-                                class="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center gap-1 transition">
-                                <i class="fas fa-plus-circle"></i> Add Category
-                            </button>
-                        </div>
-                    </div>
-                    <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
-                        <button type="button" onclick="closeModal('createBudgetModal')"
-                            class="px-6 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition">
-                            Cancel
+            <!-- Budget Analysis Section -->
+            <div class="bg-white rounded-3xl p-6 shadow-lg w-full mt-8">
+                <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold flex items-center gap-2">
+                        <i class="fas fa-chart-bar text-teal-600"></i> Budget Analysis vs Actual
+                    </h2>
+                    <div class="flex gap-3">
+                        <select id="analysisPeriod" class="border-2 border-gray-200 rounded-2xl px-4 py-2 focus:ring-4 focus:ring-blue-100 focus:border-blue-500 bg-white">
+                            <option value="all" selected>All</option>
+                            <option value="WEEKLY">Weekly</option>
+                            <option value="MONTHLY">Monthly</option>
+                        </select>
+                        <button class="bg-gradient-to-r from-green-500 to-green-600 text-white px-5 py-2 rounded-2xl hover:from-blue-500 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-2" onclick="toggleChartType()">
+                            <i id="chartIcon" class="fas fa-chart-bar"></i>
+                            <span id="chartTypeLabel">Bar Chart</span>
                         </button>
-                        <button type="submit"
-                            class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-lg font-semibold shadow-md hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2">
-                            <i class="fas fa-save"></i> Save Plan
+                        <button class="bg-gradient-to-r from-green-500 to-green-600 text-white px-5 py-2 rounded-2xl hover:from-blue-500 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-2" onclick="exportToCSV()">
+                            <i class="fas fa-download"></i> Export CSV
                         </button>
                     </div>
-                </form>
+                </div>
+
+                <!-- Chart Container -->
+                <div class="h-80 mb-6">
+                    <canvas id="budgetChart"></canvas>
+                </div>
+
+                <!-- Summary Stats -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-blue-50 p-4 rounded-xl text-center shadow-sm">
+                        <p class="text-gray-600 text-sm">Total Budget</p>
+                        <p id="totalBudgeted" class="font-bold text-lg text-blue-800">₫0</p>
+                    </div>
+                    <div class="bg-red-50 p-4 rounded-xl text-center shadow-sm">
+                        <p class="text-gray-600 text-sm">Total Spending</p>
+                        <p id="totalSpent" class="font-bold text-lg text-red-800">₫0</p>
+                    </div>
+                    <div class="bg-yellow-50 p-4 rounded-xl text-center shadow-sm">
+                        <p class="text-gray-600 text-sm">Variance</p>
+                        <p id="varianceAmount" class="font-bold text-lg">₫0</p>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-xl text-center shadow-sm">
+                        <p class="text-gray-600 text-sm">Spending Rate</p>
+                        <p id="spendingRate" class="font-bold text-lg">0%</p>
+                    </div>
+                </div>
+
+                <!-- Analysis Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-center">
+                        <thead>
+                        <tr class="bg-gray-100">
+                            <th class="p-3 font-semibold">Category</th>
+                            <th class="p-3 font-semibold">Budgeted Amount</th>
+                            <th class="p-3 font-semibold">Actual Spending</th>
+                            <th class="p-3 font-semibold">Variance</th>
+                            <th class="p-3 font-semibold">Status</th>
+                        </tr>
+                        </thead>
+                        <tbody id="analysis-table"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
-        <!-- Update Budget Modal -->
-        <div id="updateBudgetModal"
-            class="fixed inset-0 z-[1000] bg-black/60 hidden flex items-center justify-center animate-fade-in">
-            <div
-                class="bg-white bg-opacity-95 backdrop-blur-md rounded-2xl shadow-2xl p-8 w-full modal-content max-h-[90vh] overflow-y-auto">
-                <button onclick="closeModal('updateBudgetModal')"
-                    class="absolute top-4 right-4 text-2xl text-gray-500 hover:text-blue-600 transition">×
-                </button>
-                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                    <i class="fas fa-edit text-blue-600"></i> Update Budget Plan
-                </h3>
-                <form id="update-budget-form" class="space-y-6">
-                    <input type="hidden" id="update-budget-id" name="budgetId" />
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="update-startDate" class="block text-sm font-semibold text-gray-700 mb-2">Start
-                                Date</label>
-                            <input type="date" name="startDate" id="update-startDate"
-                                class="w-full p-3 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                required>
-                        </div>
-                        <div>
-                            <label for="update-periodType" class="block text-sm font-semibold text-gray-700 mb-2">Budget
-                                Period</label>
-                            <select name="periodType" id="update-periodType"
-                                class="w-full p-3 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                                required>
-                                <option value="">Select Period</option>
-                                <option value="WEEKLY">Weekly</option>
-                                <option value="MONTHLY">Monthly</option>
-                            </select>
-                        </div>
+    </main>
+
+    <!-- Create Budget Modal -->
+    <div id="createBudgetModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-2xl shadow-2xl p-0 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto animate-slide-up">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold">Create Budget Plan</h2>
+                        <p class="text-teal-100 text-sm mt-1">Set up your budget and track expenses</p>
+                    </div>
+                    <button id="closeCreateModalBtn" class="text-white/80 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg" onclick="closeModal('createBudgetModal')">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Form -->
+            <form id="create-budget-form" class="p-6 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="startDate" class="block text-sm font-semibold text-gray-700 mb-2">Start Date *</label>
+                        <input type="date" name="startDate" id="startDate" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900" required>
                     </div>
                     <div>
-                        <label for="update-threshold" class="block text-sm font-semibold text-gray-700 mb-2">Alert
-                            Threshold (%)</label>
-                        <input type="number" name="threshold" id="update-threshold" min="1" max="100"
-                            class="w-full p-3 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                            required>
+                        <label for="periodType" class="block text-sm font-semibold text-gray-700 mb-2">Budget Period *</label>
+                        <select name="periodType" id="periodType" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900" required>
+                            <option value="">Select Period</option>
+                            <option value="WEEKLY">Weekly</option>
+                            <option value="MONTHLY">Monthly</option>
+                        </select>
                     </div>
-                    <div>
-                        <label for="update-category-list"
-                            class="block text-sm font-semibold text-gray-700 mb-2">Categories and Amounts</label>
-                        <div id="update-category-list" class="space-y-4 max-h-[300px] overflow-y-auto pr-2"></div>
-                        <div class="flex justify-between mt-4">
-                            <button type="button" onclick="addBudgetCategory('update')"
-                                class="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center gap-1 transition">
-                                <i class="fas fa-plus-circle"></i> Add Category
-                            </button>
-                        </div>
-                    </div>
-                    <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
-                        <button type="button" onclick="closeModal('updateBudgetModal')"
-                            class="px-6 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition">
-                            Cancel
-                        </button>
-                        <button type="submit"
-                            class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-lg font-semibold shadow-md hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2">
-                            <i class="fas fa-save"></i> Update Plan
+                </div>
+                <div>
+                    <label for="threshold" class="block text-sm font-semibold text-gray-700 mb-2">Alert Threshold (%) *</label>
+                    <input type="number" min="0" max="100" id="threshold" name="threshold" placeholder="e.g., 80" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900" required>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-5">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <svg class="w-5 h-5 text-teal-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                        </svg>
+                        Categories and Amounts
+                    </h3>
+                    <div id="category-list" class="space-y-4 max-h-[300px] overflow-y-auto pr-2"></div>
+                    <div class="flex justify-between mt-4">
+                        <button type="button" onclick="addBudgetCategory()" class="text-sm font-medium text-teal-600 hover:text-teal-800 flex items-center gap-1 transition">
+                            <i class="fas fa-plus-circle"></i> Add Category
                         </button>
                     </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Budget Details Modal -->
-        <div id="budgetDetailsModal"
-            class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-[1000] animate-fade-in">
-            <div class="bg-white rounded-2xl p-6 w-full modal-content max-h-[90vh] overflow-y-auto">
-                <span class="absolute top-2 right-4 text-3xl text-gray-600 hover:text-blue-700 cursor-pointer"
-                    onclick="closeModal('budgetDetailsModal')">×</span>
-                <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
-                    <i class="fas fa-info-circle text-blue-600"></i> Budget Details
-                </h3>
-                <div id="budgetDetailsContent"
-                    class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-h-[400px] overflow-y-auto pr-2"></div>
-            </div>
-        </div>
-
-        <!-- Delete Confirmation Modal -->
-        <div id="deleteConfirmModal"
-            class="fixed inset-0 z-[1000] bg-black/60 hidden flex items-center justify-center animate-fade-in">
-            <div
-                class="bg-white bg-opacity-95 backdrop-blur-md rounded-2xl shadow-2xl p-8 w-full max-w-md modal-content">
-                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <i class="fas fa-exclamation-triangle text-red-600"></i> Confirm Deletion
-                </h3>
-                <p class="text-gray-600 mb-6">Are you sure you want to delete this budget? This action cannot be undone.
-                </p>
-                <div class="flex justify-end gap-3">
-                    <button onclick="closeModal('deleteConfirmModal')"
-                        class="px-6 py-2 rounded-lg bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition">
+                </div>
+                <div id="errorDisplay" class="hidden bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span id="errorMessageModal" class="text-red-700 font-medium"></span>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+                    <button type="button" onclick="closeModal('createBudgetModal')" class="flex-1 px-6 py-3 text-gray-600 hover:text-gray-800 border-2 border-gray-200 hover:border-gray-300 rounded-xl font-semibold hover:bg-purple-100 transition-all duration-200">
                         Cancel
                     </button>
-                    <button id="confirmDeleteBtn"
-                        class="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-2 rounded-lg font-semibold shadow-md hover:shadow-lg hover:-translate-y-1 transition flex items-center gap-2">
-                        <i class="fas fa-trash"></i> Delete
+                    <button type="submit" class="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-blue-500 hover:to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]">
+                        Save Plan
                     </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Update Budget Modal -->
+    <div id="updateBudgetModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-2xl shadow-2xl p-0 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto animate-slide-up">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold">Update Budget Plan</h2>
+                        <p class="text-teal-100 text-sm mt-1">Adjust your budget</p>
+                    </div>
+                    <button id="closeUpdateModalBtn" class="text-white/80 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg" onclick="closeModal('updateBudgetModal')">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Form -->
+            <form id="update-budget-form" class="p-6 space-y-6">
+                <input type="hidden" id="update-budget-id" name="budgetId" />
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="update-startDate" class="block text-sm font-semibold text-gray-700 mb-2">Start Date *</label>
+                        <input type="date" name="startDate" id="update-startDate" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900" required>
+                    </div>
+                    <div>
+                        <label for="update-periodType" class="block text-sm font-semibold text-gray-700 mb-2">Budget Period *</label>
+                        <select name="periodType" id="update-periodType" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900" required>
+                            <option value="">Select Period</option>
+                            <option value="WEEKLY">Weekly</option>
+                            <option value="MONTHLY">Monthly</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label for="update-threshold" class="block text-sm font-semibold text-gray-700 mb-2">Alert Threshold (%) *</label>
+                    <input type="number" name="threshold" id="update-threshold" min="1" max="100" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 text-gray-900" required>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-5">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <svg class="w-5 h-5 text-teal-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                        </svg>
+                        Categories and Amounts
+                    </h3>
+                    <div id="update-category-list" class="space-y-4 max-h-[300px] overflow-y-auto pr-2"></div>
+                    <div class="flex justify-between mt-4">
+                        <button type="button" onclick="addBudgetCategory('update')" class="text-sm font-medium text-teal-600 hover:text-teal-800 flex items-center gap-1 transition">
+                            <i class="fas fa-plus-circle"></i> Add Category
+                        </button>
+                    </div>
+                </div>
+                <div id="errorDisplayUpdate" class="hidden bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span id="errorMessageModalUpdate" class="text-red-700 font-medium"></span>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+                    <button type="button" onclick="closeModal('updateBudgetModal')" class="flex-1 px-6 py-3 text-gray-600 hover:text-gray-800 border-2 border-gray-200 hover:border-gray-300 rounded-xl font-semibold hover:bg-purple-100 transition-all duration-200">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-blue-500 hover:to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]">
+                        Update Plan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Budget Details Modal -->
+    <div id="budgetDetailsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto animate-slide-up relative">
+            <button onclick="closeModal('budgetDetailsModal')" class="absolute top-4 right-4 text-2xl text-gray-500 hover:text-teal-600 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+            <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                <i class="fas fa-info-circle text-teal-600"></i> Budget Details
+            </h3>
+            <div id="budgetDetailsContent" class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-h-[400px] overflow-y-auto pr-2">
+                <div class="col-span-2 flex items-center gap-3 p-4 border rounded-lg bg-blue-50 shadow-sm">
+                    <i class="fas fa-tag text-blue-600 text-lg"></i>
+                    <div>
+                        <p class="text-sm text-gray-500">Category</p>
+                        <p id="detailCategory" class="font-semibold text-blue-800"></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 p-4 border rounded-lg bg-green-50 shadow-sm">
+                    <i class="fas fa-wallet text-green-600 text-lg"></i>
+                    <div>
+                        <p class="text-sm text-gray-500">Budget</p>
+                        <p id="detailBudget" class="font-semibold text-green-800"></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 p-4 border rounded-lg bg-red-50 shadow-sm">
+                    <i class="fas fa-money-bill-wave text-red-600 text-lg"></i>
+                    <div>
+                        <p class="text-sm text-gray-500">Current Spending</p>
+                        <p id="detailSpending" class="font-semibold text-red-800"></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 p-4 border rounded-lg bg-yellow-50 shadow-sm">
+                    <i class="fas fa-percentage text-yellow-600 text-lg"></i>
+                    <div>
+                        <p class="text-sm text-gray-500">Usage Percentage</p>
+                        <p id="detailUsage" class="font-semibold text-yellow-800"></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 p-4 border rounded-lg bg-blue-50 shadow-sm">
+                    <i class="fas fa-bell text-blue-600 text-lg"></i>
+                    <div>
+                        <p class="text-sm text-gray-500">Alert Threshold</p>
+                        <p id="detailThreshold" class="font-semibold text-blue-800"></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 p-4 border rounded-lg bg-gray-50 shadow-sm">
+                    <i class="fas fa-calendar-day text-gray-600 text-lg"></i>
+                    <div>
+                        <p class="text-sm text-gray-500">Start Date</p>
+                        <p id="detailStartDate" class="font-semibold text-gray-800"></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 p-4 border rounded-lg bg-gray-50 shadow-sm">
+                    <i class="fas fa-calendar-check text-gray-600 text-lg"></i>
+                    <div>
+                        <p class="text-sm text-gray-500">End Date</p>
+                        <p id="detailEndDate" class="font-semibold text-gray-800"></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 p-4 border rounded-lg bg-purple-50 shadow-sm">
+                    <i class="fas fa-sync-alt text-purple-600 text-lg"></i>
+                    <div>
+                        <p class="text-sm text-gray-500">Period</p>
+                        <p id="detailPeriod" class="font-semibold text-purple-800"></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 p-4 border rounded-lg bg-emerald-50 shadow-sm">
+                    <i class="fas fa-piggy-bank text-emerald-600 text-lg"></i>
+                    <div>
+                        <p class="text-sm text-gray-500">Remaining Balance</p>
+                        <p id="detailRemaining" class="font-semibold text-emerald-800"></p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteConfirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto animate-slide-up">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <i class="fas fa-exclamation-triangle text-red-600"></i> Confirm Delete
+            </h3>
+            <p class="text-gray-600 mb-6">Are you sure you want to delete this budget? This action cannot be undone.</p>
+            <div class="flex justify-end gap-3">
+                <button onclick="closeModal('deleteConfirmModal')" class="flex-1 px-6 py-3 text-gray-600 hover:text-gray-800 border-2 border-gray-200 hover:border-gray-300 rounded-xl font-semibold hover:bg-purple-100 transition-all duration-200">
+                    Cancel
+                </button>
+                <button id="confirmDeleteBtn" class="flex-1 px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] flex items-center gap-2">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 
 </html>
