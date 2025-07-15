@@ -10,10 +10,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/assets/js/helper_functions.js?v=1"></script>
+    <script src="/assets/js/autho_helper.js"></script>
+    <script src="/assets/js/sidebar.js"></script>
+    <script src="/assets/js/header.js"></script>
     <script src="/assets/js/goal_detail.js" defer></script>
     <script src="/assets/js/goal-contribution.js" defer></script>
-    <script src="/assets/js/sidebar.js" defer></script>
-    <script src="/assets/js/autho_helper.js" defer></script>
 
     <script>
         tailwind.config = {
@@ -30,9 +31,13 @@
 
     <style>
         /* Add basic styles for app-container and main-content consistent with other pages */
+        body {
+            padding-top: 80px; /* Space for fixed header */
+        }
+        
         .app-container {
             display: flex;
-            min-height: 100vh;
+            min-height: calc(100vh - 80px);
         }
 
         .main-content {
@@ -75,6 +80,9 @@
 </head>
 
 <body class="bg-gray-50">
+<!-- Header -->
+<div id="header-container"></div>
+
 <div class="app-container">
     <!-- Sidebar -->
     <div id="sidebar-container"></div>
@@ -507,6 +515,55 @@
 
 
 </div>
+
+<script>
+    // Manual load components with fetch
+    async function loadComponent(url, containerId) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const html = await response.text();
+            document.getElementById(containerId).innerHTML = html;
+            return true;
+        } catch (error) {
+            console.error(`Error loading ${url}:`, error);
+            return false;
+        }
+    }
+
+    // Initialize page components
+    window.addEventListener('load', function() {
+        console.log('Page loaded, initializing components...');
+        
+        setTimeout(async function() {
+            try {
+                // Try loading with functions first
+                if (typeof loadHeader === 'function' && typeof loadSideBarSimple === 'function') {
+                    console.log('Using loadHeader and loadSideBarSimple functions...');
+                    await loadHeader();
+                    await loadSideBarSimple();
+                    console.log('Components loaded successfully');
+                } else {
+                    // Fallback to manual loading
+                    console.log('Functions not found, using manual loading...');
+                    
+                    const headerLoaded = await loadComponent('/pages/header.html', 'header-container');
+                    const sidebarLoaded = await loadComponent('/pages/sidebar.html', 'sidebar-container');
+                    
+                    if (headerLoaded && sidebarLoaded) {
+                        console.log('Components loaded manually');
+                    } else {
+                        console.error('Failed to load some components');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading page components:', error);
+            }
+        }, 200);
+    });
+</script>
 
 </body>
 
