@@ -475,6 +475,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         e.preventDefault();
         const form = e.target;
         const couponId = form.dataset.couponId;
+
         const couponData = {
             code: form.code.value,
             description: form.description.value,
@@ -482,8 +483,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             maxUsage: form.maxUsage.value ? parseInt(form.maxUsage.value) : null,
             expiryDate: form.expiryDate.value,
             isActive: form.isActive.checked,
-            premiumPackageIds: form.premiumPackageIds.value ? form.premiumPackageIds.value.split(',').map(id => parseInt(id)).filter(id => !isNaN(id)) : []
+            premiumId: form.premiumPackageIds.value ? form.premiumPackageIds.value.split(',').map(id => parseInt(id)).filter(id => !isNaN(id)) : []
         };
+
+
         try {
             const method = couponId ? 'PUT' : 'POST';
             const url = couponId ? `http://localhost:8080/api/coupon/${couponId}` : 'http://localhost:8080/api/coupon';
