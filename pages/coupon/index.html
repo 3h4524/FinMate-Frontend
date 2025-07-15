@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coupon Management - FinMate</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/assets/js/autho_helper.js" defer></script>
+    <script src="/assets/js/helper_functions.js" defer></script>
+    <script src="/assets/js/sidebar.js" defer></script>
+    <script src="/assets/js/coupon.js" defer></script>
+    <script src="/assets/js/header.js" defer></script>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-50 via-white to-purple-50 min-h-screen">
+    <div id="header-container"></div>
+    <div id="sidebar-container"></div>
+    <main class="main-content" id="mainContent" style="display: block;">
+        <div class="container mx-auto px-6 py-8">
+            <!-- Header Section -->
+            <div class="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-indigo-100">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                    <div class="flex-1 mb-6 md:mb-0">
+                        <h1
+                            class="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                            Coupon Management
+                        </h1>
+                        <p class="text-gray-600 text-lg">Create, track, and manage discount codes effectively</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coupon Statistics -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Coupon Statistics</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div
+                        class="bg-white rounded-3xl shadow-lg p-6 border border-indigo-100 hover:shadow-xl transition-all duration-300 hover:scale-105 w-full">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-3xl font-bold text-gray-900" id="totalCoupons">0</h3>
+                                <p class="text-gray-600 mt-1">Total Coupons</p>
+                            </div>
+                            <div class="relative"
+                                style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);">
+                                <i class="fas fa-ticket-alt text-white"
+                                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white rounded-3xl shadow-lg p-6 border border-green-100 hover:shadow-xl transition-all duration-300 hover:scale-105 w-full">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-3xl font-bold text-gray-900" id="activeCoupons">0</h3>
+                                <p class="text-gray-600 mt-1">Active Coupons</p>
+                            </div>
+                            <div class="relative"
+                                style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                <i class="fas fa-check-circle text-white"
+                                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white rounded-3xl shadow-lg p-6 border border-indigo-100 hover:shadow-xl transition-all duration-300 hover:scale-105 w-full">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-3xl font-bold text-gray-900" id="totalUsage">0</h3>
+                                <p class="text-gray-600 mt-1">Total Usage</p>
+                            </div>
+                            <div class="relative"
+                                style="width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);">
+                                <i class="fas fa-chart-bar text-white"
+                                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 20px;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-lg p-6 mb-6 border border-indigo-100 card-hover">
+                <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                        <i class="fas fa-filter text-indigo-500"></i> Filter Coupons
+                    </h2>
+                    <div class="flex gap-3">
+                        <button id="createBtn"
+                            class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-2 rounded-xl hover:shadow-xl hover:-translate-y-1 transition flex items-center gap-2 shadow-sm">
+                            <i class="fas fa-plus"></i> Create Coupon
+                        </button>
+                        <button id="refreshBtn"
+                            class="bg-gradient-to-r from-green-500 to-green-600 text-white px-5 py-2 rounded-xl hover:shadow-xl hover:-translate-y-1 transition flex items-center gap-2 shadow-sm">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button id="filterBtn"
+                            class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-2 rounded-xl hover:shadow-xl hover:-translate-y-1 transition flex items-center gap-2 shadow-sm">
+                            <i class="fas fa-filter"></i> Apply Filters
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div>
+                        <label for="codeFilter" class="block text-sm font-medium text-gray-700 mb-2">Coupon Code</label>
+                        <input type="text" id="codeFilter" placeholder="E.g., SUMMER20"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" />
+                    </div>
+                    <div>
+                        <label for="isActiveFilter" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                        <select id="isActiveFilter"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                            <option value="">All</option>
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="startDateFilter" class="block text-sm font-medium text-gray-700 mb-2">Start
+                            Date</label>
+                        <input type="date" id="startDateFilter"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" />
+                    </div>
+                    <div>
+                        <label for="endDateFilter" class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                        <input type="date" id="endDateFilter"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" />
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-3xl shadow-lg border border-indigo-100 card-hover">
+                <div
+                    class="p-6 border-b border-gray-200 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 lg:gap-0">
+                    <div class="flex-1">
+                        <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                            <i class="fas fa-ticket-alt text-indigo-500"></i> Coupon Entries
+                        </h2>
+                    </div>
+                    <div class="relative flex-1 max-w-md mx-4">
+                        <input type="text" id="searchInput" placeholder="Search coupons..." aria-label="Search coupons"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" />
+                        <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table id="couponsTable" class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50 sticky top-0 z-10">
+                            <tr>
+                                <th scope="col"
+                                    class="px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                    ID</th>
+                                <th scope="col"
+                                    class="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                    Code</th>
+                                <th scope="col"
+                                    class="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                    Discount</th>
+                                <th scope="col"
+                                    class="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                    Status</th>
+                                <th scope="col"
+                                    class="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                    Usage</th>
+                                <th scope="col"
+                                    class="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                    Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="couponsBody" class="bg-white divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+                <div class="px-8 py-6 border-t border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1 flex justify-between sm:hidden">
+                            <button
+                                class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                                id="prevBtn">
+                                Previous
+                            </button>
+                            <button
+                                class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                                id="nextBtn">
+                                Next
+                            </button>
+                        </div>
+                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                            <div>
+                                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" id="pageNumbers">
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create/Edit Coupon Modal -->
+            <div id="couponModal"
+                class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-[1000] px-4 sm:px-6">
+                <div
+                    class="bg-white rounded-3xl shadow-xl w-full max-w-lg sm:max-w-xl md:max-w-2xl modal-content max-h-[90vh] overflow-y-auto relative">
+                    <div class="px-6 pt-6 pb-2 sm:px-8 sm:pt-8">
+                        <button onclick="closeCouponModal()"
+                            class="absolute top-4 right-4 text-2xl text-gray-500 hover:text-indigo-500 transition">×</button>
+                        <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                            <i class="fas fa-ticket-alt text-indigo-500"></i> <span id="modalTitle">Create Coupon</span>
+                        </h3>
+                        <form id="couponForm">
+                            <div class="grid grid-cols-1 gap-4">
+                                <div>
+                                    <label for="code" class="block text-sm font-medium text-gray-700 mb-2">Coupon
+                                        Code</label>
+                                    <input type="text" id="code" name="code" required maxlength="50"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" />
+                                </div>
+                                <div>
+                                    <label for="description"
+                                        class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                                    <textarea id="description" name="description" maxlength="255"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"></textarea>
+                                </div>
+                                <div>
+                                    <label for="discountPercentage"
+                                        class="block text-sm font-medium text-gray-700 mb-2">Discount Percentage</label>
+                                    <input type="number" id="discountPercentage" name="discountPercentage" required
+                                        min="0.01" step="0.01"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" />
+                                </div>
+                                <div>
+                                    <label for="maxUsage" class="block text-sm font-medium text-gray-700 mb-2">Max
+                                        Usage</label>
+                                    <input type="number" id="maxUsage" name="maxUsage" min="1"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" />
+                                </div>
+                                <div>
+                                    <label for="expiryDate" class="block text-sm font-medium text-gray-700 mb-2">Expiry
+                                        Date</label>
+                                    <input type="date" id="expiryDate" name="expiryDate" required
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" />
+                                </div>
+                                <div>
+                                    <label for="premiumPackages"
+                                        class="block text-sm font-medium text-gray-700 mb-2">Applicable Premium
+                                        Packages</label>
+                                    <div id="premiumPackages"
+                                        class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 border border-gray-200 rounded-lg bg-white">
+                                    </div>
+                                    <input type="hidden" id="selectedPremiumPackages" name="premiumPackageIds">
+                                </div>
+                                <div>
+                                    <label for="isActive"
+                                        class="block text-sm font-medium text-gray-700 mb-2">Active</label>
+                                    <input type="checkbox" id="isActive" name="isActive"
+                                        class="w-5 h-5 rounded border-gray-200 text-indigo-500 focus:ring-indigo-500" />
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 px-6 py-4 mt-6 -mx-6 flex justify-end gap-3 sm:px-8">
+                                <button type="button"
+                                    class="px-6 py-3 border border-gray-300 rounded-2xl text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors"
+                                    onclick="closeCouponModal()">Cancel</button>
+                                <button type="submit"
+                                    class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-2xl font-medium transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div> <!-- Coupon Details Modal -->
+            <div id="couponDetailModal"
+                class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-[1000]">
+                <div class="bg-white rounded-3xl shadow-xl sm:max-w-lg sm:w-full modal-content">
+                    <div class="px-6 pt-6">
+                        <button onclick="closeCouponDetailModal()"
+                            class="absolute top-4 right-4 text-2xl text-gray-500 hover:text-indigo-500 transition">×</button>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                            <i class="fas fa-info-circle text-indigo-500"></i> Coupon Details
+                        </h3>
+                        <div id="couponDetailsContent" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                        <div class="bg-gray-50 px-6 py-4 mt-6 -mx-6 flex justify-end">
+                            <button
+                                class="px-6 py-3 border border-gray-300 rounded-2xl text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors"
+                                onclick="closeCouponDetailModal()">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="toastContainer" class="fixed top-4 right-4 z-[1000] space-y-2 w-80 max-w-full"></div>
+        </div>
+    </main>
+</body>
+
+</html>

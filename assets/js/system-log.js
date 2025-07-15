@@ -68,7 +68,7 @@ async function loadLogs(page = 0, size = 10, startDate = '', endDate = '', entit
                         ${log.action}
                     </div>
                 </td>
-                <td class="px-4 py-3 whitespace-nowrap text-blue-700">
+                <td class="px-8 py-3 whitespace-nowrap text-blue-700">
                     <div class="flex items-center gap-2">
                         <i class="fas fa-folder text-blue-500"></i>
                         ${log.entityType}
@@ -80,7 +80,7 @@ async function loadLogs(page = 0, size = 10, startDate = '', endDate = '', entit
                         ${formatTimestamp(log.createdAt)}
                     </span>
                 </td>
-                <td class="px-4 py-3 text-right whitespace-nowrap">
+                <td class="px-8 py-3 text-right whitespace-nowrap">
                     <button class="action-icon view-icon mx-2" onclick="showLogDetails(${log.id})" title="View Details">
                         <i class="fas fa-eye text-blue-600 hover:text-blue-800"></i>
                     </button>

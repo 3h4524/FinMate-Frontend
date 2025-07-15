@@ -86,6 +86,12 @@
                     <i class="fas fa-star w-5 h-5"></i>
                     <span class="sidebar-label font-medium">Subscription Manager</span>
                 </button>
+
+                <!-- Coupon Manager -->
+                <button class="sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-600 hover:bg-gray-100 hover:text-gray-800" data-page="coupon" onclick="window.location.href='../coupon'">
+                    <i class="fas fa-ticket-alt w-5 h-5"></i>
+                    <span class="sidebar-label font-medium">Coupon Manager</span>
+                </button>
             </div>
 
         </div>
@@ -401,6 +407,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     case 'user-management':
                         window.location.href = '/pages/user-management/index.html';
                         break;
+                    case 'coupon':
+                        window.location.href = '/pages/coupon/index.html';
+                        break;
                 }
             }
         });
@@ -452,6 +461,8 @@ document.addEventListener('DOMContentLoaded', function() {
         setActiveTab('admin-dashboard');
     } else if (currentPage.includes('user-management')) {
         setActiveTab('user-management');
+    } else if (currentPage.includes('coupon')) {
+        setActiveTab('coupon');
     }
 
     loadUserInfo();
