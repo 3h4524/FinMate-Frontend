@@ -152,13 +152,17 @@ async function submitBudgetForm(formId, budgetId = null) {
     try {
         await Promise.all(data.categories.map(cat => saveBudgetCategory(cat, data, budgetId)));
         showNotification('Success', `Budget plan ${budgetId ? 'updated' : 'created'} successfully!`, 'success');
+
+    } catch (err) {
+        if (err.message === 'You have reached the 3 budget limit for regular users.') PremiumModal.show(err.message);
+        else
+            showNotification("Error", err.message, 'error');
+    } finally {
         form.reset();
         closeModal(budgetId ? 'updateBudgetModal' : 'createBudgetModal');
         document.getElementById('analysisPeriod').value = 'all';
         await loadBudgetOverview();
         await loadAnalysis();
-    } catch (error) {
-        console.error('Error submitting budget form:', error);
     }
 }
 
@@ -185,7 +189,6 @@ async function saveBudgetCategory(cat, data, budgetId) {
     const isCustom = cat.category.startsWith('custom_');
     const categoryId = isCustom ? null : parseInt(cat.category);
     const userCategoryId = isCustom ? parseInt(cat.category.replace('custom_', '')) : null;
-    const endDate = calculateEndDate(data.startDate, data.periodType);
     const budgetData = {
         userId: user.userId,
         categoryId,
@@ -209,9 +212,7 @@ async function saveBudgetCategory(cat, data, budgetId) {
 
     const responseData = await response.json();
     if (!response.ok || responseData.code !== 1000) {
-        const errorMessage = responseData.message || 'Error saving budget';
-        showNotification('Error', errorMessage, 'error');
-        throw new Error(errorMessage);
+        throw new Error(responseData.message);
     }
 }
 
