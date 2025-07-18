@@ -152,7 +152,6 @@ async function submitBudgetForm(formId, budgetId = null) {
     try {
         await Promise.all(data.categories.map(cat => saveBudgetCategory(cat, data, budgetId)));
         showNotification('Success', `Budget plan ${budgetId ? 'updated' : 'created'} successfully!`, 'success');
-
     } catch (err) {
         if (err.message === 'You have reached the 3 budget limit for regular users.') PremiumModal.show(err.message);
         else
@@ -161,6 +160,7 @@ async function submitBudgetForm(formId, budgetId = null) {
         form.reset();
         closeModal(budgetId ? 'updateBudgetModal' : 'createBudgetModal');
         document.getElementById('analysisPeriod').value = 'all';
+        await monitorBudgets(0);
         await loadBudgetOverview();
         await loadAnalysis();
     }
@@ -623,6 +623,7 @@ async function deleteBudget(budgetId) {
                 showNotification('Success', 'Budget deleted successfully!', 'success');
                 await loadBudgetOverview();
                 await loadAnalysis();
+                await monitorBudgets(0);
             } else {
                 const errorData = await response.json();
                 showNotification('Error', `Error deleting budget: ${errorData.message || "Unknown error"}`, 'error');
