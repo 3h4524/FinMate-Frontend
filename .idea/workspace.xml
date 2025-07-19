@@ -6,12 +6,74 @@
   <component name="ChangeListManager">
     <list default="true" id="72949f31-0bd4-426c-a8e0-0239e303fb3b" name="Changes" comment="remove redundant function, fix togglePassword">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/admin-dashboard.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/admin-dashboard.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/feature.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/feature.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/forgot-password.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/forgot-password.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/login.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/login.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/register.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/register.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/reset-password.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/reset-password.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/subscription-manager.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/subscription-manager.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/transaction.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/transaction.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/user-management.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/user-management.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/css/verify-email.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/css/verify-email.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/autho_helper.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/autho_helper.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/budget.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/budget.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/coupon.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/coupon.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/feature.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/feature.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/assets/js/financial_report.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/financial_report.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/forgot-password.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/forgot-password.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/goal-contribution.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/goal-contribution.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/goal.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/goal.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/goal_detail.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/goal_detail.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/googleAuth.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/googleAuth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/header.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/header.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/assets/js/helper_functions.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/helper_functions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/home.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/home.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/limitFeature.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/limitFeature.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/login.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/login.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/notification.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/notification.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/page-loader.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/page-loader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/password.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/password.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/profile.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/profile.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/recurring-transaction.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/recurring-transaction.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/register.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/register.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/reset-password.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/reset-password.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/services/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/services/api.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/sidebar.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/assets/js/subscription-manager.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/subscription-manager.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/system-log.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/system-log.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/tab-logout.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/tab-logout.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/transaction.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/transaction.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/assets/js/user-premium.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/user-premium.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/user_auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/user_auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/verify-email.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/verify-email.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/admin-dashboard/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/admin-dashboard/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/budget/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/budget/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/confirmationPayment.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/confirmationPayment.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/coupon/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/coupon/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/feature/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/feature/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/financial_report/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/financial_report/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/forgot-password/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/forgot-password/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/goal/goal_detail/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/goal/goal_detail/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/goal/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/goal/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/header.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/home/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/home/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/login/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/profile/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/profile/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/recurring-transaction/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/recurring-transaction/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/register/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/register/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/reminder-confirmed/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/reminder-confirmed/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/reset-password/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/reset-password/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/set-password.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/set-password.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/sidebar.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/sidebar.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pages/subscription-manager/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/subscription-manager/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/system-log/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/system-log/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/transaction/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/transaction/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/user-management/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/user-management/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pages/user_premium/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/user_premium/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/verify-email/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/verify-email/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +98,7 @@
   <component name="GithubPullRequestsUISettings"><![CDATA[{
   "selectedUrlAndAccountId": {
     "url": "https://github.com/3h4524/FinMate-Frontend.git",
-    "accountId": "6773f4a7-b3d1-411e-822e-757f7e32f302"
+    "accountId": "16b43888-0571-4fed-b0d5-96a7066811de"
   }
 }]]></component>
   <component name="KubernetesApiPersistence">{}</component>
@@ -57,7 +119,7 @@
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;fix__frontend&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;last_opened_file_path&quot;: &quot;D:/new/Frontend1&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -70,8 +132,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.25410.129" />
-        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-IU-251.25410.129" />
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.26094.121" />
+        <option value="bundled-js-predefined-d6986cc7102b-b26f3e71634d-JavaScript-IU-251.26094.121" />
       </set>
     </attachedChunks>
   </component>
@@ -87,6 +149,7 @@
       <workItem from="1750427066580" duration="690000" />
       <workItem from="1752036524831" duration="1875000" />
       <workItem from="1752112300190" duration="6357000" />
+      <workItem from="1752911720364" duration="8000" />
     </task>
     <task id="LOCAL-00001" summary="update sidebar">
       <option name="closed" value="true" />

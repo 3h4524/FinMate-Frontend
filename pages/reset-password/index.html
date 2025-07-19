@@ -368,7 +368,7 @@
             <button type="submit" class="reset-btn"><i class="fas fa-sync-alt"></i> Reset Password</button>
         </form>
         <div class="back-to-login">
-            Remembered your password? <a href="../login">Back to Login</a>
+            Remembered your password? <a href="/">Back to Login</a>
         </div>
     </div>
 </div>
@@ -454,7 +454,7 @@
                 document.getElementById('successAlert').querySelector('span').textContent = data.message || 'Password reset successfully! Redirecting to login...';
                 document.getElementById('successAlert').style.display = 'flex';
                 setTimeout(() => {
-                    window.location.href = '../login';
+                    window.location.href = '/';
                 }, 2000);
             } else {
                 document.getElementById('errorAlert').querySelector('span').textContent = data.message || 'Failed to reset password. Please try again.';

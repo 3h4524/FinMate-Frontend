@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     if (!token || !userData) {
         console.log('[AUTH] No token or user data found, redirecting to login');
-        window.location.href = '../login/';
+        window.location.href = '/';
         return;
     }
 
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log('[AUTH] Unauthorized, redirecting to login');
                 sessionStorage.removeItem('token');
                 sessionStorage.removeItem('userData');
-                window.location.href = '../login/';
+                window.location.href = '/';
                 return;
             }
         }
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log('[AUTH] Token verification failed:', data.message);
             sessionStorage.removeItem('token');
             sessionStorage.removeItem('userData');
-            window.location.href = '../login/';
+            window.location.href = '/';
             return;
         }
 

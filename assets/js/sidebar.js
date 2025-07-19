@@ -3,7 +3,7 @@
 // Load sidebar HTML content
 async function loadSidebarHTML() {
     try {
-        const response = await fetch('../sidebar.html');
+        const response = await fetch('/pages/sidebar.html');
         if (!response.ok) {
             throw new Error('Failed to load sidebar.html');
         }
@@ -133,7 +133,7 @@ window.handleLogout = function() {
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('userData');
         localStorage.removeItem('user');
-        window.location.href = '../login/index.html';
+        window.location.href = '/';
     }
 };
 

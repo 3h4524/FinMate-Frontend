@@ -394,7 +394,7 @@ function handlePageUnload() {
 
             // Strategy 1: Use sendBeacon if available
             if (navigator.sendBeacon) {
-                const blob = new Blob([JSON.stringify({})], {type: 'application/json'});
+                const blob = new Blob([JSON.stringify({})], { type: 'application/json' });
                 navigator.sendBeacon('http://localhost:8080/api/v1/auth/logout', blob);
                 console.log('Logout sent via sendBeacon');
             } else {
@@ -432,11 +432,14 @@ document.addEventListener('DOMContentLoaded', function () {
     clearSessionOnAuthPages();
     // Chỉ check session nếu KHÔNG phải trang login, register, forgot-password, reset-password, verify-email
     const path = window.location.pathname;
-    const isAuthPage = /\/pages\/(login|register|forgot-password|reset-password|verify-email)(\/|\/index\.html)?/.test(path);
+    const isAuthPage = (
+        path === '/' ||
+        /\/pages\/(register|forgot-password|reset-password|verify-email)(\/|\/index\.html)?$/.test(path)
+    );
     if (!isAuthPage) {
         if (!checkSessionValidity()) {
             console.log('Invalid session, redirecting to login');
-            window.location.href = '/pages/login/';
+            window.location.href = '/';
         }
     }
 });
@@ -460,7 +463,7 @@ function handleBrowserClose() {
 
             // Try to send logout request
             if (navigator.sendBeacon) {
-                const blob = new Blob([JSON.stringify({})], {type: 'application/json'});
+                const blob = new Blob([JSON.stringify({})], { type: 'application/json' });
                 navigator.sendBeacon('http://localhost:8080/api/v1/auth/logout', blob);
             }
         } catch (error) {

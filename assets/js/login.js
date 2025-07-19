@@ -95,9 +95,9 @@ document.getElementById('loginForm').addEventListener('submit', async function (
                 // Check user role and redirect accordingly
                 const userRole = data.result.role;
                 if (userRole === 'ADMIN') {
-                    window.location.href = '../admin-dashboard/index.html';
+                    window.location.href = 'pages/admin-dashboard/';
                 } else {
-                    window.location.href = '../home/index.html';
+                    window.location.href = 'pages/home/';
                 }
             }, 1000);
         } else if (data.code === 1003) {
