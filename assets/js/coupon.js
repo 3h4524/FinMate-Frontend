@@ -61,17 +61,17 @@ async function loadPremiumPackages() {
     }
 }
 
-async function loadCoupons(page = 0, size = 6) {
+async function loadCoupons(page = 0, size = 6, showSuccessMessage = false) {
     try {
         const params = new URLSearchParams({ page, size, sortBy: 'usedCount', sortDirection: 'DESC' });
-        await fetchAndRenderCoupons(`http://localhost:8080/api/coupon?${params.toString()}`, 'GET');
+        await fetchAndRenderCoupons(`http://localhost:8080/api/coupon?${params.toString()}`, 'GET', null, showSuccessMessage);
     } catch (error) {
         showNotification('Error', `Failed to load coupons: ${error.message}`, 'error');
         console.error('Error loading coupons:', error);
     }
 }
 
-async function searchCoupons(page = 0, size = 6, code = '', isActive = '', startDate = '', endDate = '') {
+async function searchCoupons(page = 0, size = 6, code = '', isActive = '', startDate = '', endDate = '', showSuccessMessage = false) {
     try {
         const searchDto = {
             code: code || null,
@@ -84,14 +84,14 @@ async function searchCoupons(page = 0, size = 6, code = '', isActive = '', start
             sortDirection: 'DESC'
         };
 
-        await fetchAndRenderCoupons('http://localhost:8080/api/coupon/search', 'POST', searchDto);
+        await fetchAndRenderCoupons('http://localhost:8080/api/coupon/search', 'POST', searchDto, showSuccessMessage);
     } catch (error) {
         showNotification('Error', `Failed to search coupons: ${error.message}`, 'error');
         console.error('Error searching coupons:', error);
     }
 }
 
-async function fetchAndRenderCoupons(url, method, body = null) {
+async function fetchAndRenderCoupons(url, method, body = null, showSuccessMessage = false) {
     try {
         const options = { method };
         if (body) {
@@ -118,31 +118,31 @@ async function fetchAndRenderCoupons(url, method, body = null) {
             const tr = document.createElement('tr');
             tr.className = 'table-row-hover';
             tr.innerHTML = `
-                <td class="px-4 py-3 whitespace-nowrap font-bold text-indigo-700">
+                <td class="px-8 py-3 whitespace-nowrap font-bold text-indigo-700">
                     <div class="flex items-center gap-2">
                         <i class="fas fa-hashtag text-indigo-500"></i>
                         ${index + 1 + currentPage * (body ? body.size : parseInt(new URLSearchParams(url.split('?')[1]).get('size')) || 6)}
                     </div>
                 </td>
-                <td class="px-4 py-3 whitespace-nowrap font-semibold text-green-700">
+                <td class="px-3 py-3 whitespace-nowrap font-semibold text-green-700">
                     <div class="flex items-center gap-2">
                         <i class="fas fa-ticket-alt text-green-500"></i>
                         ${coupon.code}
                     </div>
                 </td>
-                <td class="px-4 py-3 whitespace-nowrap font-semibold text-purple-700">
+                <td class="px-12 py-3 whitespace-nowrap font-semibold text-purple-700">
                     <div class="flex items-center gap-2">
                         <i class="fas fa-percentage text-purple-500"></i>
                         ${coupon.discountPercentage}%
                     </div>
                 </td>
-                <td class="px-4 py-3 whitespace-nowrap font-semibold text-blue-700">
+                <td class="px-10 py-3 whitespace-nowrap font-semibold text-blue-700">
                     <div class="flex items-center gap-2">
                         <i class="fas fa-toggle-on text-blue-500"></i>
                         ${coupon.isActive ? 'Active' : 'Inactive'}
                     </div>
                 </td>
-                <td class="px-4 py-3 whitespace-nowrap">
+                <td class="px-9 py-3 whitespace-nowrap">
                     <span class="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 rounded px-2 py-1 font-mono text-sm">
                         <i class="fas fa-chart-bar text-indigo-500"></i>
                         ${coupon.usedCount}/${coupon.maxUsage || '∞'}
@@ -164,7 +164,9 @@ async function fetchAndRenderCoupons(url, method, body = null) {
         });
 
         renderPagination();
-        showNotification('Success', 'Coupons loaded successfully!', 'success');
+        if (showSuccessMessage) {
+            showNotification('Success', 'Coupons loaded successfully!', 'success');
+        }
     } catch (error) {
         throw error;
     }
@@ -213,7 +215,7 @@ function togglePremiumPackage(containerId, packageId) {
 async function refreshData() {
     const filters = loadFilters();
     await Promise.all([
-        loadCoupons(0, 6),
+        loadCoupons(0, 6, true),
         loadStats(),
         loadPremiumPackages()
     ]);
@@ -246,7 +248,7 @@ async function showCouponDetails(couponId) {
         document.getElementById('couponDetailsContent').innerHTML = `
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 ${fields.map(({ label, icon, color, value }) => `
-                    <div class="p-3 bg-white rounded-lg shadow border-l-4 border-${color}-500">
+                    <div class="p-4 bg-white rounded-lg shadow border-l-4 border-${color}-500 h-20 flex flex-col justify-between">
                         <div class="flex items-center gap-2 mb-1">
                             <i class="fas fa-${icon} text-${color}-500 text-lg"></i>
                             <span class="text-xs text-gray-500 font-medium">${label}</span>
@@ -260,7 +262,6 @@ async function showCouponDetails(couponId) {
         const modal = document.getElementById('couponDetailModal');
         modal.classList.remove('hidden');
         modal.classList.add('flex');
-        setTimeout(() => modal.querySelector('.modal-content').classList.add('show'), 10);
     } catch (error) {
         showNotification('Error', 'Failed to load coupon details. Please try again.', 'error');
         console.error('Error loading coupon details:', error);
@@ -269,12 +270,8 @@ async function showCouponDetails(couponId) {
 
 function closeCouponDetailModal() {
     const modal = document.getElementById('couponDetailModal');
-    const content = modal.querySelector('.modal-content');
-    content.classList.remove('show');
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }, 200);
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
 }
 
 async function openCouponModal(coupon = null) {
@@ -341,7 +338,7 @@ async function deleteCoupon(couponId) {
         if (!response.ok) throw new Error('Delete failed');
         showNotification('Success', 'Coupon deleted successfully!', 'success');
         const filters = loadFilters();
-        loadCoupons(currentPage, 6);
+        loadCoupons(currentPage, 6, false);
     } catch (error) {
         showNotification('Error', 'Failed to delete coupon. Please try again.', 'error');
         console.error('Error deleting coupon:', error);
@@ -357,7 +354,7 @@ function renderPagination() {
     startPage = Math.max(0, endPage - maxButtons);
 
     const createButton = (page, text, disabled = false) => {
-        return `<button class="px-4 py-2 rounded-lg ${disabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'} text-white transition" ${disabled ? 'disabled' : `onclick="loadCoupons(${page}, 6)"`}>${text}</button>`;
+        return `<button class="px-4 py-2 rounded-lg ${disabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'} text-white transition" ${disabled ? 'disabled' : `onclick="loadCoupons(${page}, 6, false)"`}>${text}</button>`;
     };
 
     const buttons = [
@@ -455,7 +452,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (currentPage > 0) {
             currentPage--;
             const filters = loadFilters();
-            loadCoupons(currentPage, 6);
+            loadCoupons(currentPage, 6, false);
         }
     });
 
@@ -463,7 +460,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (currentPage < totalPages - 1) {
             currentPage++;
             const filters = loadFilters();
-            loadCoupons(currentPage, 6);
+            loadCoupons(currentPage, 6, false);
         }
     });
 
@@ -499,7 +496,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             showNotification('Success', couponId ? 'Coupon updated successfully!' : 'Coupon created successfully!', 'success');
             closeCouponModal();
             const filters = loadFilters();
-            loadCoupons(currentPage, 6);
+            loadCoupons(currentPage, 6, false);
         } catch (error) {
             showNotification('Error', couponId ? 'Failed to update coupon. Please try again.' : 'Failed to create coupon. Please try again.', 'error');
             console.error('Error saving coupon:', error);

@@ -1,10 +1,11 @@
 let budgetChart = null;
 let chartType = 'bar';
 let user;
-const pageSize = 1000;
+const pageSize = 10;
 const API_BASE_URL = 'http://localhost:8080';
 let customCategories = JSON.parse(localStorage.getItem('customCategories')) || [];
 let systemCategories = [];
+let currentBudgetCount = 0;
 
 // Constants
 const CHART_TYPES = {
@@ -30,7 +31,7 @@ const PROGRESS_CLASSES = {
     ERROR: 'bg-gradient-to-r from-red-500 to-pink-600'
 };
 
-// INITIALIZATION
+// initialization
 async function initializeUI() {
     try {
         await fetchUser();
@@ -38,10 +39,7 @@ async function initializeUI() {
 
         await Promise.all([
             loadSystemCategories(),
-            loadUserCategories()
-        ]);
-
-        await Promise.all([
+            loadUserCategories(),
             loadBudgetOverview(),
             monitorBudgets(0),
             loadAnalysis(0)
@@ -68,7 +66,7 @@ async function fetchUser() {
     }
 }
 
-// MODAL MANAGEMENT
+// modal management
 function openModal(modalId) {
     const modal = document.getElementById(modalId);
     if (!modal) return;
@@ -127,7 +125,6 @@ function resetModalForm(modalId) {
     if (callback) callback();
 }
 
-// FORM HANDLING
 async function submitBudgetForm(formId, budgetId = null) {
     const form = document.getElementById(formId);
     if (!form) return;
@@ -142,6 +139,13 @@ async function submitBudgetForm(formId, budgetId = null) {
             amount: parseFloat(formData.getAll('amounts[]')[index])
         }))
     };
+
+    if (!user?.isPremium && !budgetId) {
+        if ((currentBudgetCount + data.categories.length) > 3) {
+            showNotification('Warning', 'Bạn đã đạt giới hạn 3 ngân sách cho tài khoản thường. Nâng cấp Premium để tạo thêm.', 'warning');
+            return;
+        }
+    }
 
     if (!validateBudgetData(data)) return;
     if (!user?.userId) {
@@ -216,19 +220,7 @@ async function saveBudgetCategory(cat, data, budgetId) {
     }
 }
 
-function calculateEndDate(startDate, periodType) {
-    const start = new Date(startDate);
-    const end = new Date(start);
-    if (periodType === PERIOD_TYPES.WEEKLY) {
-        end.setDate(start.getDate() + 6);
-    } else if (periodType === PERIOD_TYPES.MONTHLY) {
-        end.setMonth(start.getMonth() + 1);
-        end.setDate(start.getDate() - 1);
-    }
-    return end;
-}
-
-// CATEGORY MANAGEMENT
+// category management
 async function loadSystemCategories() {
     try {
         const response = await apiRequest(`${API_BASE_URL}/api/categories`, {
@@ -275,6 +267,17 @@ async function loadUserCategories() {
 }
 
 function addBudgetCategory(type = 'create', selectedCategory = null, amount = null) {
+    if (type === 'create' && user && !user.isPremium) {
+        const categoryList = document.getElementById('category-list');
+        if (!categoryList) return;
+        const currentRows = categoryList.children.length;
+
+        if ((currentBudgetCount + currentRows) >= 3) {
+            showNotification('Warning', 'You have reached the limit of 3 budgets for your standard account. Upgrade to Premium to create more.', 'warning');
+            return;
+        }
+    }
+
     const categoryList = document.getElementById(type === 'create' ? 'category-list' : 'update-category-list');
     if (!categoryList) return;
 
@@ -314,7 +317,6 @@ function removeBudgetCategory(button, type = 'create') {
     }
 }
 
-// BUDGET OVERVIEW
 async function loadBudgetOverview() {
     try {
         const response = await apiRequest(`${API_BASE_URL}/budget/list?page=0&size=${pageSize}`, {
@@ -323,6 +325,7 @@ async function loadBudgetOverview() {
 
         const data = await response.json();
         const budgets = data.result?.content || [];
+        currentBudgetCount = budgets.length;
 
         if (budgets.length > 0) {
             updateBudgetOverview(budgets);
@@ -338,7 +341,6 @@ function updateBudgetOverview(budgets) {
     const stats = calculateBudgetStats(budgets);
     const overallProgress = stats.totalBudget > 0 ? (stats.totalSpent / stats.totalBudget * 100) : 0;
 
-    // Update overview elements
     updateElement('activeBudgets', budgets.length);
     updateElement('totalBudgetAmount', formatCurrency(stats.totalBudget));
     updateElement('totalSpentAmount', formatCurrency(stats.totalSpent));
@@ -407,7 +409,7 @@ function getProgressBarClass(progress) {
     }
 }
 
-// BUDGET MONITORING
+// budget monitoring
 async function monitorBudgets(silent = false) {
     const monitorTableBody = document.getElementById("monitor-table-body");
     if (!monitorTableBody) return;
@@ -566,7 +568,7 @@ function showBudgetNotifications(overBudgets, nearBudgets) {
         showNotification('Warning', `Near limit: ${nearBudgets.join(', ')}`, 'warning');
     }
 }
-// BUDGET DETAILS & ACTIONS
+// budgtet details
 function viewBudgetDetails(id, categoryName, amount, currentSpending, threshold, startDate, endDate, periodType) {
     const usagePercent = (currentSpending / amount * 100).toFixed(2) || 0;
     const remaining = amount - (currentSpending || 0);
@@ -640,7 +642,7 @@ async function deleteBudget(budgetId) {
     confirmBtn.addEventListener('click', deleteHandler);
 }
 
-// ANALYSIS & CHARTS
+// analysis and charts
 function getAnalysisUrl(period) {
     const baseUrl = `${API_BASE_URL}/budget/analysis?page=0&size=${pageSize}`;
     return period === 'all' ? baseUrl : `${baseUrl}&period=${period}`;
@@ -922,7 +924,7 @@ function toggleChartType() {
     loadAnalysis();
 }
 
-// UTILITY FUNCTIONS
+// utility functions
 function showNotification(title, message, type) {
     const toastContainer = document.getElementById("toastContainer");
     if (!toastContainer) return;
@@ -1109,7 +1111,7 @@ function exportToCSV() {
         });
 }
 
-// EVENT LISTENERS
+// event listeners
 document.addEventListener('DOMContentLoaded', () => {
     const createForm = document.getElementById("create-budget-form");
     const updateForm = document.getElementById("update-budget-form");
