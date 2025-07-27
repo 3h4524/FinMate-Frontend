@@ -147,7 +147,7 @@ document.getElementById('register-form').addEventListener('submit', async functi
             showNotification('Registration successful! Please check your email to verify your account.', 'success');
             // Redirect to email verification page
             setTimeout(() => {
-                window.location.href = '../verify-email/index.html?email=' + encodeURIComponent(email);
+                window.location.href = '/pages/verify-email/?email=' + encodeURIComponent(email);
             }, 2000);
         } else {
             // Show error message

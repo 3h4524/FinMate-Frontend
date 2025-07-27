@@ -63,7 +63,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
                         showNotification('Your account requires email verification. Redirecting to verification page...', 'error');
                     }
                     setTimeout(() => {
-                        window.location.href = `../verify-email/index.html?email=${email}`;
+                        window.location.href = `/pages/verify-email/?email=${email}`;
                     }, 1000);
                     return;
                 } else {
@@ -103,7 +103,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
         } else if (data.code === 1003) {
             showNotification('Please verify your email before logging in.', 'error');
             setTimeout(() => {
-                window.location.href = `../verify-email/index.html?email=${email}`;
+                window.location.href = `/pages/verify-email/?email=${email}`;
             }, 1000);
         } else {
             showNotification(data.message || 'Login failed!', 'error');
