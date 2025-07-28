@@ -866,7 +866,7 @@
         (function() {
             const token = sessionStorage.getItem('token');
             if (!token) {
-                window.location.href = '/pages/login/';
+                window.location.href = '/';
             }
         })();
 
@@ -883,7 +883,7 @@
                 if (user.role !== 'ADMIN') {
                     console.log('[AUTH] Access denied: User does not have ADMIN role');
                     alert('Access denied. This page is only available for administrators.');
-                    window.location.href = '/pages/login/';
+                    window.location.href = '/';
                     return;
                 }
                 // Load sidebar and header first to avoid flash
@@ -920,7 +920,7 @@
             try {
                 const token = sessionStorage.getItem('token');
                 if (!token) {
-                    window.location.href = '/pages/login/';
+                    window.location.href = '/';
                     return;
                 }
                 const tbody = document.getElementById('usersTableBody');

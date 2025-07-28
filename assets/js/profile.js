@@ -464,7 +464,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         showProfileNotification('Your session has expired. Please log in again!', 'error');
                         // Redirect to login page after 2 seconds
                         setTimeout(() => {
-                            window.location.href = '/pages/login/';
+                            window.location.href = '/';
                         }, 2000);
                     } else {
                         showProfileNotification(data.message, 'error');
@@ -473,7 +473,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     showProfileNotification('Your session has expired. Please log in again!', 'error');
                     // Redirect to login page after 2 seconds
                     setTimeout(() => {
-                        window.location.href = '/pages/login/';
+                        window.location.href = '/';
                     }, 2000);
                 } else if (response.status === 400) {
                     // Hiển thị lỗi mật khẩu hiện tại không đúng

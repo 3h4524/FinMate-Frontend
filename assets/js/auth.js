@@ -394,7 +394,7 @@ function handlePageUnload() {
 
             // Strategy 1: Use sendBeacon if available
             if (navigator.sendBeacon) {
-                const blob = new Blob([JSON.stringify({})], { type: 'application/json' });
+                const blob = new Blob([JSON.stringify({})], {type: 'application/json'});
                 navigator.sendBeacon('http://localhost:8080/api/v1/auth/logout', blob);
                 console.log('Logout sent via sendBeacon');
             } else {
@@ -416,7 +416,7 @@ function handlePageUnload() {
 function clearSessionOnAuthPages() {
     const currentPath = window.location.pathname;
     // CHỈ CLEAR SESSION TRÊN TRANG LOGIN VÀ KHI CÓ THAM SỐ LOGOUT
-    if (currentPath.includes('/pages/login/') && window.location.search.includes('logout=true')) {
+    if (currentPath === '/' && window.location.search.includes('logout=true')) {
         console.log('Clearing session data on login page with logout=true:', currentPath);
         sessionStorage.clear();
         localStorage.removeItem('token');
@@ -463,7 +463,7 @@ function handleBrowserClose() {
 
             // Try to send logout request
             if (navigator.sendBeacon) {
-                const blob = new Blob([JSON.stringify({})], { type: 'application/json' });
+                const blob = new Blob([JSON.stringify({})], {type: 'application/json'});
                 navigator.sendBeacon('http://localhost:8080/api/v1/auth/logout', blob);
             }
         } catch (error) {

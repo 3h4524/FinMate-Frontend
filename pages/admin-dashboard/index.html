@@ -488,7 +488,7 @@
 
         if (!token || !userData || !loginTimestamp) {
             console.log('[AUTH] No valid session found, redirecting to login');
-            window.location.href = '../login';
+            window.location.href = '/';
             return;
         }
 
@@ -500,7 +500,7 @@
         if (currentTime - loginTime > sessionTimeout) {
             console.log('[AUTH] Session expired, redirecting to login');
             sessionStorage.clear();
-            window.location.href = '../login';
+            window.location.href = '/';
             return;
         }
 
@@ -572,7 +572,7 @@
 
     function redirectToLogin() {
         sessionStorage.clear();
-        window.location.href = '../login';
+        window.location.href = '/';
     }
 
     async function loadDashboardData() {
