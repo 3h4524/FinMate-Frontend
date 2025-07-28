@@ -16,7 +16,7 @@
     <script src="../../assets/js/sidebar.js"></script>
     <script src=" /assets/js/helper_functions.js"></script>
     <script src=" /assets/js/autho_helper.js" defer></script>
-    <script src=" /assets/js/user-premium.js" defer></script>
+    <script src="/assets/js/user-premium.js?v=1" defer></script>
     <script src="/assets/js/notification.js" defer></script>
     <style>
         /* Layout fixes for header and sidebar integration */
@@ -276,101 +276,101 @@
 </head>
 
 <body class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-<div id="header-container"></div>
-<div id="sidebar-container"></div>
+    <div id="header-container"></div>
+    <div id="sidebar-container"></div>
 
-<div class="main-content" id="mainContent">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Header -->
-        <div class="header-section text-center mb-8">
-            <div class="header-content">
-                <div class="flex justify-center mb-4">
-                    <div class="p-4 rounded-2xl rocket-icon-container shadow-lg">
-                        <i data-lucide="crown" class="w-10 h-10 text-white"></i>
+    <div class="main-content" id="mainContent">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Header -->
+            <div class="header-section text-center mb-8">
+                <div class="header-content">
+                    <div class="flex justify-center mb-4">
+                        <div class="p-4 rounded-2xl rocket-icon-container shadow-lg">
+                            <i data-lucide="crown" class="w-10 h-10 text-white"></i>
+                        </div>
                     </div>
+                    <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+                        Choose Your <span
+                            class="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Premium</span>
+                        Plan
+                    </h1>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                        Unlock premium features and elevate your financial experience today.
+                    </p>
                 </div>
-                <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-                    Choose Your <span
-                        class="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Premium</span>
-                    Plan
-                </h1>
-                <p class="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-                    Unlock premium features and elevate your financial experience today.
-                </p>
             </div>
-        </div>
 
-        <!-- Billing Toggle -->
-        <div class="flex justify-center mb-8">
-            <div class="bg-white p-2 rounded-2xl shadow-lg border border-indigo-100">
-                <div class="flex items-center space-x-2">
-                    <button id="monthly-btn"
+            <!-- Billing Toggle -->
+            <div class="flex justify-center mb-8">
+                <div class="bg-white p-2 rounded-2xl shadow-lg border border-indigo-100">
+                    <div class="flex items-center space-x-2">
+                        <button id="monthly-btn"
                             class="px-6 py-3 rounded-xl font-semibold transition-all duration-300 bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg hover:from-indigo-600 hover:to-purple-700 transform hover:scale-105"
                             onclick="toggleBilling('monthly')">
-                        Monthly
-                    </button>
-                    <button id="yearly-btn"
+                            Monthly
+                        </button>
+                        <button id="yearly-btn"
                             class="px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 relative"
                             onclick="toggleBilling('yearly')">
-                        Yearly
-                        <div
+                            Yearly
+                            <div
                                 class="absolute -top-2 -right-2 bg-gradient-to-r from-green-400 to-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center shadow-md">
-                            <i data-lucide="gift" class="w-3 h-3 inline mr-1"></i>
-                            -17%
-                        </div>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Plans Grid -->
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 plans-grid"
-             id="packagesContainer">
-            <div
-                    class="relative bg-white rounded-3xl shadow-2xl overflow-hidden transition-all duration-500 plan-card border border-indigo-100">
-                <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-8 text-white">
-                    <div class="flex items-center justify-center mb-4">
-                        <i data-lucide="loader" class="w-8 h-8 animate-spin"></i>
+                                <i data-lucide="gift" class="w-3 h-3 inline mr-1"></i>
+                                -17%
+                            </div>
+                        </button>
                     </div>
-                    <h3 class="text-xl font-bold text-center mb-2">Loading...</h3>
-                    <p class="text-center text-indigo-100 text-sm">Fetching premium plans...</p>
+                </div>
+            </div>
+
+            <!-- Plans Grid -->
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 plans-grid"
+                id="packagesContainer">
+                <div
+                    class="relative bg-white rounded-3xl shadow-2xl overflow-hidden transition-all duration-500 plan-card border border-indigo-100">
+                    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-8 text-white">
+                        <div class="flex items-center justify-center mb-4">
+                            <i data-lucide="loader" class="w-8 h-8 animate-spin"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-center mb-2">Loading...</h3>
+                        <p class="text-center text-indigo-100 text-sm">Fetching premium plans...</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-</div>
+    </div>
 
-<!-- Coupon Modal -->
-<div id="couponModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
-    <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-bold text-gray-900">Apply Coupon Code</h3>
-            <button id="closeCouponModal" class="text-gray-500 hover:text-gray-700">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
-        </div>
-        <div class="mb-4">
-            <label for="couponCode" class="block text-sm font-medium text-gray-700 mb-2">Coupon Code</label>
-            <div class="flex items-center space-x-2">
-                <input id="couponCode" type="text"
-                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                       placeholder="Enter coupon code (optional)">
+    <!-- Coupon Modal -->
+    <div id="couponModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gray-900">Apply Coupon Code</h3>
+                <button id="closeCouponModal" class="text-gray-500 hover:text-gray-700">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
             </div>
-            <p id="couponError" class="text-sm text-red-600 mt-2 hidden">Invalid coupon code.</p>
-        </div>
-        <div class="flex justify-end space-x-2">
-            <button id="cancelCouponBtn"
+            <div class="mb-4">
+                <label for="couponCode" class="block text-sm font-medium text-gray-700 mb-2">Coupon Code</label>
+                <div class="flex items-center space-x-2">
+                    <input id="couponCode" type="text"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        placeholder="Enter coupon code (optional)">
+                </div>
+                <p id="couponError" class="text-sm text-red-600 mt-2 hidden">Invalid coupon code.</p>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button id="cancelCouponBtn"
                     class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-300">
-                Cancel
-            </button>
-            <button id="proceedPaymentBtn"
+                    Cancel
+                </button>
+                <button id="proceedPaymentBtn"
                     class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-300">
-                Proceed to Payment
-            </button>
+                    Proceed to Payment
+                </button>
+            </div>
         </div>
     </div>
-</div>
 </body>
 
 </html>
