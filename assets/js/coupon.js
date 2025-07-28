@@ -248,7 +248,7 @@ async function showCouponDetails(couponId) {
         document.getElementById('couponDetailsContent').innerHTML = `
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 ${fields.map(({ label, icon, color, value }) => `
-                    <div class="p-4 bg-white rounded-lg shadow border-l-4 border-${color}-500 h-20 flex flex-col justify-between">
+                    <div class="p-4 bg-white rounded-lg shadow border-l-4 border-${color}-500 flex flex-col justify-between">
                         <div class="flex items-center gap-2 mb-1">
                             <i class="fas fa-${icon} text-${color}-500 text-lg"></i>
                             <span class="text-xs text-gray-500 font-medium">${label}</span>

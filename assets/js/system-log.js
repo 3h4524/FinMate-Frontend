@@ -123,7 +123,7 @@ async function showLogDetails(logId) {
         document.getElementById('logDetailsContent').innerHTML = `
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 ${fields.map(({label, icon, color, value}) => `
-                    <div class="p-3 bg-white rounded-lg shadow border-l-4 border-${color}-500">
+                    <div class="p-3 bg-white rounded-lg shadow border-l-4 border-${color}-500 ${label === 'Details' ? 'col-span-2' : ''}">
                         <div class="flex items-center gap-2 mb-1">
                             <i class="fas fa-${icon} text-${color}-500 text-lg"></i>
                             <span class="text-xs text-gray-500 font-medium">${label}</span>
