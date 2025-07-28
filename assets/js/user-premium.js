@@ -137,7 +137,7 @@ const renderPackages = (packagesData) => {
             // Calculate discounted price
             priceToShow = pkg.price * (1 - offer.discountPercentage / 100);
             // Calculate days remaining
-            const today = new Date('2025-07-05');
+            const today = new Date();
             const expiry = new Date(offer.expiryDate);
             const diffTime = expiry - today;
             const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -207,7 +207,7 @@ const renderPackages = (packagesData) => {
                         data-package-id="${pkg.id}"
                         onclick="showCouponModal(${pkg.id}, ${priceToShow})">
                         <i data-lucide="credit-card" class="w-5 h-3 inline mr-2"></i>
-                        ${isPurchased(pkg.id) ? 'Purchased' : 'Buy Now'}
+                        ${isPurchased(pkg.id) ? getDateRemainingForSubscription(pkg.id) : 'Buy Now'}
                     </button>
                 </div>
             </div>
@@ -221,9 +221,23 @@ const renderPackages = (packagesData) => {
 
 function isPurchased(pkgId) {
     for (let i = 0; i < purchasedList.length; i++) {
-        if (purchasedList[i].id === pkgId) return true;
+        if (purchasedList[i].packageId === pkgId) return true;
     }
     return false;
+}
+
+function getDateRemainingForSubscription(pkgId) {
+    let datesRemainingText = null;
+    for (let i = 0; i < purchasedList.length; i++) {
+        if (purchasedList[i].packageId === pkgId) {
+
+            const today = new Date();
+            const endDate = new Date(purchasedList[i].endDate);
+            const daysRemaining = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+            datesRemainingText = daysRemaining > 0 ? `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} left` : 'Expires today';
+        }
+    }
+    return datesRemainingText;
 }
 
 const toggleBilling = (cycle) => {
@@ -265,7 +279,7 @@ const init = async () => {
         }
 
         // Load purchased plans and packages
-        await fetchPurchasedPremiumPlans();
+        await fetchPurchasedSubscriptionPlans();
         await fetchPromotionalOffers();
         await loadPackages();
         toggleBilling('monthly');
@@ -308,10 +322,10 @@ async function fetchPromotionalOffers() {
 }
 
 
-async function fetchPurchasedPremiumPlans() {
+async function fetchPurchasedSubscriptionPlans() {
     try {
         const response = await apiRequest(
-            `${API_BASE_URL}/api/premium-package/purchasedList`
+            `${API_BASE_URL}/api/subscriptions/purchasedList`
         );
 
 
@@ -319,6 +333,7 @@ async function fetchPurchasedPremiumPlans() {
         const data = await response.json();
 
         purchasedList = data.result;
+        console.log("List: ", purchasedList);
     } catch (error) {
         showErrorMessage('Error fetching packages:', error);
     }
