@@ -3,7 +3,17 @@
 // Load header HTML content
 async function loadHeaderHTML() {
     try {
-        const response = await fetch('../header.html');
+        // Try to determine the correct path based on current page
+        const currentPath = window.location.pathname;
+        let headerPath = 'pages/header.html';
+        
+        if (currentPath.includes('/pages/')) {
+            headerPath = '../header.html';
+        } else if (currentPath.includes('/admin-dashboard/')) {
+            headerPath = '../header.html';
+        }
+        
+        const response = await fetch(headerPath);
         if (!response.ok) {
             throw new Error('Failed to load header.html');
         }
@@ -86,9 +96,19 @@ function initHeader() {
     // Hamburger menu toggle - triggers sidebar
     if (menuToggleBtn) {
         menuToggleBtn.addEventListener('click', function () {
-            // Call global toggleSidebar function defined in sidebar.js
-            if (typeof window.toggleSidebar === 'function') {
-                window.toggleSidebar();
+            // Call appropriate toggle function based on screen size
+            if (window.innerWidth <= 1024) {
+                // Mobile/tablet: use toggleSidebarWidth for width toggle
+                if (typeof window.toggleSidebarWidth === 'function') {
+                    window.toggleSidebarWidth();
+                } else if (typeof window.toggleSidebar === 'function') {
+                    window.toggleSidebar();
+                }
+            } else {
+                // Desktop: use toggleSidebar for open/close
+                if (typeof window.toggleSidebar === 'function') {
+                    window.toggleSidebar();
+                }
             }
         });
         console.log('Menu toggle button initialized');

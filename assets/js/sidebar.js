@@ -3,11 +3,23 @@
 // Load sidebar HTML content
 async function loadSidebarHTML() {
     try {
-        const response = await fetch('../sidebar.html');
+        // Try to determine the correct path based on current page
+        const currentPath = window.location.pathname;
+        let sidebarPath = 'pages/sidebar.html';
+        
+        if (currentPath.includes('/pages/')) {
+            sidebarPath = '../sidebar.html';
+        } else if (currentPath.includes('/admin-dashboard/')) {
+            sidebarPath = '../sidebar.html';
+        }
+        
+        const response = await fetch(sidebarPath);
         if (!response.ok) {
             throw new Error('Failed to load sidebar.html');
         }
         let html = await response.text();
+        
+        console.log('Sidebar HTML loaded successfully');
         
         // Apply saved state to HTML before rendering to prevent flash
         if (window.innerWidth > 1024) {
@@ -26,6 +38,27 @@ async function loadSidebarHTML() {
         console.error('Error loading sidebar HTML:', error);
         return null;
     }
+}
+
+// Retry initialization if sidebar is not found
+function retrySidebarInit(maxRetries = 5, delay = 100) {
+    let retries = 0;
+    
+    function attemptInit() {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) {
+            console.log('Sidebar found, initializing...');
+            initSidebar();
+        } else if (retries < maxRetries) {
+            retries++;
+            console.log(`Sidebar not found, retrying... (${retries}/${maxRetries})`);
+            setTimeout(attemptInit, delay);
+        } else {
+            console.error('Failed to initialize sidebar after maximum retries');
+        }
+    }
+    
+    attemptInit();
 }
 
 // Sidebar state management
@@ -59,18 +92,21 @@ function applySidebarState(isCollapsed) {
     if (!sidebar) return;
     
     if (window.innerWidth <= 1024) {
-        // Mobile: Always reset to default mobile state
-        sidebar.classList.remove('sidebar-collapsed', 'sidebar-open');
-        sidebar.style.width = '';
+        // Mobile: No collapse functionality - always full width
+        sidebar.classList.remove('sidebar-collapsed');
+        sidebar.style.width = '256px';
+        
+        // Main content always full width on mobile
         if (mainContent) {
             mainContent.classList.remove('sidebar-collapsed');
             mainContent.style.marginLeft = '0px';
             mainContent.style.width = '100%';
         }
+        
         return;
     }
     
-    // Desktop only: Apply collapsed/expanded state
+    // Desktop: Apply collapsed/expanded state
     if (isCollapsed) {
         // Apply collapsed state
         sidebar.classList.add('sidebar-collapsed');
@@ -94,25 +130,59 @@ function applySidebarState(isCollapsed) {
 
 // Global toggle sidebar function for header integration
 window.toggleSidebar = function() {
+    console.log('=== toggleSidebar called ===');
+    console.log('Window width:', window.innerWidth);
+    
     const sidebar = document.getElementById('sidebar');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
     const mainContent = document.querySelector('.main-content');
 
-    if (!sidebar || !mainContent) {
-        console.error('Sidebar or main content element not found!');
+    console.log('Sidebar element:', sidebar);
+    console.log('Sidebar overlay:', sidebarOverlay);
+    console.log('Main content:', mainContent);
+
+    if (!sidebar) {
+        console.error('Sidebar element not found!');
         return;
     }
 
     if (window.innerWidth <= 1024) {
-        // Mobile: Toggle overlay sidebar
-        sidebar.classList.toggle('sidebar-open');
-        if (sidebarOverlay) {
-            sidebarOverlay.classList.toggle('overlay-visible');
+        // Mobile: Simple slide in/out - no collapse functionality
+        const sidebarContainer = document.getElementById('sidebar-container');
+        const isOpen = sidebar.classList.contains('sidebar-open');
+        
+        console.log('Mobile mode - isOpen:', isOpen);
+        console.log('Sidebar container:', sidebarContainer);
+        
+        if (sidebarContainer) {
+            if (isOpen) {
+                sidebarContainer.classList.remove('sidebar-open');
+                console.log('Removed sidebar-open from container');
+            } else {
+                sidebarContainer.classList.add('sidebar-open');
+                console.log('Added sidebar-open to container');
+            }
+        }
+        
+        if (isOpen) {
+            sidebar.classList.remove('sidebar-open');
+            if (sidebarOverlay) {
+                sidebarOverlay.classList.remove('overlay-visible');
+            }
+            console.log('Closed sidebar');
+        } else {
+            sidebar.classList.add('sidebar-open');
+            if (sidebarOverlay) {
+                sidebarOverlay.classList.add('overlay-visible');
+            }
+            console.log('Opened sidebar');
         }
         
         // Reset main content styles for mobile
-        mainContent.style.marginLeft = '0px';
-        mainContent.style.width = '100%';
+        if (mainContent) {
+            mainContent.style.marginLeft = '0px';
+            mainContent.style.width = '100%';
+        }
     } else {
         // Desktop: Toggle collapsed sidebar and save state
         const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
@@ -125,6 +195,95 @@ window.toggleSidebar = function() {
         applySidebarState(newState);
     }
 };
+
+// Function to toggle sidebar width on mobile (disabled - mobile only slides in/out)
+window.toggleSidebarWidth = function() {
+    console.log('=== toggleSidebarWidth called ===');
+    
+    if (window.innerWidth <= 1024) {
+        // Mobile: Use simple toggle instead of width toggle
+        console.log('Mobile detected - using simple toggle instead of width toggle');
+        window.toggleSidebar();
+    } else {
+        // Desktop: Toggle between collapsed and expanded width
+        const sidebar = document.getElementById('sidebar');
+        if (!sidebar) {
+            console.error('Sidebar element not found');
+            return;
+        }
+        
+        const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
+        const newState = !isCollapsed;
+        
+        // Save new state to localStorage
+        setSidebarState(newState);
+        
+        // Apply new state
+        applySidebarState(newState);
+    }
+};
+
+// Add event listener for overlay to close sidebar on mobile
+function setupOverlayListener() {
+    const overlay = document.getElementById('sidebar-overlay');
+    if (overlay) {
+        // Remove any existing listeners to prevent duplicates
+        overlay.removeEventListener('click', closeSidebarOnOverlayClick);
+        overlay.addEventListener('click', closeSidebarOnOverlayClick);
+    }
+}
+
+// Function to close sidebar when overlay is clicked
+function closeSidebarOnOverlayClick() {
+    const sidebar = document.getElementById('sidebar');
+    const sidebarContainer = document.getElementById('sidebar-container');
+    const overlay = document.getElementById('sidebar-overlay');
+    
+    if (sidebar) {
+        sidebar.classList.remove('sidebar-open');
+    }
+    if (sidebarContainer) {
+        sidebarContainer.classList.remove('sidebar-open');
+    }
+    if (overlay) {
+        overlay.classList.remove('overlay-visible');
+    }
+}
+
+// Function to update mobile toggle button state
+function updateMobileToggleButton(isCollapsed) {
+    console.log('updateMobileToggleButton called with isCollapsed:', isCollapsed);
+    
+    const toggleIcon = document.getElementById('mobile-toggle-icon');
+    const toggleText = document.getElementById('mobile-toggle-text');
+    
+    console.log('Toggle icon found:', !!toggleIcon);
+    console.log('Toggle text found:', !!toggleText);
+    
+    if (toggleIcon && toggleText) {
+        if (isCollapsed) {
+            toggleIcon.className = 'fas fa-expand-alt';
+            toggleText.textContent = 'Mở rộng';
+            console.log('Updated button to show "Mở rộng"');
+        } else {
+            toggleIcon.className = 'fas fa-compress-alt';
+            toggleText.textContent = 'Thu gọn';
+            console.log('Updated button to show "Thu gọn"');
+        }
+    }
+    
+    // Update button visibility based on screen size
+    const toggleBtn = document.getElementById('mobile-toggle-btn');
+    if (toggleBtn) {
+        if (window.innerWidth <= 1024) {
+            toggleBtn.style.display = 'flex';
+            console.log('Mobile toggle button displayed');
+        } else {
+            toggleBtn.style.display = 'none';
+            console.log('Mobile toggle button hidden');
+        }
+    }
+}
 
 // Global logout function for sidebar integration
 window.handleLogout = function() {
@@ -218,8 +377,6 @@ function setActiveTab() {
     // Remove active class from all items
     sidebarItems.forEach(item => {
         item.classList.remove('active');
-        item.classList.add('text-gray-600', 'hover:bg-gray-100', 'hover:text-gray-800');
-        item.classList.remove('bg-gradient-to-r', 'from-blue-500', 'to-purple-600', 'text-white', 'shadow-lg');
     });
 
     // Determine active item based on current page
@@ -246,13 +403,15 @@ function setActiveTab() {
         activeItem = document.querySelector('[data-page="system-log"]');
     } else if (currentPage.includes('subscription-manager')) {
         activeItem = document.querySelector('[data-page="subscription-manager"]');
+    } else if (currentPage.includes('coupon')) {
+        activeItem = document.querySelector('[data-page="coupon"]');
+    } else if (currentPage.includes('feature')) {
+        activeItem = document.querySelector('[data-page="feature"]');
     }
 
     // Add active class to current item
     if (activeItem) {
         activeItem.classList.add('active');
-        activeItem.classList.remove('text-gray-600', 'hover:bg-gray-100', 'hover:text-gray-800');
-        activeItem.classList.add('bg-gradient-to-r', 'from-blue-500', 'to-purple-600', 'text-white', 'shadow-lg');
     }
 }
 
@@ -261,11 +420,22 @@ function initSidebar() {
     const sidebar = document.getElementById('sidebar');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
     
-    // Apply saved sidebar state IMMEDIATELY for desktop
-    if (window.innerWidth > 1024) {
-        const savedState = getSidebarState();
-        applySidebarState(savedState);
+    console.log('Initializing sidebar, window width:', window.innerWidth);
+    console.log('Sidebar element:', sidebar);
+    
+    // Ensure sidebar exists before proceeding
+    if (!sidebar) {
+        console.error('Sidebar element not found during initialization');
+        return;
     }
+    
+    // Apply saved sidebar state IMMEDIATELY for both desktop and mobile
+    const savedState = getSidebarState();
+    console.log('Saved sidebar state:', savedState);
+    applySidebarState(savedState);
+    
+    // Update mobile toggle button state
+    updateMobileToggleButton(savedState);
     
     // Handle responsive behavior
     handleResponsiveBehavior();
@@ -279,13 +449,18 @@ function initSidebar() {
     // Load user info
     loadUserInfo();
     
+    // Setup overlay listener for mobile
+    setupOverlayListener();
+    
     // Mark content as ready and enable transitions
     setTimeout(() => {
         const mainContent = document.querySelector('.main-content');
         if (mainContent) {
             mainContent.classList.add('content-ready');
         }
-        document.body.classList.add('page-loaded');
+        if (document.body) {
+            document.body.classList.add('page-loaded');
+        }
     }, 50);
     
     console.log('Sidebar initialized successfully');
@@ -299,10 +474,13 @@ function handleResponsiveBehavior() {
     // Handle window resize
     window.addEventListener('resize', function() {
         if (window.innerWidth <= 1024) {
-            // Mobile: Reset sidebar state and close if open
+            // Mobile: Apply saved collapsed state but keep sidebar closed
             if (sidebar) {
-                sidebar.classList.remove('sidebar-collapsed', 'sidebar-open');
-                sidebar.style.width = '';
+                sidebar.classList.remove('sidebar-open');
+                // Apply saved collapsed state for width
+                const savedState = getSidebarState();
+                applySidebarState(savedState);
+                updateMobileToggleButton(savedState);
             }
             if (mainContent) {
                 mainContent.classList.remove('sidebar-collapsed');
@@ -318,19 +496,12 @@ function handleResponsiveBehavior() {
             // Desktop: Apply saved state when resizing to desktop
             const savedState = getSidebarState();
             applySidebarState(savedState);
+            updateMobileToggleButton(savedState);
         }
     });
     
-    // Handle overlay click on mobile
-    const sidebarOverlay = document.getElementById('sidebar-overlay');
-    if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', function() {
-            if (sidebar) {
-                sidebar.classList.remove('sidebar-open');
-            }
-            sidebarOverlay.classList.remove('overlay-visible');
-        });
-    }
+    // Handle overlay click on mobile - use the centralized function
+    setupOverlayListener();
 }
 
 // Load user information
@@ -392,8 +563,8 @@ async function loadSideBarSimple(userName) {
                     }
                 }
                 
-                // Initialize sidebar - state will be applied immediately in initSidebar
-                initSidebar();
+                // Initialize sidebar with retry mechanism
+                retrySidebarInit();
             }
         }
     } catch (error) {
@@ -437,8 +608,8 @@ async function loadSideBar(user) {
                     }
                 }
                 
-                // Initialize sidebar - state will be applied immediately in initSidebar
-                initSidebar();
+                // Initialize sidebar with retry mechanism
+                retrySidebarInit();
             }
         }
     } catch (error) {
@@ -452,13 +623,18 @@ async function loadSideBar(user) {
     if (window.innerWidth > 1024) {
         const saved = localStorage.getItem('sidebarCollapsed');
         const isCollapsed = saved === 'true';
-        if (isCollapsed) {
+        if (isCollapsed && document.body) {
             document.body.classList.add('sidebar-state-collapsed');
         }
     }
     
     // Disable transitions during initial load
-    document.body.classList.add('no-transition-on-load');
+    if (document.body) {
+        document.body.classList.add('no-transition-on-load');
+    }
+    
+    // Debug: Check if toggleSidebarWidth is defined
+    console.log('Sidebar.js loaded - toggleSidebarWidth defined:', typeof window.toggleSidebarWidth);
 })();
 
 // Initialize on DOM ready
@@ -497,14 +673,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // Load sidebar HTML and initialize
         loadSideBarSimple('Loading...');
     } else if (sidebar) {
-        // Sidebar already exists, just initialize
-        initSidebar();
+        // Sidebar already exists, just initialize with retry mechanism
+        retrySidebarInit();
         loadUserInfo();
         checkUserRoleAndShowAdminFeatures();
     }
     
     // Remove no-transition class after a brief delay
     setTimeout(() => {
-        document.body.classList.remove('no-transition-on-load');
+        if (document.body) {
+            document.body.classList.remove('no-transition-on-load');
+        }
     }, 100);
 });

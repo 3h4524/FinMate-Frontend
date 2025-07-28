@@ -15,6 +15,16 @@
 
     <!-- Navigation -->
     <nav class="flex-1 p-4 pt-6">
+        <!-- Mobile Toggle Button - Hidden on mobile (no collapse functionality) -->
+        <div class="hidden lg:block mb-4">
+            <button id="mobile-toggle-btn" 
+                    class="w-full flex items-center justify-center space-x-2 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
+                    onclick="toggleSidebarWidth()">
+                <i class="fas fa-compress-alt" id="mobile-toggle-icon"></i>
+                <span id="mobile-toggle-text">Thu gọn</span>
+            </button>
+        </div>
+        
         <div class="space-y-2">
             <!-- User Menu Items (Hidden for Admin) -->
             <div class="user-menu-section">
@@ -71,7 +81,7 @@
             <!-- Admin Menu Items (Hidden by default) -->
             <div class="admin-menu hidden">
                 <!-- Admin Dashboard -->
-                <button class="sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
+                <button class="sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
                         data-page="admin-dashboard" onclick="window.location.href='../admin-dashboard'">
                     <i class="fas fa-tachometer-alt w-5 h-5"></i>
                     <span class="sidebar-label font-medium">Admin Dashboard</span>
@@ -148,7 +158,7 @@
 </div>
 
 <!-- Overlay for mobile -->
-<div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
+<div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden"></div>
 
 <style>
     /* Sidebar Styles - YouTube Integration */
@@ -232,31 +242,243 @@
         padding: 1rem 0.5rem !important;
     }
 
-    /* Mobile Sidebar */
-    @media (max-width: 1024px) {
-        #sidebar {
-            transform: translateX(-100%);
-            transition: transform 0.3s ease-in-out;
-            top: 0; /* Full height on mobile */
-            height: 100vh;
+    /* Active state styling */
+    .sidebar-item.active {
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+        transform: scale(1.02) !important;
+    }
+
+    .sidebar-item.active:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%) !important;
+        transform: scale(1.05) !important;
+    }
+
+    .sidebar-item.active i {
+        color: white !important;
+    }
+
+    .sidebar-item.active span {
+        color: white !important;
+    }
+
+    /* Active state in collapsed sidebar */
+    .sidebar-collapsed .sidebar-item.active {
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+    }
+
+    .sidebar-collapsed .sidebar-item.active i {
+        color: white !important;
+    }
+
+    .sidebar-collapsed .sidebar-item.active span {
+        color: white !important;
+    }
+
+    /* Override Tailwind text colors for active state in collapsed sidebar */
+    .sidebar-collapsed .sidebar-item.active.text-gray-600,
+    .sidebar-collapsed .sidebar-item.active.hover\:text-gray-800 {
+        color: white !important;
+    }
+
+    .sidebar-collapsed .sidebar-item.active .text-gray-600,
+    .sidebar-collapsed .sidebar-item.active .hover\:text-gray-800 {
+        color: white !important;
+    }
+
+    /* Force white color for all text elements in active state in collapsed sidebar */
+    .sidebar-collapsed .sidebar-item.active * {
+        color: white !important;
+    }
+
+    /* Higher specificity for active state */
+    #sidebar .sidebar-item.active,
+    #sidebar-container .sidebar-item.active {
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+        transform: scale(1.02) !important;
+    }
+
+    #sidebar .sidebar-item.active i,
+    #sidebar .sidebar-item.active span,
+    #sidebar-container .sidebar-item.active i,
+    #sidebar-container .sidebar-item.active span {
+        color: white !important;
+    }
+
+    /* Override Tailwind text colors for active state */
+    .sidebar-item.active.text-gray-600,
+    .sidebar-item.active.hover\:text-gray-800 {
+        color: white !important;
+    }
+
+    .sidebar-item.active .text-gray-600,
+    .sidebar-item.active .hover\:text-gray-800 {
+        color: white !important;
+    }
+
+    /* Force white color for all text elements in active state */
+    .sidebar-item.active * {
+        color: white !important;
+    }
+
+         /* Mobile Sidebar */
+     @media (max-width: 1024px) {
+         #sidebar {
+             transform: translateX(-100%);
+             transition: transform 0.3s ease-in-out;
+             top: 0; /* Full height on mobile */
+             height: 100vh;
+             width: 256px; /* Fixed width on mobile - no collapse */
+             z-index: 50; /* Higher z-index for mobile */
+         }
+
+         #sidebar.sidebar-open {
+             transform: translateX(0);
+         }
+
+         /* Mobile: No collapsed state - always full width */
+         #sidebar.sidebar-collapsed {
+             width: 256px !important; /* Force full width on mobile */
+         }
+
+         /* Ensure mobile collapsed sidebar items are properly sized */
+         #sidebar.sidebar-collapsed .sidebar-item {
+             padding: 0 !important;
+             margin: 0.25rem auto !important;
+             width: 48px !important;
+             height: 48px !important;
+             min-width: 48px !important;
+             min-height: 48px !important;
+             max-width: 48px !important;
+             max-height: 48px !important;
+             display: flex !important;
+             align-items: center !important;
+             justify-content: center !important;
+             text-align: center !important;
+             border-radius: 0.75rem !important;
+             position: relative !important;
+             overflow: hidden !important;
+             box-sizing: border-box !important;
+         }
+
+         #sidebar.sidebar-collapsed .sidebar-item > * {
+             margin-left: 0 !important;
+             margin-right: 0 !important;
+         }
+
+         #sidebar.sidebar-collapsed .sidebar-item i {
+             margin: 0 !important;
+             position: absolute !important;
+             top: 50% !important;
+             left: 50% !important;
+             transform: translate(-50%, -50%) !important;
+             z-index: 2 !important;
+             width: auto !important;
+             height: auto !important;
+         }
+
+                 #sidebar-overlay.overlay-visible {
+            opacity: 1;
+            pointer-events: auto;
         }
 
-        #sidebar.sidebar-open {
-            transform: translateX(0);
+         /* Hide logo section on mobile - same as desktop */
+         #sidebar .logo-section {
+             display: none !important;
+         }
+
+         /* Hide user profile on mobile - same as desktop */
+         #sidebar #user-profile {
+             display: none !important;
+         }
+
+         /* Hide mobile toggle button on mobile - same as desktop */
+         #mobile-toggle-btn {
+             display: none !important;
+         }
+
+        /* Mobile collapsed adjustments */
+        #sidebar.sidebar-collapsed .sidebar-text,
+        #sidebar.sidebar-collapsed .sidebar-label {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            display: none !important;
         }
 
-        #sidebar-overlay.overlay-visible {
-            display: block;
+        /* Hide toggle button text when collapsed */
+        #sidebar.sidebar-collapsed #mobile-toggle-btn span {
+            display: none !important;
         }
 
-        /* Show logo section on mobile when no header */
-        #sidebar .logo-section {
+        #sidebar.sidebar-collapsed #mobile-toggle-btn {
+            width: 48px !important;
+            height: 48px !important;
+            padding: 0 !important;
+            margin: 0.25rem auto !important;
+            border-radius: 0.75rem !important;
+        }
+
+        #sidebar.sidebar-collapsed #mobile-toggle-btn i {
+            margin: 0 !important;
+        }
+
+        #sidebar.sidebar-collapsed .sidebar-item {
+            padding: 0 !important;
+            margin: 0.25rem auto !important;
+            width: 48px !important;
+            height: 48px !important;
+            min-width: 48px !important;
+            min-height: 48px !important;
+            max-width: 48px !important;
+            max-height: 48px !important;
             display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            border-radius: 0.75rem !important;
+            position: relative !important;
+            overflow: hidden !important;
+            box-sizing: border-box !important;
         }
 
-        /* Show user profile on mobile */
-        #sidebar #user-profile {
-            display: block !important;
+        #sidebar.sidebar-collapsed .sidebar-item > * {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        #sidebar.sidebar-collapsed .sidebar-item i {
+            margin: 0 !important;
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            z-index: 2 !important;
+            width: auto !important;
+            height: auto !important;
+        }
+
+        #sidebar.sidebar-collapsed .logo-section {
+            justify-content: center;
+            padding: 1rem 0.5rem !important;
+        }
+
+        #sidebar.sidebar-collapsed .logo-section .w-10 {
+            width: 2rem !important;
+            height: 2rem !important;
+            margin: 0 auto;
+        }
+
+        #sidebar.sidebar-collapsed #user-profile {
+            padding: 1rem 0.5rem;
+        }
+
+        #sidebar.sidebar-collapsed #user-profile .flex-1 {
+            display: none;
         }
     }
 
@@ -272,18 +494,14 @@
         #sidebar #user-profile {
             display: none;
         }
+
+        /* Hide mobile toggle button on desktop */
+        #mobile-toggle-btn {
+            display: none !important;
+        }
     }
 
-    .sidebar-item.active {
-        background: linear-gradient(to right, #3b82f6, #8b5cf6) !important;
-        color: white !important;
-        box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
-    }
 
-    .sidebar-item.active i,
-    .sidebar-item.active span {
-        color: white !important;
-    }
 
     .sidebar-item {
         position: relative;
@@ -348,6 +566,26 @@
         top: 0;
         z-index: 40;
         overflow: hidden;
+    }
+    
+    /* Mobile sidebar behavior */
+    @media (max-width: 1024px) {
+        #sidebar-container {
+            top: 64px; /* Below header */
+            height: calc(100vh - 64px);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            width: 256px; /* Fixed width on mobile */
+        }
+        
+        #sidebar-container.sidebar-open {
+            transform: translateX(0);
+        }
+        
+        /* Mobile: No collapsed state - always full width */
+        #sidebar-container.sidebar-collapsed {
+            width: 256px !important;
+        }
     }
 
     /* Smooth transitions for all sidebar animations */

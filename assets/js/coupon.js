@@ -118,46 +118,48 @@ async function fetchAndRenderCoupons(url, method, body = null) {
             const tr = document.createElement('tr');
             tr.className = 'table-row-hover';
             tr.innerHTML = `
-                <td class="px-4 py-3 whitespace-nowrap font-bold text-indigo-700">
+                <td class="px-2 sm:px-4 lg:px-8 py-3 sm:py-3 whitespace-nowrap font-bold text-indigo-700">
                     <div class="flex items-center gap-2">
                         <i class="fas fa-hashtag text-indigo-500"></i>
-                        ${index + 1 + currentPage * (body ? body.size : parseInt(new URLSearchParams(url.split('?')[1]).get('size')) || 6)}
+                        <span class="text-xs sm:text-sm">${index + 1 + currentPage * (body ? body.size : parseInt(new URLSearchParams(url.split('?')[1]).get('size')) || 6)}</span>
                     </div>
                 </td>
-                <td class="px-4 py-3 whitespace-nowrap font-semibold text-green-700">
+                <td class="px-2 sm:px-4 py-3 sm:py-3 whitespace-nowrap font-semibold text-green-700">
                     <div class="flex items-center gap-2">
                         <i class="fas fa-ticket-alt text-green-500"></i>
-                        ${coupon.code}
+                        <span class="text-xs sm:text-sm">${coupon.code}</span>
                     </div>
                 </td>
-                <td class="px-4 py-3 whitespace-nowrap font-semibold text-purple-700">
+                <td class="px-2 sm:px-4 py-3 sm:py-3 whitespace-nowrap font-semibold text-purple-700">
                     <div class="flex items-center gap-2">
                         <i class="fas fa-percentage text-purple-500"></i>
-                        ${coupon.discountPercentage}%
+                        <span class="text-xs sm:text-sm">${coupon.discountPercentage}%</span>
                     </div>
                 </td>
-                <td class="px-4 py-3 whitespace-nowrap font-semibold text-blue-700">
+                <td class="px-2 sm:px-4 py-3 sm:py-3 whitespace-nowrap font-semibold text-blue-700">
                     <div class="flex items-center gap-2">
                         <i class="fas fa-toggle-on text-blue-500"></i>
-                        ${coupon.isActive ? 'Active' : 'Inactive'}
+                        <span class="text-xs sm:text-sm">${coupon.isActive ? 'Active' : 'Inactive'}</span>
                     </div>
                 </td>
-                <td class="px-4 py-3 whitespace-nowrap">
-                    <span class="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 rounded px-2 py-1 font-mono text-sm">
+                <td class="px-2 sm:px-4 py-3 sm:py-3 whitespace-nowrap">
+                    <span class="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 rounded px-2 py-1 font-mono text-xs sm:text-sm">
                         <i class="fas fa-chart-bar text-indigo-500"></i>
                         ${coupon.usedCount}/${coupon.maxUsage || '∞'}
                     </span>
                 </td>
-                <td class="px-6 py-3 text-right whitespace-nowrap">
-                    <button class="action-icon view-icon mx-2" onclick="showCouponDetails(${coupon.id})" title="View Details">
-                        <i class="fas fa-eye text-blue-600 hover:text-blue-800"></i>
-                    </button>
-                    <button class="action-icon edit-icon mx-2" onclick="editCoupon(${coupon.id})" title="Edit">
-                        <i class="fas fa-edit text-yellow-600 hover:text-yellow-800"></i>
-                    </button>
-                    <button class="action-icon delete-icon mx-2" onclick="deleteCoupon(${coupon.id})" title="Delete">
-                        <i class="fas fa-trash text-red-600 hover:text-red-800"></i>
-                    </button>
+                <td class="px-2 sm:px-6 py-3 sm:py-3 text-right whitespace-nowrap">
+                    <div class="flex items-center justify-end gap-1 sm:gap-2">
+                        <button class="action-icon view-icon p-1 sm:p-2" onclick="showCouponDetails(${coupon.id})" title="View Details">
+                            <i class="fas fa-eye text-blue-600 hover:text-blue-800 text-sm"></i>
+                        </button>
+                        <button class="action-icon edit-icon p-1 sm:p-2" onclick="editCoupon(${coupon.id})" title="Edit">
+                            <i class="fas fa-edit text-yellow-600 hover:text-yellow-800 text-sm"></i>
+                        </button>
+                        <button class="action-icon delete-icon p-1 sm:p-2" onclick="deleteCoupon(${coupon.id})" title="Delete">
+                            <i class="fas fa-trash text-red-600 hover:text-red-800 text-sm"></i>
+                        </button>
+                    </div>
                 </td>
             `;
             tbody.appendChild(tr);
@@ -244,17 +246,19 @@ async function showCouponDetails(couponId) {
         ];
 
         document.getElementById('couponDetailsContent').innerHTML = `
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                ${fields.map(({ label, icon, color, value }) => `
-                    <div class="p-3 bg-white rounded-lg shadow border-l-4 border-${color}-500">
-                        <div class="flex items-center gap-2 mb-1">
-                            <i class="fas fa-${icon} text-${color}-500 text-lg"></i>
-                            <span class="text-xs text-gray-500 font-medium">${label}</span>
+            ${fields.map(({ label, icon, color, value }) => `
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-${color}-100 flex items-center justify-center">
+                            <i class="fas fa-${icon} text-${color}-600 text-lg"></i>
                         </div>
-                        <div class="text-sm font-semibold text-${color}-700 break-all">${value}</div>
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-500">${label}</h4>
+                            <p class="text-sm font-semibold text-gray-900 break-all">${value}</p>
+                        </div>
                     </div>
-                `).join('')}
-            </div>
+                </div>
+            `).join('')}
         `;
 
         const modal = document.getElementById('couponDetailModal');
@@ -357,13 +361,13 @@ function renderPagination() {
     startPage = Math.max(0, endPage - maxButtons);
 
     const createButton = (page, text, disabled = false) => {
-        return `<button class="px-4 py-2 rounded-lg ${disabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'} text-white transition" ${disabled ? 'disabled' : `onclick="loadCoupons(${page}, 6)"`}>${text}</button>`;
+        return `<button class="px-3 py-1 rounded-lg ${disabled ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} transition text-sm" ${disabled ? 'disabled' : `onclick="loadCoupons(${page}, 6)"`}>${text}</button>`;
     };
 
     const buttons = [
-        ...(startPage > 0 ? [createButton(0, '1'), ...(startPage > 1 ? ['<span class="px-4 py-2 text-gray-500">...</span>'] : [])] : []),
+        ...(startPage > 0 ? [createButton(0, '1'), ...(startPage > 1 ? ['<span class="px-3 py-1 text-gray-500 text-sm">...</span>'] : [])] : []),
         ...Array.from({ length: endPage - startPage }, (_, i) => createButton(startPage + i, startPage + i + 1, startPage + i === currentPage)),
-        ...(endPage < totalPages ? [(endPage < totalPages - 1 ? '<span class="px-4 py-2 text-gray-500">...</span>' : ''), createButton(totalPages - 1, totalPages)] : []),
+        ...(endPage < totalPages ? [(endPage < totalPages - 1 ? '<span class="px-3 py-1 text-gray-500 text-sm">...</span>' : ''), createButton(totalPages - 1, totalPages)] : []),
     ];
 
     pageNumbers.innerHTML = buttons.join('');
@@ -483,7 +487,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             maxUsage: form.maxUsage.value ? parseInt(form.maxUsage.value) : null,
             expiryDate: form.expiryDate.value,
             isActive: form.isActive.checked,
-            premiumId: form.premiumPackageIds.value ? form.premiumPackageIds.value.split(',').map(id => parseInt(id)).filter(id => !isNaN(id)) : []
+            premiumId: form.selectedPremiumPackages.value ? form.selectedPremiumPackages.value.split(',').map(id => parseInt(id)).filter(id => !isNaN(id)) : []
         };
 
 

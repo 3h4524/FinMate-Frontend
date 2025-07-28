@@ -37,11 +37,12 @@ const clearCache = () => {
     cachedUser = null;
 };
 
-const redirectToLogin = () => {
-    sessionStorage.clear();
-    clearCache(); // Xóa cache khi đăng xuất
-    window.location.href = '/pages/login/';
-};
+// Remove duplicate function - this is already defined elsewhere
+// const redirectToLogin = () => {
+//     sessionStorage.clear();
+//     clearCache(); // Xóa cache khi đăng xuất
+//     window.location.href = '/pages/login/';
+// };
 
 const isTokenExpired = () => {
     const user = getCurrentUser();
@@ -91,4 +92,11 @@ const apiRequest = async (url, options = {}) => {
         console.error('API Request Error:', error);
         throw error;
     }
+};
+
+// Add redirectToLogin function
+const redirectToLogin = () => {
+    sessionStorage.clear();
+    clearCache(); // Xóa cache khi đăng xuất
+    window.location.href = '/pages/login/';
 };
