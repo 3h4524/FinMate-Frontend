@@ -26,9 +26,9 @@ const STATUS_CLASSES = {
 };
 
 const PROGRESS_CLASSES = {
-    SUCCESS: 'bg-gradient-to-r from-green-500 to-teal-600',
-    WARNING: 'bg-gradient-to-r from-yellow-500 to-orange-600',
-    ERROR: 'bg-gradient-to-r from-red-500 to-pink-600'
+    SUCCESS: 'bg-gradient-to-r from-blue-400 via-blue-500 to-blue-700',
+    WARNING: 'bg-gradient-to-r from-yellow-400 via-orange-400 to-orange-600',
+    ERROR: 'bg-gradient-to-r from-red-400 via-red-500 to-pink-600'
 };
 
 // initialization
@@ -139,13 +139,6 @@ async function submitBudgetForm(formId, budgetId = null) {
             amount: parseFloat(formData.getAll('amounts[]')[index])
         }))
     };
-
-    if (!user?.isPremium && !budgetId) {
-        if ((currentBudgetCount + data.categories.length) > 3) {
-            showNotification('Warning', 'Bạn đã đạt giới hạn 3 ngân sách cho tài khoản thường. Nâng cấp Premium để tạo thêm.', 'warning');
-            return;
-        }
-    }
 
     if (!validateBudgetData(data)) return;
     if (!user?.userId) {
@@ -270,12 +263,6 @@ function addBudgetCategory(type = 'create', selectedCategory = null, amount = nu
     if (type === 'create' && user && !user.isPremium) {
         const categoryList = document.getElementById('category-list');
         if (!categoryList) return;
-        const currentRows = categoryList.children.length;
-
-        if ((currentBudgetCount + currentRows) >= 3) {
-            showNotification('Warning', 'You have reached the limit of 3 budgets for your standard account. Upgrade to Premium to create more.', 'warning');
-            return;
-        }
     }
 
     const categoryList = document.getElementById(type === 'create' ? 'category-list' : 'update-category-list');
@@ -400,13 +387,8 @@ function resetBudgetOverview() {
 
 function getProgressBarClass(progress) {
     const baseClass = 'h-2 rounded-full transition-all duration-300';
-    if (progress >= 100) {
-        return `bg-gradient-to-r from-red-500 to-red-600 ${baseClass}`;
-    } else if (progress >= 80) {
-        return `bg-gradient-to-r from-yellow-500 to-orange-500 ${baseClass}`;
-    } else {
-        return `bg-gradient-to-r from-blue-500 to-purple-600 ${baseClass}`;
-    }
+    // Luôn trả về màu đỏ cho overallProgressBar
+    return `bg-gradient-to-r from-red-500 to-red-600 ${baseClass}`;
 }
 
 // budget monitoring
@@ -1024,11 +1006,11 @@ function showNoDataMessage(container = null, message = 'No budget data for the s
         budgetChart = null;
     }
 
-    const chartContainer = document.querySelector('.h-80');
-    const gridContainer = document.querySelector('.grid');
+    const chartContainer = document.getElementById('budgetChart')?.parentElement;
+    const tableContainer = document.getElementById('analysis-table')?.parentElement?.parentElement;
 
     if (chartContainer) chartContainer.classList.add('hidden');
-    if (gridContainer) gridContainer.classList.add('hidden');
+    if (tableContainer) tableContainer.classList.add('hidden');
 
     if (!container) {
         showNotification('Info', 'No data available for the selected period.', 'warning');
