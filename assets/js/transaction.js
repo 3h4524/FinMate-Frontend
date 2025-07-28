@@ -1041,6 +1041,39 @@ const updateStats = async () => {
     }
 };
 
+function renderPagination (total) {
+    totalPages = total;
+    const pageNumbers = DOM.pageNumbers;
+    const paginationDiv = DOM.paginationDiv;
+    const firstBtn = DOM.firstBtn;
+    const lastBtn = DOM.lastBtn;
+    pageNumbers.innerHTML = '';
+    if (total <= 1) {
+        hideElement(paginationDiv);
+        return;
+    }
+    showElement(paginationDiv);
+    firstBtn.disabled = currentPage === 0;
+    lastBtn.disabled = currentPage === totalPages - 1;
+    const maxPagesToShow = 5;
+    let startPage = Math.max(0, currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + maxPagesToShow);
+    if (endPage - startPage < maxPagesToShow) {
+        startPage = Math.max(0, endPage - maxPagesToShow);
+    }
+    for (let i = startPage; i < endPage; i++) {
+        const btn = document.createElement('button');
+        btn.className = `px-4 py-3 rounded-lg font-semibold ${i === currentPage ? 'bg-green-600 text-white shadow-md' : 'bg-white border-2 border-gray-200 hover:bg-green-50 hover:border-green-600'}`;
+        btn.textContent = i + 1;
+        btn.addEventListener('click', () => {
+            currentPage = i;
+            loadTransactions();
+        });
+        pageNumbers.appendChild(btn);
+    }
+};
+
+
 
 const divideModal = document.getElementById('divideModal');
 const denyBtn = document.getElementById('denyBtn');
