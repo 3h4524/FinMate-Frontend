@@ -5,7 +5,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>System Logs - FinMate</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="/assets/css/global-layout.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -15,13 +14,14 @@
     <script src="/assets/js/helper_functions.js"></script>
     <script src="/assets/js/autho_helper.js" defer></script>
     <script src="/assets/js/system-log.js" defer></script>
+    <script src="/assets/js/notification.js" defer></script>
 </head>
 
 <body class="bg-gradient-to-br from-indigo-50 via-white to-purple-50 min-h-screen">
     <div id="header-container"></div>
     <div id="sidebar-container"></div>
     <div class="main-content" id="mainContent" style="display: block;">
-        <div class="container mx-auto px-6 py-8">
+        <div class="mx-auto px-6 py-8 max-w-10xl">
             <!-- Header Section -->
             <div class="bg-white rounded-3xl shadow-2xl p-8 mb-8 border border-indigo-100">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between">
@@ -142,7 +142,7 @@
                             <tr>
                                 <th scope="col"
                                     class="px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
-                                    style="width: 16.66%;">ID</th>
+                                    style="width: 16.66%;">#</th>
                                 <th scope="col"
                                     class="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
                                     style="width: 16.66%;">Admin</th>
@@ -157,7 +157,7 @@
                                     style="width: 16.66%;">Timestamp</th>
                                 <th scope="col"
                                     class="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
-                                    style="width: 16.66%;">Actions</th>
+                                    style="width: 16.66%;">Details</th>
                             </tr>
                         </thead>
                         <tbody id="logsBody" class="bg-white divide-y divide-gray-200">

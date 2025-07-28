@@ -15,9 +15,8 @@ function debounce(func, wait) {
 }
 
 
-
 function saveFilters(code, isActive, startDate, endDate) {
-    localStorage.setItem('couponFilters', JSON.stringify({ code, isActive, startDate, endDate }));
+    localStorage.setItem('couponFilters', JSON.stringify({code, isActive, startDate, endDate}));
 }
 
 function loadFilters() {
@@ -63,8 +62,8 @@ async function loadPremiumPackages() {
 
 async function loadCoupons(page = 0, size = 6) {
     try {
-        const params = new URLSearchParams({ page, size, sortBy: 'usedCount', sortDirection: 'DESC' });
-        await fetchAndRenderCoupons(`http://localhost:8080/api/coupon?${params.toString()}`, 'GET');
+        const params = new URLSearchParams({page, size, sortBy: 'usedCount', sortDirection: 'DESC'});
+        await fetchAndRenderCoupons(`http://localhost:8080/api/coupon?${params.toString()}`, 'GET', null);
     } catch (error) {
         showNotification('Error', `Failed to load coupons: ${error.message}`, 'error');
         console.error('Error loading coupons:', error);
@@ -83,7 +82,6 @@ async function searchCoupons(page = 0, size = 6, code = '', isActive = '', start
             sortBy: 'usedCount',
             sortDirection: 'DESC'
         };
-
         await fetchAndRenderCoupons('http://localhost:8080/api/coupon/search', 'POST', searchDto);
     } catch (error) {
         showNotification('Error', `Failed to search coupons: ${error.message}`, 'error');
@@ -93,10 +91,10 @@ async function searchCoupons(page = 0, size = 6, code = '', isActive = '', start
 
 async function fetchAndRenderCoupons(url, method, body = null) {
     try {
-        const options = { method };
+        const options = {method};
         if (body) {
             options.body = JSON.stringify(body);
-            options.headers = { 'Content-Type': 'application/json' };
+            options.headers = {'Content-Type': 'application/json'};
         }
 
         const response = await apiRequest(url, options);
@@ -118,55 +116,52 @@ async function fetchAndRenderCoupons(url, method, body = null) {
             const tr = document.createElement('tr');
             tr.className = 'table-row-hover';
             tr.innerHTML = `
-                <td class="px-2 sm:px-4 lg:px-8 py-3 sm:py-3 whitespace-nowrap font-bold text-indigo-700">
+                <td class="px-8 py-3 whitespace-nowrap font-bold text-indigo-700">
                     <div class="flex items-center gap-2">
                         <i class="fas fa-hashtag text-indigo-500"></i>
-                        <span class="text-xs sm:text-sm">${index + 1 + currentPage * (body ? body.size : parseInt(new URLSearchParams(url.split('?')[1]).get('size')) || 6)}</span>
+                        ${index + 1 + currentPage * (body ? body.size : parseInt(new URLSearchParams(url.split('?')[1]).get('size')) || 6)}
                     </div>
                 </td>
-                <td class="px-2 sm:px-4 py-3 sm:py-3 whitespace-nowrap font-semibold text-green-700">
+                <td class="px-3 py-3 whitespace-nowrap font-semibold text-green-700">
                     <div class="flex items-center gap-2">
                         <i class="fas fa-ticket-alt text-green-500"></i>
-                        <span class="text-xs sm:text-sm">${coupon.code}</span>
+                        ${coupon.code}
                     </div>
                 </td>
-                <td class="px-2 sm:px-4 py-3 sm:py-3 whitespace-nowrap font-semibold text-purple-700">
+                <td class="px-12 py-3 whitespace-nowrap font-semibold text-purple-700">
                     <div class="flex items-center gap-2">
                         <i class="fas fa-percentage text-purple-500"></i>
-                        <span class="text-xs sm:text-sm">${coupon.discountPercentage}%</span>
+                        ${coupon.discountPercentage}%
                     </div>
                 </td>
-                <td class="px-2 sm:px-4 py-3 sm:py-3 whitespace-nowrap font-semibold text-blue-700">
+                <td class="px-10 py-3 whitespace-nowrap font-semibold text-blue-700">
                     <div class="flex items-center gap-2">
                         <i class="fas fa-toggle-on text-blue-500"></i>
-                        <span class="text-xs sm:text-sm">${coupon.isActive ? 'Active' : 'Inactive'}</span>
+                        ${coupon.isActive ? 'Active' : 'Inactive'}
                     </div>
                 </td>
-                <td class="px-2 sm:px-4 py-3 sm:py-3 whitespace-nowrap">
-                    <span class="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 rounded px-2 py-1 font-mono text-xs sm:text-sm">
+                <td class="px-9 py-3 whitespace-nowrap">
+                    <span class="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 rounded px-2 py-1 font-mono text-sm">
                         <i class="fas fa-chart-bar text-indigo-500"></i>
                         ${coupon.usedCount}/${coupon.maxUsage || '∞'}
                     </span>
                 </td>
-                <td class="px-2 sm:px-6 py-3 sm:py-3 text-right whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 sm:gap-2">
-                        <button class="action-icon view-icon p-1 sm:p-2" onclick="showCouponDetails(${coupon.id})" title="View Details">
-                            <i class="fas fa-eye text-blue-600 hover:text-blue-800 text-sm"></i>
-                        </button>
-                        <button class="action-icon edit-icon p-1 sm:p-2" onclick="editCoupon(${coupon.id})" title="Edit">
-                            <i class="fas fa-edit text-yellow-600 hover:text-yellow-800 text-sm"></i>
-                        </button>
-                        <button class="action-icon delete-icon p-1 sm:p-2" onclick="deleteCoupon(${coupon.id})" title="Delete">
-                            <i class="fas fa-trash text-red-600 hover:text-red-800 text-sm"></i>
-                        </button>
-                    </div>
+                <td class="px-6 py-3 text-right whitespace-nowrap">
+                    <button class="action-icon view-icon mx-2" onclick="showCouponDetails(${coupon.id})" title="View Details">
+                        <i class="fas fa-eye text-blue-600 hover:text-blue-800"></i>
+                    </button>
+                    <button class="action-icon edit-icon mx-2" onclick="editCoupon(${coupon.id})" title="Edit">
+                        <i class="fas fa-edit text-yellow-600 hover:text-yellow-800"></i>
+                    </button>
+                    <button class="action-icon delete-icon mx-2" onclick="deleteCoupon(${coupon.id})" title="Delete">
+                        <i class="fas fa-trash text-red-600 hover:text-red-800"></i>
+                    </button>
                 </td>
             `;
             tbody.appendChild(tr);
         });
 
         renderPagination();
-        showNotification('Success', 'Coupons loaded successfully!', 'success');
     } catch (error) {
         throw error;
     }
@@ -180,7 +175,7 @@ function renderPremiumPackages(containerId, selectedPackageIds = []) {
     }
     console.log("id: ", selectedPackageIds);
 
-    const packagesHTML = allPremiumPackages.map(pkg => `
+    container.innerHTML = allPremiumPackages.map(pkg => `
         <div class="package-item flex items-center gap-2 p-2 rounded-md bg-gray-100 cursor-pointer text-sm text-gray-700 ${selectedPackageIds.includes(pkg.id) ? '' : 'opacity-75'}" 
              data-package-id="${pkg.id}" 
              onclick="togglePremiumPackage('${containerId}', ${pkg.id})">
@@ -188,7 +183,6 @@ function renderPremiumPackages(containerId, selectedPackageIds = []) {
             ${pkg.name}
         </div>
     `).join('');
-    container.innerHTML = packagesHTML;
 }
 
 function togglePremiumPackage(containerId, packageId) {
@@ -234,37 +228,34 @@ async function showCouponDetails(couponId) {
         const premiumPackages = couponData.premiumPackages || [];
 
         const fields = [
-            { label: 'Coupon Code', icon: 'ticket-alt', color: 'indigo', value: couponData.code || 'N/A' },
-            { label: 'Discount Percentage', icon: 'percentage', color: 'green', value: `${couponData.discountPercentage || 'N/A'}%` },
-            { label: 'Description', icon: 'info-circle', color: 'red', value: couponData.description || 'N/A' },
-            { label: 'Max Usage', icon: 'ticket-alt', color: 'yellow', value: couponData.maxUsage || 'Unlimited' },
-            { label: 'Used Count', icon: 'chart-bar', color: 'blue', value: couponData.usedCount || 0 },
-            { label: 'Expiry Date', icon: 'calendar-day', color: 'indigo', value: expiryDate },
-            { label: 'Status', icon: 'toggle-on', color: 'purple', value: couponData.isActive ? 'Active' : 'Inactive' },
-            { label: 'Applicable Premium Packages', icon: 'crown', color: 'indigo', value: premiumPackages.length > 0 ? premiumPackages.map(p => p.name).join(', ') : 'None' },
-            { label: 'Created At', icon: 'calendar-day', color: 'indigo', value: createdAt }
+            {label: 'Coupon Code', icon: 'ticket-alt', color: 'indigo', value: couponData.code || 'N/A'},
+            {label: 'Discount Percentage', icon: 'percentage', color: 'green', value: `${couponData.discountPercentage || 'N/A'}%`},
+            {label: 'Description', icon: 'info-circle', color: 'red', value: couponData.description || 'N/A'},
+            {label: 'Max Usage', icon: 'ticket-alt', color: 'yellow', value: couponData.maxUsage || 'Unlimited'},
+            {label: 'Used Count', icon: 'chart-bar', color: 'blue', value: couponData.usedCount || 0},
+            {label: 'Expiry Date', icon: 'calendar-day', color: 'indigo', value: expiryDate},
+            {label: 'Status', icon: 'toggle-on', color: 'purple', value: couponData.isActive ? 'Active' : 'Inactive'},
+            {label: 'Applicable Premium Packages', icon: 'crown', color: 'indigo', value: premiumPackages.length > 0 ? premiumPackages.map(p => p.name).join(', ') : 'None'},
+            {label: 'Created At', icon: 'calendar-day', color: 'indigo', value: createdAt}
         ];
 
         document.getElementById('couponDetailsContent').innerHTML = `
-            ${fields.map(({ label, icon, color, value }) => `
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-${color}-100 flex items-center justify-center">
-                            <i class="fas fa-${icon} text-${color}-600 text-lg"></i>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                ${fields.map(({label, icon, color, value}) => `
+                    <div class="p-4 bg-white rounded-lg shadow border-l-4 border-${color}-500 flex flex-col justify-between">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="fas fa-${icon} text-${color}-500 text-lg"></i>
+                            <span class="text-xs text-gray-500 font-medium">${label}</span>
                         </div>
-                        <div>
-                            <h4 class="text-sm font-medium text-gray-500">${label}</h4>
-                            <p class="text-sm font-semibold text-gray-900 break-all">${value}</p>
-                        </div>
+                        <div class="text-sm font-semibold text-${color}-700 break-all">${value}</div>
                     </div>
-                </div>
-            `).join('')}
+                `).join('')}
+            </div>
         `;
 
         const modal = document.getElementById('couponDetailModal');
         modal.classList.remove('hidden');
         modal.classList.add('flex');
-        setTimeout(() => modal.querySelector('.modal-content').classList.add('show'), 10);
     } catch (error) {
         showNotification('Error', 'Failed to load coupon details. Please try again.', 'error');
         console.error('Error loading coupon details:', error);
@@ -273,12 +264,8 @@ async function showCouponDetails(couponId) {
 
 function closeCouponDetailModal() {
     const modal = document.getElementById('couponDetailModal');
-    const content = modal.querySelector('.modal-content');
-    content.classList.remove('show');
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }, 200);
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
 }
 
 async function openCouponModal(coupon = null) {
@@ -341,11 +328,11 @@ async function editCoupon(couponId) {
 async function deleteCoupon(couponId) {
     if (!confirm('Are you sure you want to delete this coupon?')) return;
     try {
-        const response = await apiRequest(`http://localhost:8080/api/coupon/${couponId}`, { method: 'DELETE' });
+        const response = await apiRequest(`http://localhost:8080/api/coupon/${couponId}`, {method: 'DELETE'});
         if (!response.ok) throw new Error('Delete failed');
         showNotification('Success', 'Coupon deleted successfully!', 'success');
-        const filters = loadFilters();
-        loadCoupons(currentPage, 6);
+        loadFilters();
+        await loadCoupons(currentPage, 6);
     } catch (error) {
         showNotification('Error', 'Failed to delete coupon. Please try again.', 'error');
         console.error('Error deleting coupon:', error);
@@ -361,13 +348,13 @@ function renderPagination() {
     startPage = Math.max(0, endPage - maxButtons);
 
     const createButton = (page, text, disabled = false) => {
-        return `<button class="px-3 py-1 rounded-lg ${disabled ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} transition text-sm" ${disabled ? 'disabled' : `onclick="loadCoupons(${page}, 6)"`}>${text}</button>`;
+        return `<button class="px-4 py-2 rounded-lg ${disabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'} text-white transition" ${disabled ? 'disabled' : `onclick="loadCoupons(${page}, 6, false)"`}>${text}</button>`;
     };
 
     const buttons = [
-        ...(startPage > 0 ? [createButton(0, '1'), ...(startPage > 1 ? ['<span class="px-3 py-1 text-gray-500 text-sm">...</span>'] : [])] : []),
-        ...Array.from({ length: endPage - startPage }, (_, i) => createButton(startPage + i, startPage + i + 1, startPage + i === currentPage)),
-        ...(endPage < totalPages ? [(endPage < totalPages - 1 ? '<span class="px-3 py-1 text-gray-500 text-sm">...</span>' : ''), createButton(totalPages - 1, totalPages)] : []),
+        ...(startPage > 0 ? [createButton(0, '1'), ...(startPage > 1 ? ['<span class="px-4 py-2 text-gray-500">...</span>'] : [])] : []),
+        ...Array.from({length: endPage - startPage}, (_, i) => createButton(startPage + i, startPage + i + 1, startPage + i === currentPage)),
+        ...(endPage < totalPages ? [(endPage < totalPages - 1 ? '<span class="px-4 py-2 text-gray-500">...</span>' : ''), createButton(totalPages - 1, totalPages)] : []),
     ];
 
     pageNumbers.innerHTML = buttons.join('');
@@ -487,7 +474,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             maxUsage: form.maxUsage.value ? parseInt(form.maxUsage.value) : null,
             expiryDate: form.expiryDate.value,
             isActive: form.isActive.checked,
-            premiumId: form.selectedPremiumPackages.value ? form.selectedPremiumPackages.value.split(',').map(id => parseInt(id)).filter(id => !isNaN(id)) : []
+            premiumId: form.premiumPackageIds.value ? form.premiumPackageIds.value.split(',').map(id => parseInt(id)).filter(id => !isNaN(id)) : []
         };
 
 
@@ -496,7 +483,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const url = couponId ? `http://localhost:8080/api/coupon/${couponId}` : 'http://localhost:8080/api/coupon';
             const response = await apiRequest(url, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(couponData)
             });
             if (!response.ok) throw new Error(couponId ? 'Failed to update coupon' : 'Failed to create coupon');
