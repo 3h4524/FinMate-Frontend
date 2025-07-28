@@ -1,65 +1,47 @@
+let notifications = [];
+
 async function loadNotification() {
-    const notificationContainer = document.createElement('div');
-    notificationContainer.id = 'notificationContainer';
-    notificationContainer.className = 'hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-10';
-    document.body.appendChild(notificationContainer);
+    let notificationContainer = document.getElementById('notificationContainer');
 
-    const userId = 1; // Replace with actual user ID from your auth system
-    const isVisible = !notificationContainer.classList.contains('hidden');
-
-    if (isVisible) {
-        notificationContainer.classList.add('hidden');
-        return;
+    if (!notificationContainer) {
+        notificationContainer = document.createElement('div');
+        notificationContainer.id = 'notificationContainer';
+        notificationContainer.className = 'fixed right-4 top-20 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 transition-all duration-300';
+        document.body.appendChild(notificationContainer);
     }
 
-    try {
-        const response = await apiRequest(`${API_BASE_URL}/api/notifications/${userId}`);
-        const data = await response.json();
-        if (data.code === 1000) {
-            const notifications = data.result;
+    notificationContainer.classList.remove('hidden');
 
-            notificationContainer.innerHTML = `
-                <div class="p-4">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Notifications</h3>
-                    <div class="max-h-96 overflow-y-auto">
-                        ${notifications.length > 0 ? notifications.map(notification => `
-                            <div class="py-2 border-b border-gray-100 last:border-b-0">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-800">${notification.title}</p>
-                                        <p class="text-sm text-gray-600">${notification.message}</p>
-                                        <p class="text-xs text-gray-400">${notification.type}</p>
-                                    </div>
-                                    <button onclick="deleteNotification(${notification.notificationId})" 
-                                            class="text-red-500 hover:text-red-700 text-sm">
-                                        Delete
-                                    </button>
-                                </div>
-                            </div>
-                        `).join('') : `
-                            <p class="text-sm text-gray-500 text-center py-4">No notifications</p>
-                        `}
+    notificationContainer.innerHTML = `
+        <div class="p-4 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    🔔 Notifications
+                </h3>
+            </div>
+            <div class="max-h-96 overflow-y-auto space-y-3 pr-2">
+                ${notifications.length > 0 ? notifications.map(notification => `
+                    <div class="p-3 rounded-xl shadow-sm border hover:shadow-md transition flex justify-between items-start 
+                        ${notification.type === 'Goal' ? 'bg-blue-50 border-blue-200' : ''} 
+                        ${notification.type === 'Spending' ? 'bg-red-50 border-red-200' : ''}">
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">${notification.title}</p>
+                            <p class="text-sm text-gray-600">${notification.message}</p>
+                            <p class="text-xs text-gray-400 mt-1">Type: ${notification.type}</p>
+                        </div>
+                        <button onclick="deleteNotification(${notification.notificationId})" 
+                            class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-3 py-1 rounded-lg font-semibold text-sm ml-3 transition hover:from-indigo-600 hover:to-purple-700">
+                            Mark as Read
+                        </button>
                     </div>
-                </div>
-            `;
-
-            notificationContainer.classList.remove('hidden');
-        } else {
-            throw new Error(response.message);
-        }
-
-    } catch (error) {
-        console.error('Error fetching notifications:', error);
-        notificationContainer.innerHTML = `
-                <div class="p-4">
-                    <p class="text-sm text-red-500 text-center">Error loading notifications</p>
-                </div>
-            `;
-        notificationContainer.classList.remove('hidden');
-    }
+                `).join('') : `
+                    <p class="text-sm text-gray-500 text-center py-6">No notifications available</p>
+                `}
+            </div>
+        </div>
+    `;
 }
 
-// Close notification when clicking outside
 document.addEventListener('click', function (e) {
     const notificationContainer = document.getElementById('notificationContainer');
     const buttonNotification = document.getElementById('buttonNotification');
@@ -70,25 +52,20 @@ document.addEventListener('click', function (e) {
     }
 });
 
-// Delete notification function
 window.deleteNotification = async function (notificationId) {
     try {
-        const response = await apiRequest(`${API_BASE_URL}/api/notifications/${notificationId}`, {
+        const response = await apiRequest(`http://localhost:8080/api/notifications/${notificationId}`, {
             method: 'PATCH',
         });
 
         if (!response.ok) {
-            throw new Error('Failed to delete notification');
+            throw new Error(response.message);
         }
-
-        // Refresh notifications after deletion
-        const buttonNotification = document.getElementById('buttonNotification');
-        if (buttonNotification) {
-            await loadNotification();
-        }
+        await fetchNotifications();
+        loadNotification();
+        loadNumberOfNotification();
     } catch (error) {
         console.error('Error deleting notification:', error);
-        // Show error message in notification container
         const notificationContainer = document.getElementById('notificationContainer');
         if (notificationContainer) {
             notificationContainer.innerHTML = `
@@ -100,3 +77,42 @@ window.deleteNotification = async function (notificationId) {
         }
     }
 };
+
+// Initialize
+window.addEventListener('load', () => {
+    console.log('Notification script loaded');
+    initNotification();
+});
+
+async function initNotification() {
+    await fetchNotifications();
+    loadNumberOfNotification();
+}
+
+async function fetchNotifications() {
+    try {
+        const response = await apiRequest(`http://localhost:8080/api/notifications`);
+        const data = await response.json();
+
+        if (data.code === 1000) {
+            notifications = data.result;
+            loadNumberOfNotification();
+        } else {
+            throw new Error(response.message);
+        }
+    } catch (error) {
+        console.error('Error fetching notifications:', error.message);
+    }
+}
+
+function loadNumberOfNotification() {
+    const badge = document.getElementById('notificationBadge');
+    if (badge) {
+        if (notifications.length > 0) {
+            badge.textContent = notifications.length;
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+    }
+}

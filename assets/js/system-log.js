@@ -48,12 +48,12 @@ async function loadLogs(page = 0, size = 10, startDate = '', endDate = '', entit
         totalPages = pages;
         currentPage = page;
 
-        document.getElementById('logsBody').innerHTML = logs.map(log => `
+        document.getElementById('logsBody').innerHTML = logs.map((log, index) => `
             <tr class="table-row-hover">
                 <td class="px-4 py-3 whitespace-nowrap font-bold text-indigo-700">
                     <div class="flex items-center gap-2">
                         <i class="fas fa-hashtag text-indigo-500"></i>
-                        ${log.id}
+                        ${index + 1 + page * size}
                     </div>
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap font-semibold text-green-700">
