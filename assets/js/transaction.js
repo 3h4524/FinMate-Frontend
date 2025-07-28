@@ -344,7 +344,7 @@ const loadTransactions = async (searchParams = {}) => {
             userId: user.userId,
             page: currentPage,
             size: 10,
-            sortBy: 'transactionDate',
+            sortBy: 'createdAt',
             sortDirection: 'DESC',
             ...searchParams,
         });
@@ -384,6 +384,8 @@ const createTransaction = async (formData) => {
             note: formData.note || null,
             transactionDate: formData.transactionDate,
             paymentMethod: formData.paymentMethod || null,
+            isAgree: formData.isAgree || false,
+            percentage: formData.percentage || 0,
         };
 
         const response = await apiRequest(url, {
@@ -582,15 +584,15 @@ const updateCategorySelects = () => {
         ...[...state.categories.system, ...state.categories.user]
             .filter((cat) => cat.type === 'INCOME')
             .map((cat) => ({
-                value: cat.isSystem ? `system-${cat.categoryId}` : `user-${cat.categoryId}`,
+                value: cat.isSystem ? `system-INCOME-${cat.categoryId}` : `user-INCOME-${cat.categoryId}`,
                 label: formatLabel(cat.icon, cat.categoryName),
-                customProperties: {type: 'income'},
+                customProperties: {type: 'INCOME'},
             })),
         {label: '<strong>Categories - Expense<strong/>', id: 'expense', disabled: true},
         ...[...state.categories.system, ...state.categories.user]
             .filter((cat) => cat.type === 'EXPENSE')
             .map((cat) => ({
-                value: cat.isSystem ? `system-${cat.categoryId}` : `user-${cat.categoryId}`,
+                value: cat.isSystem ? `system-EXPENSE-${cat.categoryId}` : `user-EXPENSE-${cat.categoryId}`,
                 label: formatLabel(cat.icon, cat.categoryName),
                 customProperties: {type: 'expense'},
             })),
@@ -744,9 +746,10 @@ const openTransactionModal = async (transaction = null) => {
     resetForm(DOM.transactionForm, {resetChoices: true});
 
     if (transaction) {
+        console.log(transaction.type)
         const [type, id] = transaction.categoryId
-            ? [`system-${transaction.categoryId}`, transaction.categoryId]
-            : [`user-${transaction.userCategoryId}`, transaction.userCategoryId];
+            ? [`system-${transaction.type}-${transaction.categoryId}`, transaction.categoryId]
+            : [`user-${transaction.type}-${transaction.userCategoryId}`, transaction.userCategoryId];
         document.getElementById('amount').value = transaction.amount;
         document.getElementById('note').value = transaction.note || '';
         const choices = state.choicesInstances.get('category-edit');
@@ -817,7 +820,50 @@ const initEventListeners = () => {
     DOM.transactionForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (!validateTransactionForm()) return;
-        const [type, id] = document.getElementById('category-edit').value.split('-');
+        const [type, category, id] = document.getElementById('category-edit').value.split('-');
+
+        let percentage;
+        let agree;
+
+        // Hàm để chờ người dùng tương tác với modal
+        const waitForModal = () => {
+            return new Promise((resolve) => {
+                divideModal.classList.remove('hidden');
+
+                // Xử lý khi nhấn Deny
+                const denyHandler = () => {
+                    agree = false;
+                    percentage = 0;
+                    divideModal.classList.add('hidden');
+                    resolve({agree, percentage});
+                    // Cleanup event listeners
+                    denyBtn.removeEventListener('click', denyHandler);
+                    agreeBtn.removeEventListener('click', agreeHandler);
+                };
+
+                // Xử lý khi nhấn Agree
+                const agreeHandler = () => {
+                    agree = true;
+                    percentage = percentageInput.value;
+                    divideModal.classList.add('hidden');
+                    resolve({agree, percentage});
+                    // Cleanup event listeners
+                    denyBtn.removeEventListener('click', denyHandler);
+                    agreeBtn.removeEventListener('click', agreeHandler);
+                };
+
+                denyBtn.addEventListener('click', denyHandler);
+                agreeBtn.addEventListener('click', agreeHandler);
+            });
+        };
+
+        // Kiểm tra nếu cần mở modal
+        if (document.getElementById('amount').value > 5000000 && category === 'income' && state.editingTransactionId == null) {
+            const result = await waitForModal();
+            agree = result.agree;
+            percentage = result.percentage;
+        }
+
         const formData = {
             categoryId: type === 'system' ? id : null,
             userCategoryId: type === 'user' ? id : null,
@@ -825,9 +871,11 @@ const initEventListeners = () => {
             transactionDate: document.getElementById('transactionDate').value,
             paymentMethod: document.getElementById('paymentMethod').value,
             note: document.getElementById('note').value,
+            isAgree: agree,
+            percentage: percentage ? parseFloat(percentage) : null,
         };
 
-        console.debug('Form Data: ', formData);
+        console.log('Form Data: ', formData);
         if (state.editingTransactionId) {
             await updateTransaction(state.editingTransactionId, formData);
         } else {
@@ -946,7 +994,6 @@ const init = async () => {
         await loadCategories();
         await loadTransactions();
         await updateStats();
-
         console.log('Transaction page initialized successfully');
     } catch (error) {
         console.error('Error initializing transaction page:', error);
@@ -993,3 +1040,13 @@ const updateStats = async () => {
             : '#4CAF50';
     }
 };
+
+
+const divideModal = document.getElementById('divideModal');
+const denyBtn = document.getElementById('denyBtn');
+const agreeBtn = document.getElementById('agreeBtn');
+const percentageInput = document.getElementById('percentageInput');
+
+divideModal.classList.add('hidden');
+percentageInput.value = '';
+denyBtn.addEventListener('click', closeModal);

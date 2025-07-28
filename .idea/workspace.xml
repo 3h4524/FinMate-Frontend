@@ -4,16 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="72949f31-0bd4-426c-a8e0-0239e303fb3b" name="Changes" comment="fix hehe">
+    <list default="true" id="72949f31-0bd4-426c-a8e0-0239e303fb3b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/googleAuth.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/googleAuth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/login.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/login.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/sidebar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/user_auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/user_auth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/forgot-password/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/forgot-password/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/header.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/home/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/home/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/reset-password/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/reset-password/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/transaction.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/transaction.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/ai-management/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/ai-management/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/transaction/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/transaction/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,22 +48,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "JavaScript Debug.index.html.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "D:/new/Frontend1",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;JavaScript Debug.index.html.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Merging tip__per__day&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/new/Frontend1&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\FPT\SU25\SWP\FinMate\FinMate-Frontend" />
@@ -95,6 +90,7 @@
       <workItem from="1750427066580" duration="690000" />
       <workItem from="1752036524831" duration="1875000" />
       <workItem from="1752112300190" duration="6357000" />
+      <workItem from="1753742388310" duration="606000" />
     </task>
     <task id="LOCAL-00001" summary="update sidebar">
       <option name="closed" value="true" />

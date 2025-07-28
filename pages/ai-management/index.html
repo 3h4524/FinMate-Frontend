@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,14 +32,12 @@
 
         /* Force exact values with highest specificity */
         @media (min-width: 1025px) {
-            /* Default expanded state */
             body .main-content {
                 margin-left: 256px !important;
                 padding-top: 64px !important;
                 width: calc(100% - 256px) !important;
             }
 
-            /* Collapsed state - MUST override default */
             body .main-content.sidebar-collapsed {
                 margin-left: 80px !important;
                 width: calc(100% - 80px) !important;
@@ -47,6 +46,7 @@
 
         /* Mobile: No margin, full width */
         @media (max-width: 1024px) {
+
             body .main-content,
             body .main-content.sidebar-collapsed {
                 margin-left: 0 !important;
@@ -77,19 +77,24 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* Status indicators */
         .status-success {
             background: linear-gradient(135deg, #10b981, #059669);
         }
-        
+
         .status-error {
             background: linear-gradient(135deg, #ef4444, #dc2626);
         }
-        
+
         .status-training {
             background: linear-gradient(135deg, #f59e0b, #d97706);
         }
@@ -100,91 +105,137 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Pagination button styles */
+        .pagination-btn {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 2px solid #e5e7eb;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            border-color: #6366f1;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-number-btn {
+            min-width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            font-weight: 600;
+        }
+
+        .page-number-btn.active {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border-color: #4f46e5;
         }
     </style>
 </head>
+
 <body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen no-scroll-margin">
-<!-- Include Header -->
-<div id="header-container"></div>
+    <!-- Include Header -->
+    <div id="header-container"></div>
 
-<!-- Include Sidebar -->
-<div id="sidebar-container"></div>
+    <!-- Include Sidebar -->
+    <div id="sidebar-container"></div>
 
-<!-- Main Content -->
-<div class="main-content">
-    <div class="p-4 lg:p-8">
-        <!-- Page Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-2">AI Management</h1>
-            <p class="text-gray-600">Manage and monitor your AI model training</p>
-        </div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="p-4 lg:p-8">
+            <!-- Page Header -->
+            <div class="mb-8">
+                <h1 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-2">AI Management</h1>
+                <p class="text-gray-600">Manage and monitor your AI model training</p>
+            </div>
 
-        <!-- AI Status Overview -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <!-- Current Model Status -->
-            <div class="bg-white rounded-3xl p-6 shadow-lg">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-bold text-gray-800">Current Model</h3>
-                    <div class="w-3 h-3 rounded-full bg-green-500" id="modelStatusIndicator"></div>
+            <!-- AI Status Overview -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Current Model Status -->
+                <div class="bg-white rounded-3xl p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">Current Model</h3>
+                        <div class="w-3 h-3 rounded-full bg-green-500" id="modelStatusIndicator"></div>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-sm text-gray-600">Status: <span class="font-semibold text-green-600"
+                                id="modelStatus">Active</span></p>
+                        <p class="text-sm text-gray-600">Last Updated: <span class="font-semibold"
+                                id="lastUpdated">Loading...</span></p>
+                        <p class="text-sm text-gray-600">Accuracy: <span class="font-semibold text-blue-600"
+                                id="modelAccuracy">Loading...</span></p>
+                    </div>
                 </div>
-                <div class="space-y-2">
-                    <p class="text-sm text-gray-600">Status: <span class="font-semibold text-green-600" id="modelStatus">Active</span></p>
-                    <p class="text-sm text-gray-600">Last Updated: <span class="font-semibold" id="lastUpdated">Loading...</span></p>
-                    <p class="text-sm text-gray-600">Accuracy: <span class="font-semibold text-blue-600" id="modelAccuracy">Loading...</span></p>
+
+                <!-- Training Statistics -->
+                <div class="bg-white rounded-3xl p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">Training Stats</h3>
+                        <i class="fas fa-chart-line text-blue-500"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-sm text-gray-600">Total Trainings: <span class="font-semibold"
+                                id="totalTrainings">Loading...</span></p>
+                        <p class="text-sm text-gray-600">Success Rate: <span class="font-semibold text-green-600"
+                                id="successRate">Loading...</span></p>
+                        <p class="text-sm text-gray-600">Avg Duration: <span class="font-semibold"
+                                id="avgDuration">Loading...</span></p>
+                    </div>
+                </div>
+
+                <!-- Data Overview -->
+                <div class="bg-white rounded-3xl p-6 shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">Data Overview</h3>
+                        <i class="fas fa-database text-purple-500"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-sm text-gray-600">Transactions: <span class="font-semibold"
+                                id="totalTransactions">Loading...</span></p>
+                        <p class="text-sm text-gray-600">Categories: <span class="font-semibold"
+                                id="totalCategories">Loading...</span></p>
+
+                    </div>
                 </div>
             </div>
 
-            <!-- Training Statistics -->
-            <div class="bg-white rounded-3xl p-6 shadow-lg">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-bold text-gray-800">Training Stats</h3>
-                    <i class="fas fa-chart-line text-blue-500"></i>
-                </div>
-                <div class="space-y-2">
-                    <p class="text-sm text-gray-600">Total Trainings: <span class="font-semibold" id="totalTrainings">Loading...</span></p>
-                    <p class="text-sm text-gray-600">Success Rate: <span class="font-semibold text-green-600" id="successRate">Loading...</span></p>
-                    <p class="text-sm text-gray-600">Avg Duration: <span class="font-semibold" id="avgDuration">Loading...</span></p>
-                </div>
-            </div>
-
-            <!-- Data Overview -->
-            <div class="bg-white rounded-3xl p-6 shadow-lg">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-bold text-gray-800">Data Overview</h3>
-                    <i class="fas fa-database text-purple-500"></i>
-                </div>
-                <div class="space-y-2">
-                    <p class="text-sm text-gray-600">Transactions: <span class="font-semibold" id="totalTransactions">Loading...</span></p>
-                    <p class="text-sm text-gray-600">Categories: <span class="font-semibold" id="totalCategories">Loading...</span></p>
-                    <p class="text-sm text-gray-600">Features: <span class="font-semibold" id="totalFeatures">Loading...</span></p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Content Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Left Column: Retrain Model -->
-            <div class="lg:col-span-2 space-y-8">
+            <!-- Main Content Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-1 gap-8 mb-10">
                 <!-- Retrain Model Section -->
                 <div class="bg-white rounded-3xl p-6 lg:p-8 shadow-lg">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-xl lg:text-2xl font-bold text-gray-800">Retrain AI Model</h3>
                         <i class="fas fa-brain text-2xl text-purple-500"></i>
                     </div>
-                    
                     <div class="mb-6">
                         <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-4 mb-4">
                             <p class="text-sm text-gray-700">
                                 <i class="fas fa-info-circle text-blue-500 mr-2"></i>
-                                Retraining will improve the model's accuracy using your latest transaction data. 
-                                This process may take a few minutes.
+                                Retraining will improve the model's accuracy using your latest transaction data. This
+                                process may take a few minutes.
                             </p>
                         </div>
                     </div>
-
-                    <!-- Training Progress -->
                     <div id="trainingProgress" class="hidden mb-6">
                         <div class="flex items-center justify-center space-x-4 p-6 bg-blue-50 rounded-2xl">
                             <div class="spinner"></div>
@@ -194,23 +245,17 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Training Results -->
                     <div id="trainingResults" class="hidden mb-6">
-                        <div class="p-4 rounded-2xl" id="resultsContainer">
-                            <!-- Results will be populated here -->
-                        </div>
+                        <div class="p-4 rounded-2xl" id="resultsContainer"></div>
                     </div>
-
-                    <!-- Retrain Button -->
-                    <button id="retrainBtn" onclick="retrainModel()" 
-                            class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-4 px-6 rounded-2xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                    <button id="retrainBtn" onclick="retrainModel()"
+                        class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-4 px-6 rounded-2xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
                         <i class="fas fa-sync-alt mr-2"></i>
                         Start Retraining
                     </button>
                 </div>
-
-                <!-- Training History -->
+            </div>
+            <div>
                 <div class="bg-white rounded-3xl p-6 lg:p-8 shadow-lg">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-xl lg:text-2xl font-bold text-gray-800">Training History</h3>
@@ -218,358 +263,340 @@
                             <i class="fas fa-refresh"></i>
                         </button>
                     </div>
-                    
                     <div id="trainingHistory" class="space-y-4">
-                        <!-- Training history will be loaded here -->
                         <div class="text-center py-8 text-gray-500">
                             <i class="fas fa-history text-3xl mb-2"></i>
                             <p>Loading training history...</p>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Right Column: Quick Actions & Info -->
-            <div class="space-y-6">
-                <!-- Model Performance -->
-                <div class="bg-white rounded-3xl p-6 shadow-lg">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">Model Performance</h3>
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600">MSE Score:</span>
-                            <span class="font-semibold" id="mseScore">Loading...</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-gradient-to-r from-green-500 to-blue-500 h-2 rounded-full" style="width: 85%" id="performanceBar"></div>
-                        </div>
-                        <p class="text-sm text-gray-500">Higher is better</p>
-                    </div>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="bg-white rounded-3xl p-6 shadow-lg">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">Quick Actions</h3>
-                    <div class="space-y-3">
-                        <button onclick="exportTrainingData()" 
-                                class="w-full bg-green-500 text-white py-3 px-4 rounded-2xl hover:bg-green-600 transition-colors flex items-center justify-center space-x-2">
-                            <i class="fas fa-download"></i>
-                            <span>Export Training Data</span>
-                        </button>
-                        <button onclick="viewModelDetails()" 
-                                class="w-full bg-blue-500 text-white py-3 px-4 rounded-2xl hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2">
-                            <i class="fas fa-info-circle"></i>
-                            <span>Model Details</span>
-                        </button>
-                        <button onclick="resetModel()" 
-                                class="w-full bg-red-500 text-white py-3 px-4 rounded-2xl hover:bg-red-600 transition-colors flex items-center justify-center space-x-2">
-                            <i class="fas fa-trash-alt"></i>
-                            <span>Reset Model</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Feature Importance -->
-                <div class="bg-white rounded-3xl p-6 shadow-lg">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">Top Features</h3>
-                    <div id="featureImportance" class="space-y-3">
-                        <!-- Feature importance will be loaded here -->
-                        <div class="text-center py-4 text-gray-500">
-                            <p class="text-sm">Loading features...</p>
-                        </div>
-                    </div>
+                <div id="paginationDiv"
+                    class="hidden flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8 p-4 sm:p-6 bg-white rounded-3xl shadow-lg">
+                    <button
+                        class="pagination-btn w-full sm:w-auto px-4 py-3 font-semibold rounded-2xl disabled:opacity-50 disabled:pointer-events-none"
+                        id="firstBtn" disabled>First</button>
+                    <div class="flex flex-wrap justify-center space-x-2" id="pageNumbers"></div>
+                    <button
+                        class="pagination-btn w-full sm:w-auto px-4 py-3 font-semibold rounded-2xl disabled:opacity-50 disabled:pointer-events-none"
+                        id="lastBtn" disabled>Last</button>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Scripts -->
-<script src="/assets/js/autho_helper.js"></script>
-<script>
-    // Check authentication
-    document.addEventListener('DOMContentLoaded', function () {
-        const loginTimestamp = sessionStorage.getItem('loginTimestamp');
-        const token = sessionStorage.getItem('token');
-        const userData = sessionStorage.getItem('userData');
-
-        if (!token || !userData || !loginTimestamp) {
-            console.log('No valid session found, redirecting to login');
-            window.location.href = '/';
-            return;
-        }
-
-        const loginTime = parseInt(loginTimestamp);
-        const currentTime = Date.now();
-        const sessionTimeout = 24 * 60 * 60 * 1000; // 24 hours
-
-        if (currentTime - loginTime > sessionTimeout) {
-            console.log('Session expired, redirecting to login');
-            sessionStorage.clear();
-            window.location.href = '/';
-            return;
-        }
-
-        try {
-            const user = JSON.parse(userData);
-            
-            // Check if user has permission to access AI management
-            if (user.role !== 'ADMIN' && user.role !== 'admin') {
-                console.log('Insufficient permissions for AI management');
-                window.location.href = '/pages/home/';
-                return;
-            }
-
-            console.log('Admin authorized to access AI management');
-            
-            // Load initial data
-            loadModelStatus();
-            loadTrainingHistory();
-            
-        } catch (error) {
-            console.error('Error parsing user data:', error);
-            sessionStorage.clear();
-            window.location.href = '/';
-        }
-    });
-
-    // API Configuration
-    const API_BASE_URL = 'http://localhost:8080';
-    
-    function getAuthHeaders() {
-        const token = sessionStorage.getItem('token');
-        return {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+    <!-- Scripts -->
+    <script src="/assets/js/autho_helper.js"></script>
+    <script>
+        // State management
+        const state = {
+            currentPage: 0,
+            totalPages: 0
         };
-    }
 
-    // Load Model Status
-    async function loadModelStatus() {
-        try {
-            // Since there's no specific endpoint for model status, we'll simulate it
-            // In a real implementation, you'd have endpoints for model status
-            document.getElementById('modelStatus').textContent = 'Active';
-            document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString();
-            document.getElementById('modelAccuracy').textContent = '94.5%';
-            document.getElementById('totalTrainings').textContent = '12';
-            document.getElementById('successRate').textContent = '91.7%';
-            document.getElementById('avgDuration').textContent = '2.3min';
-            document.getElementById('totalTransactions').textContent = '1,250';
-            document.getElementById('totalCategories').textContent = '8';
-            document.getElementById('totalFeatures').textContent = '15';
-            document.getElementById('mseScore').textContent = '0.0234';
-            
-        } catch (error) {
-            console.error('Error loading model status:', error);
-        }
-    }
+        // DOM elements
+        const DOM = {
+            paginationDiv: document.getElementById('paginationDiv'),
+            firstBtn: document.getElementById('firstBtn'),
+            lastBtn: document.getElementById('lastBtn'),
+            pageNumbers: document.getElementById('pageNumbers'),
+            trainingHistory: document.getElementById('trainingHistory')
+        };
 
-    // Retrain Model
-    async function retrainModel() {
-        const retrainBtn = document.getElementById('retrainBtn');
-        const trainingProgress = document.getElementById('trainingProgress');
-        const trainingResults = document.getElementById('trainingResults');
-        
-        // Reset previous results
-        trainingResults.classList.add('hidden');
-        
-        // Show progress
-        retrainBtn.disabled = true;
-        retrainBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Training...';
-        trainingProgress.classList.remove('hidden');
-        
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/ai/retrain-model`, {
-                method: 'GET',
-                headers: getAuthHeaders()
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+        // Utility functions
+        const showElement = (element) => element.classList.remove('hidden');
+        const hideElement = (element) => element.classList.add('hidden');
+
+        // API Configuration
+        const API_BASE_URL = 'http://localhost:8080';
+
+        // Authentication check
+        document.addEventListener('DOMContentLoaded', function () {
+            const loginTimestamp = sessionStorage.getItem('loginTimestamp');
+            const token = sessionStorage.getItem('token');
+            const userData = sessionStorage.getItem('userData');
+
+            try {
+                console.log('user: ', userData);
+                const user = JSON.parse(userData);
+                if (user.role !== 'ADMIN' && user.role !== 'admin') {
+                    console.log('Insufficient permissions for AI management');
+                    window.location.href = '/pages/home/';
+                    return;
+                }
+                console.log('Admin authorized to access AI management');
+                loadModelStatus();
+                loadTrainingHistory();
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+                sessionStorage.clear();
+                window.location.href = '/';
             }
-            
-            const data = await response.json();
-            
-            // Hide progress
-            trainingProgress.classList.add('hidden');
-            
-            // Show results
-            displayTrainingResults(data.result);
-            
-            // Update model status
-            loadModelStatus();
-            loadTrainingHistory();
-            
-        } catch (error) {
-            console.error('Error retraining model:', error);
-            trainingProgress.classList.add('hidden');
-            showErrorResults(error.message);
-        } finally {
-            // Reset button
-            retrainBtn.disabled = false;
-            retrainBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Start Retraining';
-        }
-    }
 
-    // Display Training Results
-    function displayTrainingResults(result) {
-        const trainingResults = document.getElementById('trainingResults');
-        const resultsContainer = document.getElementById('resultsContainer');
-        
-        const successClass = result.status === 'success' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
-        const iconClass = result.status === 'success' ? 'fas fa-check-circle text-green-500' : 'fas fa-exclamation-circle text-red-500';
-        
-        let featuresHtml = '';
-        if (result.featureColumns && result.featureColumns.length > 0) {
-            featuresHtml = result.featureColumns.slice(0, 5).map(feature => 
-                `<span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">${feature}</span>`
-            ).join(' ');
-        }
-        
-        let categoriesHtml = '';
-        if (result.topCategories && result.topCategories.length > 0) {
-            categoriesHtml = result.topCategories.slice(0, 3).map(category => 
-                `<span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs">${category}</span>`
-            ).join(' ');
-        }
-        
-        resultsContainer.className = `p-4 rounded-2xl border-2 ${successClass}`;
-        resultsContainer.innerHTML = `
-            <div class="flex items-start space-x-3">
-                <i class="${iconClass} text-xl mt-1"></i>
-                <div class="flex-1">
-                    <h4 class="font-semibold text-gray-800 mb-2">Training ${result.status === 'success' ? 'Completed' : 'Failed'}</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div>
-                            <p class="text-gray-600">MSE Score: <span class="font-semibold">${result.mse || 'N/A'}</span></p>
-                            <p class="text-gray-600">Duration: <span class="font-semibold">${result.trainingDurationSeconds ? result.trainingDurationSeconds.toFixed(2) + 's' : 'N/A'}</span></p>
-                            <p class="text-gray-600">Transactions: <span class="font-semibold">${result.numTransactions || 'N/A'}</span></p>
-                        </div>
-                        <div>
-                            <p class="text-gray-600">Timestamp: <span class="font-semibold">${result.trainingTimestamp || 'N/A'}</span></p>
-                        </div>
-                    </div>
-                    ${featuresHtml ? `
-                        <div class="mt-3">
-                            <p class="text-sm text-gray-600 mb-2">Key Features:</p>
-                            <div class="flex flex-wrap gap-1">${featuresHtml}</div>
-                        </div>
-                    ` : ''}
-                    ${categoriesHtml ? `
-                        <div class="mt-3">
-                            <p class="text-sm text-gray-600 mb-2">Top Categories:</p>
-                            <div class="flex flex-wrap gap-1">${categoriesHtml}</div>
-                        </div>
-                    ` : ''}
-                </div>
-            </div>
-        `;
-        
-        trainingResults.classList.remove('hidden');
-        trainingResults.classList.add('fade-in');
-    }
+            // Initialize pagination event listeners
+            initPaginationListeners();
+        });
 
-    // Show Error Results
-    function showErrorResults(errorMessage) {
-        const trainingResults = document.getElementById('trainingResults');
-        const resultsContainer = document.getElementById('resultsContainer');
-        
-        resultsContainer.className = 'p-4 rounded-2xl border-2 bg-red-50 border-red-200';
-        resultsContainer.innerHTML = `
-            <div class="flex items-start space-x-3">
-                <i class="fas fa-exclamation-circle text-red-500 text-xl mt-1"></i>
-                <div>
-                    <h4 class="font-semibold text-gray-800 mb-2">Training Failed</h4>
-                    <p class="text-sm text-gray-600">${errorMessage}</p>
-                    <p class="text-xs text-gray-500 mt-2">Please try again or contact support if the issue persists.</p>
-                </div>
-            </div>
-        `;
-        
-        trainingResults.classList.remove('hidden');
-    }
+        async function loadModelStatus() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/AI/stats-model`, {
+                    method: 'GET',
+                    headers: getAuthHeaders()
+                });
 
-    // Load Training History (Mock data for now)
-    function loadTrainingHistory() {
-        const historyContainer = document.getElementById('trainingHistory');
-        
-        // Mock data - replace with actual API call
-        const mockHistory = [
-            {
-                timestamp: '2025-01-28 14:30:00',
-                status: 'success',
-                mse: 0.0234,
-                duration: 125.5,
-                transactions: 1250
-            },
-            {
-                timestamp: '2025-01-25 10:15:00',
-                status: 'success',
-                mse: 0.0267,
-                duration: 108.2,
-                transactions: 1180
-            },
-            {
-                timestamp: '2025-01-22 16:45:00',
-                status: 'error',
-                mse: null,
-                duration: 45.1,
-                transactions: 1150
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('statictis: ', data.result);
+                if (data.result) {
+                    const result = data.result;
+                    console.log('result: ', result);
+                    document.getElementById('modelStatus').textContent = 'Active';
+                    document.getElementById('lastUpdated').textContent = result.lastUpdated || 'N/A';
+                    document.getElementById('modelAccuracy').textContent = result.accuracy ? result.accuracy.toFixed(2) : 'N/A';
+                    document.getElementById('totalTrainings').textContent = result.totalTraining || '0';
+                    document.getElementById('successRate').textContent = result.successRate ? result.successRate + '%' : '0%';
+                    document.getElementById('avgDuration').textContent = result.avgDuration ? result.avgDuration.toFixed(2) + 's' : 'N/A';
+                    document.getElementById('totalTransactions').textContent = result.totalTransaction || '0';
+                    document.getElementById('totalCategories').textContent = result.totalCategories || '0';
+                } else {
+                    console.error('No result found in response');
+                }
+            } catch (error) {
+                console.error('Error loading model status:', error);
+                // Optionally update UI to show error state
+                document.getElementById('modelStatus').textContent = 'Error';
+                document.getElementById('lastUpdated').textContent = 'N/A';
+                document.getElementById('modelAccuracy').textContent = 'N/A';
+                document.getElementById('totalTrainings').textContent = 'N/A';
+                document.getElementById('successRate').textContent = 'N/A';
+                document.getElementById('avgDuration').textContent = 'N/A';
+                document.getElementById('totalTransactions').textContent = 'N/A';
+                document.getElementById('totalCategories').textContent = 'N/A';
+                document.getElementById('totalFeatures').textContent = 'N/A';
             }
-        ];
-        
-        historyContainer.innerHTML = mockHistory.map(training => {
-            const statusClass = training.status === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-            const statusIcon = training.status === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
-            
-            return `
-                <div class="border border-gray-200 rounded-2xl p-4 hover:shadow-md transition-shadow">
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="flex items-center space-x-2">
-                            <i class="${statusIcon} ${training.status === 'success' ? 'text-green-500' : 'text-red-500'}"></i>
-                            <span class="font-semibold text-gray-800">${training.timestamp}</span>
-                        </div>
-                        <span class="px-2 py-1 rounded-full text-xs font-medium ${statusClass}">
-                            ${training.status.toUpperCase()}
-                        </span>
-                    </div>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-gray-600">
-                        <div>MSE: ${training.mse ? training.mse.toFixed(4) : 'N/A'}</div>
-                        <div>Duration: ${training.duration.toFixed(1)}s</div>
-                        <div>Transactions: ${training.transactions}</div>
-                        <div class="text-right">
-                            <button class="text-blue-600 hover:text-blue-800">
-                                <i class="fas fa-eye"></i> View
-                            </button>
+        }
+
+        // Retrain Model
+        async function retrainModel() {
+            const retrainBtn = document.getElementById('retrainBtn');
+            const trainingProgress = document.getElementById('trainingProgress');
+            const trainingResults = document.getElementById('trainingResults');
+
+            trainingResults.classList.add('hidden');
+            retrainBtn.disabled = true;
+            retrainBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Training...';
+            trainingProgress.classList.remove('hidden');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/AI/retrain-model`, {
+                    method: 'GET',
+                    headers: getAuthHeaders()
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                trainingProgress.classList.add('hidden');
+                displayTrainingResults(data.result);
+                loadModelStatus();
+                loadTrainingHistory();
+            } catch (error) {
+                console.error('Error retraining model:', error);
+                trainingProgress.classList.add('hidden');
+                showErrorResults(error.message);
+            } finally {
+                retrainBtn.disabled = false;
+                retrainBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Start Retraining';
+            }
+        }
+
+        // Display Training Results
+        function displayTrainingResults(result) {
+            const trainingResults = document.getElementById('trainingResults');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const successClass = result.status === 'success' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
+            const iconClass = result.status === 'success' ? 'fas fa-check-circle text-green-500' : 'fas fa-exclamation-circle text-red-500';
+            resultsContainer.className = `p-4 rounded-2xl border-2 ${successClass}`;
+            resultsContainer.innerHTML = `
+                <div class="flex items-start space-x-3">
+                    <i class="${iconClass} text-xl mt-1"></i>
+                    <div class="flex-1">
+                        <h4 class="font-semibold text-gray-800 mb-2">Training ${result.status === 'success' ? 'Completed' : 'Failed'}</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <p class="text-gray-600">MSE Score: <span class="font-semibold">${result.mse || 'N/A'}</span></p>
+                                <p class="text-gray-600">Duration: <span class="font-semibold">${result.training_duration_seconds ? result.training_duration_seconds.toFixed(2) + 's' : 'N/A'}</span></p>
+                                <p class="text-gray-600">Transactions: <span class="font-semibold">${result.num_transactions || 'N/A'}</span></p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600">Timestamp: <span class="font-semibold">${result.training_timestamp || 'N/A'}</span></p>
+                            </div>
                         </div>
                     </div>
                 </div>
             `;
-        }).join('');
-    }
-
-    // Refresh History
-    function refreshHistory() {
-        loadTrainingHistory();
-    }
-
-    // Quick Actions
-    function exportTrainingData() {
-        alert('Export functionality will be implemented based on your backend API');
-    }
-
-    function viewModelDetails() {
-        alert('Model details modal will be implemented');
-    }
-
-    function resetModel() {
-        if (confirm('Are you sure you want to reset the model? This action cannot be undone.')) {
-            alert('Reset functionality will be implemented based on your backend API');
+            trainingResults.classList.remove('hidden');
+            trainingResults.classList.add('fade-in');
         }
-    }
-</script>
-<script src="/assets/js/page-loader.js"></script>
-<script src="/assets/js/header.js"></script>
-<script src="/assets/js/sidebar.js"></script>
+
+        // Show Error Results
+        function showErrorResults(errorMessage) {
+            const trainingResults = document.getElementById('trainingResults');
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.className = 'p-4 rounded-2xl border-2 bg-red-50 border-red-200';
+            resultsContainer.innerHTML = `
+                <div class="flex items-start space-x-3">
+                    <i class="fas fa-exclamation-circle text-red-500 text-xl mt-1"></i>
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Training Failed</h4>
+                        <p class="text-sm text-gray-600">${errorMessage}</p>
+                        <p class="text-xs text-gray-500 mt-2">Please try again or contact support if the issue persists.</p>
+                    </div>
+                </div>
+            `;
+            trainingResults.classList.remove('hidden');
+        }
+
+        // Load Training History
+        async function loadTrainingHistory() {
+            const historyContainer = DOM.trainingHistory;
+            try {
+                historyContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-history text-3xl mb-2"></i>
+                        <p>Loading training history...</p>
+                    </div>
+                `;
+                const queryParams = new URLSearchParams({
+                    page: state.currentPage,
+                    size: 5,
+                    sortBy: 'trainingTimestamp',
+                    sortDirection: 'DESC'
+                });
+
+
+                console.log('hahah');
+                const response = await fetch(`${API_BASE_URL}/AI/training-models?${queryParams.toString()}`, {
+                    method: 'GET',
+                    headers: getAuthHeaders(),
+                });
+
+                console.log('page:  ', state.currentPage)
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                if (data.result && data.result.content) {
+                    console.log('result: ', data.result);
+                    historyContainer.innerHTML = data.result.content.map(training => {
+                        const statusClass = training.status === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+                        const statusIcon = training.status === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+                        return `
+                            <div class="border border-gray-200 rounded-2xl p-4 hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="${statusIcon} ${training.status === 'success' ? 'text-green-500' : 'text-red-500'}"></i>
+                                        <span class="font-semibold text-gray-800">${new Date(training.training_timestamp).toLocaleString()}</span>
+                                    </div>
+                                    <span class="px-2 py-1 rounded-full text-xs font-medium ${statusClass}">
+                                        ${training.status.toUpperCase()}
+                                    </span>
+                                </div>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-gray-600">
+                                    <div>MSE: ${training.mse ? training.mse.toFixed(4) : 'N/A'}</div>
+                                    <div>Duration: ${training.training_duration_seconds ? training.training_duration_seconds.toFixed(1) + 's' : 'N/A'}</div>
+                                    <div>Transactions: ${training.num_transactions || 'N/A'}</div>
+                                    <div class="text-right">
+                                        <button class="text-blue-600 hover:text-blue-800" onclick="viewTrainingDetails('${training.trainingId}')">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    renderPagination(data.result.totalPages || 0);
+                } else {
+                    throw new Error('Invalid response format');
+                }
+            } catch (error) {
+                console.error('Error loading training history:', error);
+                historyContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-exclamation-circle text-3xl mb-2"></i>
+                        <p>Không thể tải lịch sử huấn luyện. Vui lòng thử lại sau.</p>
+                        <button class="text-blue-600 hover:text-blue-800 mt-2" onclick="loadTrainingHistory()">
+                            <i class="fas fa-refresh mr-1"></i>Thử lại
+                        </button>
+                    </div>
+                `;
+                hideElement(DOM.paginationDiv);
+            }
+        }
+
+        // View Training Details (Placeholder)
+        function viewTrainingDetails(trainingId) {
+            alert(`View details for training ID: ${trainingId} (To be implemented)`);
+        }
+
+        // Render Pagination
+        function renderPagination(total) {
+            state.totalPages = total;
+            DOM.pageNumbers.innerHTML = '';
+            if (total <= 1) {
+                hideElement(DOM.paginationDiv);
+                return;
+            }
+            showElement(DOM.paginationDiv);
+            DOM.firstBtn.disabled = state.currentPage === 0;
+            DOM.lastBtn.disabled = state.currentPage === state.totalPages - 1;
+            const maxPagesToShow = 5;
+            let startPage = Math.max(0, state.currentPage - 2);
+            let endPage = Math.min(state.totalPages, startPage + maxPagesToShow);
+            if (endPage - startPage < maxPagesToShow) {
+                startPage = Math.max(0, endPage - maxPagesToShow);
+            }
+            for (let i = startPage; i < endPage; i++) {
+                const btn = document.createElement('button');
+                btn.className = `page-number-btn pagination-btn ${i === state.currentPage ? 'active' : ''}`;
+                btn.textContent = i + 1;
+                btn.addEventListener('click', () => {
+                    state.currentPage = i;
+                    loadTrainingHistory();
+                });
+                DOM.pageNumbers.appendChild(btn);
+            }
+        }
+
+        // Initialize Pagination Event Listeners
+        function initPaginationListeners() {
+            DOM.firstBtn.addEventListener('click', () => {
+                if (state.currentPage > 0) {
+                    state.currentPage = 0;
+                    loadTrainingHistory();
+                }
+            });
+            DOM.lastBtn.addEventListener('click', () => {
+                if (state.currentPage < state.totalPages - 1) {
+                    state.currentPage = state.totalPages - 1;
+                    loadTrainingHistory();
+                }
+            });
+        }
+
+        // Refresh History
+        function refreshHistory() {
+            state.currentPage = 0;
+            loadTrainingHistory();
+        }
+    </script>
+    <script src="/assets/js/page-loader.js"></script>
+    <script src="/assets/js/header.js"></script>
+    <script src="/assets/js/sidebar.js"></script>
 </body>
+
 </html>
