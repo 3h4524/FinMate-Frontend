@@ -5,8 +5,19 @@ const API_BASE = 'http://localhost:8080';
 
 // Helper to show notification messages
 function showProfileNotification(message, type = 'success') {
+    // Clear any existing notifications first
+    const existingNotifications = document.querySelectorAll('.profile-notification');
+    existingNotifications.forEach(notification => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 500);
+    });
+
     const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg transition-all duration-500 transform translate-x-full ${
+    notification.className = `profile-notification fixed top-20 right-4 p-4 rounded-lg shadow-lg transition-all duration-500 transform translate-x-full ${
         type === 'success' ? 'bg-green-500' : 'bg-red-500'
     } text-white`;
     notification.style.zIndex = '9999';
@@ -29,7 +40,9 @@ function showProfileNotification(message, type = 'success') {
     setTimeout(() => {
         notification.classList.add('translate-x-full');
         setTimeout(() => {
-            document.body.removeChild(notification);
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
         }, 500);
     }, 3000);
 }
@@ -108,7 +121,7 @@ async function loadProfile() {
 function populateProfile(user) {
     // Header information
     document.getElementById('profileName').textContent = user.name || 'User';
-    document.getElementById('profileEmail').textContent = user.email;
+    document.getElementById('profileEmail').textContent = user.email || '';
 
     // Role badge
     const roleSpan = document.getElementById('profileRole');
@@ -139,7 +152,6 @@ function populateProfile(user) {
 
     // Form fields
     document.getElementById('name').value = user.name || '';
-    document.getElementById('email').value = user.email || '';
 
     // Last login time
     const lastLoginSpan = document.getElementById('lastLoginTime');
@@ -174,7 +186,7 @@ function toggleEditMode(enabled) {
     const editActions = document.getElementById('editActions');
 
     inputs.forEach(input => {
-        if (input.id === 'name' || input.id === 'email') {
+        if (input.id === 'name') {
             input.disabled = !enabled;
             if (enabled) {
                 input.classList.remove('bg-gray-50', 'cursor-not-allowed');
@@ -232,23 +244,12 @@ function initProfileForm() {
         e.preventDefault();
 
         const formData = {
-            name: document.getElementById('name').value.trim(),
-            email: document.getElementById('email').value.trim()
+            name: document.getElementById('name').value.trim()
         };
 
         // Validate required fields
         if (!formData.name) {
             showProfileNotification('Please enter your name.', 'error');
-            return;
-        }
-
-        if (!formData.email) {
-            showProfileNotification('Please enter your email.', 'error');
-            return;
-        }
-
-        if (!isValidEmail(formData.email)) {
-            showProfileNotification('Invalid email format.', 'error');
             return;
         }
 
@@ -262,17 +263,12 @@ function initProfileForm() {
                 body: JSON.stringify(formData)
             });
             const response = await res.json();
-            if (response.code === 2001 && formData.email) {
-                showOtpEmailModal(formData.email);
-                return;
-            }
             if (res.ok && response.code === 1000) {
                 // Update session storage
                 const stored = JSON.parse(sessionStorage.getItem('userData') || '{}');
                 const newStored = {...stored, ...formData};
                 sessionStorage.setItem('userData', JSON.stringify(newStored));
                 document.getElementById('profileName').textContent = formData.name;
-                document.getElementById('profileEmail').textContent = formData.email;
                 if (typeof window.updateHeaderDisplayNames === 'function') {
                     window.updateHeaderDisplayNames(formData.name);
                 }
@@ -283,10 +279,12 @@ function initProfileForm() {
                 window.location.reload();
                 return;
             } else {
-                showProfileNotification(response.message || 'Update failed.', 'error');
+                // Silently handle error without showing notification
+                console.log('Profile update failed:', response.message);
             }
         } catch (error) {
-            showProfileNotification('Update failed.', 'error');
+            // Silently handle error without showing notification
+            console.log('Profile update error:', error);
         }
     });
 }

@@ -65,15 +65,6 @@
             transition: none !important;
         }
 
-        /* Hide content until sidebar is loaded */
-        .app-container {
-            visibility: hidden;
-        }
-
-        .app-container.sidebar-ready {
-            visibility: visible;
-        }
-
         @media (max-width: 900px) {
             .main-content {
                 margin-left: 0;
@@ -576,31 +567,23 @@
     // Load sidebar function for this page
     async function loadSideBarSimple() {
         const sidebarContainer = document.getElementById('sidebar-container');
-        const appContainer = document.querySelector('.app-container');
         
         if (sidebarContainer) {
             const sidebarHTML = await loadSidebarHTML();
             if (sidebarHTML) {
                 sidebarContainer.innerHTML = sidebarHTML;
                 initSidebar();
-                
-                // Show content after sidebar is loaded
-                if (appContainer) {
-                    appContainer.classList.add('sidebar-ready');
-                }
-                
                 return true;
             }
         }
         return false;
     }
 
-    // Initialize page components immediately
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM ready, loading components immediately...');
+    // Initialize page components
+    window.addEventListener('load', function() {
+        console.log('Page loaded, initializing components...');
         
-        // Load components immediately without delay
-        (async function() {
+        setTimeout(async function() {
             try {
                 // Try loading with functions first
                 if (typeof loadHeader === 'function' && typeof loadSideBarSimple === 'function') {
@@ -630,12 +613,6 @@
                         if (typeof initSidebar === 'function') {
                             initSidebar();
                         }
-                        
-                        // Show content after components are loaded
-                        const appContainer = document.querySelector('.app-container');
-                        if (appContainer) {
-                            appContainer.classList.add('sidebar-ready');
-                        }
                     } else {
                         console.error('Failed to load some components');
                     }
@@ -643,7 +620,7 @@
             } catch (error) {
                 console.error('Error loading page components:', error);
             }
-        })();
+        }, 200);
     });
 </script>
 

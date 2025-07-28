@@ -94,6 +94,17 @@
     #sidebar-container {
         transform: translateX(-100%);
         width: 256px;
+        transition: transform 0.3s ease-in-out;
+    }
+    
+    /* Show sidebar when it's open on mobile */
+    #sidebar-container.sidebar-open {
+        transform: translateX(0);
+    }
+    
+    /* Mobile: No collapsed state - always full width */
+    #sidebar-container.sidebar-collapsed {
+        width: 256px !important;
     }
 }
 
