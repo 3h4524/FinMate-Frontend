@@ -23,7 +23,7 @@ function hideNotification() {
 }
 
 
-// Password validation
+// Password validation - synchronized with reset password page
 function initPasswordValidation() {
     const password = document.getElementById('password');
     if (!password) return;
@@ -36,56 +36,13 @@ function initPasswordValidation() {
         special: document.getElementById('special')
     };
 
-    // Initially mark all requirements as invalid
-    Object.values(requirements).forEach(li => li.classList.add('invalid'));
-
     password.addEventListener('input', function () {
         const value = this.value;
-
-        // Check length
-        if (value.length >= 8) {
-            requirements.length.classList.add('valid');
-            requirements.length.classList.remove('invalid');
-        } else {
-            requirements.length.classList.remove('valid');
-            requirements.length.classList.add('invalid');
-        }
-
-        // Check uppercase
-        if (/[A-Z]/.test(value)) {
-            requirements.uppercase.classList.add('valid');
-            requirements.uppercase.classList.remove('invalid');
-        } else {
-            requirements.uppercase.classList.remove('valid');
-            requirements.uppercase.classList.add('invalid');
-        }
-
-        // Check lowercase
-        if (/[a-z]/.test(value)) {
-            requirements.lowercase.classList.add('valid');
-            requirements.lowercase.classList.remove('invalid');
-        } else {
-            requirements.lowercase.classList.remove('valid');
-            requirements.lowercase.classList.add('invalid');
-        }
-
-        // Check number
-        if (/[0-9]/.test(value)) {
-            requirements.number.classList.add('valid');
-            requirements.number.classList.remove('invalid');
-        } else {
-            requirements.number.classList.remove('valid');
-            requirements.number.classList.add('invalid');
-        }
-
-        // Check special character
-        if (/[!@#$%^&*]/.test(value)) {
-            requirements.special.classList.add('valid');
-            requirements.special.classList.remove('invalid');
-        } else {
-            requirements.special.classList.remove('valid');
-            requirements.special.classList.add('invalid');
-        }
+        requirements.length.classList.toggle('valid', value.length >= 8);
+        requirements.uppercase.classList.toggle('valid', /[A-Z]/.test(value));
+        requirements.lowercase.classList.toggle('valid', /[a-z]/.test(value));
+        requirements.number.classList.toggle('valid', /[0-9]/.test(value));
+        requirements.special.classList.toggle('valid', /[!@#$%^&*]/.test(value));
     });
 }
 
@@ -122,6 +79,14 @@ document.getElementById('register-form').addEventListener('submit', async functi
     document.getElementById('emailError').style.display = 'none';
     document.getElementById('passwordError').style.display = 'none';
     document.getElementById('confirmPasswordError').style.display = 'none';
+
+    // Validate password - synchronized with reset password page
+    if (password.length < 8 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*]/.test(password)) {
+        showNotification('Password does not meet requirements.', 'error');
+        document.getElementById('passwordError').textContent = 'Password does not meet requirements.';
+        document.getElementById('passwordError').style.display = 'block';
+        return;
+    }
 
     // Check password match
     if (password !== confirmPassword) {

@@ -3,7 +3,7 @@
 // Load header HTML content
 async function loadHeaderHTML() {
     try {
-        const response = await fetch('../header.html');
+        const response = await fetch('/pages/header.html');
         if (!response.ok) {
             throw new Error('Failed to load header.html');
         }
