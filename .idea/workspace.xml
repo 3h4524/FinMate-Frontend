@@ -6,14 +6,23 @@
   <component name="ChangeListManager">
     <list default="true" id="72949f31-0bd4-426c-a8e0-0239e303fb3b" name="Changes" comment="fix hehe">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/googleAuth.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/googleAuth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/login.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/login.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/autho_helper.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/autho_helper.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/services/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/services/api.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/assets/js/sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/sidebar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/user_auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/user_auth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/forgot-password/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/forgot-password/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/transaction.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/transaction.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/admin-dashboard/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/admin-dashboard/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/ai-management/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/ai-management/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/budget/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/budget/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/coupon/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/coupon/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/feature/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/feature/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/goal/goal_detail/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/goal/goal_detail/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pages/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/header.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pages/home/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/home/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/reset-password/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/reset-password/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/profile/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/profile/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/recurring-transaction/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/recurring-transaction/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/transaction/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/transaction/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/user-management/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/user-management/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,7 +32,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="releasev2.0" />
+        <entry key="$PROJECT_DIR$" value="maitt" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -59,7 +68,7 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "tip__per__day",
     "last_opened_file_path": "D:/new/Frontend1",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",

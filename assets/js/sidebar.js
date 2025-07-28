@@ -287,15 +287,7 @@ function updateMobileToggleButton(isCollapsed) {
 }
 
 // Global logout function for sidebar integration
-window.handleLogout = function() {
-    if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('userData');
-        localStorage.removeItem('user');
-        window.location.href = '/';
-    }
-};
+// Now handled by logout-manager.js
 
 // Set active sidebar link based on current page
 function setActiveSidebarLink() {

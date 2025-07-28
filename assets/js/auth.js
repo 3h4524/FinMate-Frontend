@@ -269,148 +269,24 @@ function clearSessionData() {
     localStorage.removeItem('loginTimestamp');
 }
 
-// Backup logout mechanism - store logout intent in localStorage
-function setLogoutIntent() {
-    const token = sessionStorage.getItem('token');
-    const userData = sessionStorage.getItem('userData');
-
-    if (token && userData) {
-        localStorage.setItem('logoutIntent', JSON.stringify({
-            token: token,
-            userData: userData,
-            timestamp: Date.now()
-        }));
-        console.log('Logout intent stored');
-    }
-}
-
-// Check and process logout intent on page load
-function checkLogoutIntent() {
-    const logoutIntent = localStorage.getItem('logoutIntent');
-
-    if (logoutIntent) {
-        try {
-            const intent = JSON.parse(logoutIntent);
-            const token = intent.token;
-
-            // Check if this was from browser close
-            if (intent.browserClosed) {
-                console.log('Processing logout intent from browser close');
-            }
-
-            // Send logout request
-            fetch('http://localhost:8080/api/v1/auth/logout', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            }).then(() => {
-                console.log('Backup logout processed successfully');
-            }).catch(error => {
-                console.log('Backup logout failed:', error);
-            }).finally(() => {
-                localStorage.removeItem('logoutIntent');
-            });
-        } catch (error) {
-            console.log('Error processing logout intent:', error);
-            localStorage.removeItem('logoutIntent');
-        }
-    }
-}
-
-// Handle browser/tab close events
-function handleBeforeUnload() {
-    const token = sessionStorage.getItem('token');
-    const userData = sessionStorage.getItem('userData');
-
-    if (token && userData) {
-        try {
-            const user = JSON.parse(userData);
-
-            // Use synchronous XMLHttpRequest for more reliable delivery during page unload
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'http://localhost:8080/api/v1/auth/logout', false); // Synchronous
-            xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.send();
-
-            console.log('Logout request sent on page unload');
-        } catch (error) {
-            console.log('Error during logout on page unload:', error);
-        }
-    }
-}
+// Logout functions now handled by logout-manager.js
 
 // Handle visibility change (when tab becomes hidden)
 function handleVisibilityChange() {
     if (document.visibilityState === 'hidden') {
-        const token = sessionStorage.getItem('token');
-        const userData = sessionStorage.getItem('userData');
-
-        if (token && userData) {
-            try {
-                const user = JSON.parse(userData);
-                // Set logout intent as backup
-                setLogoutIntent();
-
-                // Send logout request to backend to set verified = false
-                fetch('http://localhost:8080/api/v1/auth/logout', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                }).then(response => {
-                    console.log('Logout successful on visibility change');
-                }).catch(error => {
-                    console.log('Logout request failed on visibility change:', error);
-                });
-            } catch (error) {
-                console.log('Error parsing user data on visibility change:', error);
-            }
-        }
+        // Logout intent handling removed - now handled by logout-manager.js
+        console.log('Tab hidden - logout intent handled by logout-manager.js');
     } else if (document.visibilityState === 'visible') {
         // When tab becomes visible again, check if we need to logout
         const logoutIntent = localStorage.getItem('logoutIntent');
         if (logoutIntent) {
             console.log('Tab became visible, processing logout intent');
-            checkLogoutIntent();
+            // This is now handled by logout-manager.js
         }
     }
 }
 
-// Handle page unload with multiple strategies
-function handlePageUnload() {
-    const token = sessionStorage.getItem('token');
-    const userData = sessionStorage.getItem('userData');
-
-    if (token && userData) {
-        try {
-            const user = JSON.parse(userData);
-
-            // Set logout intent as backup
-            setLogoutIntent();
-
-            // Strategy 1: Use sendBeacon if available
-            if (navigator.sendBeacon) {
-                const blob = new Blob([JSON.stringify({})], {type: 'application/json'});
-                navigator.sendBeacon('http://localhost:8080/api/v1/auth/logout', blob);
-                console.log('Logout sent via sendBeacon');
-            } else {
-                // Strategy 2: Use synchronous XMLHttpRequest
-                const xhr = new XMLHttpRequest();
-                xhr.open('POST', 'http://localhost:8080/api/v1/auth/logout', false);
-                xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-                xhr.setRequestHeader('Content-Type', 'application/json');
-                xhr.send();
-                console.log('Logout sent via XMLHttpRequest');
-            }
-        } catch (error) {
-            console.log('Error during logout on page unload:', error);
-        }
-    }
-}
+// Page unload handling removed - now handled by logout-manager.js
 
 // Clear session data when loading auth pages
 function clearSessionOnAuthPages() {
@@ -427,8 +303,6 @@ function clearSessionOnAuthPages() {
 
 // Call this function when page loads
 document.addEventListener('DOMContentLoaded', function () {
-    // Check for logout intent first
-    checkLogoutIntent();
     clearSessionOnAuthPages();
     // Chỉ check session nếu KHÔNG phải trang login, register, forgot-password, reset-password, verify-email
     const path = window.location.pathname;
@@ -444,35 +318,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// Handle browser close completely
-function handleBrowserClose() {
-    const token = sessionStorage.getItem('token');
-    const userData = sessionStorage.getItem('userData');
+// Browser close handling removed - now handled by logout-manager.js
 
-    if (token && userData) {
-        try {
-            const user = JSON.parse(userData);
-
-            // Store logout intent for next session
-            localStorage.setItem('logoutIntent', JSON.stringify({
-                token: token,
-                userData: userData,
-                timestamp: Date.now(),
-                browserClosed: true
-            }));
-
-            // Try to send logout request
-            if (navigator.sendBeacon) {
-                const blob = new Blob([JSON.stringify({})], {type: 'application/json'});
-                navigator.sendBeacon('http://localhost:8080/api/v1/auth/logout', blob);
-            }
-        } catch (error) {
-            console.log('Error during browser close:', error);
-        }
-    }
-}
-
-// Add event listeners for browser/tab close
-window.addEventListener('beforeunload', handlePageUnload);
-window.addEventListener('unload', handleBrowserClose);
-document.addEventListener('visibilitychange', handleVisibilityChange); 
+// Event listeners removed - now handled by logout-manager.js 

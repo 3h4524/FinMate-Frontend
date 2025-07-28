@@ -143,23 +143,29 @@ const apiService = {
     },
 
     async logout() {
-        try {
-            const token = getValidToken();
-            if (token) {
-                await fetch(`${API_BASE_URL}/auth/logout`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+        // Use centralized logout manager
+        if (window.logoutManager) {
+            window.logoutManager.handleLogout();
+        } else {
+            // Fallback
+            try {
+                const token = getValidToken();
+                if (token) {
+                    await fetch(`${API_BASE_URL}/auth/logout`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                sessionStorage.removeItem('token');
+                sessionStorage.removeItem('userData');
+                window.location.href = '/';
             }
-        } catch (error) {
-            console.error('Logout error:', error);
-        } finally {
-            sessionStorage.removeItem('token');
-            sessionStorage.removeItem('userData');
-            window.location.href = '/';
         }
     },
 

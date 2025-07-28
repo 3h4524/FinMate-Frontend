@@ -906,8 +906,8 @@ const initEventListeners = () => {
 
     // Logout
     if (DOM.logoutBtn) {
-        DOM.logoutBtn.addEventListener('click', async () => {
-            await handleLogout();
+        DOM.logoutBtn.addEventListener('click', () => {
+            handleLogout();
         });
     }
 };

@@ -96,7 +96,13 @@ const apiRequest = async (url, options = {}) => {
 
 // Add redirectToLogin function
 const redirectToLogin = () => {
-    sessionStorage.clear();
-    clearCache(); // Xóa cache khi đăng xuất
-    window.location.href = '/';
+    // Use centralized logout manager if available
+    if (window.logoutManager) {
+        window.logoutManager.handleLogout();
+    } else {
+        // Fallback
+        sessionStorage.clear();
+        clearCache(); // Xóa cache khi đăng xuất
+        window.location.href = '/';
+    }
 };
