@@ -13,11 +13,11 @@ if (typeof apiRequest === 'undefined') {
             const defaultOptions = {
                 headers: {
                     'Content-Type': 'application/json',
-                    ...(token && { 'Authorization': `Bearer ${token}` })
+                    ...(token && {'Authorization': `Bearer ${token}`})
                 }
             };
 
-            const response = await fetch(url, { ...defaultOptions, ...options });
+            const response = await fetch(url, {...defaultOptions, ...options});
             return response;
         } catch (error) {
             console.error('API request failed:', error);
@@ -30,10 +30,10 @@ if (typeof getCurrentUser === 'undefined') {
     window.getCurrentUser = () => {
         try {
             const user = sessionStorage.getItem('currentUser');
-            return user ? JSON.parse(user) : { userId: 1 }; // fallback user
+            return user ? JSON.parse(user) : {userId: 1}; // fallback user
         } catch (error) {
             console.error('Error getting current user:', error);
-            return { userId: 1 };
+            return {userId: 1};
         }
     };
 }
@@ -104,24 +104,24 @@ const DOM = {
 };
 
 const iconOptions = [
-    { src: '/assets/images/bank-coin.svg', name: 'Bank Coin' },
-    { src: '/assets/images/bank-fee.svg', name: 'Bank Fee' },
-    { src: '/assets/images/car.svg', name: 'Car' },
-    { src: '/assets/images/card.svg', name: 'Card' },
-    { src: '/assets/images/coffee.svg', name: 'Coffee' },
-    { src: '/assets/images/cost.svg', name: 'Cost' },
-    { src: '/assets/images/electric-bill.svg', name: 'Electric Bill' },
-    { src: '/assets/images/entertainment.svg', name: 'Entertainment' },
-    { src: '/assets/images/financial-management.svg', name: 'Financial' },
-    { src: '/assets/images/food.svg', name: 'Food' },
-    { src: '/assets/images/game.svg', name: 'Game' },
-    { src: '/assets/images/relax.svg', name: 'Relax' },
-    { src: '/assets/images/shopping.svg', name: 'Shopping' },
-    { src: '/assets/images/television.svg', name: 'TV' },
-    { src: '/assets/images/travel.svg', name: 'Travel' },
-    { src: '/assets/images/water-fee.svg', name: 'Water Bill' },
-    { src: '/assets/images/world.svg', name: 'World' },
-    { src: '/assets/images/more.svg', name: 'More' },
+    {src: '/assets/images/bank-coin.svg', name: 'Bank Coin'},
+    {src: '/assets/images/bank-fee.svg', name: 'Bank Fee'},
+    {src: '/assets/images/car.svg', name: 'Car'},
+    {src: '/assets/images/card.svg', name: 'Card'},
+    {src: '/assets/images/coffee.svg', name: 'Coffee'},
+    {src: '/assets/images/cost.svg', name: 'Cost'},
+    {src: '/assets/images/electric-bill.svg', name: 'Electric Bill'},
+    {src: '/assets/images/entertainment.svg', name: 'Entertainment'},
+    {src: '/assets/images/financial-management.svg', name: 'Financial'},
+    {src: '/assets/images/food.svg', name: 'Food'},
+    {src: '/assets/images/game.svg', name: 'Game'},
+    {src: '/assets/images/relax.svg', name: 'Relax'},
+    {src: '/assets/images/shopping.svg', name: 'Shopping'},
+    {src: '/assets/images/television.svg', name: 'TV'},
+    {src: '/assets/images/travel.svg', name: 'Travel'},
+    {src: '/assets/images/water-fee.svg', name: 'Water Bill'},
+    {src: '/assets/images/world.svg', name: 'World'},
+    {src: '/assets/images/more.svg', name: 'More'},
 ];
 
 const iconMapping = iconOptions.reduce((map, icon) => {
@@ -170,7 +170,7 @@ const formatLabel = (iconName, categoryName) => {
 };
 
 const formatAmount = (amount) =>
-    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(amount);
 
 const formatDate = (dateString) => new Date(dateString).toLocaleDateString('vi-VN');
 
@@ -193,7 +193,7 @@ const hideLoading = () => {
 const showModal = (modal) => modal.classList.remove('hidden');
 const hideModal = (modal) => modal.classList.add('hidden');
 const resetForm = (form, options = {}) => {
-    const { resetChoices = true, defaultValues = {}, callback } = options;
+    const {resetChoices = true, defaultValues = {}, callback} = options;
     form.reset();
     Object.entries(defaultValues).forEach(([id, value]) => {
         const element = form.querySelector(`#${id}`);
@@ -223,17 +223,17 @@ const validateTransactionForm = () => {
     document.querySelectorAll('.error-message').forEach((span) => (span.textContent = ''));
 
     if (!fields.amount.value || isNaN(parseFloat(fields.amount.value)) || parseFloat(fields.amount.value) <= 0) {
-        document.getElementById('amountError').textContent = 'Số tiền phải là số và lớn hơn 0';
+        document.getElementById('amountError').textContent = 'Amount must be positive';
         isValid = false;
     }
 
     if (!state.editingTransactionId && !fields.transactionDate.value) {
-        document.getElementById('transactionDateError').textContent = 'Vui lòng chọn ngày giao dịch';
+        document.getElementById('transactionDateError').textContent = 'Please choose transaction date';
         isValid = false;
     }
 
     if (!fields.categorySelect.value) {
-        document.getElementById('categoryEditError').textContent = 'Vui lòng chọn danh mục';
+        document.getElementById('categoryEditError').textContent = 'Please choose category';
         isValid = false;
     }
 
@@ -246,11 +246,11 @@ const validateWalletForm = () => {
         isNaN(parseFloat(DOM.newBalanceInput.value)) ||
         parseFloat(DOM.newBalanceInput.value) < 0
     ) {
-        document.getElementById('newBalanceError').textContent = 'Số dư phải là số và không âm';
+        document.getElementById('newBalanceError').textContent = 'Balance must be positive';
         return false;
     }
     if (!DOM.currencySelect.value) {
-        showError('Vui lòng chọn loại tiền tệ');
+        showError('Please choose currency');
         return false;
     }
     return true;
@@ -263,15 +263,11 @@ const validateCategoryForm = () => {
         categoryIcon: document.getElementById('categoryIcon'),
     };
     if (!fields.categoryName.value.trim()) {
-        showError('Tên danh mục không được để trống');
+        showError('Category is required');
         return false;
     }
     if (!fields.categoryType.value) {
-        showError('Vui lòng chọn loại danh mục');
-        return false;
-    }
-    if (!fields.categoryIcon.value) {
-        showError('Vui lòng chọn biểu tượng');
+        showError('Please choose categoryType');
         return false;
     }
     return true;
@@ -325,17 +321,17 @@ const updateWalletBalance = async (newBalance, currency) => {
             DOM.balanceCurrency.textContent = data.result.currency;
             DOM.currentBalanceDisplay.textContent =
                 formatAmount(data.result.balance) + ' ' + data.result.currency;
-            showSuccess('Cập nhật số dư ví thành công!');
+            showSuccess('Adjusted balance successfully.');
             if (state.currentTab === 'transactions') {
                 loadTransactions();
             }
             return true;
         } else {
-            throw new Error(data.message || 'Không thể cập nhật số dư ví');
+            throw new Error(data.message || 'Can not update wallet');
         }
     } catch (error) {
         console.error('Error updating wallet:', error);
-        showError(error.message || 'Lỗi khi cập nhật wallet');
+        showError(error.message || 'An error occurred while updating wallet.');
         return false;
     }
 };
@@ -361,15 +357,13 @@ const loadTransactions = async (searchParams = {}) => {
             await loadWalletBalance();
             await updateStats();
         } else {
-            showError(`Lỗi: ${data.message || 'Không thể tải giao dịch'}`);
-            DOM.transactionTableBody.innerHTML =
-                '<tr><td colspan="5" class="text-center py-12 text-gray-500">Không có giao dịch nào</td></tr>';
+            throw new Error(data.message);
         }
     } catch (error) {
         console.error('Error loading transactions:', error);
-        showError('Lỗi khi tải danh sách giao dịch');
+        showError(error.message);
         DOM.transactionTableBody.innerHTML =
-            '<tr><td colspan="5" class="text-center py-12 text-gray-500">Không có giao dịch nào</td></tr>';
+            '<tr><td colspan="5" class="text-center py-12 text-gray-500">No transaction found</td></tr>';
     } finally {
         hideLoading();
     }
@@ -399,17 +393,16 @@ const createTransaction = async (formData) => {
         if (!response) return;
         const data = await response.json();
         if (data.code === 1000) {
-            showSuccess('Tạo giao dịch thành công!');
+            showSuccess('Create transaction successfully.!');
             hideModal(DOM.transactionModal);
             resetForm(DOM.transactionForm);
 
             loadTransactions();
         } else {
-            showError(`Lỗi: ${data.message || 'Không thể tạo giao dịch'}`);
+            throw new Error(data.message);
         }
     } catch (error) {
-        console.error('Error creating transaction:', error);
-        showError('Lỗi khi tạo giao dịch');
+        showError(error.message);
     }
 };
 
@@ -418,13 +411,13 @@ const updateTransaction = async (transactionId, formData) => {
     try {
         const url = `${API_BASE_URL}/${transactionId}?userId=${user.userId}`;
         const body =
-        {
-            categoryId: formData.categoryId || null,
-            userCategoryId: formData.userCategoryId || null,
-            amount: parseFloat(formData.amount),
-            note: formData.note || null,
-            transactionDate: formData.transactionDate,
-        };
+            {
+                categoryId: formData.categoryId || null,
+                userCategoryId: formData.userCategoryId || null,
+                amount: parseFloat(formData.amount),
+                note: formData.note || null,
+                transactionDate: formData.transactionDate,
+            };
         const response = await apiRequest(url, {
             method: 'PUT',
             body: JSON.stringify(body),
@@ -432,22 +425,21 @@ const updateTransaction = async (transactionId, formData) => {
         if (!response) return;
         const data = await response.json();
         if (data.code === 1000) {
-            showSuccess('Cập nhật giao dịch thành công!');
+            showSuccess('Update transaction successfully.!');
             hideModal(DOM.transactionModal);
             resetForm(DOM.transactionForm);
             loadTransactions();
             await loadWalletBalance();
         } else {
-            throw new Error(data.message || 'Không thể cập nhật giao dịch');
+            throw new Error(data.message);
         }
     } catch (error) {
-        console.error('Error updating transaction:', error);
-        showError(error.message || 'Lỗi khi cập nhật giao dịch');
+        showError(error.message);
     }
 };
 
 const deleteTransaction = async (transactionId) => {
-    if (!confirm('Bạn có chắc chắn muốn xóa giao dịch này?')) return;
+    if (!confirm('Are you sure to delete this transaction?')) return;
     const user = getCurrentUser();
     try {
         const url = `${API_BASE_URL}/${transactionId}?userId=${user.userId}`;
@@ -456,18 +448,18 @@ const deleteTransaction = async (transactionId) => {
         });
         if (!response) return;
         if (response.ok) {
-            showSuccess('Xóa giao dịch thành công!');
+            showSuccess('Deletion transaction successfully.!');
 
             loadTransactions();
 
             await loadWalletBalance();
         } else {
             const data = await response.json();
-            showError(`Lỗi: ${data.message || 'Không thể xóa giao dịch'}`);
+            showError(`Error: ${data.message || 'Can not delete transaction.!'}`);
         }
     } catch (error) {
         console.error('Error deleting transaction:', error);
-        showError('Lỗi khi xóa giao dịch');
+        showError('Can not delete transaction.!');
     }
 };
 
@@ -502,15 +494,12 @@ const searchTransactions = async () => {
             resetForm(DOM.searchForm);
             await loadWalletBalance();
         } else {
-            showError(`Lỗi: ${data.message || 'Không thể tìm kiếm giao dịch'}`);
-            DOM.transactionTableBody.innerHTML =
-                '<tr><td colspan="5" class="text-center py-12 text-gray-500">Không có giao dịch nào</td></tr>';
+            throw new Error(data.message);
         }
     } catch (error) {
-        console.error('Error searching transactions:', error);
-        showError('Lỗi khi tìm kiếm giao dịch');
+        showError(error.message);
         DOM.transactionTableBody.innerHTML =
-            '<tr><td colspan="5" class="text-center py-12 text-gray-500">Không có giao dịch nào</td></tr>';
+            '<tr><td colspan="5" class="text-center py-12 text-gray-500">No transaction found</td></tr>';
     } finally {
         hideLoading();
     }
@@ -520,7 +509,7 @@ const searchTransactions = async () => {
 const renderTransactions = (transactions) => {
     DOM.transactionTableBody.innerHTML = '';
     if (transactions.length === 0) {
-        DOM.transactionTableBody.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-gray-500">Không có giao dịch nào</td></tr>';
+        DOM.transactionTableBody.innerHTML = '<tr><td colspan="5" class="text-center py-12 text-gray-500">No transaction found</td></tr>';
         return;
     }
     transactions.forEach((transaction) => {
@@ -589,23 +578,23 @@ const loadCategories = async () => {
 
 const updateCategorySelects = () => {
     const allChoices = [
-        { label: 'Danh mục - Thu nhập', id: 'income', disabled: true },
+        {label: '<strong>Categories - Income<strong/>', id: 'income', disabled: true},
         ...[...state.categories.system, ...state.categories.user]
             .filter((cat) => cat.type === 'INCOME')
             .map((cat) => ({
                 value: cat.isSystem ? `system-${cat.categoryId}` : `user-${cat.categoryId}`,
                 label: formatLabel(cat.icon, cat.categoryName),
-                customProperties: { type: 'income' },
+                customProperties: {type: 'income'},
             })),
-        { label: 'Danh mục - Chi tiêu', id: 'expense', disabled: true },
+        {label: '<strong>Categories - Expense<strong/>', id: 'expense', disabled: true},
         ...[...state.categories.system, ...state.categories.user]
             .filter((cat) => cat.type === 'EXPENSE')
             .map((cat) => ({
                 value: cat.isSystem ? `system-${cat.categoryId}` : `user-${cat.categoryId}`,
                 label: formatLabel(cat.icon, cat.categoryName),
-                customProperties: { type: 'expense' },
+                customProperties: {type: 'expense'},
             })),
-        { value: 'create-new', label: '➕ Tạo danh mục mới' },
+        {value: 'create-new', label: '➕ Create new category'},
     ];
     document.querySelectorAll('.categorySelect').forEach((select) => {
         const selectKey = select.id || select.name || Math.random().toString();
@@ -626,7 +615,8 @@ const updateCategorySelects = () => {
             }
         });
     });
-}; const debounce = (func, wait) => {
+};
+const debounce = (func, wait) => {
     let timeout;
     return (...args) => {
         clearTimeout(timeout);
@@ -688,7 +678,6 @@ const closeCreateCategoryModal = () => {
 };
 
 
-
 const createUserCategory = async (formData) => {
     const user = getCurrentUser();
     try {
@@ -705,7 +694,7 @@ const createUserCategory = async (formData) => {
         if (!response) return;
         const data = await response.json();
         if (data.code === 1000) {
-            showSuccess('Tạo danh mục thành công!');
+            showSuccess('Create category successfully.!');
             state.categories = null;
             closeCreateCategoryModal();
             await debouncedLoadCategories();
@@ -721,11 +710,16 @@ const createUserCategory = async (formData) => {
                 state.lastCategorySelectId = null;
             }
         } else {
-            showError(`Lỗi: ${data.message || 'Không thể tạo danh mục'}`);
+            throw new Error(data.message);
         }
     } catch (error) {
-        console.error('Error creating category:', error);
-        showError('Lỗi khi tạo danh mục');
+        if (error.message === 'The number of custom categories has been exceeded') {
+            PremiumModal.show(error.message);
+        } else {
+            console.error('Error creating category:', error);
+            showError(error.message);
+        }
+
     }
 };
 
@@ -747,7 +741,7 @@ const openTransactionModal = async (transaction = null) => {
     const transactionDateField = document.getElementById('transactionDate');
     const recurringPatternDiv = DOM.transactionForm.querySelector('.recurring-fields');
 
-    resetForm(DOM.transactionForm, { resetChoices: true });
+    resetForm(DOM.transactionForm, {resetChoices: true});
 
     if (transaction) {
         const [type, id] = transaction.categoryId
@@ -966,16 +960,16 @@ const fetchStats = async () => {
     try {
         const user = getCurrentUser();
         const response = await apiRequest(`http://localhost:8080/api/transactions/stats?userId=${user.userId}`);
-        if (!response) return { totalIncome: 0, totalSpending: 0, incomeExpenseRatio: 0 };
+        if (!response) return {totalIncome: 0, totalSpending: 0, incomeExpenseRatio: 0};
         const data = await response.json();
         const result = data.result || {};
         const totalIncome = result.totalIncome || 0;
         const totalSpending = result.totalExpense || 0;
         const incomeExpenseRatio = totalIncome > 0 ? (totalIncome / totalSpending) * 100 : totalSpending > 0 ? Infinity : 0;
-        return { totalIncome, totalSpending, incomeExpenseRatio };
+        return {totalIncome, totalSpending, incomeExpenseRatio};
     } catch (error) {
         console.error('Error fetching stats:', error);
-        return { totalIncome: 0, totalSpending: 0, incomeExpenseRatio: 0 };
+        return {totalIncome: 0, totalSpending: 0, incomeExpenseRatio: 0};
     }
 };
 
