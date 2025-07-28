@@ -2,6 +2,8 @@ const API_BASE_URL = 'http://localhost:8080/api/transactions';
 const RECURRING_API_BASE_URL = 'http://localhost:8080/api/recurringTransactions';
 
 const token = sessionStorage.getItem('authToken');
+let currentPage = 0;
+let totalPages = 0;
 
 // Fallback functions if helper files are not loaded
 if (typeof apiRequest === 'undefined') {
@@ -11,11 +13,11 @@ if (typeof apiRequest === 'undefined') {
             const defaultOptions = {
                 headers: {
                     'Content-Type': 'application/json',
-                    ...(token && {'Authorization': `Bearer ${token}`})
+                    ...(token && { 'Authorization': `Bearer ${token}` })
                 }
             };
 
-            const response = await fetch(url, {...defaultOptions, ...options});
+            const response = await fetch(url, { ...defaultOptions, ...options });
             return response;
         } catch (error) {
             console.error('API request failed:', error);
@@ -28,10 +30,10 @@ if (typeof getCurrentUser === 'undefined') {
     window.getCurrentUser = () => {
         try {
             const user = sessionStorage.getItem('currentUser');
-            return user ? JSON.parse(user) : {userId: 1}; // fallback user
+            return user ? JSON.parse(user) : { userId: 1 }; // fallback user
         } catch (error) {
             console.error('Error getting current user:', error);
-            return {userId: 1};
+            return { userId: 1 };
         }
     };
 }
@@ -52,8 +54,6 @@ const state = {
     choicesInstances: new Map(),
     currentWallet: null,
     editingTransactionId: null,
-    currentPage: 0,
-    totalPages: 0,
     categories: null,
     lastCategorySelectId: null,
     currentTransaction: null,
@@ -96,32 +96,32 @@ const DOM = {
     transactionTableBody: document.getElementById('transactionTableBody'),
     paginationDiv: document.getElementById('paginationDiv'),
     pageNumbers: document.getElementById('pageNumbers'),
-    prevBtn: document.getElementById('prevBtn'),
-    nextBtn: document.getElementById('nextBtn'),
+    firstBtn: document.getElementById('firstBtn'),
+    lastBtn: document.getElementById('lastBtn'),
     recurringBtn: document.getElementById('recurringBtn'),
     transactionsContent: document.getElementById('transactions-content'),
     logoutBtn: document.getElementById('logoutBtn'),
 };
 
 const iconOptions = [
-    {src: ' /assets/images/bank-coin.svg', name: 'Bank Coin'},
-    {src: ' /assets/images/bank-fee.svg', name: 'Bank Fee'},
-    {src: ' /assets/images/car.svg', name: 'Car'},
-    {src: ' /assets/images/card.svg', name: 'Card'},
-    {src: ' /assets/images/coffee.svg', name: 'Coffee'},
-    {src: ' /assets/images/cost.svg', name: 'Cost'},
-    {src: ' /assets/images/electric-bill.svg', name: 'Electric Bill'},
-    {src: ' /assets/images/entertainment.svg', name: 'Entertainment'},
-    {src: ' /assets/images/financial-management.svg', name: 'Financial'},
-    {src: ' /assets/images/food.svg', name: 'Food'},
-    {src: ' /assets/images/game.svg', name: 'Game'},
-    {src: ' /assets/images/relax.svg', name: 'Relax'},
-    {src: ' /assets/images/shopping.svg', name: 'Shopping'},
-    {src: ' /assets/images/television.svg', name: 'TV'},
-    {src: ' /assets/images/travel.svg', name: 'Travel'},
-    {src: ' /assets/images/water-fee.svg', name: 'Water Bill'},
-    {src: ' /assets/images/world.svg', name: 'World'},
-    {src: ' /assets/images/more.svg', name: 'More'},
+    { src: '/assets/images/bank-coin.svg', name: 'Bank Coin' },
+    { src: '/assets/images/bank-fee.svg', name: 'Bank Fee' },
+    { src: '/assets/images/car.svg', name: 'Car' },
+    { src: '/assets/images/card.svg', name: 'Card' },
+    { src: '/assets/images/coffee.svg', name: 'Coffee' },
+    { src: '/assets/images/cost.svg', name: 'Cost' },
+    { src: '/assets/images/electric-bill.svg', name: 'Electric Bill' },
+    { src: '/assets/images/entertainment.svg', name: 'Entertainment' },
+    { src: '/assets/images/financial-management.svg', name: 'Financial' },
+    { src: '/assets/images/food.svg', name: 'Food' },
+    { src: '/assets/images/game.svg', name: 'Game' },
+    { src: '/assets/images/relax.svg', name: 'Relax' },
+    { src: '/assets/images/shopping.svg', name: 'Shopping' },
+    { src: '/assets/images/television.svg', name: 'TV' },
+    { src: '/assets/images/travel.svg', name: 'Travel' },
+    { src: '/assets/images/water-fee.svg', name: 'Water Bill' },
+    { src: '/assets/images/world.svg', name: 'World' },
+    { src: '/assets/images/more.svg', name: 'More' },
 ];
 
 const iconMapping = iconOptions.reduce((map, icon) => {
@@ -142,7 +142,6 @@ const createIconGrid = () => {
         iconButton.title = icon.name;
         iconButton.innerHTML = `
             <img src="${icon.src}" alt="${icon.name}" class="w-6 h-6 mb-1">
-            <span class="text-xs text-gray-500">${icon.name}</span>
         `;
         iconButton.addEventListener('click', () => {
             document.querySelectorAll('.icon-option').forEach((btn) => btn.classList.remove('border-purple-500', 'bg-purple-100'));
@@ -171,7 +170,7 @@ const formatLabel = (iconName, categoryName) => {
 };
 
 const formatAmount = (amount) =>
-    new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(amount);
+    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 
 const formatDate = (dateString) => new Date(dateString).toLocaleDateString('vi-VN');
 
@@ -194,7 +193,7 @@ const hideLoading = () => {
 const showModal = (modal) => modal.classList.remove('hidden');
 const hideModal = (modal) => modal.classList.add('hidden');
 const resetForm = (form, options = {}) => {
-    const {resetChoices = true, defaultValues = {}, callback} = options;
+    const { resetChoices = true, defaultValues = {}, callback } = options;
     form.reset();
     Object.entries(defaultValues).forEach(([id, value]) => {
         const element = form.querySelector(`#${id}`);
@@ -217,7 +216,6 @@ const validateTransactionForm = () => {
         amount: document.getElementById('amount'),
         transactionDate: document.getElementById('transactionDate'),
         categorySelect: document.getElementById('category-edit'),
-        recurringPattern: document.getElementById('recurringPattern'),
         startDate: document.getElementById('startDate'),
         endDate: document.getElementById('endDate'),
     };
@@ -229,7 +227,7 @@ const validateTransactionForm = () => {
         isValid = false;
     }
 
-    if (!state.editingTransactionId && !fields.recurringPattern.value && !fields.transactionDate.value) {
+    if (!state.editingTransactionId && !fields.transactionDate.value) {
         document.getElementById('transactionDateError').textContent = 'Vui lòng chọn ngày giao dịch';
         isValid = false;
     }
@@ -237,25 +235,6 @@ const validateTransactionForm = () => {
     if (!fields.categorySelect.value) {
         document.getElementById('categoryEditError').textContent = 'Vui lòng chọn danh mục';
         isValid = false;
-    }
-
-    if (!state.editingTransactionId && fields.recurringPattern.value) {
-        const today = new Date().toISOString().split('T')[0];
-        if (!fields.startDate.value) {
-            document.getElementById('startDateError').textContent = 'Vui lòng chọn ngày bắt đầu';
-            isValid = false;
-        } else if (fields.startDate.value < today) {
-            document.getElementById('startDateError').textContent = 'Ngày bắt đầu phải từ hôm nay trở đi';
-            isValid = false;
-        }
-        if (!fields.endDate.value) {
-            document.getElementById('endDateError').textContent = 'Vui lòng chọn ngày kết thúc';
-            isValid = false;
-        }
-        if (fields.endDate.value && fields.startDate.value && new Date(fields.endDate.value) < new Date(fields.startDate.value)) {
-            document.getElementById('endDateError').textContent = 'Ngày kết thúc phải sau ngày bắt đầu';
-            isValid = false;
-        }
     }
 
     return isValid;
@@ -367,7 +346,7 @@ const loadTransactions = async (searchParams = {}) => {
     try {
         const params = new URLSearchParams({
             userId: user.userId,
-            page: state.currentPage,
+            page: currentPage,
             size: 10,
             sortBy: 'transactionDate',
             sortDirection: 'DESC',
@@ -378,7 +357,7 @@ const loadTransactions = async (searchParams = {}) => {
         const data = await response.json();
         if (data.code === 1000) {
             renderTransactions(data.result.content || []);
-            renderPagination(data.result.totalPages || 0, 'transactions');
+            renderPagination(data.result.totalPages || 0);
             await loadWalletBalance();
             await updateStats();
         } else {
@@ -400,32 +379,19 @@ const loadTransactions = async (searchParams = {}) => {
 const createTransaction = async (formData) => {
     const user = getCurrentUser();
     try {
-        let url = formData.recurringPattern ? RECURRING_API_BASE_URL : API_BASE_URL;
+        let url = API_BASE_URL;
         let body;
-        if (formData.recurringPattern) {
-            body = {
-                userId: user.userId,
-                categoryId: formData.categoryId || null,
-                userCategoryId: formData.userCategoryId || null,
-                amount: parseFloat(formData.amount),
-                note: formData.note || null,
-                frequency: formData.recurringPattern,
-                startDate: formData.startDate,
-                endDate: formData.endDate,
-                isActive: true,
-            };
-        } else {
-            body = {
-                userId: user.userId,
-                categoryId: formData.categoryId || null,
-                userCategoryId: formData.userCategoryId || null,
-                amount: parseFloat(formData.amount),
-                note: formData.note || null,
-                transactionDate: formData.transactionDate,
-                paymentMethod: formData.paymentMethod || null,
-                location: formData.location || null,
-            };
-        }
+
+        body = {
+            userId: user.userId,
+            categoryId: formData.categoryId || null,
+            userCategoryId: formData.userCategoryId || null,
+            amount: parseFloat(formData.amount),
+            note: formData.note || null,
+            transactionDate: formData.transactionDate,
+            paymentMethod: formData.paymentMethod || null,
+        };
+
         const response = await apiRequest(url, {
             method: 'POST',
             body: JSON.stringify(body),
@@ -433,7 +399,7 @@ const createTransaction = async (formData) => {
         if (!response) return;
         const data = await response.json();
         if (data.code === 1000) {
-            showSuccess(formData.recurringPattern ? 'Tạo giao dịch định kỳ thành công!' : 'Tạo giao dịch thành công!');
+            showSuccess('Tạo giao dịch thành công!');
             hideModal(DOM.transactionModal);
             resetForm(DOM.transactionForm);
 
@@ -452,15 +418,13 @@ const updateTransaction = async (transactionId, formData) => {
     try {
         const url = `${API_BASE_URL}/${transactionId}?userId=${user.userId}`;
         const body =
-            {
-                categoryId: formData.categoryId || null,
-                userCategoryId: formData.userCategoryId || null,
-                amount: parseFloat(formData.amount),
-                note: formData.note || null,
-                transactionDate: formData.transactionDate,
-                paymentMethod: formData.paymentMethod || null,
-                location: formData.location || null,
-            };
+        {
+            categoryId: formData.categoryId || null,
+            userCategoryId: formData.userCategoryId || null,
+            amount: parseFloat(formData.amount),
+            note: formData.note || null,
+            transactionDate: formData.transactionDate,
+        };
         const response = await apiRequest(url, {
             method: 'PUT',
             body: JSON.stringify(body),
@@ -513,21 +477,8 @@ const searchTransactions = async () => {
     const searchParams = {
         categoryId: type === 'system' ? id : null,
         userCategoryId: type === 'user' ? id : null,
-        minAmount: document.getElementById('minAmount').value
-            ? parseFloat(document.getElementById('minAmount').value)
-            : null,
-        maxAmount: document.getElementById('maxAmount').value
-            ? parseFloat(document.getElementById('maxAmount').value)
-            : null,
         startDate: document.getElementById('searchStartDate').value || null,
         endDate: document.getElementById('searchEndDate').value || null,
-        paymentMethod: document.getElementById('paymentMethodSearch').value || null,
-        location: document.getElementById('locationSearch').value || null,
-        note: document.getElementById('noteSearch').value || null,
-        isRecurring:
-            document.getElementById('isRecurringSearch').value === ''
-                ? null
-                : document.getElementById('isRecurringSearch').value === 'true',
     };
     showLoading();
     try {
@@ -536,7 +487,7 @@ const searchTransactions = async () => {
             body: JSON.stringify({
                 userId: user.userId,
                 ...searchParams,
-                page: state.currentPage,
+                page: currentPage,
                 size: 10,
                 sortBy: 'transactionDate',
                 sortDirection: 'DESC',
@@ -546,7 +497,7 @@ const searchTransactions = async () => {
         const data = await response.json();
         if (data.code === 1000) {
             renderTransactions(data.result.content || []);
-            renderPagination(data.result.totalPages || 0, 'transactions');
+            renderPagination(data.result.totalPages || 0);
             hideModal(DOM.searchModal);
             resetForm(DOM.searchForm);
             await loadWalletBalance();
@@ -565,57 +516,6 @@ const searchTransactions = async () => {
     }
 };
 
-const searchRecurringTransactions = async () => {
-    const user = getCurrentUser();
-    const [type, id] = document.getElementById('category-search').value.split('-');
-    const searchParams = {
-        categoryId: type === 'system' ? id : null,
-        userCategoryId: type === 'user' ? id : null,
-        minAmount: document.getElementById('minAmount').value
-            ? parseFloat(document.getElementById('minAmount').value)
-            : null,
-        maxAmount: document.getElementById('maxAmount').value
-            ? parseFloat(document.getElementById('maxAmount').value)
-            : null,
-        startDate: document.getElementById('searchStartDate').value || null,
-        endDate: document.getElementById('searchEndDate').value || null,
-        note: document.getElementById('noteSearch').value || null,
-    };
-    showLoading();
-    try {
-        const response = await apiRequest(`${RECURRING_API_BASE_URL}/search`, {
-            method: 'POST',
-            body: JSON.stringify({
-                userId: user.userId,
-                ...searchParams,
-                page: state.currentPage,
-                size: 10,
-                sortBy: 'startDate',
-                sortDirection: 'DESC',
-            }),
-        });
-        if (!response) return;
-        const data = await response.json();
-        if (data.code === 1000) {
-            renderRecurringTransactions(data.result.content || []);
-            renderPagination(data.result.totalPages || 0, 'recurring');
-            hideModal(DOM.searchModal);
-            resetForm(DOM.searchForm);
-            await loadWalletBalance();
-        } else {
-            showError(`Lỗi: ${data.message || 'Không thể tìm kiếm giao dịch định kỳ'}`);
-            DOM.recurringTableBody.innerHTML =
-                '<tr><td colspan="6" class="text-center py-12 text-gray-500">Không có giao dịch định kỳ nào</td></tr>';
-        }
-    } catch (error) {
-        console.error('Error searching recurring transactions:', error);
-        showError('Lỗi khi tìm kiếm giao dịch định kỳ');
-        DOM.recurringTableBody.innerHTML =
-            '<tr><td colspan="6" class="text-center py-12 text-gray-500">Không có giao dịch định kỳ nào</td></tr>';
-    } finally {
-        hideLoading();
-    }
-};
 
 const renderTransactions = (transactions) => {
     DOM.transactionTableBody.innerHTML = '';
@@ -658,83 +558,6 @@ const renderTransactions = (transactions) => {
     });
 };
 
-const renderRecurringTransactions = (transactions) => {
-    DOM.recurringTableBody.innerHTML = '';
-    if (transactions.length === 0) {
-        DOM.recurringTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-12 text-gray-500">Không có giao dịch định kỳ nào</td></tr>';
-        return;
-    }
-    transactions.forEach((transaction) => {
-        if (!transaction.id) {
-            console.error('Missing id for recurring transaction:', transaction);
-            return;
-        }
-        const transactionType = transaction.categoryId ? transaction.type || 'EXPENSE' : transaction.type || 'EXPENSE';
-        const categoryIcon = transaction.categoryId;
-        const categoryName = transaction.categoryName || transaction.userCategoryName;
-        const iconHtml = categoryIcon ? getIconSymbol(categoryIcon) : '<i class="fas fa-question"></i>';
-        const amountSign = transactionType === 'INCOME' ? '+' : '-';
-        const amountClass = transactionType === 'INCOME' ? 'text-green-600' : 'text-red-600';
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-green-50 transition';
-        tr.innerHTML = `
-            <td class="px-6 py-4">${formatDate(transaction.startDate)}</td>
-            <td class="px-6 py-4">${formatDate(transaction.endDate)}</td>
-            <td class="px-6 py-4">${iconHtml} ${categoryName}</td>
-            <td class="px-6 py-4 text-left"><span class="${amountClass} font-semibold">${amountSign} ${formatAmount(transaction.amount)}</span></td>
-            <td class="px-6 py-4">${transaction.frequency}</td>
-            <td class="px-6 py-4 text-right">
-                <button class="action-btn text-blue-600 hover:bg-blue-100 p-2 rounded-lg transition" data-id="${transaction.id}" data-type="recurring">
-                    <svg width="16" height="16" stroke="currentColor" fill="none" viewBox="0 0 16 16">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.586 2.586l2.828 2.828m-1.414-2.828a1 1 0 011.414 1.414L4 12H2v2l8.586-8.586z"></path>
-                    </svg>
-                </button>
-                <button class="action-btn text-red-600 hover:bg-red-100 p-2 rounded-lg transition" data-id="${transaction.id}" data-type="delete" data-action-type="recurring">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H3"></path>
-                    </svg>
-                </button>
-            </td>
-        `;
-        DOM.recurringTableBody.appendChild(tr);
-    });
-};
-
-const renderPagination = (total, type) => {
-    state.totalPages = total;
-    const pageNumbers = type === 'transactions' ? DOM.pageNumbers : DOM.recurringPageNumbers;
-    const paginationDiv = type === 'transactions' ? DOM.paginationDiv : DOM.recurringPaginationDiv;
-    const prevBtn = type === 'transactions' ? DOM.prevBtn : DOM.recurringPrevBtn;
-    const nextBtn = type === 'transactions' ? DOM.nextBtn : DOM.recurringNextBtn;
-    pageNumbers.innerHTML = '';
-    if (total <= 1) {
-        hideElement(paginationDiv);
-        return;
-    }
-    showElement(paginationDiv);
-    prevBtn.disabled = state.currentPage === 0;
-    nextBtn.disabled = state.currentPage === state.totalPages - 1;
-    const maxPagesToShow = 5;
-    let startPage = Math.max(0, state.currentPage - 2);
-    let endPage = Math.min(state.totalPages, startPage + maxPagesToShow);
-    if (endPage - startPage < maxPagesToShow) {
-        startPage = Math.max(0, endPage - maxPagesToShow);
-    }
-    for (let i = startPage; i < endPage; i++) {
-        const btn = document.createElement('button');
-        btn.className = `px-4 py-3 rounded-lg font-semibold ${i === state.currentPage ? 'bg-green-600 text-white shadow-md' : 'bg-white border-2 border-gray-200 hover:bg-green-50 hover:border-green-600'}`;
-        btn.textContent = i + 1;
-        btn.addEventListener('click', () => {
-            state.currentPage = i;
-            if (type === 'transactions') {
-                loadTransactions();
-            } else {
-                loadRecurringTransactions();
-            }
-        });
-        pageNumbers.appendChild(btn);
-    }
-};
 
 const loadCategories = async () => {
     if (state.categories) {
@@ -766,23 +589,23 @@ const loadCategories = async () => {
 
 const updateCategorySelects = () => {
     const allChoices = [
-        {label: 'Danh mục - Thu nhập', id: 'income', disabled: true},
+        { label: 'Danh mục - Thu nhập', id: 'income', disabled: true },
         ...[...state.categories.system, ...state.categories.user]
             .filter((cat) => cat.type === 'INCOME')
             .map((cat) => ({
                 value: cat.isSystem ? `system-${cat.categoryId}` : `user-${cat.categoryId}`,
                 label: formatLabel(cat.icon, cat.categoryName),
-                customProperties: {type: 'income'},
+                customProperties: { type: 'income' },
             })),
-        {label: 'Danh mục - Chi tiêu', id: 'expense', disabled: true},
+        { label: 'Danh mục - Chi tiêu', id: 'expense', disabled: true },
         ...[...state.categories.system, ...state.categories.user]
             .filter((cat) => cat.type === 'EXPENSE')
             .map((cat) => ({
                 value: cat.isSystem ? `system-${cat.categoryId}` : `user-${cat.categoryId}`,
                 label: formatLabel(cat.icon, cat.categoryName),
-                customProperties: {type: 'expense'},
+                customProperties: { type: 'expense' },
             })),
-        {value: 'create-new', label: '➕ Tạo danh mục mới'},
+        { value: 'create-new', label: '➕ Tạo danh mục mới' },
     ];
     document.querySelectorAll('.categorySelect').forEach((select) => {
         const selectKey = select.id || select.name || Math.random().toString();
@@ -803,9 +626,7 @@ const updateCategorySelects = () => {
             }
         });
     });
-};
-
-const debounce = (func, wait) => {
+}; const debounce = (func, wait) => {
     let timeout;
     return (...args) => {
         clearTimeout(timeout);
@@ -823,6 +644,36 @@ const openCreateCategoryModal = (triggerSelectId) => {
     showModal(DOM.createCategoryModal);
 };
 
+
+function updateCategoryPreview() {
+    const preview = document.getElementById('categoryPreview');
+    const name = document.getElementById('categoryName').value || 'Category Name';
+    const type = document.getElementById('categoryType').value;
+    const iconName = document.getElementById('categoryIcon').value;
+
+    if (preview) {
+        const iconElementContainer = preview.querySelector('.icon-wrapper');
+        const nameElement = preview.querySelector('.font-semibold');
+        const typeElement = preview.querySelector('.text-sm');
+
+        // Update icon preview
+        if (iconElementContainer && iconName) {
+            iconElementContainer.innerHTML = `
+                <img src="/path/to/icons/${iconName}.svg" alt="${iconName}" class="w-6 h-6 mb-1">
+            `;
+        }
+
+        if (nameElement) {
+            nameElement.textContent = name;
+        }
+
+        if (typeElement) {
+            typeElement.textContent = `Type: ${type ? (type === 'INCOME' ? 'Income' : 'Expense') : 'Not selected'}`;
+        }
+    }
+}
+
+
 const closeCreateCategoryModal = () => {
     hideModal(DOM.createCategoryModal);
     resetForm(DOM.createCategoryForm);
@@ -835,6 +686,8 @@ const closeCreateCategoryModal = () => {
         state.lastCategorySelectId = null;
     }
 };
+
+
 
 const createUserCategory = async (formData) => {
     const user = getCurrentUser();
@@ -878,17 +731,12 @@ const createUserCategory = async (formData) => {
 
 const switchTab = (tab) => {
     state.currentTab = tab;
-    state.currentPage = 0;
+    currentPage = 0;
     if (tab === 'transactions') {
         showElement(DOM.transactionsContent);
         hideElement(DOM.recurringContent);
         document.getElementById('headerTitle').textContent = 'Transaction Management';
         loadTransactions();
-    } else if (tab === 'recurring') {
-        hideElement(DOM.transactionsContent);
-        showElement(DOM.recurringContent);
-        document.getElementById('headerTitle').textContent = 'Recurring Transactions';
-        loadRecurringTransactions();
     }
 };
 
@@ -899,7 +747,7 @@ const openTransactionModal = async (transaction = null) => {
     const transactionDateField = document.getElementById('transactionDate');
     const recurringPatternDiv = DOM.transactionForm.querySelector('.recurring-fields');
 
-    resetForm(DOM.transactionForm, {resetChoices: true});
+    resetForm(DOM.transactionForm, { resetChoices: true });
 
     if (transaction) {
         const [type, id] = transaction.categoryId
@@ -914,22 +762,26 @@ const openTransactionModal = async (transaction = null) => {
             ? transaction.transactionDate.split('T')[0]
             : '';
         document.getElementById('paymentMethod').value = transaction.paymentMethod || '';
-        document.getElementById('location').value = transaction.location || '';
         transactionDateField.disabled = false;
-
-        // Hide recurring pattern when editing
-        hideElement(recurringPatternDiv);
-        document.getElementById('recurringPattern').value = '';
     } else {
         document.getElementById('transactionDate').value = new Date().toISOString().split('T')[0];
-        // Show recurring pattern when creating new
-        showElement(recurringPatternDiv);
         transactionDateField.disabled = false;
     }
 
     showModal(DOM.transactionModal);
     await loadCategories();
 };
+
+const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+if (clearFiltersBtn) {
+    clearFiltersBtn.addEventListener('click', function () {
+        document.getElementById('searchForm').reset();
+        document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+            btn.classList.remove('border-blue-500', 'bg-blue-50', 'text-blue-700');
+            btn.classList.add('border-gray-200');
+        });
+    });
+}
 
 const initEventListeners = () => {
     console.log('Initializing event listeners...');
@@ -978,12 +830,10 @@ const initEventListeners = () => {
             amount: document.getElementById('amount').value,
             transactionDate: document.getElementById('transactionDate').value,
             paymentMethod: document.getElementById('paymentMethod').value,
-            location: document.getElementById('location').value,
             note: document.getElementById('note').value,
-            recurringPattern: document.getElementById('recurringPattern').value,
-            startDate: document.getElementById('startDate').value,
-            endDate: document.getElementById('endDate').value,
         };
+
+        console.debug('Form Data: ', formData);
         if (state.editingTransactionId) {
             await updateTransaction(state.editingTransactionId, formData);
         } else {
@@ -991,17 +841,6 @@ const initEventListeners = () => {
         }
     });
 
-    document.getElementById('recurringPattern').addEventListener('change', (e) => {
-        const recurringDates = DOM.transactionForm.querySelector('.recurring-dates');
-        const transactionDateField = document.getElementById('transactionDate');
-        if (e.target.value) {
-            showElement(recurringDates);
-            transactionDateField.disabled = true;
-        } else {
-            hideElement(recurringDates);
-            transactionDateField.disabled = false;
-        }
-    });
 
     // Search Modal
     if (DOM.searchBtn) {
@@ -1018,8 +857,6 @@ const initEventListeners = () => {
         e.preventDefault();
         if (state.currentTab === 'transactions') {
             await searchTransactions();
-        } else {
-            await searchRecurringTransactions();
         }
     });
 
@@ -1033,7 +870,6 @@ const initEventListeners = () => {
             userCategoryName: document.getElementById('categoryName').value,
             type: document.getElementById('categoryType').value,
             icon: document.getElementById('categoryIcon').value,
-            color: document.getElementById('categoryColor').value,
         };
         await createUserCategory(formData);
     });
@@ -1059,15 +895,16 @@ const initEventListeners = () => {
 
 
     // Pagination
-    DOM.prevBtn.addEventListener('click', () => {
-        if (state.currentPage > 0) {
-            state.currentPage--;
+    DOM.firstBtn.addEventListener('click', () => {
+        if (currentPage > 0) {
+            currentPage = 0;
             loadTransactions();
         }
+
     });
-    DOM.nextBtn.addEventListener('click', () => {
-        if (state.currentPage < state.totalPages - 1) {
-            state.currentPage++;
+    DOM.lastBtn.addEventListener('click', () => {
+        if (currentPage < totalPages - 1) {
+            currentPage = totalPages - 1;
             loadTransactions();
         }
     });
@@ -1129,16 +966,16 @@ const fetchStats = async () => {
     try {
         const user = getCurrentUser();
         const response = await apiRequest(`http://localhost:8080/api/transactions/stats?userId=${user.userId}`);
-        if (!response) return {totalIncome: 0, totalSpending: 0, incomeExpenseRatio: 0};
+        if (!response) return { totalIncome: 0, totalSpending: 0, incomeExpenseRatio: 0 };
         const data = await response.json();
         const result = data.result || {};
         const totalIncome = result.totalIncome || 0;
         const totalSpending = result.totalExpense || 0;
         const incomeExpenseRatio = totalIncome > 0 ? (totalIncome / totalSpending) * 100 : totalSpending > 0 ? Infinity : 0;
-        return {totalIncome, totalSpending, incomeExpenseRatio};
+        return { totalIncome, totalSpending, incomeExpenseRatio };
     } catch (error) {
         console.error('Error fetching stats:', error);
-        return {totalIncome: 0, totalSpending: 0, incomeExpenseRatio: 0};
+        return { totalIncome: 0, totalSpending: 0, incomeExpenseRatio: 0 };
     }
 };
 

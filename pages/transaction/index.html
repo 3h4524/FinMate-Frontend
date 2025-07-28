@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FINEbank.IO - Transaction Management</title>
+    <title>FINMATE - Transaction Management</title>
     <link href="../../assets/css/global-layout.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <script src="../../assets/js/page-loader.js"></script>
     <script src="../../assets/js/header.js"></script>
@@ -21,7 +21,8 @@
     <style>
         /* Layout fixes for header and sidebar integration */
         .main-content {
-            padding-top: 80px; /* Space for fixed header */
+            padding-top: 80px;
+            /* Space for fixed header */
             min-height: 100vh;
             width: 100%;
             max-width: 100%;
@@ -38,6 +39,7 @@
         body.sidebar-collapsed .main-content {
             margin-left: 80px;
         }
+
 
         /* Custom colors for Tailwind v2 compatibility */
         .bg-indigo-500 {
@@ -147,6 +149,41 @@
             -webkit-backdrop-filter: blur(4px);
         }
 
+        /* Pagination button styles - sửa lại phần CSS */
+        .pagination-btn {
+            transition: all 0.3s ease;
+            border: 2px solid #e5e7eb;
+            background: white;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            border-color: #6366f1;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f3f4f6 !important;
+            border-color: #d1d5db !important;
+            color: #9ca3af !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Đảm bảo disabled button không có hover effect */
+        .pagination-btn:disabled:hover {
+            background: #f3f4f6 !important;
+            border-color: #d1d5db !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+
         /* Additional responsive utilities if needed */
         @media (min-width: 1024px) {
             .lg\:ml-64 {
@@ -223,450 +260,679 @@
         .icon-grid::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+
+        /* Enhanced Modal Styles - Responsive and Modern */
+        .modal-backdrop {
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.6);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            animation: slideUp 0.3s ease-out;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Form input enhancements */
+        .form-input {
+            transition: all 0.3s ease;
+            border: 2px solid #e5e7eb;
+            background: #fafafa;
+        }
+
+        .form-input:focus {
+            border-color: #6366f1;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-input:hover {
+            border-color: #d1d5db;
+            background: #ffffff;
+        }
+
+        /* Button enhancements */
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            transition: all 0.3s ease;
+            border: 2px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            border-color: #6366f1;
+            background: #f8fafc;
+            transform: translateY(-1px);
+        }
+
+        /* Icon selection improvements */
+        .icon-option {
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .icon-option:hover {
+            border-color: #6366f1;
+            background: #eef2ff;
+            transform: scale(1.05);
+        }
+
+        .icon-option.selected {
+            border-color: #6366f1;
+            background: #eef2ff;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Mobile responsive improvements */
+        @media (max-width: 640px) {
+            .modal-content {
+                margin: 1rem;
+                max-height: calc(100vh - 2rem);
+                width: calc(100vw - 2rem);
+            }
+
+            .form-grid-mobile {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-mobile-stack {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .btn-mobile-stack button {
+                width: 100%;
+            }
+        }
+
+        /* Enhanced error states */
+        .form-error {
+            color: #ef4444;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            opacity: 0;
+            animation: errorFadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes errorFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-error {
+            border-color: #ef4444 !important;
+            background: #fef2f2 !important;
+        }
+
+        .input-error:focus {
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+        }
+
+        /* Loading states */
+        .btn-loading {
+            position: relative;
+            color: transparent !important;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Enhanced category type badges */
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .category-badge.income {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .category-badge.expense {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Date picker enhancements */
+        input[type="date"] {
+            position: relative;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%236366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>') no-repeat center;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        /* Improved checkbox and radio styles */
+        .form-checkbox,
+        .form-radio {
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid #d1d5db;
+            transition: all 0.2s ease;
+        }
+
+        .form-checkbox:checked,
+        .form-radio:checked {
+            background-color: #6366f1;
+            border-color: #6366f1;
+        }
+
+        /* Responsive table on mobile */
+        @media (max-width: 768px) {
+            .responsive-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
     </style>
 </head>
 
 <body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen overflow-x-hidden">
-<div class="flex min-h-screen w-full">
-    <!-- Sidebar -->
-    <div id="sidebar-container"></div>
+    <div class="flex min-h-screen w-full">
+        <!-- Sidebar -->
+        <div id="sidebar-container"></div>
 
-    <!-- Include Header -->
-    <div id="header-container"></div>
+        <!-- Include Header -->
+        <div id="header-container"></div>
 
-    <!-- Main Content -->
-    <div class="main-content flex-1 ml-0 transition-all duration-300 ease-in-out lg:ml-64 min-h-screen w-full">
-        <div class="p-6 lg:p-8 w-full max-w-none">
+        <!-- Main Content -->
+        <div class="main-content flex-1 ml-0 transition-all duration-300 ease-in-out lg:ml-64 min-h-screen w-full">
+            <div class="p-4 sm:p-6 lg:p-8 w-full max-w-none">
 
-            <!-- Stats Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-6 lg:mb-8">
-                <div class="bg-white rounded-3xl shadow-lg p-6">
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="text-sm font-medium text-gray-500">Total Income</span>
-                        <div class="w-10 h-10 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center">
-                            <i class="fas fa-trending-up text-xl"></i>
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 lg:gap-8 mb-6 lg:mb-8">
+                    <div
+                        class="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 rounded-3xl p-6 lg:p-8 text-white shadow-2xl col-span-1 md:col-span-2">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center ">
+                                <!-- Icon block -->
+                                <div class="bg-white/20 backdrop-blur-sm rounded-2xl">
+                                    <i class="fas fa-wallet text-xl lg:text-2xl text-indigo-200"></i>
+                                </div>
+
+                                <!-- Text block -->
+                                <div class="text-lg font-medium opacity-90 ml-4">My Wallet</div>
+                            </div>
+                            <button
+                                class="bg-white bg-opacity-20 text-white px-3 py-2 rounded-2xl flex items-center space-x-2 hover:bg-opacity-30 transition"
+                                id="editWalletBtn">
+                                <i class="fas fa-edit"></i><span class="hidden sm:inline">Edit</span>
+                            </button>
+                        </div>
+                        <div id="walletContent">
+                            <div id="walletLoading" class="flex items-center space-x-2 text-white">
+                                <div class="wallet-spinner"></div>
+                                <span>Loading wallet...</span>
+                            </div>
+                            <div id="walletBalance" class="hidden">
+                                <div class="text-3xl font-bold" id="balanceAmount">0.00</div>
+                                <div class="text-sm opacity-80" id="balanceCurrency">VND</div>
+                            </div>
+                            <div id="walletError" class="hidden text-white opacity-80">Error loading wallet</div>
                         </div>
                     </div>
-                    <div class="text-2xl font-bold text-gray-800" id="totalIncome">$0</div>
-                </div>
-                <div class="bg-white rounded-3xl shadow-lg p-6">
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="text-sm font-medium text-gray-500">Total Spending</span>
-                        <div class="w-10 h-10 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center">
-                            <i class="fas fa-trending-down text-xl"></i>
+                    <div class="bg-white rounded-3xl shadow-lg p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-sm font-medium text-gray-500">Total Income</span>
+                            <div
+                                class="w-10 h-10 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center">
+                                <i class="fas fa-trending-up text-xl"></i>
+                            </div>
                         </div>
+                        <div class="text-2xl font-bold text-gray-800" id="totalIncome">$0</div>
                     </div>
-                    <div class="text-2xl font-bold text-gray-800" id="totalSpending">$0</div>
-                </div>
-                <div class="bg-white rounded-3xl shadow-lg p-6">
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="text-sm font-medium text-gray-500">Balance Ratio</span>
-                        <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center">
-                            <i class="fas fa-chart-pie text-xl"></i>
+                    <div class="bg-white rounded-3xl shadow-lg p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-sm font-medium text-gray-500">Total Spending</span>
+                            <div class="w-10 h-10 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center">
+                                <i class="fas fa-trending-down text-xl"></i>
+                            </div>
                         </div>
+                        <div class="text-2xl font-bold text-gray-800" id="totalSpending">$0</div>
                     </div>
-                    <div class="text-2xl font-bold text-gray-800" id="incomeExpenseRatio">0%</div>
+                    <div class="bg-white rounded-3xl shadow-lg p-6 sm:col-span-2 lg:col-span-1">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-sm font-medium text-gray-500">Balance Ratio</span>
+                            <div
+                                class="w-10 h-10 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center">
+                                <i class="fas fa-chart-pie text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-gray-800" id="incomeExpenseRatio">0%</div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Transactions Content -->
-            <div id="transactions-content">
-                <div class="wallet-card rounded-3xl p-6 text-white mb-6 shadow-2xl">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="text-lg font-medium opacity-90">💳 My Wallet</div>
-                        <button class="bg-white bg-opacity-20 text-white px-3 py-2 rounded-2xl flex items-center space-x-2 hover:bg-opacity-30 transition" id="editWalletBtn">
-                            <i class="fas fa-edit"></i><span>Edit</span>
+                <!-- Transactions Content -->
+                <div id="transactions-content">
+
+                    <div class="bg-white rounded-3xl shadow-lg p-4 sm:p-6 mb-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Transaction Management
+                            </h2>
+                            <div class="flex flex-wrap gap-2 sm:gap-4 w-full sm:w-auto">
+                                <button
+                                    class="btn-primary text-white px-3 sm:px-4 py-2 sm:py-3 rounded-2xl font-semibold flex items-center space-x-2 transition-all duration-300 transform hover:scale-105 shadow-lg flex-1 sm:flex-none justify-center"
+                                    id="searchBtn">
+                                    <i class="fas fa-search"></i><span class="hidden sm:inline">Search</span>
+                                </button>
+                                <button
+                                    class="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-2xl font-semibold flex items-center space-x-2 hover:from-green-600 hover:to-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex-1 sm:flex-none justify-center"
+                                    id="createBtn">
+                                    <i class="fas fa-plus"></i><span class="hidden sm:inline">Add</span><span
+                                        class="sm:hidden">Transaction</span>
+                                </button>
+                                <a href="../recurring-transaction"
+                                    class="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-2xl font-semibold flex items-center space-x-2 hover:from-purple-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex-1 sm:flex-none justify-center"
+                                    id="recurringBtn">
+                                    <i class="fas fa-redo"></i><span class="hidden sm:inline">Recurring</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="loadingDiv" class="hidden text-center py-12">
+                        <div
+                            class="inline-block w-10 h-10 border-4 border-gray-200 border-t-indigo-600 rounded-full animate-spin">
+                        </div>
+                        <p class="mt-2 text-gray-500">Loading...</p>
+                    </div>
+
+                    <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+                        <div class="responsive-table">
+                            <table class="w-full min-w-full">
+                                <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                                    <tr>
+                                        <th
+                                            class="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-800 uppercase">
+                                            Date</th>
+                                        <th
+                                            class="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-800 uppercase">
+                                            Category</th>
+                                        <th
+                                            class="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-800 uppercase">
+                                            Amount</th>
+                                        <th
+                                            class="px-4 sm:px-6 py-4 text-left text-xs font-semibold text-gray-800 uppercase hidden sm:table-cell">
+                                            Note</th>
+                                        <th
+                                            class="px-4 sm:px-6 py-4 text-right text-xs font-semibold text-gray-800 uppercase">
+                                            Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactionTableBody">
+                                    <tr>
+                                        <td colspan="5" class="text-center py-12 text-gray-500">No transactions</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="paginationDiv"
+                        class="hidden flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8 p-4 sm:p-6 bg-white rounded-3xl shadow-lg">
+                        <button
+                            class="w-full sm:w-auto px-4 py-3 border-2 border-gray-200 rounded-2xl font-semibold hover:bg-indigo-50 hover:border-indigo-600 transition disabled:opacity-50 disabled:pointer-events-none"
+                            id="firstBtn" disabled>First
+                        </button>
+                        <div class="flex flex-wrap justify-center space-x-2" id="pageNumbers"></div>
+                        <button
+                            class="w-full sm:w-auto px-4 py-3 border-2 border-gray-200 rounded-2xl font-semibold hover:bg-indigo-50 hover:border-indigo-600 transition disabled:opacity-50 disabled:pointer-events-none"
+                            id="lastBtn" disabled>Last
                         </button>
                     </div>
-                    <div id="walletContent">
-                        <div id="walletLoading" class="flex items-center space-x-2 text-white">
-                            <div class="wallet-spinner"></div>
-                            <span>Loading wallet...</span>
-                        </div>
-                        <div id="walletBalance" class="hidden">
-                            <div class="text-3xl font-bold" id="balanceAmount">0.00</div>
-                            <div class="text-sm opacity-80" id="balanceCurrency">VND</div>
-                        </div>
-                        <div id="walletError" class="hidden text-white opacity-80">Error loading wallet</div>
-                    </div>
                 </div>
 
-                <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Transaction Management</h2>
-                        <div class="flex space-x-4">
-                            <button class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-3 rounded-2xl font-semibold flex items-center space-x-2 hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
-                                    id="searchBtn">
-                                <i class="fas fa-search"></i><span>Search</span>
-                            </button>
-                            <button class="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-3 rounded-2xl font-semibold flex items-center space-x-2 hover:from-green-600 hover:to-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
-                                    id="createBtn">
-                                <i class="fas fa-plus"></i><span>Add Transaction</span>
-                            </button>
-                            <a href="../recurring-transaction"
-                               class="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-3 rounded-2xl font-semibold flex items-center space-x-2 hover:from-purple-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
-                               id="recurringBtn">
-                                <i class="fas fa-redo"></i><span>Recurring Transactions</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="loadingDiv" class="hidden text-center py-12">
-                    <div class="inline-block w-10 h-10 border-4 border-gray-200 border-t-indigo-600 rounded-full animate-spin"></div>
-                    <p class="mt-2 text-gray-500">Loading...</p>
-                </div>
-
-                <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-                    <table class="w-full">
-                        <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
-                        <tr>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-800 uppercase">Date</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-800 uppercase">Category</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-800 uppercase">Amount</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-800 uppercase">Note</th>
-                            <th class="px-6 py-4 text-right text-xs font-semibold text-gray-800 uppercase">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody id="transactionTableBody">
-                        <tr>
-                            <td colspan="5" class="text-center py-12 text-gray-500">No transactions</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div id="paginationDiv" class="hidden flex justify-center items-center space-x-4 mt-8 p-6 bg-white rounded-3xl shadow-lg">
-                    <button class="px-4 py-3 bg-white border-2 border-gray-200 rounded-2xl font-semibold hover:bg-indigo-50 hover:border-indigo-600 transition disabled:opacity-50"
-                            id="prevBtn" disabled>Previous
-                    </button>
-                    <div class="flex space-x-2" id="pageNumbers"></div>
-                    <button class="px-4 py-3 bg-white border-2 border-gray-200 rounded-2xl font-semibold hover:bg-indigo-50 hover:border-indigo-600 transition disabled:opacity-50"
-                            id="nextBtn" disabled>Next
-                    </button>
-                </div>
-            </div>
-
-            <!-- Other Content Areas (Bills, Expenses, Goals, Settings) -->
-            <div id="bills-content" class="content-area hidden text-center py-12">
-                <div class="bg-white rounded-3xl p-8 shadow-lg">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Bills</h2>
-                    <p class="text-gray-500">This feature is under development...</p>
-                </div>
-            </div>
-            <div id="expenses-content" class="content-area hidden text-center py-12">
-                <div class="bg-white rounded-3xl p-8 shadow-lg">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Expenses</h2>
-                    <p class="text-gray-500">This feature is under development...</p>
-                </div>
-            </div>
-            <div id="goals-content" class="content-area hidden text-center py-12">
-                <div class="bg-white rounded-3xl p-8 shadow-lg">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Goals</h2>
-                    <p class="text-gray-500">This feature is under development...</p>
-                </div>
-            </div>
-            <div id="settings-content" class="content-area hidden text-center py-12">
-                <div class="bg-white rounded-3xl p-8 shadow-lg">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Settings</h2>
-                    <p class="text-gray-500">This feature is under development...</p>
-                </div>
             </div>
         </div>
     </div>
-</div>
-</div>
 
-<!-- Wallet Modal -->
-<div id="walletModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-    <div class="bg-white rounded-3xl p-6 lg:p-8 max-w-md w-full mx-4 shadow-2xl">
-        <div class="flex justify-between items-center mb-4 lg:mb-6">
-            <h3 class="text-xl lg:text-2xl font-bold text-gray-800">Edit Wallet Balance</h3>
-            <button class="text-gray-500 hover:text-gray-700 text-2xl" id="closeWalletModalBtn">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <form id="walletForm" class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Current Balance</label>
-                <div class="bg-gray-50 p-4 rounded-2xl text-gray-600">
-                    <span id="currentBalanceDisplay">Loading...</span>
+    <!-- Enhanced Wallet Modal -->
+    <div id="walletModal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div class="modal-content bg-white rounded-3xl p-6 lg:p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl lg:text-2xl font-bold text-gray-800">💳 Edit Wallet Balance</h3>
+                <button
+                    class="text-gray-400 hover:text-gray-600 text-2xl transition-colors p-2 rounded-xl hover:bg-gray-100"
+                    id="closeWalletModalBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="walletForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">Current Balance</label>
+                    <div
+                        class="bg-gradient-to-r from-gray-50 to-gray-100 p-4 rounded-2xl text-gray-700 border border-gray-200">
+                        <span id="currentBalanceDisplay" class="font-medium">Loading...</span>
+                    </div>
                 </div>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">New Balance</label>
-                <input type="number" step="0.01" id="newBalance" required placeholder="Enter new balance"
-                       class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-indigo-500 focus:outline-none">
-                <span class="text-red-600 text-xs mt-1 block" id="newBalanceError"></span>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Currency</label>
-                <select id="currency" class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-indigo-500 focus:outline-none">
-                    <option value="VND">VND - Vietnamese Dong</option>
-                    <option value="USD">USD - US Dollar</option>
-                    <option value="EUR">EUR - Euro</option>
-                </select>
-            </div>
-            <div class="flex space-x-4 mt-6">
-                <button type="button" id="cancelWalletBtn" class="flex-1 px-6 py-3 rounded-2xl border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors">
-                    Cancel
-                </button>
-                <button type="submit" id="updateWalletBtn" class="flex-1 px-6 py-3 rounded-2xl bg-indigo-600 text-white hover:bg-indigo-700 transition-colors">
-                    Update Balance
-                </button>
-            </div>
-        </form>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">New Balance</label>
+                    <input type="number" step="0.01" id="newBalance" required placeholder="Enter new balance"
+                        class="form-input w-full px-4 py-3 rounded-2xl focus:outline-none">
+                    <div class="form-error" id="newBalanceError"></div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">Currency</label>
+                    <select id="currency" class="form-input w-full px-4 py-3 rounded-2xl focus:outline-none">
+                        <option value="VND">VND - Vietnamese Dong</option>
+                    </select>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4 mt-8">
+                    <button type="button" id="cancelWalletBtn"
+                        class="btn-secondary flex-1 px-6 py-3 rounded-2xl font-semibold transition-all">
+                        Cancel
+                    </button>
+                    <button type="submit" id="updateWalletBtn"
+                        class="btn-primary flex-1 px-6 py-3 rounded-2xl text-white font-semibold">
+                        Update Balance
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<!-- Create/Edit Transaction Modal -->
-<div id="transactionModal"
-     class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center hidden z-50">
-    <div class="bg-white rounded-xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
-        <div class="flex justify-between items-center mb-6 border-b-2 border-gray-100 pb-4">
-            <h2 class="text-2xl font-bold text-gray-800" id="modalTitle">Create New Transaction</h2>
-            <button
-                    class="bg-gray-100 text-gray-500 w-10 h-10 rounded-lg flex items-center justify-center hover:bg-gray-200 transition"
-                    id="closeModalBtn">×
-            </button>
-        </div>
-        <form id="transactionForm" class="space-y-6">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-800 mb-2">💰 Amount *</label>
-                    <input type="number" step="0.01"
-                           class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
-                           id="amount" required>
-                    <span class="text-red-600 text-xs mt-1 block" id="amountError"></span>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-800 mb-2">📅 Transaction Date *</label>
-                    <input type="date"
-                           class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
-                           id="transactionDate" required>
-                    <span class="text-red-600 text-xs mt-1 block" id="transactionDateError"></span>
-                </div>
+    <div id="transactionModal" class="modal-backdrop fixed inset-0 flex items-center justify-center hidden z-50">
+        <div
+            class="modal-content bg-white rounded-3xl p-6 sm:p-8 max-w-4xl w-full mx-4 max-h-[95vh] overflow-y-auto shadow-2xl">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-gray-100">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800" id="modalTitle">
+                    <i class="fas fa-plus-circle text-indigo-600 mr-2"></i>Create New Transaction
+                </h2>
+                <button
+                    class="text-gray-400 hover:text-gray-600 text-2xl transition-colors p-2 rounded-xl hover:bg-gray-100"
+                    id="closeModalBtn">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-800 mb-2">📋 Transaction Type</label>
-                <select
-                        class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200 categorySelect"
-                        id="category-edit" required>
-                    <option value="">Select transaction type</option>
-                </select>
-                <span class="text-red-600 text-xs mt-1 block" id="categoryEditError"></span>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-800 mb-2">💳 Payment Method</label>
-                    <input type="text"
-                           class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
-                           id="paymentMethod" maxlength="255">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-800 mb-2">📍 Location</label>
-                    <input type="text"
-                           class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
-                           id="location" maxlength="255">
-                </div>
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-800 mb-2">📝 Note</label>
-                <textarea
-                        class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200 resize-y min-h-[100px]"
-                        id="note" maxlength="255"></textarea>
-            </div>
-            <div class="recurring-fields">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+            <form id="transactionForm" class="space-y-6">
+                <!-- Amount and Date Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-semibold text-gray-800 mb-2">🔄 Recurring Pattern</label>
-                        <select
-                                class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
-                                id="recurringPattern">
-                            <option value="">Non-recurring</option>
-                            <option value="Daily">Daily</option>
-                            <option value="Weekly">Weekly</option>
-                            <option value="Monthly">Monthly</option>
+                        <label class="block text-sm font-semibold text-gray-800 mb-3">
+                            <i class="fas fa-dollar-sign text-green-600 mr-2"></i>Amount *
+                        </label>
+                        <input type="number" step="0.01" class="form-input w-full p-4 rounded-2xl focus:outline-none"
+                            id="amount" required placeholder="0.00">
+                        <div class="form-error" id="amountError"></div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-800 mb-3">
+                            <i class="fas fa-calendar text-blue-600 mr-2"></i>Transaction Date *
+                        </label>
+                        <input type="date" class="form-input w-full p-4 rounded-2xl focus:outline-none"
+                            id="transactionDate" required>
+                        <div class="form-error" id="transactionDateError"></div>
+                    </div>
+                </div>
+
+                <!-- Category Row -->
+                <div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <!-- Transaction Type -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-800 mb-3">
+                                <i class="fas fa-tags text-purple-600 mr-2"></i>Transaction Type *
+                            </label>
+                            <select class="form-input w-full p-4 rounded-2xl focus:outline-none categorySelect"
+                                id="category-edit" required>
+                                <option value="">Select transaction type</option>
+                            </select>
+                        </div>
+
+                        <!-- Payment Method -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-800 mb-3">
+                                <i class="fas fa-credit-card text-indigo-600 mr-2"></i>Payment Method
+                            </label>
+                            <input type="text" class="form-input w-full p-4 rounded-2xl focus:outline-none"
+                                id="paymentMethod" maxlength="255" placeholder="e.g., Cash, Credit Card, Bank Transfer">
+                        </div>
+                    </div>
+
+                    <div class="form-error" id="categoryEditError"></div>
+                </div>
+
+                <!-- Note Section -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-3">
+                        <i class="fas fa-sticky-note text-yellow-600 mr-2"></i>Note
+                    </label>
+                    <textarea class="form-input w-full p-4 rounded-2xl focus:outline-none resize-y min-h-[100px]"
+                        id="note" maxlength="255" placeholder="Add any additional details..."></textarea>
+                    <div class="text-xs text-gray-500 mt-2 flex justify-between">
+                        <span>Optional description for your transaction</span>
+                        <span id="noteCounter">0/255</span>
+                    </div>
+                </div>
+
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t-2 border-gray-100">
+                    <button type="button" class="btn-secondary flex-1 p-4 rounded-2xl font-semibold order-2 sm:order-1"
+                        id="cancelBtn">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </button>
+                    <button type="submit"
+                        class="btn-primary flex-1 p-4 rounded-2xl text-white font-semibold order-1 sm:order-2"
+                        id="submitBtn">
+                        <i class="fas fa-save mr-2"></i>Save Transaction
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Enhanced Search  -->
+    <div id="searchModal" class="modal-backdrop fixed inset-0 flex items-center justify-center hidden z-50">
+        <div
+            class="modal-content bg-white rounded-3xl p-6 sm:p-8 max-w-3xl w-full mx-4 max-h-[95vh] overflow-y-auto shadow-2xl">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-gray-100">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">
+                    <i class="fas fa-search text-blue-600 mr-2"></i>Search Transactions
+                </h2>
+                <button
+                    class="text-gray-400 hover:text-gray-600 text-2xl transition-colors p-2 rounded-xl hover:bg-gray-100"
+                    id="closeSearchModalBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="searchForm" class="space-y-6">
+
+                <!-- Keywords Search -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-3">
+                        <i class="fas fa-search text-gray-600 mr-2"></i>Keywords in Note
+                    </label>
+                    <input type="text" class="form-input w-full p-4 rounded-2xl focus:outline-none" id="searchKeywords"
+                        placeholder="Search in transaction notes...">
+                </div>
+
+                <!-- Category Filter -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-3">
+                        <i class="fas fa-tags text-purple-600 mr-2"></i>Transaction Type
+                    </label>
+                    <select class="form-input w-full p-4 rounded-2xl focus:outline-none categorySelect"
+                        id="category-search">
+                        <option value="">All transaction types</option>
+                    </select>
+                </div>
+
+                <!-- Date Range -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-3">
+                        <i class="fas fa-calendar-alt text-blue-600 mr-2"></i>Date Range
+                    </label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs text-gray-600 mb-2">From Date</label>
+                            <input type="date" class="form-input w-full p-4 rounded-2xl focus:outline-none"
+                                id="searchStartDate">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-600 mb-2">To Date</label>
+                            <input type="date" class="form-input w-full p-4 rounded-2xl focus:outline-none"
+                                id="searchEndDate">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t-2 border-gray-100">
+                    <button type="button" class="btn-secondary flex-1 p-4 rounded-2xl font-semibold order-3 sm:order-1"
+                        id="clearFiltersBtn">
+                        <i class="fas fa-eraser mr-2"></i>Clear All
+                    </button>
+                    <button type="button" class="btn-secondary flex-1 p-4 rounded-2xl font-semibold order-2"
+                        id="cancelSearchBtn">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </button>
+                    <button type="submit"
+                        class="btn-primary flex-1 p-4 rounded-2xl text-white font-semibold order-1 sm:order-3"
+                        id="submitSearchBtn">
+                        <i class="fas fa-search mr-2"></i>Search Transactions
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Enhanced Create Category Modal -->
+    <div id="createCategoryModal" class="modal-backdrop fixed inset-0 flex items-center justify-center hidden z-50">
+        <div
+            class="modal-content bg-white rounded-3xl p-6 sm:p-8 max-w-2xl w-full mx-4 max-h-[95vh] overflow-y-auto shadow-2xl">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-gray-100">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800">
+                    <i class="fas fa-plus-circle text-green-600 mr-2"></i>Create New Category
+                </h2>
+                <button
+                    class="text-gray-400 hover:text-gray-600 text-2xl transition-colors p-2 rounded-xl hover:bg-gray-100"
+                    id="closeCreateCategoryModalBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="createCategoryForm" class="space-y-6">
+                <!-- Category Type and Color -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-800 mb-3">
+                            <i class="fas fa-tag text-blue-600 mr-2"></i>Category Name *
+                        </label>
+                        <input type="text" class="form-input w-full p-4 rounded-2xl focus:outline-none"
+                            id="categoryName" required maxlength="50" placeholder="Enter category name">
+                        <div class="text-xs text-gray-500 mt-2 flex justify-between">
+                            <span>Choose a descriptive name for your category</span>
+                            <span id="categoryNameCounter">0/50</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-800 mb-3">
+                            <i class="fas fa-list text-purple-600 mr-2"></i>Category Type *
+                        </label>
+                        <select class="form-input w-full p-4 rounded-2xl focus:outline-none" id="categoryType" required>
+                            <option value="">Select type</option>
+                            <option value="INCOME">💰 Income</option>
+                            <option value="EXPENSE">💸 Expense</option>
                         </select>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 recurring-dates hidden">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-800 mb-2">📅 Start Date *</label>
-                        <input type="date"
-                               class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
-                               id="startDate">
-                        <span class="text-red-600 text-xs mt-1 block" id="startDateError"></span>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-800 mb-2">📅 End Date *</label>
-                        <input type="date"
-                               class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
-                               id="endDate">
-                        <span class="text-red-600 text-xs mt-1 block" id="endDateError"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="flex space-x-4 pt-6 border-t-2 border-gray-100">
-                <button type="submit"
-                        class="flex-1 bg-green-600 text-white p-4 rounded-lg font-semibold hover:bg-green-700 transition"
-                        id="submitBtn">Submit Details
-                </button>
-                <button type="button"
-                        class="flex-1 bg-white text-gray-800 p-4 border-2 border-gray-200 rounded-lg font-semibold hover:bg-gray-50 transition"
-                        id="cancelBtn">Cancel
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
 
-<!-- Search Modal -->
-<div id="searchModal"
-     class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center hidden z-50">
-    <div class="bg-white rounded-xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
-        <div class="flex justify-between items-center mb-6 border-b-2 border-gray-100 pb-4">
-            <h2 class="text-2xl font-bold text-gray-800">Search Transactions</h2>
-            <button
-                    class="bg-gray-100 text-gray-500 w-10 h-10 rounded-lg flex items-center justify-center hover:bg-gray-200 transition"
-                    id="closeSearchModalBtn">×
-            </button>
+                <!-- Icon Selection -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-800 mb-3">
+                        <i class="fas fa-icons text-indigo-600 mr-2"></i>Choose Icon *
+                    </label>
+
+                    <div class="icon-grid grid grid-cols-6 sm:grid-cols-8 lg:grid-cols-10 gap-3 p-4 bg-gray-50 border-2 border-gray-200 rounded-2xl max-h-64 overflow-y-auto"
+                        id="iconGrid">
+                        <!-- Icons will be populated here -->
+                    </div>
+                    <input type="hidden" id="categoryIcon" required>
+                    <div class="form-error" id="categoryIconError"></div>
+                </div>
+
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t-2 border-gray-100">
+                    <button type="button" class="btn-secondary flex-1 p-4 rounded-2xl font-semibold order-2 sm:order-1"
+                        id="cancelCategoryBtn">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </button>
+                    <button type="submit"
+                        class="btn-primary flex-1 p-4 rounded-2xl text-white font-semibold order-1 sm:order-2"
+                        id="submitCategoryBtn">
+                        <i class="fas fa-save mr-2"></i>Save Category
+                    </button>
+                </div>
+            </form>
         </div>
-        <form id="searchForm" class="space-y-6">
-            <div>
-                <label class="block text-sm font-semibold text-gray-800 mb-2">📋 Transaction Type</label>
-                <select
-                        class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200 categorySelect"
-                        id="category-search">
-                    <option value="">Select transaction type</option>
-                </select>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-800 mb-2">💰 Minimum Amount</label>
-                    <input type="number" step="0.01"
-                           class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
-                           id="minAmount">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-800 mb-2">💰 Maximum Amount</label>
-                    <input type="number" step="0.01"
-                           class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
-                           id="maxAmount">
-                </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-800 mb-2">📅 From Date</label>
-                    <input type="date"
-                           class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
-                           id="searchStartDate">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-800 mb-2">📅 To Date</label>
-                    <input type="date"
-                           class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
-                           id="searchEndDate">
-                </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-800 mb-2">💳 Payment Method</label>
-                    <input type="text"
-                           class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
-                           id="paymentMethodSearch" maxlength="255">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-800 mb-2">📍 Location</label>
-                    <input type="text"
-                           class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
-                           id="locationSearch" maxlength="255">
-                </div>
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-800 mb-2">📝 Note</label>
-                <input type="text"
-                       class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
-                       id="noteSearch" maxlength="255">
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-800 mb-2">🔄 Recurring Transactions</label>
-                <select
-                        class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
-                        id="isRecurringSearch">
-                    <option value="">All</option>
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
-                </select>
-            </div>
-            <div class="flex space-x-4 pt-6 border-t-2 border-gray-100">
-                <button type="submit"
-                        class="flex-1 bg-green-600 text-white p-4 rounded-lg font-semibold hover:bg-green-700 transition"
-                        id="submitSearchBtn">Search
-                </button>
-                <button type="button"
-                        class="flex-1 bg-white text-gray-800 p-4 border-2 border-gray-200 rounded-lg font-semibold hover:bg-gray-50 transition"
-                        id="cancelSearchBtn">Cancel
-                </button>
-            </div>
-        </form>
     </div>
-</div>
-<!-- Create Category Modal -->
-<div id="createCategoryModal"
-     class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center hidden z-50">
-    <div class="bg-white rounded-xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
-        <div class="flex justify-between items-center mb-6 border-b-2 border-gray-100 pb-4">
-            <h2 class="text-2xl font-bold text-gray-800">Create New Category</h2>
-            <button
-                    class="bg-gray-100 text-gray-500 w-10 h-10 rounded-lg flex items-center justify-center hover:bg-gray-200 transition"
-                    id="closeCreateCategoryModalBtn">×
-            </button>
-        </div>
-        <form id="createCategoryForm" class="space-y-6">
-            <div>
-                <label class="block text-sm font-semibold text-gray-800 mb-2">📋 Category Name *</label>
-                <input type="text"
-                       class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
-                       id="categoryName" required maxlength="50" placeholder="Enter category name">
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-800 mb-2">🎨 Category Type *</label>
-                    <select
-                            class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
-                            id="categoryType" required>
-                        <option value="">Select type</option>
-                        <option value="INCOME">Income</option>
-                        <option value="EXPENSE">Expense</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-800 mb-2">🎨 Color</label>
-                    <input type="color"
-                           class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:ring focus:ring-green-200"
-                           id="categoryColor" value="#4CAF50">
-                </div>
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-800 mb-2">🖼️ Choose Icon *</label>
-                <div class="icon-grid grid grid-cols-4 sm:grid-cols-6 gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg max-h-52 overflow-y-auto"
-                     id="iconGrid"></div>
-                <input type="hidden" id="categoryIcon" required>
-            </div>
-            <div class="flex space-x-4 pt-6 border-t-2 border-gray-100">
-                <button type="submit"
-                        class="flex-1 bg-green-600 text-white p-4 rounded-lg font-semibold hover:bg-green-700 transition"
-                        id="submitCategoryBtn">Save Category
-                </button>
-                <button type="button"
-                        class="flex-1 bg-white text-gray-800 p-4 border-2 border-gray-200 rounded-lg font-semibold hover:bg-gray-50 transition"
-                        id="cancelCategoryBtn">Cancel
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+
 </body>
 
 </html>
