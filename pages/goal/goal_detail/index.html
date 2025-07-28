@@ -11,10 +11,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/assets/js/helper_functions.js?v=1"></script>
     <script src="/assets/js/autho_helper.js"></script>
-    <script src="/assets/js/sidebar.js"></script>
-    <script src="/assets/js/header.js"></script>
     <script src="/assets/js/goal_detail.js" defer></script>
     <script src="/assets/js/goal-contribution.js" defer></script>
+    <script src="/assets/js/sidebar.js"></script>
+    <script src="/assets/js/header.js"></script>
 
     <script>
         tailwind.config = {
@@ -48,16 +48,38 @@
             padding: 0;
             display: flex;
             flex-direction: column;
+            transition: margin-left 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Adjust main content when sidebar is collapsed */
+        .sidebar-collapsed ~ .main-content {
+            margin-left: 100px;
+        }
+
+        /* Ensure main content is always clickable */
+        .main-content {
+            pointer-events: auto;
+        }
+
+        /* Ensure header navigation is always clickable */
+        .bg-white.shadow-sm.border-b {
+            position: relative;
+            z-index: 20;
+            pointer-events: auto;
+        }
+
+        /* Ensure back button is always clickable */
+        #backButton {
+            position: relative;
+            z-index: 25;
+            pointer-events: auto;
         }
 
         /* Hide header spacer to prevent double spacing */
         #header-spacer {
             display: none !important;
-        }
-
-        /* Prevent sidebar flash - no transitions */
-        #sidebar-container {
-            opacity: 1;
         }
 
         /* No transitions for main content */
@@ -91,6 +113,12 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+
+        #sidebar-container:empty {
+            display: none !important;
+            width: 0 !important;
+            pointer-events: none !important;
         }
     </style>
 </head>
@@ -533,95 +561,32 @@
 </div>
 
 <script>
-    // Manual load components with fetch
-    async function loadComponent(url, containerId) {
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const html = await response.text();
-            const container = document.getElementById(containerId);
-            container.innerHTML = html;
-            return true;
-        } catch (error) {
-            console.error(`Error loading ${url}:`, error);
-            return false;
-        }
-    }
-
-    // Load header function for this page
-    async function loadHeader() {
-        const headerContainer = document.getElementById('header-container');
-        if (headerContainer) {
-            const headerHTML = await loadHeaderHTML();
-            if (headerHTML) {
-                headerContainer.innerHTML = headerHTML;
-                initHeader();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Load sidebar function for this page
-    async function loadSideBarSimple() {
-        const sidebarContainer = document.getElementById('sidebar-container');
-        
-        if (sidebarContainer) {
-            const sidebarHTML = await loadSidebarHTML();
-            if (sidebarHTML) {
-                sidebarContainer.innerHTML = sidebarHTML;
-                initSidebar();
-                return true;
-            }
-        }
-        return false;
-    }
-
     // Initialize page components
-    window.addEventListener('load', function() {
-        console.log('Page loaded, initializing components...');
+    window.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, initializing components...');
         
-        setTimeout(async function() {
-            try {
-                // Try loading with functions first
-                if (typeof loadHeader === 'function' && typeof loadSideBarSimple === 'function') {
-                    console.log('Using loadHeader and loadSideBarSimple functions...');
-                    const headerLoaded = await loadHeader();
-                    const sidebarLoaded = await loadSideBarSimple();
-                    
-                    if (headerLoaded && sidebarLoaded) {
-                        console.log('Components loaded successfully');
-                    } else {
-                        console.error('Failed to load some components');
-                    }
-                } else {
-                    // Fallback to manual loading
-                    console.log('Functions not found, using manual loading...');
-                    
-                    const headerLoaded = await loadComponent('/pages/header.html', 'header-container');
-                    const sidebarLoaded = await loadComponent('/pages/sidebar.html', 'sidebar-container');
-                    
-                    if (headerLoaded && sidebarLoaded) {
-                        console.log('Components loaded manually');
-                        
-                        // Initialize header and sidebar after loading
-                        if (typeof initHeader === 'function') {
-                            initHeader();
-                        }
-                        if (typeof initSidebar === 'function') {
-                            initSidebar();
-                        }
-                    } else {
-                        console.error('Failed to load some components');
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading page components:', error);
-            }
-        }, 200);
+        // Load header and sidebar immediately
+        loadHeaderAndSidebar();
     });
+
+    async function loadHeaderAndSidebar() {
+        try {
+            console.log('Loading header and sidebar...');
+            
+            // Load header and sidebar using standard functions like other pages
+            if (typeof loadHeader === 'function') {
+                await loadHeader();
+            }
+            
+            if (typeof loadSideBar === 'function') {
+                await loadSideBar();
+            }
+            
+            console.log('All components loaded');
+        } catch (error) {
+            console.error('Error loading components:', error);
+        }
+    }
 </script>
 
 </body>
