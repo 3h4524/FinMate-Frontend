@@ -87,6 +87,12 @@ const contributionForm = document.getElementById('contributionForm');
 const formError = document.getElementById('formError');
 
 
+const paginationDiv = document.getElementById('paginationDiv');
+const pageNumbers = document.getElementById('pageNumbers');
+const firstBtn = document.getElementById('firstBtn');
+const lastBtn = document.getElementById('lastBtn');
+
+
 // DOM elements for edit modal
 const editGoalModal = document.getElementById('editGoalModal');
 const closeEditModalButton = document.getElementById('closeEditModalButton');
@@ -101,6 +107,9 @@ const editButton = document.getElementById('editButton');
 
 // API configuration
 const API_BASE_URL = 'http://localhost:8080';
+
+let currentPage = 0;
+let totalPages = 0;
 
 const urlParams = new URLSearchParams(window.location.search);
 const goalId = urlParams.get('goalId');
@@ -141,9 +150,10 @@ async function fetchGoalProgressData() {
 
 async function fetchGoalContributionData(goalId) {
     try {
-        const contributionsResponse = await apiRequest(`${API_BASE_URL}/contributions/${goalId}`);
+        const contributionsResponse = await apiRequest(`${API_BASE_URL}/contributions/${goalId}?page=${currentPage}&size=5`);
         if (!contributionsResponse.ok) throw new Error('Failed to fetch goal contributions');
         const contributionsData = await contributionsResponse.json();
+        renderPagination(contributionsData.result.totalPages);
         return contributionsData.result.content;
     } catch (error) {
         console.error('Error fetching goal contribution data:', error);
@@ -189,6 +199,21 @@ function renderGoalDetails() {
     renderChart();
     renderContributions();
 }
+
+// Pagination
+firstBtn.addEventListener('click', () => {
+    if (currentPage > 0) {
+        currentPage = 0;
+        renderContributions();
+    }
+
+});
+lastBtn.addEventListener('click', () => {
+    if (currentPage < totalPages - 1) {
+        currentPage = totalPages - 1;
+        renderContributions();
+    }
+});
 
 // Render chart
 async function renderChart() {
@@ -726,3 +751,35 @@ window.addEventListener('load', () => {
         initiateUI();
     }
 });
+
+
+function renderPagination(total) {
+    totalPages = total;
+    pageNumbers.innerHTML = '';
+    if (total <= 1) {
+        hideElement(paginationDiv);
+        return;
+    }
+    showElement(paginationDiv);
+    firstBtn.disabled = currentPage === 0;
+    lastBtn.disabled = currentPage === totalPages - 1;
+    const maxPagesToShow = 5;
+    let startPage = Math.max(0, currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + maxPagesToShow);
+    if (endPage - startPage < maxPagesToShow) {
+        startPage = Math.max(0, endPage - maxPagesToShow);
+    }
+    for (let i = startPage; i < endPage; i++) {
+        const btn = document.createElement('button');
+        btn.className = `px-4 py-3 rounded-lg font-semibold ${i === currentPage ? 'bg-green-600 text-white shadow-md' : 'bg-white border-2 border-gray-200 hover:bg-green-50 hover:border-green-600'}`;
+        btn.textContent = i + 1;
+        btn.addEventListener('click', () => {
+            currentPage = i;
+            renderContributions();
+        });
+        pageNumbers.appendChild(btn);
+    }
+}
+
+const showElement = (element) => element.classList.remove('hidden');
+const hideElement = (element) => element.classList.add('hidden');
