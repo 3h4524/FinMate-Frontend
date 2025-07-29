@@ -467,7 +467,7 @@ const deleteTransaction = async (transactionId) => {
 
 const searchTransactions = async () => {
     const user = getCurrentUser();
-    const [type, id] = document.getElementById('category-search').value.split('-');
+    const [type, category ,id] = document.getElementById('category-search').value.split('-');
     const searchParams = {
         categoryId: type === 'system' ? id : null,
         userCategoryId: type === 'user' ? id : null,

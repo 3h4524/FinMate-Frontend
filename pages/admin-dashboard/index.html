@@ -314,7 +314,7 @@
                 <div class="bg-white rounded-3xl shadow-lg p-6 border border-blue-100 hover:shadow-xl transition-all duration-300">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h3 class="text-3xl font-bold text-gray-900" id="totalRevenue">$0</h3>
+                            <h3 class="text-3xl font-bold text-gray-900" id="totalRevenue">0</h3>
                             <p class="text-sm text-gray-600 mt-1">Total Revenue</p>
                             <div class="flex items-center mt-2">
                                 <i class="fas fa-arrow-up text-green-500 text-xs mr-1"></i>
@@ -619,7 +619,7 @@
                 const estimatedRevenue = premiumUsers * 29.99 + activeUsers * 2.5; // Estimated monthly revenue
 
                 document.getElementById('totalTransactions').textContent = estimatedTransactions.toLocaleString();
-                document.getElementById('totalRevenue').textContent = `$${estimatedRevenue.toFixed(2)}`;
+                document.getElementById('totalRevenue').textContent = `${formatCurrency(estimatedRevenue.toFixed(2))}`;
 
                 // Get previous stats for percentage calculation
                 const prevStats = JSON.parse(localStorage.getItem('adminStats') || '{}');
