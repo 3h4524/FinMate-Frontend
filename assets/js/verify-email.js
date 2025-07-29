@@ -165,10 +165,10 @@ document.getElementById('verificationForm').addEventListener('submit', async (e)
 
                 if (userRole === 'ADMIN' || userRole === 'admin') {
                     console.log('Redirecting to admin dashboard');
-                    window.location.href = '../admin-dashboard/index.html';
+                    window.location.href = '../user-management/';
                 } else {
                     console.log('Redirecting to home page');
-                    window.location.href = '../home/index.html';
+                    window.location.href = '../transaction/';
                 }
             }, 1000);
         } else {

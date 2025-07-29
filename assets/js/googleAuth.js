@@ -102,9 +102,9 @@ async function handleGoogleSignIn(response) {
             // Redirect based on user role, not current page
             const userData = JSON.parse(finalUserData);
             if (userData.role === 'ADMIN') {
-                window.location.href = '/pages/admin-dashboard/';
+                window.location.href = '/pages/user-management/';
             } else {
-                window.location.href = '/pages/home/';
+                window.location.href = '/pages/transaction/';
             }
         }, 1000);
     } catch (error) {
